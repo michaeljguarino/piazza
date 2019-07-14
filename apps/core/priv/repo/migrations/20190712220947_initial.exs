@@ -5,11 +5,11 @@ defmodule Core.Repo.Migrations.Initial do
     create table(:users, primary_key: false) do
       add :id, :uuid, primary_key: true
 
-      add :email,    :string, null: false
-      add :name,     :string, null: false
-      add :handle,   :string, null: false
-      add :password, :string
-      add :bio,      :string
+      add :email,         :string, null: false
+      add :name,          :string, null: false
+      add :handle,        :string, null: false
+      add :password_hash, :string
+      add :bio,           :string
 
       add :profile_img, :map
 
@@ -23,6 +23,8 @@ defmodule Core.Repo.Migrations.Initial do
       add :id, :uuid, primary_key: true
       add :name, :string, null: false
       add :public, :boolean, default: true, null: false
+
+      add :creator_id, references(:users, type: :uuid)
 
       timestamps()
     end

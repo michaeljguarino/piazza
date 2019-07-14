@@ -1,5 +1,5 @@
-defmodule Core.SchemaTest do
-  use Core.DataCase
+defmodule Core.Schema.QueriesTest do
+  use Core.DataCase, async: true
 
   describe "User" do
     test "It will fetch a user by id" do
@@ -148,6 +148,4 @@ defmodule Core.SchemaTest do
       assert ids_equal(users, expected)
     end
   end
-
-  def run_query(query, variables, context \\ %{}), do: Absinthe.run(query, Core.Schema, variables: variables, context: context)
 end

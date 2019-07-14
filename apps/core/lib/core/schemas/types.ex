@@ -9,12 +9,13 @@ defmodule Core.Schemas.Types do
     field :name, non_null(:string)
     field :handle, non_null(:string)
     field :email, non_null(:string)
+    field :bio, :string
   end
 
   object :conversation do
     field :id, :id
     field :name, non_null(:string)
-    field :private, non_null(:boolean)
+    field :public, non_null(:boolean)
     connection field :messages, node_type: :message do
       resolve &Conversation.list_messages/2
     end

@@ -1,9 +1,11 @@
 defmodule Core.Schema do
   use Absinthe.Schema
   use Absinthe.Relay.Schema, :modern
+  import Core.Schemas.Helpers
 
   alias Core.Resolvers.{Conversation, User}
   import_types Core.Schemas.Types
+  import_types Core.Schemas.InputTypes
 
   def context(ctx) do
     loader =
@@ -41,6 +43,56 @@ defmodule Core.Schema do
     field :conversation, :conversation do
       arg :id, non_null(:id)
       resolve &Conversation.resolve_conversation/3
+    end
+  end
+
+  mutation do
+    @desc "Creates a new user for this piazza instance"
+    field :create_user, :user do
+      arg :attributes, non_null(:user_attributes)
+
+      resolve safe_resolver(&User.create_user/2)
+    end
+
+    @desc "Updates the attributes on a single user"
+    field :update_user, :user do
+      arg :id, non_null(:id)
+      arg :attributes, non_null(:user_attributes)
+
+      resolve safe_resolver(&User.update_user/2)
+    end
+
+    @desc "Creates a new conversation"
+    field :create_conversation, :conversation do
+      arg :attributes, non_null(:conversation_attributes)
+
+      resolve safe_resolver(&Conversation.create_conversation/2)
+    end
+
+    @desc "Updates a conversation by id"
+    field :update_conversation, :conversation do
+      arg :id, non_null(:id)
+      arg :attributes, non_null(:conversation_attributes)
+
+      resolve safe_resolver(&Conversation.update_conversation/2)
+    end
+
+    @desc "Creates a message in a conversation"
+    field :create_message, :message do
+      arg :conversation_id, non_null(:id)
+      arg :attributes, non_null(:message_attributes)
+
+      resolve safe_resolver(&Conversation.create_message/2)
+    end
+  end
+
+  def safe_resolver(fun) do
+    fn args, ctx ->
+      case fun.(args, ctx) do
+        {:ok, res} -> {:ok, res}
+        {:error, %Ecto.Changeset{} = cs} -> {:error, resolve_changeset(cs)}
+        error -> error
+      end
     end
   end
 end

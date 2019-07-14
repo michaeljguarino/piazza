@@ -11,7 +11,7 @@ defmodule Core.Models.Message do
     timestamps()
   end
 
-  @valid ~w(name msg creator_id conversation_id)
+  @valid ~w(text)a
 
   def for_conversation(query \\ __MODULE__, conv_id),
     do: from(m in query, where: m.conversation_id == ^conv_id)
@@ -24,9 +24,9 @@ defmodule Core.Models.Message do
   def changeset(model, attrs \\ %{}) do
     model
     |> cast(attrs, @valid)
-    |> validate_required([:name, :creator_id, :conversation_id])
+    |> validate_required([:text, :creator_id, :conversation_id])
     |> foreign_key_constraint(:creator_id)
     |> foreign_key_constraint(:conversation_id)
-    |> validate_length(:name, max: 255)
+    |> validate_length(:text, max: 255)
   end
 end

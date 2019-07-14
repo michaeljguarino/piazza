@@ -1,6 +1,6 @@
 defmodule Core.Models.Conversation do
   use Core.DB.Schema
-  alias Core.Models.{Participant, Message}
+  alias Core.Models.{Participant, Message, User}
 
   schema "conversations" do
     field :name,   :string
@@ -8,10 +8,13 @@ defmodule Core.Models.Conversation do
 
     has_many :participants, Participant
     has_many :messages, Message
+
+    belongs_to :creator, User
+
     timestamps()
   end
 
-  @valid ~w(name public)
+  @valid ~w(name public)a
 
   def for_user(query \\ any(), user_id) do
     from(c in query,

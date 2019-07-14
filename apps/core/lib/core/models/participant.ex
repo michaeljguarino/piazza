@@ -9,7 +9,7 @@ defmodule Core.Models.Participant do
     timestamps()
   end
 
-  @valid ~w(user_id conversation_id)
+  @valid ~w(user_id conversation_id)a
 
   def for_user(query \\ __MODULE__, user_id),
     do: from(p in query, where: p.user_id == ^user_id)
