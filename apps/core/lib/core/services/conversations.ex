@@ -1,6 +1,11 @@
 defmodule Core.Services.Conversations do
   use Core.Services.Base
   alias Core.Models.{Conversation, Message, Participant}
+  alias Core.PubSub.{
+    ConversationCreated,
+    ConversationUpdated,
+    MessageCreated
+  }
   import Core.Policies.Conversation
 
   def get_conversation!(id), do: Core.Repo.get!(Conversation, id)
@@ -12,6 +17,7 @@ defmodule Core.Services.Conversations do
     |> Conversation.changeset(attrs)
     |> allow(user, :create)
     |> when_ok(:insert)
+    |> notify(:create, user)
   end
 
   def update_conversation(id, attrs, user) do
@@ -19,6 +25,7 @@ defmodule Core.Services.Conversations do
     |> Conversation.changeset(attrs)
     |> allow(user, :update)
     |> when_ok(:update)
+    |> notify(:update, user)
   end
 
   def create_message(conv_id, attrs, user) do
@@ -26,5 +33,14 @@ defmodule Core.Services.Conversations do
     |> Message.changeset(attrs)
     |> allow(user, :create)
     |> when_ok(:insert)
+    |> notify(:create, user)
   end
+
+  def notify({:ok, %Conversation{} = conv}, :create, actor),
+    do: handle_notify(ConversationCreated, conv, actor: actor)
+  def notify({:ok, %Message{} = msg}, :create, actor),
+    do: handle_notify(MessageCreated, msg, actor: actor)
+  def notify({:ok, %Conversation{} = conv}, :update, actor),
+    do: handle_notify(ConversationUpdated, conv, actor: actor)
+  def notify(error, _, _), do: error
 end

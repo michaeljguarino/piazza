@@ -1,6 +1,7 @@
 defmodule Core.Services.ConversationsTest do
   use Core.DataCase, async: true
   alias Core.Services.Conversations
+  alias Core.PubSub
 
   describe "create_conversation/2" do
     test "Users can create conversations" do
@@ -9,6 +10,8 @@ defmodule Core.Services.ConversationsTest do
 
       assert conv.name == "my conversation"
       assert conv.creator_id == user.id
+
+      assert_receive {:event, %PubSub.ConversationCreated{item: ^conv}}
     end
   end
 
@@ -22,6 +25,8 @@ defmodule Core.Services.ConversationsTest do
 
       assert updated.id == conversation.id
       assert updated.name == "my conversation"
+
+      assert_receive {:event, %PubSub.ConversationUpdated{item: ^updated}}
     end
 
     test "Nonparticipants cannot update conversations" do
@@ -41,6 +46,8 @@ defmodule Core.Services.ConversationsTest do
 
       assert message.text == "new message"
       assert message.creator_id == user.id
+
+      assert_receive {:event, %PubSub.MessageCreated{item: ^message}}
     end
 
     test "Participants can create messages in private conversations" do

@@ -44,6 +44,7 @@ defmodule Core.MixProject do
       {:dataloader, "~> 1.0.0"},
       {:comeonin, "~> 5.1.2"},
       {:argon2_elixir, "~> 2.0"},
+      {:gen_stage, "~> 0.14.2"},
       {:ex_machina, "~> 2.3", only: :test}
     ]
   end

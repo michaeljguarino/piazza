@@ -11,4 +11,8 @@ config :core, Core.Repo,
 config :core, Core.Repo,
     pool: Ecto.Adapters.SQL.Sandbox
 
+config :core, :consumers, [
+  Core.EchoConsumer
+]
+
 config :logger, level: :warn
