@@ -23,11 +23,11 @@ defmodule Core.TestHelpers do
     do: Absinthe.run(query, Core.Schema, variables: variables, context: context)
 
   def verify_record(schema, %{"id" => id} = result) do
-    user = Core.Repo.get(schema, id)
-    assert user
+    record = Core.Repo.get(schema, id)
+    assert record
 
     Enum.each(result, fn {key, val} ->
-      assert Map.get(user, String.to_atom(key)) == val
+      assert Map.get(record, String.to_atom(key)) == val
     end)
   end
 
@@ -40,4 +40,6 @@ defmodule Core.TestHelpers do
   def submap?(sub, sup) do
     Enum.all?(sub, fn {k, v} -> Map.get(sup, k) == v end)
   end
+
+  def refetch(%{__struct__: schema, id: id}), do: Core.Repo.get(schema, id)
 end

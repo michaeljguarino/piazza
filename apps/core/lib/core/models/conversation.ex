@@ -5,6 +5,7 @@ defmodule Core.Models.Conversation do
   schema "conversations" do
     field :name,   :string
     field :public, :boolean, default: true
+    field :global, :boolean, default: false
 
     has_many :participants, Participant
     has_many :messages, Message
@@ -24,11 +25,16 @@ defmodule Core.Models.Conversation do
     )
   end
 
+  def global(query \\ __MODULE__), do: from(c in query, where: c.global)
+
   def public(query \\ any()), do: from(c in query, where: c.public)
 
   def private(query \\ any()), do: from(c in query, where: not c.public)
 
   def any(), do: from(c in __MODULE__, order_by: [asc: :name])
+
+  def ordered(query \\ __MODULE__, order \\ [asc: :name]),
+    do: from(c in query, order_by: ^order)
 
   def changeset(model, attrs \\ %{}) do
     model

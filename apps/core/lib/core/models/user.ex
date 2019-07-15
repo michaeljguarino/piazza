@@ -18,7 +18,7 @@ defmodule Core.Models.User do
 
   @valid ~w(email name handle password)a
 
-  def ordered(query \\ __MODULE__), do: from(u in query, order_by: [asc: :email])
+  def ordered(query \\ __MODULE__, order \\ [asc: :email]), do: from(u in query, order_by: ^order)
 
   def changeset(model, attrs \\ %{}) do
     model

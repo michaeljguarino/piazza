@@ -25,7 +25,8 @@ defmodule Core.Resolvers.Conversation do
   end
 
   def list_messages(args, %{source: conversation}) do
-    Message.for_conversation(conversation.id)
+    Message.any()
+    |> Message.for_conversation(conversation.id)
     |> paginate(args)
   end
 
@@ -42,4 +43,10 @@ defmodule Core.Resolvers.Conversation do
 
   def create_message(%{conversation_id: conv_id, attributes: attrs}, %{context: %{current_user: user}}),
     do: Conversations.create_message(conv_id, attrs, user)
+
+  def create_participant(%{attributes: attrs}, %{context: %{current_user: user}}),
+    do: Conversations.create_participant(attrs, user)
+
+  def delete_participant(%{conversation_id: cid, user_id: uid}, %{context: %{current_user: user}}),
+    do: Conversations.delete_participant(cid, uid, user)
 end

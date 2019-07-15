@@ -16,6 +16,8 @@ defmodule Piazza.MixProject do
   #
   # Run "mix help deps" for examples and options.
   defp deps do
-    []
+    [
+      {:ecto, "~> 3.1.7", override: true}
+    ]
   end
 end

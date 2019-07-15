@@ -7,6 +7,7 @@ defmodule Core.DB.Schema do
       import Core.DB.Schema
 
       @primary_key {:id, :binary_id, autogenerate: true}
+      @timestamps_opts [type: :utc_datetime_usec]
       @foreign_key_type :binary_id
 
       def any(), do: from(r in __MODULE__)

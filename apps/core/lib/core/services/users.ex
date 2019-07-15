@@ -1,10 +1,7 @@
 defmodule Core.Services.Users do
   use Core.Services.Base
   alias Core.Models.User
-  alias Core.PubSub.{
-    UserCreated,
-    UserUpdated
-  }
+  alias Core.PubSub
   import Core.Policies.User
 
   def create_user(attrs) do
@@ -22,7 +19,7 @@ defmodule Core.Services.Users do
     |> notify(:update)
   end
 
-  def notify({:ok, user}, :create), do: handle_notify(UserCreated, user)
-  def notify({:ok, user}, :update), do: handle_notify(UserUpdated, user, actor: user)
+  def notify({:ok, user}, :create), do: handle_notify(PubSub.UserCreated, user)
+  def notify({:ok, user}, :update), do: handle_notify(PubSub.UserUpdated, user, actor: user)
   def notify(error, _), do: error
 end

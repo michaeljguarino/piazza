@@ -7,6 +7,7 @@ defmodule Core.Services.Base do
 
   def when_ok({:ok, resource}, :insert), do: Core.Repo.insert(resource)
   def when_ok({:ok, resource}, :update), do: Core.Repo.update(resource)
+  def when_ok({:ok, resource}, :delete), do: Core.Repo.delete(resource)
   def when_ok(error, _), do: error
 
   def handle_notify(event_type, resource, additional \\ %{}) do
@@ -18,5 +19,11 @@ defmodule Core.Services.Base do
       :ok   -> {:ok, resource}
       _error -> {:error, :internal_error}
     end
+  end
+
+  def timestamped(map) do
+    map
+    |> Map.put(:inserted_at, DateTime.utc_now())
+    |> Map.put(:updated_at, DateTime.utc_now())
   end
 end

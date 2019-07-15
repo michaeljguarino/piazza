@@ -37,6 +37,7 @@ defmodule Core.MixProject do
   defp deps do
     [
       {:ecto_sql, "~> 3.1"},
+      {:ecto, "~> 3.1.7", override: true},
       {:postgrex, ">= 0.0.0"},
       {:jason, "~> 1.0"},
       {:absinthe, "~> 1.4.6"},
@@ -45,6 +46,8 @@ defmodule Core.MixProject do
       {:comeonin, "~> 5.1.2"},
       {:argon2_elixir, "~> 2.0"},
       {:gen_stage, "~> 0.14.2"},
+      {:bourne, "~> 1.1"},
+      {:flow, "~> 0.14.3"},
       {:ex_machina, "~> 2.3", only: :test}
     ]
   end

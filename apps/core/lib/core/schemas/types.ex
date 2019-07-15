@@ -16,6 +16,7 @@ defmodule Core.Schemas.Types do
     field :id, :id
     field :name, non_null(:string)
     field :public, non_null(:boolean)
+    field :global, non_null(:boolean)
     connection field :messages, node_type: :message do
       resolve &Conversation.list_messages/2
     end

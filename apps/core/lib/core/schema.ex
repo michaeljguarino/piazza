@@ -5,7 +5,7 @@ defmodule Core.Schema do
 
   alias Core.Resolvers.{Conversation, User}
   import_types Core.Schemas.Types
-  import_types Core.Schemas.InputTypes
+  import_types Core.Schemas.Inputs
 
   def context(ctx) do
     loader =
@@ -83,6 +83,19 @@ defmodule Core.Schema do
       arg :attributes, non_null(:message_attributes)
 
       resolve safe_resolver(&Conversation.create_message/2)
+    end
+
+    field :create_participant, :participant do
+      arg :attributes, non_null(:participant_attributes)
+
+      resolve safe_resolver(&Conversation.create_participant/2)
+    end
+
+    field :delete_participant, :participant do
+      arg :conversation_id, non_null(:id)
+      arg :user_id, non_null(:id)
+
+      resolve safe_resolver(&Conversation.delete_participant/2)
     end
   end
 

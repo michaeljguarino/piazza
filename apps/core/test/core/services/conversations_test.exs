@@ -68,4 +68,57 @@ defmodule Core.Services.ConversationsTest do
       {:error, _} = Conversations.create_message(conversation.id, %{text: "new message"}, user)
     end
   end
+
+  describe "#create_participant/2" do
+    test "Participants can create other participants" do
+      user         = insert(:user)
+      conversation = insert(:conversation)
+      other_user   = insert(:user)
+      insert(:participant, user: user, conversation: conversation)
+
+      {:ok, participant} = Conversations.create_participant(%{
+        conversation_id: conversation.id,
+        user_id: other_user.id
+      }, user)
+
+      assert participant.user_id == other_user.id
+      assert participant.conversation_id == conversation.id
+
+      assert_receive {:event, %PubSub.ParticipantCreated{item: ^participant}}
+    end
+
+    test "Nonparticipants cannot create participants" do
+      user         = insert(:user)
+      conversation = insert(:conversation)
+      other_user   = insert(:user)
+
+      {:error, _} = Conversations.create_participant(%{
+        conversation_id: conversation.id,
+        user_id: other_user.id
+      }, user)
+    end
+  end
+
+  describe "#delete_participant/3" do
+    test "Participants can delete other participants" do
+      user         = insert(:user)
+      conversation = insert(:conversation)
+      participant  = insert(:participant, conversation: conversation)
+      insert(:participant, user: user, conversation: conversation)
+
+      {:ok, participant} = Conversations.delete_participant(conversation.id, participant.user_id, user)
+
+      refute refetch(participant)
+
+      assert_receive {:event, %PubSub.ParticipantDeleted{item: ^participant}}
+    end
+
+    test "Nonparticipants cannot delete participants" do
+      user         = insert(:user)
+      conversation = insert(:conversation)
+      participant  = insert(:participant, conversation: conversation)
+
+      {:error, _} = Conversations.delete_participant(conversation.id, participant.user_id, user)
+    end
+  end
 end
