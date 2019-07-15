@@ -15,4 +15,10 @@ config :core, :consumers, [
   Core.EchoConsumer
 ]
 
+config :core, Core.TestBroker,
+  adapter: ConduitAMQP,
+  url: "amqp://rabbitmq:rabbitmq@localhost"
+
+config :rtc, :start_broker, false
+
 config :logger, level: :warn

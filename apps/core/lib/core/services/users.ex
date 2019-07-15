@@ -4,6 +4,8 @@ defmodule Core.Services.Users do
   alias Core.PubSub
   import Core.Policies.User
 
+  def get_user(id), do: Core.Repo.get(User, id)
+
   def create_user(attrs) do
     %User{}
     |> User.changeset(attrs)

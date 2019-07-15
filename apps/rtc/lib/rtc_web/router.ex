@@ -19,6 +19,10 @@ defmodule RtcWeb.Router do
     get "/", PageController, :index
   end
 
+  forward "/graphiql", Absinthe.Plug.GraphiQL,
+    schema: Core.Schema,
+    socket: Rtc.UserSocket
+
   # Other scopes may use custom stacks.
   # scope "/api", RtcWeb do
   #   pipe_through :api

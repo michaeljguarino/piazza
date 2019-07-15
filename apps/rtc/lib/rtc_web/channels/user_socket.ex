@@ -1,5 +1,7 @@
 defmodule RtcWeb.UserSocket do
   use Phoenix.Socket
+  use Absinthe.Phoenix.Socket,
+    schema: Core.Schema
 
   ## Channels
   # channel "room:*", RtcWeb.RoomChannel

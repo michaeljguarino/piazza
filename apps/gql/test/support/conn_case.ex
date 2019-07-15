@@ -20,6 +20,9 @@ defmodule GqlWeb.ConnCase do
       # Import conveniences for testing with connections
       use Phoenix.ConnTest
       alias GqlWeb.Router.Helpers, as: Routes
+      import GqlWeb.ConnCase
+      import Core.Factory
+      import Core.TestHelpers
 
       # The default endpoint for testing
       @endpoint GqlWeb.Endpoint
@@ -34,5 +37,14 @@ defmodule GqlWeb.ConnCase do
     end
 
     {:ok, conn: Phoenix.ConnTest.build_conn()}
+  end
+
+  def authorized(conn, user) do
+    {:ok, token, _} = Gql.Guardian.encode_and_sign(user, %{})
+    Plug.Conn.put_req_header(conn, "authorization", "Bearer #{token}")
+  end
+
+  def wrap_gql(query, vars \\ %{}) do
+    %{"query" => query, "variables" => vars}
   end
 end

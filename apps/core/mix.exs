@@ -48,7 +48,9 @@ defmodule Core.MixProject do
       {:gen_stage, "~> 0.14.2"},
       {:bourne, "~> 1.1"},
       {:flow, "~> 0.14.3"},
-      {:ex_machina, "~> 2.3", only: :test}
+      {:ex_machina, "~> 2.3", only: :test},
+
+      {:aquaduct, in_umbrella: true}
     ]
   end
 

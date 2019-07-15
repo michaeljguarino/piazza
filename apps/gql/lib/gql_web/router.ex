@@ -13,6 +13,22 @@ defmodule GqlWeb.Router do
     plug :accepts, ["json"]
   end
 
+  pipeline :auth do
+    plug GqlWeb.GuardianPipeline
+    plug GqlWeb.Plug.AbsintheContext
+  end
+
+  forward "/graphiql", Absinthe.Plug.GraphiQL,
+      schema: Core.Schema,
+      interface: :simple
+
+  scope "/gql" do
+    pipe_through [:api, :auth]
+
+    forward "/", Absinthe.Plug,
+      schema: Core.Schema
+  end
+
   scope "/", GqlWeb do
     pipe_through :browser
 

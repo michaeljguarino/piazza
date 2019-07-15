@@ -19,8 +19,6 @@ config :core,
 #       level: :info,
 #       format: "$date $time [$level] $metadata$message\n",
 #       metadata: [:user_id]
-#
-
 
 config :gql,
   ecto_repos: [Core.Repo]
@@ -31,6 +29,15 @@ config :gql, GqlWeb.Endpoint,
   secret_key_base: "f1eG7CJW01KDOwE7hoQngUobzj9kvvT7Ymumr2Tzmb4XzSu7vHQsw2N1yJgFqvKN",
   render_errors: [view: GqlWeb.ErrorView, accepts: ~w(html json)],
   pubsub: [name: Gql.PubSub, adapter: Phoenix.PubSub.PG2]
+
+config :gql, Gql.Guardian,
+  issuer: "piazza",
+  secret_key: "piazza_secret"
+
+config :gql, GqlWeb.GuardianPipeline,
+  module: GqlWeb.GuardianPipeline,
+  error_handler: GqlWeb.Plug.AuthErrorHandler
+
 
 # Configures Elixir's Logger
 config :logger, :console,
@@ -59,6 +66,20 @@ config :core, Core.Repo,
 config :core, :consumers, [
   Core.PubSub.Consumers.Integrity
 ]
+
+config :aquaduct, Aquaduct.Broker,
+  adapter: ConduitAMQP,
+  url: "amqp://rabbitmq:rabbitmq@localhost"
+
+config :rtc, Rtc.Aquaduct.Broker,
+  adapter: ConduitAMQP,
+  url: "amqp://rabbitmq:rabbitmq@localhost"
+
+# deal with some lager weirdness
+config :lager, :error_logger_redirect, false
+config :lager, :error_logger_whitelist, [Logger.ErrorHandler]
+
+config :rtc, :start_broker, true
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
