@@ -20,7 +20,7 @@ defmodule GqlWeb.Router do
 
   forward "/graphiql", Absinthe.Plug.GraphiQL,
       schema: Core.Schema,
-      interface: :simple
+      interface: :advanced
 
   scope "/gql" do
     pipe_through [:api, :auth]
@@ -29,14 +29,15 @@ defmodule GqlWeb.Router do
       schema: Core.Schema
   end
 
+  scope "/auth", GqlWeb do
+    pipe_through [:api]
+
+    post "/login", AuthController, :login
+  end
+
   scope "/", GqlWeb do
     pipe_through :browser
 
     get "/", PageController, :index
   end
-
-  # Other scopes may use custom stacks.
-  # scope "/api", GqlWeb do
-  #   pipe_through :api
-  # end
 end

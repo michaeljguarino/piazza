@@ -14,10 +14,10 @@ defmodule Core.Resolvers.Conversation do
   end
   def query(_, %{current_user: user}), do: Conversation.for_user(user.id)
 
-  def resolve_conversation(_parent, %{id: id}, %{current_user: user}),
+  def resolve_conversation(_parent, %{id: id}, %{context: %{current_user: user}}),
     do: {:ok, Conversation.for_user(user.id) |> Core.Repo.get(id)}
-  def resolve_conversation(_parent, %{id: id}, _),
-    do: {:ok, Conversation.public() |> Core.Repo.get(id)}
+  def resolve_conversation(_, %{name: name}, %{context: %{current_user: user}}),
+    do: {:ok, Conversation.for_user(user.id) |> Core.Repo.get_by(name: name)}
 
   def list_conversations(args, %{context: context}) do
     query(:conversation, Map.merge(args, context))

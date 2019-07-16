@@ -4,12 +4,16 @@ defmodule Core.Schemas.Types do
   import Absinthe.Resolution.Helpers
   alias Core.Resolvers.{Conversation, User}
 
+  import_types Absinthe.Type.Custom
+
   object :user do
     field :id, :id
     field :name, non_null(:string)
     field :handle, non_null(:string)
     field :email, non_null(:string)
     field :bio, :string
+    field :roles, :roles
+    field :deleted_at, :datetime
   end
 
   object :conversation do
@@ -41,6 +45,10 @@ defmodule Core.Schemas.Types do
     field :conversation_id, non_null(:id)
     field :creator, :user, resolve: dataloader(User)
     field :conversation, :conversation, resolve: dataloader(Conversation)
+  end
+
+  object :roles do
+    field :admin, :boolean
   end
 
   connection node_type: :conversation

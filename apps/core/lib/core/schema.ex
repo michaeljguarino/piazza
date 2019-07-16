@@ -22,9 +22,16 @@ defmodule Core.Schema do
 
   # NB: I'll need to break this up somehow soon
   query do
+    @desc "Returns yourself"
+    field :me, :user do
+      resolve fn _, %{context: %{current_user: user}} -> {:ok, user} end
+    end
+
     @desc "Get a user by id"
     field :user, :user do
-      arg :id, type: non_null(:id)
+      arg :id, :id
+      arg :handle, :string
+      arg :email, :string
       resolve &User.resolve_user/3
     end
 
@@ -41,7 +48,9 @@ defmodule Core.Schema do
 
     @desc "Fetches an individual conversation"
     field :conversation, :conversation do
-      arg :id, non_null(:id)
+      arg :id, :id
+      arg :name, :string
+
       resolve &Conversation.resolve_conversation/3
     end
   end
@@ -60,6 +69,13 @@ defmodule Core.Schema do
       arg :attributes, non_null(:user_attributes)
 
       resolve safe_resolver(&User.update_user/2)
+    end
+
+    @desc "Deletes a user by id"
+    field :delete_user, :user do
+      arg :id, non_null(:id)
+
+      resolve safe_resolver(&User.delete_user/2)
     end
 
     @desc "Creates a new conversation"

@@ -3,6 +3,21 @@ defmodule Core.Models.User do
 
   @email_re ~r/^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9-\.]+\.[a-zA-Z]{2,}$/
 
+  defmodule Roles do
+    use Core.DB.Schema
+
+    embedded_schema do
+      field :admin, :boolean, default: false
+    end
+
+    @valid ~w(admin)a
+
+    def changeset(model, attrs \\ %{}) do
+      model
+      |> cast(attrs, @valid)
+    end
+  end
+
   schema "users" do
     field :email,         :string
     field :name,          :string
@@ -11,7 +26,12 @@ defmodule Core.Models.User do
     field :password_hash, :string
     field :bio,           :string
 
-    field :profile_img, :map
+    field :profile_img,   :map
+    field :deleted_at,    :utc_datetime_usec
+
+    embeds_one :roles, Roles, on_replace: :update do
+      field :admin, :boolean, default: true
+    end
 
     timestamps()
   end
@@ -31,7 +51,13 @@ defmodule Core.Models.User do
     |> validate_length(:name,   max: 255)
     |> validate_length(:password, min: 10)
     |> validate_format(:email, @email_re)
+    |> cast_embed(:roles, with: &role_changeset/2)
     |> hash_password()
+  end
+
+  defp role_changeset(schema, params) do
+    schema
+    |> cast(params, [:admin])
   end
 
   defp hash_password(%Ecto.Changeset{valid?: true, changes: %{password: password}} = changeset) do

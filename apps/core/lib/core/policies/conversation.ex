@@ -23,6 +23,9 @@ defmodule Core.Policies.Conversation do
     can?(user, conv, :update)
   end
 
+  def can?(user, %Ecto.Changeset{} = cs, action),
+    do: can?(user, apply_changes(cs), action)
+
   def can?(_, _, _), do: {:error, "Forbidden"}
 
   defp allow_in_conversation(uid, conv_id, error_msg) do

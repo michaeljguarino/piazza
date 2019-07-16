@@ -15,7 +15,7 @@ defmodule Core.Models.Conversation do
     timestamps()
   end
 
-  @valid ~w(name public)a
+  @valid ~w(name public global)a
 
   def for_user(query \\ any(), user_id) do
     from(c in query,

@@ -6,6 +6,10 @@ defmodule Core.Services.Conversations do
 
   def get_conversation!(id), do: Core.Repo.get!(Conversation, id)
 
+  def get_conversation(id), do: Core.Repo.get(Conversation, id)
+
+  def get_conversation_by_name(name), do: Core.Repo.get_by(Conversation, name: name)
+
   def get_participant(user_id, conv_id),
     do: Core.Repo.get_by(Participant, user_id: user_id, conversation_id: conv_id)
 

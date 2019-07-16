@@ -24,6 +24,8 @@ defmodule GqlWeb do
       import Plug.Conn
       import GqlWeb.Gettext
       alias GqlWeb.Router.Helpers, as: Routes
+
+      action_fallback GqlWeb.FallbackController
     end
   end
 

@@ -3,7 +3,8 @@ defmodule Core.Schema.UserMutationsTest do
   alias Core.Models.User
 
   describe "createUser" do
-    test "It will create a new user" do
+    test "Admins can create a new user" do
+      admin = insert(:user, roles: %{admin: true})
       {:ok, %{data: %{"createUser" => result}}} = run_query("""
         mutation  {
           createUser(attributes: {
@@ -19,7 +20,7 @@ defmodule Core.Schema.UserMutationsTest do
             bio
           }
         }
-      """, %{})
+      """, %{}, %{current_user: admin})
 
       verify_record(User, result)
     end
@@ -47,23 +48,43 @@ defmodule Core.Schema.UserMutationsTest do
       verify_record(User, result)
     end
 
-    test "A user cannot update others" do
+    test "An admin can update roles" do
       user = build(:user) |> with_password("really strong password")
-      other_user = insert(:user)
-      {:ok, %{data: %{"updateUser" => nil}, errors: [%{message: _}]}} = run_query("""
+      admin = insert(:user, roles: %{admin: true})
+      {:ok, %{data: %{"updateUser" => user}}} = run_query("""
         mutation updateUser($id: ID!) {
           updateUser(id: $id, attributes: {
             name: "New User",
             handle: "n00b",
-            bio: "Just a user"
+            bio: "Just a user",
+            roles: {admin: true}
           }) {
             id
-            name
-            email
-            bio
+            roles {
+              admin
+            }
           }
         }
-      """, %{"id" => user.id}, %{current_user: other_user})
+      """, %{"id" => user.id}, %{current_user: admin})
+
+      assert user["roles"]["admin"]
+    end
+  end
+
+  describe "deleteUser" do
+    test "An admin can delete users" do
+      user = build(:user) |> with_password("really strong password")
+      admin = insert(:user, roles: %{admin: true})
+      {:ok, %{data: %{"deleteUser" => user}}} = run_query("""
+        mutation deleteUser($id: ID!) {
+          deleteUser(id: $id) {
+            id
+            deletedAt
+          }
+        }
+      """, %{"id" => user.id}, %{current_user: admin})
+
+      assert user["deletedAt"]
     end
   end
 end

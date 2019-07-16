@@ -21,4 +21,6 @@ config :core, Core.TestBroker,
 
 config :rtc, :start_broker, false
 
+config :cron, :run, false
+
 config :logger, level: :warn

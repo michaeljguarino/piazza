@@ -16,25 +16,23 @@ defmodule Core.Policies.Base do
   defmacro __using__(_) do
     quote do
       import Core.Policies.Base
+      import Ecto.Changeset, only: [apply_changes: 1]
 
       def allow(resource, user, action) when is_atom(action),
         do: allow(resource, user, [action])
-      def allow(resource, user, actions) do
-        with {:ok, record} <- find_resource(resource),
-             :ok <- resolve_policy(__MODULE__, record, user, actions),
-          do: {:ok, resource}
-      end
+      def allow(resource, user, actions),
+        do: resolve_policy(__MODULE__, resource, user, actions)
     end
   end
 
   # TODO: parallelize policy resolutions
-  def resolve_policy(_, _, _, []), do: :ok
+  def resolve_policy(_, resource, _, []), do: {:ok, resource}
   def resolve_policy(policy_module, resource, user, [next | actions]) do
-    {resource, action} = infer_resource_and_action(next, resource)
-    case policy_module.can?(user, resource, action) do
+    {inferred, action} = infer_resource_and_action(next, resource)
+    case policy_module.can?(user, inferred, action) do
       :continue -> resolve_policy(policy_module, resource, user, actions)
       {:error, reason} -> {:error, reason}
-      :pass -> :ok
+      :pass -> {:ok, resource}
     end
   end
 

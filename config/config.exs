@@ -75,6 +75,8 @@ config :rtc, Rtc.Aquaduct.Broker,
   adapter: ConduitAMQP,
   url: "amqp://rabbitmq:rabbitmq@localhost"
 
+config :cron, :run, true
+
 # deal with some lager weirdness
 config :lager, :error_logger_redirect, false
 config :lager, :error_logger_whitelist, [Logger.ErrorHandler]

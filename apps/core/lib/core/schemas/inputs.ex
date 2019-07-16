@@ -7,6 +7,11 @@ defmodule Core.Schemas.Inputs do
     field :password, :string
     field :handle,   :string
     field :bio,      :string
+    field :roles,    :role_attributes
+  end
+
+  input_object :role_attributes do
+    field :admin, :boolean
   end
 
   input_object :conversation_attributes do
