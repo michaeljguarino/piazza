@@ -19,13 +19,22 @@ defmodule RtcWeb.ChannelCase do
     quote do
       # Import conveniences for testing with channels
       use Phoenix.ChannelTest
+      import Core.Factory
+      import RtcWeb.ChannelCase
+      import Rtc.TestUtils
 
       # The default endpoint for testing
       @endpoint RtcWeb.Endpoint
     end
   end
 
-  setup _tags do
+  setup tags do
+    :ok = Ecto.Adapters.SQL.Sandbox.checkout(Core.Repo)
+
+    unless tags[:async] do
+      Ecto.Adapters.SQL.Sandbox.mode(Core.Repo, {:shared, self()})
+    end
+
     :ok
   end
 end

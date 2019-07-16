@@ -1,5 +1,6 @@
 defmodule RtcWeb.Endpoint do
   use Phoenix.Endpoint, otp_app: :rtc
+  use Absinthe.Phoenix.Endpoint
 
   socket "/socket", RtcWeb.UserSocket,
     websocket: true,

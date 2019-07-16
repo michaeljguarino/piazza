@@ -55,6 +55,7 @@ defmodule Core.Schema.QueriesTest do
     test "It will fetch a conversation" do
       conversation = insert(:conversation)
       insert(:conversation)
+      user = insert(:user)
 
 
       {:ok, %{data: %{"conversation" => found}}} = run_query("""
@@ -64,7 +65,7 @@ defmodule Core.Schema.QueriesTest do
               name
             }
           }
-      """, %{"id" => conversation.id})
+      """, %{"id" => conversation.id}, %{current_user: user})
 
       assert found["id"] == conversation.id
       assert found["name"] == conversation.name
@@ -77,6 +78,7 @@ defmodule Core.Schema.QueriesTest do
       ignored = insert(:conversation)
       insert_list(3, :message, conversation: ignored)
       insert_list(2, :participant, conversation: ignored)
+      user = insert(:user)
 
       {:ok, %{data: %{"conversation" => found}}} = run_query("""
           query Conversation($participantCount: Int!, $messageCount: Int!, $id: ID) {
@@ -104,7 +106,7 @@ defmodule Core.Schema.QueriesTest do
               }
             }
           }
-      """, %{"id" => conversation.id, "participantCount" => 3, "messageCount" => 3})
+      """, %{"id" => conversation.id, "participantCount" => 3, "messageCount" => 3}, %{current_user: user})
 
       found_participants = from_connection(found["participants"])
       found_msgs = from_connection(found["messages"])

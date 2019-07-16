@@ -137,6 +137,10 @@ defmodule Core.Schema do
       config fn _args, _info -> {:ok, topic: "conversations:deleted"} end
     end
 
+    field :new_messages, :message do
+      config fn _args, _info -> {:ok, topic: "messages"} end
+    end
+
     field :new_participants, :participant do
       arg :conversation_id, non_null(:id)
       config fn %{id: id}, _info -> {:ok, topic: "participants:#{id}"} end

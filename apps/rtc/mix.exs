@@ -46,6 +46,7 @@ defmodule Rtc.MixProject do
       {:jason, "~> 1.0"},
       {:plug_cowboy, "~> 2.0"},
       {:absinthe_phoenix, "~> 1.4.0"},
+      {:guardian, "~> 1.2.1"},
 
       {:core, in_umbrella: true},
       {:aquaduct, in_umbrella: true}

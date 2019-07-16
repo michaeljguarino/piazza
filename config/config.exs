@@ -34,6 +34,10 @@ config :gql, Gql.Guardian,
   issuer: "piazza",
   secret_key: "piazza_secret"
 
+config :rtc, Rtc.Guardian,
+  issuer: "piazza",
+  secret_key: "piazza_secret"
+
 config :gql, GqlWeb.GuardianPipeline,
   module: GqlWeb.GuardianPipeline,
   error_handler: GqlWeb.Plug.AuthErrorHandler
