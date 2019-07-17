@@ -67,9 +67,7 @@ config :core, Core.Repo,
   password: "postgres",
   hostname: "localhost"
 
-config :core, :consumers, [
-  Core.PubSub.Consumers.Integrity
-]
+config :core, :consumers, []
 
 config :aquaduct, Aquaduct.Broker,
   adapter: ConduitAMQP,

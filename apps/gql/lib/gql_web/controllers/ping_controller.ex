@@ -1,7 +1,7 @@
-defmodule GqlWeb.PageController do
+defmodule GqlWeb.PingController do
   use GqlWeb, :controller
 
   def index(conn, _params) do
-    render(conn, "index.html")
+    json(conn, %{pong: true})
   end
 end

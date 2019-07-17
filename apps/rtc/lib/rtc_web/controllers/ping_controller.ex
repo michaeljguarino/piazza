@@ -1,7 +1,7 @@
-defmodule RtcWeb.PageController do
+defmodule RtcWeb.PingController do
   use RtcWeb, :controller
 
   def index(conn, _params) do
-    render(conn, "index.html")
+    json(conn, %{pong: true})
   end
 end

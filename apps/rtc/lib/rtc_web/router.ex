@@ -16,7 +16,7 @@ defmodule RtcWeb.Router do
   scope "/", RtcWeb do
     pipe_through :browser
 
-    get "/", PageController, :index
+    get "/ping", PingController, :index
   end
 
   forward "/graphiql", Absinthe.Plug.GraphiQL,

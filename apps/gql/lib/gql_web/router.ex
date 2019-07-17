@@ -38,6 +38,6 @@ defmodule GqlWeb.Router do
   scope "/", GqlWeb do
     pipe_through :browser
 
-    get "/", PageController, :index
+    get "/ping", PingController, :index
   end
 end
