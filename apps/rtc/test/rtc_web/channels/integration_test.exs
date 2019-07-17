@@ -1,16 +1,14 @@
 defmodule RtcWeb.Channels.IntegrationTest do
   use RtcWeb.ChannelCase, async: false
-  use Absinthe.Phoenix.SubscriptionTest, schema: Core.Schema
 
   alias Core.PubSub
 
   describe "rtc end to end" do
     test "it will publish from rabbit -> ws" do
       user = insert(:user)
-      {:ok, socket} = connect(RtcWeb.UserSocket, %{"token" => jwt(user)}, %{})
-      {:ok, socket} = Absinthe.Phoenix.SubscriptionTest.join_absinthe(socket)
+      {:ok, socket} = establish_socket(user)
 
-      push_doc(socket, """
+      ref = push_doc(socket, """
         subscription {
           newUsers {
             id
@@ -19,6 +17,8 @@ defmodule RtcWeb.Channels.IntegrationTest do
           }
         }
       """)
+
+      assert_reply(ref, :ok, _)
 
       {:ok, _} = Rtc.Aquaduct.Broker.start_link()
       Aquaduct.Broker.publish(%Conduit.Message{body: %PubSub.UserCreated{item: insert(:user)}}, :rtc)

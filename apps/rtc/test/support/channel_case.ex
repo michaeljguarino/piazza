@@ -19,12 +19,18 @@ defmodule RtcWeb.ChannelCase do
     quote do
       # Import conveniences for testing with channels
       use Phoenix.ChannelTest
+      use Absinthe.Phoenix.SubscriptionTest, schema: Core.Schema
       import Core.Factory
       import RtcWeb.ChannelCase
       import Rtc.TestUtils
 
       # The default endpoint for testing
       @endpoint RtcWeb.Endpoint
+
+      def establish_socket(user) do
+        {:ok, socket} = connect(RtcWeb.UserSocket, %{"token" => Rtc.TestUtils.jwt(user)}, %{})
+        Absinthe.Phoenix.SubscriptionTest.join_absinthe(socket)
+      end
     end
   end
 
@@ -37,4 +43,6 @@ defmodule RtcWeb.ChannelCase do
 
     :ok
   end
+
+  def publish_event(event), do: Rtc.Aquaduct.Subscriber.publish_event(event)
 end

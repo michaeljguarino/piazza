@@ -19,6 +19,15 @@ defmodule Core.Resolvers.Conversation do
   def resolve_conversation(_, %{name: name}, %{context: %{current_user: user}}),
     do: {:ok, Conversation.for_user(user.id) |> Core.Repo.get_by(name: name)}
 
+  def authorize_subscription(conversation_id, current_user, topic) do
+    with %Conversation{} = conv <- Conversations.get_conversation(conversation_id),
+         {:ok, _} <- Core.Policies.Conversation.allow(conv, current_user, :access) do
+      {:ok, topic: topic}
+    else
+      _ -> {:error, :forbidden}
+    end
+  end
+
   def list_conversations(args, %{context: context}) do
     query(:conversation, Map.merge(args, context))
     |> paginate(args)

@@ -130,25 +130,37 @@ defmodule Core.Schema do
     end
 
     field :updated_conversations, :conversation do
-      config fn _args, _info -> {:ok, topic: "conversations:updated"} end
-    end
-
-    field :deleted_conversations, :conversation do
-      config fn _args, _info -> {:ok, topic: "conversations:deleted"} end
+      arg :id, non_null(:id)
+      config fn %{id: id}, %{context: %{current_user: user}} ->
+        Conversation.authorize_subscription(id, user, "conversations:#{id}")
+      end
     end
 
     field :new_messages, :message do
-      config fn _args, _info -> {:ok, topic: "messages"} end
+      arg :conversation_id, non_null(:id)
+      config fn %{conversation_id: id}, %{context: %{current_user: user}} ->
+        Conversation.authorize_subscription(id, user, "messages:#{id}")
+      end
     end
 
     field :new_participants, :participant do
       arg :conversation_id, non_null(:id)
-      config fn %{id: id}, _info -> {:ok, topic: "participants:#{id}"} end
+      config fn %{conversation_id: id}, %{context: %{current_user: user}} ->
+        Conversation.authorize_subscription(id, user, "participants:#{id}")
+      end
     end
 
     field :deleted_participants, :participant do
       arg :conversation_id, non_null(:id)
-      config fn %{id: id}, _info -> {:ok, topic: "participants:#{id}"} end
+      config fn %{conversation_id: id}, %{context: %{current_user: user}} ->
+        Conversation.authorize_subscription(id, user, "participants:#{id}")
+      end
+    end
+
+    field :my_participants, :participant do
+      config fn _, %{context: %{current_user: %{id: id}}} ->
+        {:ok, topic: "participants:mine:#{id}"}
+      end
     end
   end
 

@@ -11,6 +11,8 @@ defmodule Core.Services.ConversationsTest do
       assert conv.name == "my conversation"
       assert conv.creator_id == user.id
 
+      assert Conversations.get_participant(user.id, conv.id)
+
       assert_receive {:event, %PubSub.ConversationCreated{item: ^conv}}
     end
   end

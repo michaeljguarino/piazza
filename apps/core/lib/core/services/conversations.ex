@@ -17,10 +17,19 @@ defmodule Core.Services.Conversations do
     do: Core.Repo.get_by!(Participant, user_id: user_id, conversation_id: conv_id)
 
   def create_conversation(attrs, user) do
-    %Conversation{creator_id: user.id}
-    |> Conversation.changeset(attrs)
-    |> allow(user, :create)
-    |> when_ok(:insert)
+    start_transaction()
+    |> add_operation(:conversation, fn _ ->
+      %Conversation{creator_id: user.id}
+      |> Conversation.changeset(attrs)
+      |> allow(user, :create)
+      |> when_ok(:insert)
+    end)
+    |> add_operation(:participant, fn %{conversation: conv} ->
+      %Participant{}
+      |> Participant.changeset(%{conversation_id: conv.id, user_id: user.id})
+      |> Core.Repo.insert()
+    end)
+    |> execute(extract: :conversation)
     |> notify(:create, user)
   end
 
