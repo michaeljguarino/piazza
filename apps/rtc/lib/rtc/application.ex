@@ -4,9 +4,11 @@ defmodule Rtc.Application do
   use Application
 
   def start(_type, _args) do
+    topologies = Application.get_env(:libcluster, :topologies)
     children = [
       RtcWeb.Endpoint,
-      {Absinthe.Subscription, [RtcWeb.Endpoint]}
+      {Absinthe.Subscription, [RtcWeb.Endpoint]},
+      {Cluster.Supervisor, [topologies, [name: MyApp.ClusterSupervisor]]}
     ] ++ broker()
 
     opts = [strategy: :one_for_one, name: Rtc.Supervisor]

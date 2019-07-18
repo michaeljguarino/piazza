@@ -1,5 +1,6 @@
 .PHONY: help
 
+GCR_PROJECT ?= piazza-247002
 APP_NAME ?= gql
 APP_VSN ?= `grep 'version:' mix.exs | cut -d '"' -f2`
 BUILD ?= `git rev-parse --short HEAD`
@@ -12,10 +13,13 @@ build: ## Build the Docker image
 	docker build --build-arg APP_NAME=$(APP_NAME) \
 		--build-arg APP_VSN=$(APP_VSN) \
 		-t $(APP_NAME):$(APP_VSN) \
-		-t $(APP_NAME):latest .
-		-t gcr.io/piazza/$(APP_NAME):$(APP_VSN)
+		-t $(APP_NAME):latest \
+		-t gcr.io/$(GCR_PROJECT)/$(APP_NAME):$(APP_VSN) .
 
 run: ## Run the app in Docker
 	docker run --env-file config/docker.env \
 		--expose 4000 -p 4000:4000 \
 		--rm -it $(APP_NAME):latest
+
+push: ## push to gcr
+	docker push gcr.io/$(GCR_PROJECT)/$(APP_NAME):$(APP_VSN)

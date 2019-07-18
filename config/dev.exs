@@ -67,6 +67,11 @@ config :gql, GqlWeb.Endpoint,
     ]
   ]
 
+config :core, :consumers, [
+  Core.PubSub.Consumers.Integrity,
+  Core.PubSub.Consumers.Rtc,
+]
+
 # Do not include metadata nor timestamps in development logs
 config :logger, :console, format: "[$level] $message\n"
 

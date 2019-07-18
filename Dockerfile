@@ -40,7 +40,7 @@ RUN apk update && \
 # This copies our app source code into the build container
 COPY . .
 
-RUN mix do deps.get, deps.compile, compile
+RUN mix do deps.get, compile
 
 # This step builds assets for the Phoenix app (if there is one)
 # If you aren't building a Phoenix app, pass `--build-arg SKIP_PHOENIX=true`
@@ -62,7 +62,7 @@ RUN \
   rm ${APP_NAME}.tar.gz
 
 # From this line onwards, we're in a new image, which will be the image used in production
-FROM alpine:${ALPINE_VERSION}
+FROM erlang:22-alpine
 
 # The name of your application/release (required)
 ARG APP_NAME
@@ -70,7 +70,7 @@ ARG APP_NAME
 RUN apk update && \
     apk add --no-cache \
       bash \
-      openssl-dev
+      openssl-dev ca-certificates
 
 ENV REPLACE_OS_VARS=true \
     APP_NAME=${APP_NAME}

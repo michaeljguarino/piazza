@@ -1,7 +1,11 @@
 _build/
 deps/
+charts/
+.vscode/
+log/
 .git/
 .gitignore
+.dockerignore
 Dockerfile
 Makefile
 README*

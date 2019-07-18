@@ -49,6 +49,7 @@ defmodule Core.MixProject do
       {:bourne, "~> 1.1"},
       {:flow, "~> 0.14.3"},
       {:ex_machina, "~> 2.3", only: :test},
+      {:botanist, "~> 0.1.0", git: "https://github.com/michaeljguarino/botanist.git", branch: "ecto3"},
 
       {:aquaduct, in_umbrella: true}
     ]
@@ -62,7 +63,7 @@ defmodule Core.MixProject do
   # See the documentation for `Mix` for more info on aliases.
   defp aliases do
     [
-      "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
+      "ecto.setup": ["ecto.create", "ecto.migrate"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       test: ["ecto.create --quiet", "ecto.migrate", "test"]
     ]

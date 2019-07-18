@@ -1,0 +1,12 @@
+dependencies:
+- name: postgresql
+  repository: https://kubernetes-charts.storage.googleapis.com/
+  version: 5.3.13
+- name: rabbitmq
+  repository: https://kubernetes-charts.storage.googleapis.com/
+  version: 6.2.1
+- name: external-dns
+  repository: https://kubernetes-charts.storage.googleapis.com/
+  version: 2.3.2
+digest: sha256:17eb7654794498b9ac330d37b564d9ce530be0be36f37eab749fb0ff79bf5b69
+generated: "2019-07-17T22:43:35.750757-04:00"

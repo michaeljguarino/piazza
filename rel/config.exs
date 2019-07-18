@@ -37,11 +37,11 @@ environment :prod do
   set vm_args: "rel/vm.args"
   set config_providers: [
     {Distillery.Releases.Config.Providers.Elixir, ["${RELEASE_ROOT_DIR}/etc/config.exs"]},
-    {Distillery.Releases.Config.Providers.Elixir, ["${RELEASE_ROOT_DIR}/etc/<% release_name %>.exs"]}
+    {Distillery.Releases.Config.Providers.Elixir, ["${RELEASE_ROOT_DIR}/etc/app.exs"]}
   ]
   set overlays: [
     {:copy, "rel/config/config.exs", "etc/config.exs"},
-    {:copy, "rel/config/<%= release_name %>.exs", "etc/<%= release_name %>.exs"}
+    {:copy, "rel/config/<%= release_name %>.exs", "etc/app.exs"}
   ]
 end
 
@@ -52,6 +52,9 @@ release :gql do
     aquaduct: :permanent,
     core: :permanent,
     gql: :permanent
+  ]
+  set commands: [
+    migrate: "rel/commands/migrate.sh"
   ]
 end
 

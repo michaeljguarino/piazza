@@ -10,7 +10,8 @@ defmodule Cron.Bootstrap do
         name: "admin",
         handle: "admin",
         password: "admin_password",
-        email: "admin@example.com"
+        email: "admin@example.com",
+        roles: %{admin: true}
       })
       |> Core.Repo.insert()
     Logger.info "Created temporary admin user (log in with admin@example.com, password admin_password"

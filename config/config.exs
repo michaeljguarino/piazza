@@ -67,6 +67,9 @@ config :core, Core.Repo,
   password: "postgres",
   hostname: "localhost"
 
+config :botanist,
+  ecto_repo: Core.Repo
+
 config :core, :consumers, []
 
 config :aquaduct, Aquaduct.Broker,
@@ -84,6 +87,8 @@ config :lager, :error_logger_redirect, false
 config :lager, :error_logger_whitelist, [Logger.ErrorHandler]
 
 config :rtc, :start_broker, true
+
+config :libcluster, :topologies, []
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.

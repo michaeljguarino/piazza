@@ -11,14 +11,19 @@ config :rtc, Rtc.Guardian,
 
 config :aquaduct, Aquaduct.Broker,
   adapter: ConduitAMQP,
-  url: "amqp://rabbitmq:#{get_env("RABBITMQ_PASSWORD")}@localhost"
+  host: "piazza-rabbitmq",
+  username: "rabbitmq",
+  password: get_env("RABBITMQ_PASSWORD")
 
 config :rtc, Rtc.Aquaduct.Broker,
   adapter: ConduitAMQP,
-  url: "amqp://rabbitmq:#{get_env("RABBITMQ_PASSWORD")}@localhost"
+  host: "piazza-rabbitmq",
+  username: "rabbitmq",
+  password: get_env("RABBITMQ_PASSWORD")
 
 config :core, Core.Repo,
   database: "piazza",
   username: "piazza",
   password: get_env("POSTGRES_PASSWORD"),
-  hostname: "localhost"
+  hostname: "piazza-postgresql",
+  ssl: true

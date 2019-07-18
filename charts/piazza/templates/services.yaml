@@ -1,0 +1,46 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: piazza-gql
+  labels:
+{{ include "piazza.labels" . | indent 4 }}
+  annotations:
+    cloud.google.com/neg: '{"ingress": true}'
+spec:
+  type: NodePort
+  ports:
+    - port: {{ .Values.gqlPort }}
+      targetPort: http
+      protocol: TCP
+      name: http
+    - port: 4369
+      targetPort: http
+      protocol: TCP
+      name: epmd
+  selector:
+    app.kubernetes.io/name: piazza-gql
+    app.kubernetes.io/instance: {{ .Release.Name }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: piazza-rtc
+  labels:
+{{ include "piazza.labels" . | indent 4 }}
+  annotations:
+    cloud.google.com/neg: '{"ingress": true}'
+    beta.cloud.google.com/backend-config: '{"ports": {"http": "piazza-backendconfig"}}'
+spec:
+  type: NodePort
+  ports:
+    - port: {{ .Values.rtcPort }}
+      targetPort: http
+      protocol: TCP
+      name: http
+    - port: 4369
+      targetPort: http
+      protocol: TCP
+      name: epmd
+  selector:
+    app.kubernetes.io/name: piazza-rtc
+    app.kubernetes.io/instance: {{ .Release.Name }}
