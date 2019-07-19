@@ -11,3 +11,4 @@ Makefile
 README*
 test/
 priv/static/
+creds/

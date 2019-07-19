@@ -1,3 +1,3 @@
 #!/bin/sh
 
-/opt/app/bin/gql command Elixir.Core.ReleaseTasks seed
+release_ctl eval --mfa "Core.DB.ReleaseTasks.seed/1" --argv -- "$@"

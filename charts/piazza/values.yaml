@@ -29,13 +29,10 @@ external-dns:
     create: true
     serviceAccountName: external-dns
   domainFilters:
-  - piazza.io
+  - piazzaapp.com
   google:
     project: piazza-247002
     serviceAccountSecret: externaldns-serviceaccount
-
-ingress:
-  enabled: true
 
 image:
   gqlRepository: gcr.io/piazza-247002/gql
@@ -51,23 +48,23 @@ rtcPort: 4000
 gqlReplicaCount: 2
 gqlResources:
   requests:
-    cpu: .3
+    cpu: .25
     memory: 256Mi
 
 rtcReplicaCount: 2
 rtcResources:
   requests:
-    cpu: .3
+    cpu: .25
     memory: 256Mi
 
 dbPasswordSecret: piazza-postgresql
 rabbitPasswordSecret: piazza-rabbitmq
 
-piazzaDns: app.piazza.io
-
 ingress:
-  enabled: false
-  annotations: {}
+  enabled: true
+  dns: api.piazzaapp.com
+  annotations:
+    networking.gke.io/managed-certificates: piazza-certificate
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
   hosts:

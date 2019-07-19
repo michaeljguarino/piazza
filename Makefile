@@ -2,7 +2,7 @@
 
 GCR_PROJECT ?= piazza-247002
 APP_NAME ?= gql
-APP_VSN ?= `grep 'version:' mix.exs | cut -d '"' -f2`
+APP_VSN ?= `cat VERSION`
 BUILD ?= `git rev-parse --short HEAD`
 
 help:
@@ -23,3 +23,40 @@ run: ## Run the app in Docker
 
 push: ## push to gcr
 	docker push gcr.io/$(GCR_PROJECT)/$(APP_NAME):$(APP_VSN)
+
+install:
+	helm install --name piazza --namespace piazza --values charts/piazza/config.secrets.yaml charts/piazza
+
+uninstall:
+	helm del --purge piazza
+
+upgrade:
+	helm upgrade -f charts/piazza/config.secrets.yaml piazza charts/piazza
+
+test:
+	mix test
+
+serve:
+	mix phx.server
+
+testsetup:
+	docker-compuse up -d
+
+bootstrap:
+	# create the cluster
+	gcloud container clusters create piazza \
+    --enable-ip-alias \
+    --create-subnetwork="" \
+    --network=default \
+    --zone=us-east1-b
+
+	gcloud container clusters get-credentials piazza
+
+	# setup helm, perhaps with too broad rbac perms
+	kubectl -n kube-system create serviceaccount tiller
+	kubectl create clusterrolebinding tiller --clusterrole cluster-admin --serviceaccount=kube-system:tiller
+	helm init --service-account=tiller
+
+	# setup the piazza namespace
+	kubectl create namespace piazza
+	kubectl create secret generic externaldns-serviceaccount --from-file=credentials.json=creds/externaldns.json -n piazza

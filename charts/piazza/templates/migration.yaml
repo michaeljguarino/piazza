@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: piazza-migration
+  name: piazza-migration-{{ randAlphaNum 4 | lower }}
 spec:
   template:
     spec:
@@ -9,6 +9,7 @@ spec:
       - name: migrator
         image: "{{ .Values.image.gqlRepository }}:{{ .Values.image.tag }}"
         command: ["/opt/app/bin/gql",  "migrate"]
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
         envFrom:
         - secretRef:
             name: piazza-env
@@ -22,18 +23,14 @@ spec:
             fieldRef:
               fieldPath: status.podIP
         - name: RABBITMQ_PASSWORD
-          value: rabbitmq
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.rabbitPasswordSecret }}
+              key: rabbitmq-password
         - name: POSTGRES_PASSWORD
-          value: piazza
-        # - name: RABBITMQ_PASSWORD
-        #   valueFrom:
-        #     secretKeyRef:
-        #       name: {{ .Values.rabbitPasswordSecret }}
-        #       key: rabbitmq-password
-        # - name: POSTGRES_PASSWORD
-        #   valueFrom:
-        #     secretKeyRef:
-        #       name: {{ .Values.dbPasswordSecret }}
-        #       key: postgresql-password
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.dbPasswordSecret }}
+              key: postgresql-password
       restartPolicy: Never
   backoffLimit: 5

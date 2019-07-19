@@ -7,6 +7,8 @@
 |> Path.wildcard()
 |> Enum.map(&Code.eval_file(&1))
 
+version = File.read!("VERSION")
+
 use Distillery.Releases.Config,
     # This sets the default release built by `mix distillery.release`
     default_release: :default,
@@ -21,8 +23,6 @@ use Distillery.Releases.Config,
 # an environment's settings will override those of a release
 # when building in that environment, this combination of release
 # and environment configuration is called a profile
-
-version = "0.1.0"
 
 environment :dev do
   set dev_mode: true

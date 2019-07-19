@@ -1,10 +1,12 @@
 defmodule Piazza.MixProject do
   use Mix.Project
 
+  @vsn File.read!("VERSION")
+
   def project do
     [
       apps_path: "apps",
-      version: "0.1.0",
+      version: @vsn,
       start_permanent: Mix.env() == :prod,
       deps: deps()
     ]

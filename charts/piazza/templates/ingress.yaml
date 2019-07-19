@@ -9,6 +9,14 @@ spec:
   sessionAffinity:
     affinityType: "CLIENT_IP"
 ---
+apiVersion: networking.gke.io/v1beta1
+kind: ManagedCertificate
+metadata:
+  name: piazza-certificate
+spec:
+  domains:
+  - {{ .Values.ingress.dns }}
+---
 {{- $fullName := include "piazza.fullname" . -}}
 apiVersion: extensions/v1beta1
 kind: Ingress
@@ -22,10 +30,14 @@ metadata:
   {{- end }}
 spec:
   rules:
-  - host: {{ .Values.piazzaDns | quote }}
+  - host: {{ .Values.ingress.dns | quote }}
     http:
       paths:
       - path: /socket
+        backend:
+          serviceName: piazza-rtc
+          servicePort: http
+      - path: /socket/websocket
         backend:
           serviceName: piazza-rtc
           servicePort: http

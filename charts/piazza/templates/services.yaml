@@ -9,14 +9,14 @@ metadata:
 spec:
   type: NodePort
   ports:
-    - port: {{ .Values.gqlPort }}
-      targetPort: http
-      protocol: TCP
-      name: http
-    - port: 4369
-      targetPort: http
-      protocol: TCP
-      name: epmd
+  - port: {{ .Values.gqlPort }}
+    targetPort: http
+    protocol: TCP
+    name: http
+  - port: 4369
+    targetPort: http
+    protocol: TCP
+    name: epmd
   selector:
     app.kubernetes.io/name: piazza-gql
     app.kubernetes.io/instance: {{ .Release.Name }}
@@ -33,14 +33,14 @@ metadata:
 spec:
   type: NodePort
   ports:
-    - port: {{ .Values.rtcPort }}
-      targetPort: http
-      protocol: TCP
-      name: http
-    - port: 4369
-      targetPort: http
-      protocol: TCP
-      name: epmd
+  - port: {{ .Values.rtcPort }}
+    targetPort: http
+    protocol: TCP
+    name: http
+  - port: 4369
+    targetPort: http
+    protocol: TCP
+    name: epmd
   selector:
     app.kubernetes.io/name: piazza-rtc
     app.kubernetes.io/instance: {{ .Release.Name }}
