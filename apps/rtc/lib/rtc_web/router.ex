@@ -19,6 +19,8 @@ defmodule RtcWeb.Router do
     get "/ping", PingController, :index
   end
 
+  get "/cluster", RtcWeb.ClusterController, :show
+
   forward "/graphiql", Absinthe.Plug.GraphiQL,
     schema: Core.Schema,
     socket: Rtc.UserSocket

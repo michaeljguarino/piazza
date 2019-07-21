@@ -11,7 +11,7 @@ config :libcluster,
       config: [
         mode: :ip,
         kubernetes_node_basename: "rtc",
-        kubernetes_selector: "app=piazza-rtc",
+        kubernetes_selector: "app.kubernetes.io/name=piazza-rtc",
         kubernetes_namespace: get_env("NAMESPACE"),
         polling_interval: 10_000
       ]

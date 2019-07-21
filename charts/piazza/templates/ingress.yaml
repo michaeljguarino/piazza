@@ -8,7 +8,7 @@ spec:
   connectionDraining:
     drainingTimeoutSec: 60
   sessionAffinity:
-    affinityType: "CLIENT_IP"
+    affinityType: "GENERATED_COOKIE"
 ---
 apiVersion: networking.gke.io/v1beta1
 kind: ManagedCertificate
@@ -39,6 +39,10 @@ spec:
           serviceName: piazza-rtc
           servicePort: http
       - path: /socket/websocket
+        backend:
+          serviceName: piazza-rtc
+          servicePort: http
+      - path: /cluster
         backend:
           serviceName: piazza-rtc
           servicePort: http
