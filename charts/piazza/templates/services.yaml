@@ -3,6 +3,7 @@ kind: Service
 metadata:
   name: piazza-gql
   labels:
+    app: gql
 {{ include "piazza.labels" . | indent 4 }}
   annotations:
     cloud.google.com/neg: '{"ingress": true}'
@@ -26,6 +27,7 @@ kind: Service
 metadata:
   name: piazza-rtc
   labels:
+    app: rtc
 {{ include "piazza.labels" . | indent 4 }}
   annotations:
     cloud.google.com/neg: '{"ingress": true}'
