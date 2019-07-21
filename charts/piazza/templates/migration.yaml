@@ -51,6 +51,8 @@ spec:
         envFrom:
         - secretRef:
             name: piazza-env
+        - secretRef:
+            name: piazza-migration-env
         env:
         - name: NAMESPACE
           valueFrom:

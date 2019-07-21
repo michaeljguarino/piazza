@@ -11,6 +11,7 @@ defmodule Core.Resolvers.User do
 
   def list_users(args, _) do
     User.ordered()
+    |> User.active()
     |> paginate(args)
   end
 

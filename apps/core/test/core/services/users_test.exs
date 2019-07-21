@@ -81,4 +81,22 @@ defmodule Core.Services.UsersTest do
       assert is_binary(msg)
     end
   end
+
+  describe "#login/2" do
+    test "A user can login with his password" do
+      user = build(:user) |> with_password("super strong pwd")
+
+      {:ok, login} = Users.login_user(user.email, "super strong pwd")
+
+      assert login.id == user.id
+    end
+
+    test "A deleted user cannot login" do
+      user =
+        build(:user, deleted_at: DateTime.utc_now())
+        |> with_password("super strong pwd")
+
+      {:error, :not_found} = Users.login_user(user.email, "super strong pwd")
+    end
+  end
 end

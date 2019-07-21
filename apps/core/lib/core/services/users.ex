@@ -15,11 +15,12 @@ defmodule Core.Services.Users do
   def get_user_by_email!(email), do: Core.Repo.get_by!(User, email: email)
 
   def login_user(email, password) do
-    get_user_by_email!(email)
-    |> Argon2.check_pass(password)
-    |> case do
-      {:ok, user} -> {:ok, user}
-      {:error, _} -> {:error, :invalid_password}
+    with %User{deleted_at: nil} = user <- get_user_by_email!(email),
+         {:ok, user} <- Argon2.check_pass(user, password) do
+      {:ok, user}
+    else
+      %User{} -> {:error, :not_found}
+      _ -> {:error, :invalid_password}
     end
   end
 

@@ -36,6 +36,13 @@ uninstall: ## purge the current helm installation
 upgrade: ## upgrade the current helm installation
 	helm upgrade -f charts/piazza/config.secrets.yaml piazza charts/piazza
 
+secretsup: ## uploads the current secret conf to kubernetes.  Retrieve with secretsdown
+	kubectl create secret generic helm-secrets -n piazza --from-file charts/piazza/config.secrets.yaml
+
+secretsdown: ## downloads the current secret conf to the canonical yaml file
+	kubectl get secret helm-secrets -n piazza -o jsonpath="{.data['config\.secrets\.yaml']}" \
+		| base64 -D > charts/piazza/config.secrets.yaml
+
 test: ## run tests
 	mix test
 
