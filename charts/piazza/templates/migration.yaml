@@ -2,14 +2,14 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: piazza-migration-{{ randAlphaNum 4 | lower }}
+  name: piazza-drop-{{ randAlphaNum 4 | lower }}
 spec:
   template:
     spec:
       containers:
       - name: migrator
         image: "{{ .Values.image.gqlRepository }}:{{ .Values.image.tag }}"
-        command: ["/opt/app/bin/gql",  "migrate"]
+        command: ["/opt/app/bin/gql",  "drop"]
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         envFrom:
         - secretRef:

@@ -57,7 +57,7 @@ defmodule Core.DB.ReleaseTasks do
     Enum.each(@repos, &run_migrations_for(&1, direction))
   end
 
-  defp run_migrations_for(repo, direction \\ :up) do
+  defp run_migrations_for(repo, direction) do
     app = Keyword.get(repo.config(), :otp_app)
     IO.puts("Running migrations for #{app}")
     migrations_path = priv_path_for(repo, "migrations")

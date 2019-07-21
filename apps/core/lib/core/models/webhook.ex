@@ -2,7 +2,7 @@ defmodule Core.Models.Webhook do
   use Core.DB.Schema
 
   schema "webhooks" do
-    field :url, :string
+    field :url, Core.DB.Types.URI
     field :disabled, :boolean
     field :secret, :string
 
@@ -15,6 +15,5 @@ defmodule Core.Models.Webhook do
     schema
     |> cast(attrs, @valid)
     |> validate_required([:url])
-    |> validate_url(:url)
   end
 end
