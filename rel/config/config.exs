@@ -2,11 +2,11 @@ import Config
 import System, only: [get_env: 1]
 
 config :gql, GqlWeb.Endpoint,
-  url: [host: get_env("HOST"), port: 80]
+  url: [host: get_env("HOST"), port: 80],
   check_origin: ["//#{get_env("HOST")}", "//piazza-gql"]
 
 config :rtc, RtcWeb.Endpoint,
-  url: [host: get_env("HOST"), port: 80]
+  url: [host: get_env("HOST"), port: 80],
   check_origin: ["//#{get_env("HOST")}", "//piazza-rtc"]
 
 config :gql, Gql.Guardian,

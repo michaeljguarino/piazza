@@ -3,7 +3,7 @@ defmodule Core.Schema do
   use Absinthe.Relay.Schema, :modern
   import Core.Schemas.Helpers
 
-  alias Core.Resolvers.{Conversation, User}
+  alias Core.Resolvers.{Conversation, User, Platform}
   import_types Core.Schemas.Types
   import_types Core.Schemas.Inputs
 
@@ -12,6 +12,7 @@ defmodule Core.Schema do
       Dataloader.new()
       |> Dataloader.add_source(Conversation, Conversation.data(ctx))
       |> Dataloader.add_source(User, User.data(ctx))
+      |> Dataloader.add_source(Platform, Platform.data(ctx))
 
     Map.put(ctx, :loader, loader)
   end
@@ -52,6 +53,10 @@ defmodule Core.Schema do
       arg :name, :string
 
       resolve &Conversation.resolve_conversation/3
+    end
+
+    connection field :commands, node_type: :command do
+      resolve &Platform.list_commands/2
     end
   end
 
@@ -112,6 +117,12 @@ defmodule Core.Schema do
       arg :user_id, non_null(:id)
 
       resolve safe_resolver(&Conversation.delete_participant/2)
+    end
+
+    field :create_command, :command do
+      arg :attributes, non_null(:command_attributes)
+
+      resolve safe_resolver(&Platform.create_command/2)
     end
   end
 

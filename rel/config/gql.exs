@@ -9,4 +9,4 @@ config :core, :consumers, [
   Core.PubSub.Consumers.Rtc
 ]
 
-config :gql, :giphy_secret, get_env("GIPHY_SECRET") #"kDg0A469PK1MZZKRqk4f0fZOmjVeqAOu"
+config :gql, :giphy_secret, get_env("GIPHY_SECRET")

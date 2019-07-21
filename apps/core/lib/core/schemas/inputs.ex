@@ -28,4 +28,21 @@ defmodule Core.Schemas.Inputs do
     field :conversation_id, non_null(:string)
     field :user_id, non_null(:string)
   end
+
+  input_object :command_attributes do
+    field :name, non_null(:string)
+    field :documentation, :string
+    field :webhook, non_null(:webhook_attributes)
+    field :bot, :bot_attributes
+  end
+
+  input_object :webhook_attributes do
+    field :url, non_null(:string)
+  end
+
+  input_object :bot_attributes do
+    field :name, :string
+    field :email, :string
+    field :handle, :string
+  end
 end

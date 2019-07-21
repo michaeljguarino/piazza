@@ -15,6 +15,9 @@ defmodule Core.Models.Command do
 
   @valid ~w(name documentation bot_id webhook_id)a
 
+  def ordered(query \\ __MODULE__, order \\ [asc: :name]),
+    do: from(c in query, order_by: ^order)
+
   def changeset(schema, attrs \\ %{}) do
     schema
     |> cast(attrs, @valid)

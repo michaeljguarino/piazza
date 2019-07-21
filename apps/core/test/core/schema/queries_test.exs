@@ -150,4 +150,28 @@ defmodule Core.Schema.QueriesTest do
       assert ids_equal(users, expected)
     end
   end
+
+  describe "Commands" do
+    test "It will list available commands" do
+      commands = insert_list(3, :command)
+      expected = Enum.sort_by(commands, & &1.name) |> Enum.take(2)
+
+      {:ok, %{data: %{"commands" => commands}}} = run_query("""
+        query {
+          commands(first: 2) {
+            edges {
+              node {
+                id
+                name
+              }
+            }
+          }
+        }
+      """, %{})
+
+      commands = from_connection(commands)
+      assert Enum.all?(commands, & &1["name"])
+      assert ids_equal(commands, expected)
+    end
+  end
 end
