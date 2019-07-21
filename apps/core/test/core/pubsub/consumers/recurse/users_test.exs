@@ -1,7 +1,7 @@
-defmodule Core.PubSub.Consumers.Integrity.UsersTest do
+defmodule Core.PubSub.Consumers.Recurse.UsersTest do
   use Core.DataCase
   alias Core.PubSub
-  alias PubSub.Consumers.Integrity
+  alias PubSub.Consumers.Recurse
   alias Core.Services.Conversations
 
 
@@ -12,7 +12,7 @@ defmodule Core.PubSub.Consumers.Integrity.UsersTest do
       user    = insert(:user)
 
       event = %PubSub.UserCreated{item: user}
-      3 = Integrity.handle_event(event)
+      3 = Recurse.handle_event(event)
 
       for %{id: conv_id} <- globals,
         do: assert Conversations.get_participant(user.id, conv_id)

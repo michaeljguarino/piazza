@@ -11,7 +11,7 @@ defmodule Core.TestSubscriber do
 end
 
 defmodule Core.TestBroker do
-  use Aquaduct.Sink, otp_app: :core
+  use Aquaduct.Topology, otp_app: :core
 
   incoming Core do
     pipe_through [:deserialize]

@@ -2,8 +2,6 @@ import requests
 import sys
 
 def login(email, password):
-  r = requests.get('http://api.piazzaapp.com/ping')
-  print r.text
   r = requests.post('http://api.piazzaapp.com/auth/login',
     data={'email': email, 'password': password},
     headers={'accept': 'application/json'}

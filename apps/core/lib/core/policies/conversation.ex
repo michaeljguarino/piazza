@@ -3,6 +3,7 @@ defmodule Core.Policies.Conversation do
   alias Core.Models.{User, Conversation, Message, Participant}
 
   def can?(%User{}, %Conversation{}, :create), do: :pass
+  def can?(%User{bot: true}, %Message{}, :create), do: :pass
   def can?(%User{id: uid}, %Message{} = message, :create) do
     case Core.Repo.preload(message, [:conversation]) do
       %{conversation: %{public: true}} -> :pass

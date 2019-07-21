@@ -72,7 +72,7 @@ config :botanist,
 
 config :core, :consumers, []
 
-config :aquaduct, Aquaduct.Broker,
+config :core, Core.Aquaduct.Broker,
   adapter: ConduitAMQP,
   url: "amqp://rabbitmq:rabbitmq@localhost"
 
@@ -89,6 +89,8 @@ config :lager, :error_logger_whitelist, [Logger.ErrorHandler]
 config :rtc, :start_broker, true
 
 config :libcluster, :topologies, []
+
+config :core, :start_broker, true
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.

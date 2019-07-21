@@ -1,4 +1,5 @@
 defmodule Core.DB.Schema do
+  import Ecto.Changeset
   defmacro __using__(_) do
     quote do
       use Ecto.Schema
@@ -15,6 +16,37 @@ defmodule Core.DB.Schema do
       def for_id(query \\ __MODULE__, id), do: from(r in query, where: r.id == ^id)
 
       defoverridable [any: 0]
+
+      defimpl Jason.Encoder, for: __MODULE__ do
+        def encode(struct, opts) do
+          Core.DB.Schema.mapify(struct)
+          |> Jason.Encode.map(opts)
+        end
+      end
     end
+  end
+
+  @url_regex ~r/^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/
+
+  def validate_url(changeset, field) do
+    validate_format(changeset, field, @url_regex)
+  end
+
+  def external_type(module) do
+    Macro.underscore(module)
+    |> String.split("/")
+    |> List.last()
+  end
+
+  def mapify(%{__struct__: module} = struct) do
+    Map.from_struct(struct)
+    |> Enum.map(fn
+      {:__meta__, _} -> nil
+      {_, %Ecto.Association.NotLoaded{}} -> nil
+      {k, v} -> {k, v}
+    end)
+    |> Enum.filter(& &1)
+    |> Map.new()
+    |> Map.put(:_type, external_type(module))
   end
 end

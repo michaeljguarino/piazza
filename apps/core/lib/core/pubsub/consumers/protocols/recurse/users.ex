@@ -1,8 +1,8 @@
-defimpl Core.Integrity.Preservable, for: Core.PubSub.UserCreated do
+defimpl Core.Recurse.Traversable, for: Core.PubSub.UserCreated do
   import Core.Services.Base, only: [timestamped: 1]
   alias Core.Models.{Conversation, Participant}
 
-  def preserve(%{item: %{id: user_id}}) do
+  def traverse(%{item: %{id: user_id}}) do
     Conversation.global()
     |> Conversation.ordered(asc: :id)
     |> Core.Repo.stream(method: :keyset)

@@ -13,7 +13,7 @@ config :rtc, RtcWeb.Endpoint,
   server: true
 
 config :core, :consumers, [
-  Core.PubSub.Consumers.Integrity,
+  Core.PubSub.Consumers.Recurse,
   Core.PubSub.Consumers.Rtc,
 ]
 

@@ -41,5 +41,6 @@ defmodule Core.Models.Conversation do
     |> cast(attrs, @valid)
     |> validate_required([:name, :public])
     |> validate_length(:name, max: 255)
+    |> unique_constraint(:name)
   end
 end

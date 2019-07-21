@@ -62,11 +62,11 @@ defmodule Core.DB.ReleaseTasks do
 
   defp run_seeds_for(repo) do
     # Run the seed script if it exists
-    seed_script = priv_path_for(repo, "seeds.exs")
-
-    if File.exists?(seed_script) do
-      IO.puts("Running seed script..")
-      Code.eval_file(seed_script)
+    priv_path_for(repo, "seeds")
+    |> File.ls()
+    |> case do
+      {:ok, files} -> Enum.each(files, &Code.eval_file/1)
+      {:error, _} -> IO.puts "No seeds to run"
     end
   end
 

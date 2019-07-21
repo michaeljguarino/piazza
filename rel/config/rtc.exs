@@ -16,4 +16,6 @@ config :libcluster,
         polling_interval: 10_000
       ]
     ]
-]
+  ]
+
+config :core, :start_broker, false

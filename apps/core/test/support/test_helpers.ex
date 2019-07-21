@@ -42,4 +42,10 @@ defmodule Core.TestHelpers do
   end
 
   def refetch(%{__struct__: schema, id: id}), do: Core.Repo.get(schema, id)
+
+  def with_mailbox(fun) do
+    Core.Mailbox.register()
+    fun.()
+    Core.Mailbox.deregister()
+  end
 end

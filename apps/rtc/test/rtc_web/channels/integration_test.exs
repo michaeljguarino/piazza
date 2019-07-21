@@ -21,7 +21,7 @@ defmodule RtcWeb.Channels.IntegrationTest do
       assert_reply(ref, :ok, _)
 
       {:ok, _} = Rtc.Aquaduct.Broker.start_link()
-      Aquaduct.Broker.publish(%Conduit.Message{body: %PubSub.UserCreated{item: insert(:user)}}, :rtc)
+      Rtc.Aquaduct.Broker.publish(%Conduit.Message{body: %PubSub.UserCreated{item: insert(:user)}}, :rtc)
 
       assert_push("subscription:data", %{result: %{data: %{"newUsers" => doc}}})
       assert doc["id"]
