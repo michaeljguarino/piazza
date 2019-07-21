@@ -6,7 +6,10 @@ APP_VSN ?= `cat VERSION`
 BUILD ?= `git rev-parse --short HEAD`
 
 help:
-	@echo "$(APP_NAME):$(APP_VSN)"
+	@echo "============================~Piazza~=============================="
+	@echo "=  Basic build utilities for the piazza application ecosystem.   ="
+	@echo "=  Anything build-system-y should be defined here.               ="
+	@echo "=================================================================="
 	@perl -nle'print $& if m{^[a-zA-Z_-]+:.*?## .*$$}' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
 build: ## Build the Docker image
@@ -24,25 +27,25 @@ run: ## Run the app in Docker
 push: ## push to gcr
 	docker push gcr.io/$(GCR_PROJECT)/$(APP_NAME):$(APP_VSN)
 
-install:
+install: ## install (via helm) in the piazza namespace of the current kube context
 	helm install --name piazza --namespace piazza --values charts/piazza/config.secrets.yaml charts/piazza
 
-uninstall:
+uninstall: ## purge the current helm installation
 	helm del --purge piazza
 
-upgrade:
+upgrade: ## upgrade the current helm installation
 	helm upgrade -f charts/piazza/config.secrets.yaml piazza charts/piazza
 
-test:
+test: ## run tests
 	mix test
 
-serve:
+serve: ## run as a local server (gql is on port 4001, rtc on 4000)
 	mix phx.server
 
-testsetup:
+testsetup: ## setup test dependencies
 	docker-compose up -d
 
-bootstrap:
+bootstrap: ## initialize your helm/kubernetes environment
 	# create the cluster
 	gcloud container clusters create piazza \
     --enable-ip-alias \
