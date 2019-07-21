@@ -37,7 +37,7 @@ external-dns:
 image:
   gqlRepository: gcr.io/piazza-247002/gql
   rtcRepository: gcr.io/piazza-247002/rtc
-  tag: "0.1.0"
+  tag: "0.2.0"
   pullPolicy: Always
 
 imagePullSecrets: []
