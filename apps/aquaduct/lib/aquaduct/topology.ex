@@ -46,7 +46,7 @@ defmodule Aquaduct.Topology do
       end
 
       pipeline :error_handling do
-        plug Conduit.Plug.DeadLetter, broker: __MODULE__, publish_to: :error
+        plug Aquaduct.Plug.DeadLetter, broker: __MODULE__, publish_to: :error
         plug Conduit.Plug.Retry, attempts: 3
       end
 

@@ -35,7 +35,7 @@ defmodule GqlWeb.Router do
     post "/login", AuthController, :login
   end
 
-  scope "/webhook", GqlWeb do
+  scope "/webhooks", GqlWeb do
     pipe_through [:api]
 
     post "/giphy", WebhookController, :giphy
