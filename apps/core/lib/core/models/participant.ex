@@ -22,5 +22,6 @@ defmodule Core.Models.Participant do
     |> cast(attrs, @valid)
     |> foreign_key_constraint(:user_id)
     |> foreign_key_constraint(:conversation_id)
+    |> unique_constraint(:user_id, name: :participants_user_id_conversation_id_index)
   end
 end

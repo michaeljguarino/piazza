@@ -68,7 +68,7 @@ config :gql, GqlWeb.Endpoint,
   ]
 
 config :core, :consumers, [
-  Core.PubSub.Consumers.Integrity,
+  Core.PubSub.Consumers.Recurse,
   Core.PubSub.Consumers.Rtc,
 ]
 

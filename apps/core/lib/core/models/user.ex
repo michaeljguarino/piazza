@@ -3,21 +3,6 @@ defmodule Core.Models.User do
 
   @email_re ~r/^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9-\.]+\.[a-zA-Z]{2,}$/
 
-  defmodule Roles do
-    use Core.DB.Schema
-
-    embedded_schema do
-      field :admin, :boolean, default: false
-    end
-
-    @valid ~w(admin)a
-
-    def changeset(model, attrs \\ %{}) do
-      model
-      |> cast(attrs, @valid)
-    end
-  end
-
   schema "users" do
     field :email,         :string
     field :name,          :string
@@ -25,6 +10,7 @@ defmodule Core.Models.User do
     field :password,      :string, virtual: true
     field :password_hash, :string
     field :bio,           :string
+    field :bot,           :boolean, default: false
 
     field :profile_img,   :map
     field :deleted_at,    :utc_datetime_usec
@@ -36,7 +22,7 @@ defmodule Core.Models.User do
     timestamps()
   end
 
-  @valid ~w(email name handle password)a
+  @valid ~w(email name handle password bot)a
 
   def ordered(query \\ __MODULE__, order \\ [asc: :email]), do: from(u in query, order_by: ^order)
 

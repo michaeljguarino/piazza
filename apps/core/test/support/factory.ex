@@ -31,4 +31,19 @@ defmodule Core.Factory do
       user: build(:user)
     }
   end
+
+  def webhook_factory() do
+    %Models.Webhook{
+      url: "https://example.com/webhook"
+    }
+  end
+
+  def command_factory() do
+    %Models.Command{
+      name: sequence(:command, &"command-#{&1}"),
+      webhook: build(:webhook),
+      bot: build(:user, bot: true),
+      creator: build(:user)
+    }
+  end
 end

@@ -5,6 +5,6 @@ config :gql, GqlWeb.Endpoint,
   secret_key_base: get_env("SECRET_KEY_BASE")
 
 config :core, :consumers, [
-  Core.PubSub.Consumers.Integrity,
+  Core.PubSub.Consumers.Recurse,
   Core.PubSub.Consumers.Rtc
 ]

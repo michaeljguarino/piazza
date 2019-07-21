@@ -15,7 +15,7 @@ config :rtc, Rtc.Guardian,
   issuer: "piazza",
   secret_key: get_env("JWT_SECRET")
 
-config :aquaduct, Aquaduct.Broker,
+config :core, Core.Aquaduct.Broker,
   adapter: ConduitAMQP,
   url: "amqp://rabbitmq:#{get_env("RABBITMQ_PASSWORD")}@piazza-rabbitmq"
 

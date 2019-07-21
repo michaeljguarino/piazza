@@ -33,7 +33,6 @@ defmodule Core.DataCase do
     unless tags[:async] do
       Ecto.Adapters.SQL.Sandbox.mode(Core.Repo, {:shared, self()})
     end
-
     :ok
   end
 

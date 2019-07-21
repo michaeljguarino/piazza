@@ -40,7 +40,7 @@ serve:
 	mix phx.server
 
 testsetup:
-	docker-compuse up -d
+	docker-compose up -d
 
 bootstrap:
 	# create the cluster
