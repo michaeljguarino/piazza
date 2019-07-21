@@ -28,6 +28,14 @@ defmodule Core.DB.ReleaseTasks do
     stop_services()
   end
 
+  def drop(_argv) do
+    start_services()
+
+    run_migrations(:down)
+
+    stop_services()
+  end
+
   defp start_services do
     IO.puts("Starting dependencies..")
     # Start apps necessary for executing migrations
@@ -45,16 +53,20 @@ defmodule Core.DB.ReleaseTasks do
     :init.stop()
   end
 
-  defp run_migrations do
-    Enum.each(@repos, &run_migrations_for/1)
+  defp run_migrations(direction \\ :up) do
+    Enum.each(@repos, &run_migrations_for(&1, direction))
   end
 
-  defp run_migrations_for(repo) do
+  defp run_migrations_for(repo, direction \\ :up) do
     app = Keyword.get(repo.config(), :otp_app)
     IO.puts("Running migrations for #{app}")
     migrations_path = priv_path_for(repo, "migrations")
-    Ecto.Migrator.run(repo, migrations_path, :up, all: true)
+    Ecto.Migrator.run(repo, migrations_path, direction, all: true)
   end
+
+  # defp drop_db() do
+  #   Enum.each(@repos, & &1.__adapter__.storage_down(&1.config))
+  # end
 
   defp run_seeds do
     Enum.each(@repos, &run_seeds_for/1)

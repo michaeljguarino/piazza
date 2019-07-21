@@ -54,7 +54,8 @@ release :gql do
     gql: :permanent
   ]
   set commands: [
-    migrate: "rel/commands/migrate.sh"
+    migrate: "rel/commands/migrate.sh",
+    drop: "rel/commands/drop.sh"
   ]
 end
 

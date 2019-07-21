@@ -1,3 +1,4 @@
+{{- if .Values.dropDB -}}
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -34,3 +35,41 @@ spec:
               key: postgresql-password
       restartPolicy: Never
   backoffLimit: 5
+{{- else }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: piazza-migration-{{ randAlphaNum 4 | lower }}
+spec:
+  template:
+    spec:
+      containers:
+      - name: migrator
+        image: "{{ .Values.image.gqlRepository }}:{{ .Values.image.tag }}"
+        command: ["/opt/app/bin/gql",  "migrate"]
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        envFrom:
+        - secretRef:
+            name: piazza-env
+        env:
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        - name: RABBITMQ_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.rabbitPasswordSecret }}
+              key: rabbitmq-password
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.dbPasswordSecret }}
+              key: postgresql-password
+      restartPolicy: Never
+  backoffLimit: 5
+{{- end }}
