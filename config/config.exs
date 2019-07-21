@@ -92,7 +92,6 @@ config :libcluster, :topologies, []
 
 config :core, :start_broker, true
 
-config :gql, :giphy_secret, "kDg0A469PK1MZZKRqk4f0fZOmjVeqAOu"
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{Mix.env()}.exs"

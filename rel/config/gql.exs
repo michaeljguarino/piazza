@@ -10,3 +10,5 @@ config :core, :consumers, [
 ]
 
 config :gql, :giphy_secret, get_env("GIPHY_SECRET")
+
+config :core, :start_broker, true
