@@ -9,7 +9,7 @@ defmodule Core.Services.Platform.Webhooks do
          {:ok, msg} <- handle_response(response) do
       Core.Services.Conversations.create_message(conv_id, %{text: msg}, bot)
     else
-      {:ok, %Mojito.Response{}} -> {:error, :request_failed}
+      {:ok, %Mojito.Response{body: body}} -> {:error, :request_failed, body}
       error -> error
     end
   end
@@ -19,6 +19,7 @@ defmodule Core.Services.Platform.Webhooks do
     signature = :crypto.hash(:sha, "#{payload}:#{epoch}:#{secret}") |> Base.encode64()
     [
       {"content-type", "application/json"},
+      {"accept", "application/json"},
       {"x-piazza-signature", signature},
       {"x-piazza-timestamp", "#{epoch}"}
     ]
