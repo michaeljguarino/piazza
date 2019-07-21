@@ -5,10 +5,10 @@ defmodule Aquaduct.Topology do
 
       configure do
         exchange "piazza.topic", type: :topic, durable: true
-        queue "piazza.rtc", from: ["#.rtc"], exchange: "piazza.topic", durable: true
+        queue "piazza.rtc", from: ["piazza.rtc"], exchange: "piazza.topic", durable: true
         queue "zzz.piazza.rtc", from: ["zzz.piazza.rtc"], exchange: "piazza.topic", durable: true
 
-        queue "piazza.webhook", from: ["#.webhook"], exchange: "piazza.topic", durable: true
+        queue "piazza.webhook", from: ["piazza.webhook"], exchange: "piazza.topic", durable: true
         queue "zzz.piazza.webhook", from: ["zzz.piazza.webhook"], exchange: "piazza.topic", durable: true
       end
 
@@ -47,7 +47,7 @@ defmodule Aquaduct.Topology do
 
       pipeline :error_handling do
         plug Conduit.Plug.DeadLetter, broker: __MODULE__, publish_to: :error
-        plug Conduit.Plug.Retry, attempts: 5
+        plug Conduit.Plug.Retry, attempts: 3
       end
 
       pipeline :deserialize do
