@@ -30,3 +30,5 @@ config :core, Core.Repo,
   username: "piazza",
   password: get_env("POSTGRES_PASSWORD"),
   hostname: "piazza-postgresql"
+
+config :gql, :giphy_secret, get_env("GIPHY_SECRET")

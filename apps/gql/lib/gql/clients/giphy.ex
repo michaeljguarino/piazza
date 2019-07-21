@@ -5,8 +5,10 @@ defmodule Gql.Clients.Giphy do
       q: search_query,
       limit: 1
     })
-    with {:ok, result} <- get("gifs/search?#{params}"),
-      do: select_url(result)
+    case get("gifs/search?#{params}") do
+      {:ok, %{"data" => [result | _]}} ->  select_url(result)
+      _ -> {:error, :not_found}
+    end
   end
 
   def get(path, headers \\ []) do

@@ -7,7 +7,7 @@ defmodule GqlWeb.WebhookControllerTest do
       gif_url = "https://media.giphy.com/some.gif"
       with_mock Mojito, [
         get: fn "https://api.giphy.com/v1/gifs/search" <> _, _ ->
-          json = Jason.encode!(%{images: %{original: %{mp4: gif_url}}})
+          json = Jason.encode!(%{data: [%{images: %{original: %{mp4: gif_url}}}]})
           {:ok, %Mojito.Response{body: json, status_code: 200}}
         end
       ] do
