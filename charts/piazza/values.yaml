@@ -34,6 +34,7 @@ external-dns:
     project: piazza-247002
     serviceAccountSecret: externaldns-serviceaccount
 
+dropDb: true
 image:
   gqlRepository: gcr.io/piazza-247002/gql
   rtcRepository: gcr.io/piazza-247002/rtc

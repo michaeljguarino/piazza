@@ -62,6 +62,7 @@ config :rtc, RtcWeb.Endpoint,
   pubsub: [name: Rtc.PubSub, adapter: Phoenix.PubSub.PG2]
 
 config :core, Core.Repo,
+  migration_timestamps: [type: :utc_datetime_usec],
   database: "piazza",
   username: "postgres",
   password: "postgres",
