@@ -1,0 +1,50 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: piazza-prune-messages
+  labels:
+{{ include "piazza.labels" . | indent 4 }}
+spec:
+  schedule: "0 0 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: Never
+          serviceAccountName: piazza
+          containers:
+          - name: cron
+            image: "{{ .Values.cron.image }}:{{ .Values.image.tag }}"
+            imagePullPolicy: {{ .Values.image.pullPolicy }}
+            envFrom:
+            - secretRef:
+                name: piazza-env
+            env:
+            - name: CRON
+              value: Prune.Messages
+            - name: RETENTION_POLICY
+              value: "{{ .Values.retentionPolicy }}"
+            - name: HOST
+              value: {{ .Values.ingress.dns }}
+            - name: DEPLOYED_AT
+              value: {{ .Release.Time }}
+            - name: NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: RABBITMQ_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.rabbitPasswordSecret }}
+                  key: rabbitmq-password
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.dbPasswordSecret }}
+                  key: postgresql-password
+            resources:
+              {{- toYaml .Values.cron.resources | nindent 12 }}

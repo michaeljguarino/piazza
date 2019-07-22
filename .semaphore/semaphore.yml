@@ -50,3 +50,7 @@ blocks:
       commands:
       - make build APP_NAME=rtc
       - make push APP_NAME=rtc
+    - name: "Build cron"
+      commands:
+      - make build APP_NAME=cron
+      - make push APP_NAME=cron

@@ -8,7 +8,7 @@ spec:
     spec:
       containers:
       - name: migrator
-        image: "{{ .Values.image.gqlRepository }}:{{ .Values.image.tag }}"
+        image: "{{ .Values.gql.image }}:{{ .Values.image.tag }}"
         command: ["/opt/app/bin/gql",  "drop"]
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         envFrom:
@@ -45,7 +45,7 @@ spec:
     spec:
       containers:
       - name: migrator
-        image: "{{ .Values.image.gqlRepository }}:{{ .Values.image.tag }}"
+        image: "{{ .Values.gql.image }}:{{ .Values.image.tag }}"
         command: ["/opt/app/bin/gql",  "migrate"]
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         envFrom:

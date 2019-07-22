@@ -5,7 +5,7 @@ metadata:
   labels:
 {{ include "piazza.labels" . | indent 4 }}
 spec:
-  replicas: {{ .Values.gqlReplicaCount }}
+  replicas: {{ .Values.gql.replicas }}
   selector:
     matchLabels:
       app.kubernetes.io/name: piazza-gql
@@ -19,7 +19,7 @@ spec:
       serviceAccountName: piazza
       containers:
       - name: gql
-        image: "{{ .Values.image.gqlRepository }}:{{ .Values.image.tag }}"
+        image: "{{ .Values.gql.image }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         envFrom:
         - secretRef:
@@ -49,7 +49,7 @@ spec:
               key: postgresql-password
         ports:
         - name: http
-          containerPort: {{ .Values.gqlPort }}
+          containerPort: {{ .Values.gql.port }}
           protocol: TCP
         - name: epmd
           containerPort: 4369
@@ -63,7 +63,7 @@ spec:
             path: /ping
             port: http
         resources:
-          {{- toYaml .Values.gqlResources | nindent 12 }}
+          {{- toYaml .Values.gql.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
@@ -84,7 +84,7 @@ metadata:
   labels:
 {{ include "piazza.labels" . | indent 4 }}
 spec:
-  replicas: {{ .Values.rtcReplicaCount }}
+  replicas: {{ .Values.rtc.replicas }}
   selector:
     matchLabels:
       app.kubernetes.io/name: piazza-rtc
@@ -98,7 +98,7 @@ spec:
       serviceAccountName: piazza
       containers:
       - name: rtc
-        image: "{{ .Values.image.rtcRepository }}:{{ .Values.image.tag }}"
+        image: "{{ .Values.rtc.image }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         envFrom:
         - secretRef:
@@ -128,7 +128,7 @@ spec:
               key: postgresql-password
         ports:
         - name: http
-          containerPort: {{ .Values.rtcPort }}
+          containerPort: {{ .Values.rtc.port }}
           protocol: TCP
         - name: epmd
           containerPort: 4369
@@ -142,7 +142,7 @@ spec:
             path: /ping
             port: http
         resources:
-          {{- toYaml .Values.rtcResources | nindent 12 }}
+          {{- toYaml .Values.rtc.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

@@ -10,7 +10,7 @@ metadata:
 spec:
   type: NodePort
   ports:
-  - port: {{ .Values.gqlPort }}
+  - port: {{ .Values.gql.port }}
     targetPort: http
     protocol: TCP
     name: http
@@ -35,7 +35,7 @@ metadata:
 spec:
   type: NodePort
   ports:
-  - port: {{ .Values.rtcPort }}
+  - port: {{ .Values.rtc.port }}
     targetPort: http
     protocol: TCP
     name: http
