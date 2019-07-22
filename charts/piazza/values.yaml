@@ -20,7 +20,7 @@ rabbitmq:
     requests:
       cpu: .2
       memory: 256Mi
-  replicas: 2
+  replicas: 3
 
 external-dns:
   provider: google

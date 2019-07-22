@@ -37,6 +37,7 @@ upgrade: ## upgrade the current helm installation
 	helm upgrade -f charts/piazza/config.secrets.yaml piazza charts/piazza
 
 secretsup: ## uploads the current secret conf to kubernetes.  Retrieve with secretsdown
+	kubectl delete secret helm-secrets -n piazza || echo "Creating Secret"
 	kubectl create secret generic helm-secrets -n piazza --from-file charts/piazza/config.secrets.yaml
 
 secretsdown: ## downloads the current secret conf to the canonical yaml file
