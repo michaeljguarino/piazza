@@ -9,7 +9,7 @@ postgresql:
   postgresqlDatabase: piazza
   resources:
     requests:
-      cpu: 2
+      cpu: .5
       memory: 2Gi
 
 rabbitmq:
@@ -45,7 +45,7 @@ gql:
   image: gcr.io/piazza-247002/gql
   resources:
     requests:
-      cpu: .25
+      cpu: .15
       memory: 256Mi
   replicas: 2
 
@@ -55,7 +55,7 @@ rtc:
   replicas: 2
   resources:
     requests:
-      cpu: .25
+      cpu: .15
       memory: 256Mi
 
 cron:
