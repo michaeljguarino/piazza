@@ -19,8 +19,13 @@ defmodule Core.Services.Base do
         %{extract: operation} -> {:ok, result[operation]}
         _ -> {:ok, result}
       end
+    else
+      {:error, _, reason, _} -> {:error, reason}
+      {:error, reason} -> {:error, reason}
     end
   end
+
+  def ok(res), do: {:ok, res}
 
   def when_ok({:ok, resource}, :insert), do: Core.Repo.insert(resource)
   def when_ok({:ok, resource}, :update), do: Core.Repo.update(resource)

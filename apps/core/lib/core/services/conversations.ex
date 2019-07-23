@@ -1,7 +1,8 @@
 defmodule Core.Services.Conversations do
   use Core.Services.Base
-  alias Core.Models.{Conversation, Message, Participant}
+  alias Core.Models.{Conversation, Message, Participant, MessageEntity}
   alias Core.PubSub
+  alias Core.Services.Messages
   import Core.Policies.Conversation
 
   def get_conversation!(id), do: Core.Repo.get!(Conversation, id)
@@ -42,10 +43,31 @@ defmodule Core.Services.Conversations do
   end
 
   def create_message(conv_id, attrs, user) do
-    %Message{conversation_id: conv_id, creator_id: user.id}
-    |> Message.changeset(attrs)
-    |> allow(user, :create)
-    |> when_ok(:insert)
+    start_transaction()
+    |> add_operation(:message, fn _ ->
+      %Message{conversation_id: conv_id, creator_id: user.id}
+      |> Message.changeset(attrs)
+      |> allow(user, :create)
+      |> when_ok(:insert)
+    end)
+    |> add_operation(:inflated, fn %{message: %{text: text} = msg} ->
+      with extracted when map_size(extracted) > 0 <- Messages.PostProcessor.extract_entities(text, user) do
+        entities = for {_, {{pos, len}, user}} <- extracted do
+          timestamped(%{
+            user_id: user.id,
+            type: :mention,
+            start_index: pos,
+            length: len,
+            message_id: msg.id
+          })
+        end
+        {_, entities} = Core.Repo.insert_all(MessageEntity, entities, returning: true)
+        {:ok, %{msg | entities: entities}}
+      else
+        _ -> {:ok, %{msg | entities: []}}
+      end
+    end)
+    |> execute(extract: :inflated)
     |> notify(:create, user)
   end
 

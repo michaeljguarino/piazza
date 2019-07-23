@@ -29,6 +29,10 @@ defmodule Core.Models.User do
   def active(query \\ __MODULE__),
     do: from(u in query, where: is_nil(u.deleted_at))
 
+  def with_handles(query \\ __MODULE__, handles) do
+    from(u in query, where: u.handle in ^handles)
+  end
+
   def changeset(model, attrs \\ %{}) do
     model
     |> cast(attrs, @valid)

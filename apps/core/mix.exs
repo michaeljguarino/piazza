@@ -50,6 +50,7 @@ defmodule Core.MixProject do
       {:flow, "~> 0.14.3"},
       {:ex_machina, "~> 2.3", only: :test},
       {:mojito, "~> 0.3.0"},
+      {:ecto_enum, "~> 1.3"},
       {:botanist, "~> 0.1.0", git: "https://github.com/michaeljguarino/botanist.git", branch: "ecto3"},
 
       {:mock, "~> 0.3.3", only: :test},

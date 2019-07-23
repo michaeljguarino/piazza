@@ -6,6 +6,7 @@ defmodule Core.DB.Schema do
       import Ecto.Query
       import Ecto.Changeset
       import Core.DB.Schema
+      import EctoEnum
 
       @primary_key {:id, :binary_id, autogenerate: true}
       @timestamps_opts [type: :utc_datetime_usec]
@@ -14,6 +15,9 @@ defmodule Core.DB.Schema do
       def any(), do: from(r in __MODULE__)
 
       def for_id(query \\ __MODULE__, id), do: from(r in query, where: r.id == ^id)
+
+      def selected(query \\ __MODULE__),
+        do: from(r in query, select: r)
 
       defoverridable [any: 0]
 

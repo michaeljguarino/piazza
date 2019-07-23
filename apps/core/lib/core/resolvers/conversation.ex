@@ -1,11 +1,12 @@
 defmodule Core.Resolvers.Conversation do
   use Core.Resolvers.Base, model: Core.Models.Conversation
   alias Core.Services.Conversations
-  alias Core.Models.{Message, Participant}
+  alias Core.Models.{Message, Participant, MessageEntity}
 
   def query(Message, _args), do: Message
   def query(Participant, _args), do: Participant
   def query(Conversation, _args), do: Conversation
+  def query(MessageEntity, _args), do: MessageEntity
 
   def query(_, %{public: true}), do: Conversation.public()
   def query(_, %{public: false, current_user: user}) do

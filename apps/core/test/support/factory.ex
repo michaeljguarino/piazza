@@ -46,4 +46,23 @@ defmodule Core.Factory do
       creator: build(:user)
     }
   end
+
+  def message_entity_factory do
+    %Models.MessageEntity{
+      type: :mention,
+      message: build(:message),
+      user: build(:user),
+      start_index: 0,
+      length: 1
+    }
+  end
+
+  def notification_factory do
+    %Models.Notification{
+      type: :mention,
+      user: build(:user),
+      message: build(:message),
+      actor: build(:user)
+    }
+  end
 end

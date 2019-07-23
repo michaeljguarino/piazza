@@ -174,4 +174,35 @@ defmodule Core.Schema.QueriesTest do
       assert ids_equal(commands, expected)
     end
   end
+
+  describe "notifications" do
+    test "it will paginate notifications for a user" do
+      user = insert(:user)
+      notifications = insert_list(3, :notification, user: user)
+      insert_list(2, :notification)
+      expected =
+        Enum.sort_by(notifications, & &1.inserted_at)
+        |> Enum.reverse()
+        |> Enum.take(2)
+
+      {:ok, %{data: %{"notifications" => notifications}}} = run_query("""
+        query {
+          notifications(first: 2) {
+            edges {
+              node {
+                id
+                message {
+                  text
+                }
+              }
+            }
+          }
+        }
+      """, %{}, %{current_user: user})
+
+      notifications = from_connection(notifications)
+      assert Enum.all?(notifications, & &1["message"]["text"])
+      assert ids_equal(notifications, expected)
+    end
+  end
 end

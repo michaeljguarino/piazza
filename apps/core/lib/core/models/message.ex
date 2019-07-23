@@ -1,12 +1,13 @@
 defmodule Core.Models.Message do
   use Core.DB.Schema
-  alias Core.Models.{User, Conversation}
+  alias Core.Models.{User, Conversation, MessageEntity}
 
   schema "messages" do
     field :text, :string
 
     belongs_to :creator, User
     belongs_to :conversation, Conversation
+    has_many :entities, MessageEntity
 
     timestamps()
   end

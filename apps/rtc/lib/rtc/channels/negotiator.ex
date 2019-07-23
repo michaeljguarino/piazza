@@ -47,3 +47,8 @@ defimpl Rtc.Channels.Negotiator, for: Core.PubSub.ParticipantDeleted do
   def negotiate(%{item: %{conversation_id: id} = participant}),
     do: {participant, [deleted_participants: "participants:#{id}"]}
 end
+
+defimpl Rtc.Channels.Negotiator, for: Core.PubSub.NotificationCreated do
+  def negotiate(%{item: %{user_id: id} = notification}),
+    do: {notification, [new_notifications: "notifications:#{id}"]}
+end

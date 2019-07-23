@@ -47,6 +47,34 @@ defmodule Core.Schemas.Types do
     field :conversation_id, non_null(:id)
     field :creator, :user, resolve: dataloader(User)
     field :conversation, :conversation, resolve: dataloader(Conversation)
+    field :entities, list_of(:message_entity), resolve: dataloader(Conversation)
+
+    timestamps()
+  end
+
+  enum :entity_type do
+    value :mention
+  end
+
+  object :message_entity do
+    field :id, :id
+    field :type, :entity_type
+    field :user, :user, resolve: dataloader(User)
+    field :start_index, :integer
+    field :length, :integer
+  end
+
+  enum :notification_type do
+    value :mention
+  end
+
+  object :notification do
+    field :id, :id
+    field :type, :notification_type
+    field :user, :user, resolve: dataloader(User)
+    field :actor, :user, resolve: dataloader(User)
+    field :message, :message, resolve: dataloader(Conversation)
+    field :seen_at, :datetime
 
     timestamps()
   end
@@ -59,6 +87,7 @@ defmodule Core.Schemas.Types do
   connection node_type: :user
   connection node_type: :message
   connection node_type: :participant
+  connection node_type: :notification
 
   ## Platform-related types
 

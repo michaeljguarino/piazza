@@ -3,7 +3,12 @@ defmodule Core.Schema do
   use Absinthe.Relay.Schema, :modern
   import Core.Schemas.Helpers
 
-  alias Core.Resolvers.{Conversation, User, Platform}
+  alias Core.Resolvers.{
+    Conversation,
+    User,
+    Platform,
+    Notification
+  }
   import_types Core.Schemas.Types
   import_types Core.Schemas.Inputs
 
@@ -57,6 +62,10 @@ defmodule Core.Schema do
 
     connection field :commands, node_type: :command do
       resolve &Platform.list_commands/2
+    end
+
+    connection field :notifications, node_type: :notification do
+      resolve &Notification.list_notifications/2
     end
   end
 
@@ -124,6 +133,10 @@ defmodule Core.Schema do
 
       resolve safe_resolver(&Platform.create_command/2)
     end
+
+    field :view_notifications, list_of(:notification) do
+      resolve safe_resolver(&Notification.view_notifications/2)
+    end
   end
 
   subscription do
@@ -171,6 +184,12 @@ defmodule Core.Schema do
     field :my_participants, :participant do
       config fn _, %{context: %{current_user: %{id: id}}} ->
         {:ok, topic: "participants:mine:#{id}"}
+      end
+    end
+
+    field :new_notifications, :notification do
+      config fn _, %{context: %{current_user: %{id: id}}} ->
+        {:ok, topic: "notifications:#{id}"}
       end
     end
   end

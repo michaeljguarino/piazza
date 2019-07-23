@@ -69,6 +69,22 @@ defmodule Core.Services.ConversationsTest do
 
       {:error, _} = Conversations.create_message(conversation.id, %{text: "new message"}, user)
     end
+
+    test "you can mention other users by their handle" do
+      user = insert(:user)
+      dwight = insert(:user, handle: "dwight")
+      jim = insert(:user, handle: "jim")
+      conversation = insert(:conversation)
+
+      {:ok, msg} = Conversations.create_message(conversation.id, %{text: "@jim give @dwight his stapler back"}, user)
+      entities = Enum.sort_by(msg.entities, & &1.start_index)
+
+      assert length(entities) == 2
+      assert Enum.all?(entities, & &1.type == :mention)
+      assert Enum.map(entities, & &1.user_id) |> ids_equal([jim, dwight])
+      assert [0, 10] == Enum.map(entities, & &1.start_index)
+      assert [4, 7] == Enum.map(entities, & &1.length)
+    end
   end
 
   describe "#create_participant/2" do
