@@ -87,4 +87,45 @@ defmodule Core.Schema.UserMutationsTest do
       assert user["deletedAt"]
     end
   end
+
+  describe "login" do
+    test "You can login by email/password" do
+      user = build(:user, email: "user@example.com") |> with_password("really strong password")
+      {:ok, %{data: %{"login" => login}}} = run_query("""
+        mutation {
+          login(email: "user@example.com", password: "really strong password") {
+            id
+            email
+            jwt
+          }
+        }
+      """, %{})
+
+      assert login["id"] == user.id
+      assert is_binary(login["jwt"])
+    end
+  end
+
+  describe "signup" do
+    test "You can signup by email/password" do
+      {:ok, %{data: %{"signup" => signup}}} = run_query("""
+        mutation {
+          signup(attributes: {
+            email: "user@example.com",
+            password: "really strong password",
+            handle: "user",
+            name: "Some User"
+          }) {
+            id
+            email
+            jwt
+          }
+        }
+      """, %{})
+
+      assert signup["id"]
+      assert signup["email"] == "user@example.com"
+      assert is_binary(signup["jwt"])
+    end
+  end
 end

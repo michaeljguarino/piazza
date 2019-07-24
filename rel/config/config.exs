@@ -9,11 +9,7 @@ config :rtc, RtcWeb.Endpoint,
   url: [host: get_env("HOST"), port: 80],
   check_origin: ["//#{get_env("HOST")}", "//piazza-rtc"]
 
-config :gql, Gql.Guardian,
-  issuer: "piazza",
-  secret_key: get_env("JWT_SECRET")
-
-config :rtc, Rtc.Guardian,
+config :core, Core.Guardian,
   issuer: "piazza",
   secret_key: get_env("JWT_SECRET")
 

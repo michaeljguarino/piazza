@@ -70,6 +70,19 @@ defmodule Core.Schema do
   end
 
   mutation do
+    field :signup, :user do
+      arg :attributes, non_null(:user_attributes)
+
+      resolve safe_resolver(&User.signup/2)
+    end
+
+    field :login, :user do
+      arg :email, non_null(:string)
+      arg :password, non_null(:string)
+
+      resolve safe_resolver(&User.login_user/2)
+    end
+
     @desc "Creates a new user for this piazza instance"
     field :create_user, :user do
       arg :attributes, non_null(:user_attributes)
@@ -202,6 +215,16 @@ defmodule Core.Schema do
       end
     end
   end
+
+  @unauthed ~w(login signup)
+  @root_types ~w(query subscription mutation)
+
+
+  def middleware(mdlware, _field, %Absinthe.Type.Object{identifier: id}) when id in @root_types,
+    do: [Core.Schemas.Authenticated | mdlware]
+  def middleware(mdlware, _, %Absinthe.Type.Object{identifier: id}) when id in @unauthed,
+    do: Enum.reject(mdlware, & &1 == Core.Schemas.Authenticated)
+  def middleware(mdlware, _field, _object), do: mdlware
 
   def safe_resolver(fun) do
     fn args, ctx ->

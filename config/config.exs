@@ -30,11 +30,8 @@ config :gql, GqlWeb.Endpoint,
   render_errors: [view: GqlWeb.ErrorView, accepts: ~w(html json)],
   pubsub: [name: Gql.PubSub, adapter: Phoenix.PubSub.PG2]
 
-config :gql, Gql.Guardian,
-  issuer: "piazza",
-  secret_key: "piazza_secret"
 
-config :rtc, Rtc.Guardian,
+config :core, Core.Guardian,
   issuer: "piazza",
   secret_key: "piazza_secret"
 

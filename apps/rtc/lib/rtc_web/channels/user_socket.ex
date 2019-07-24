@@ -11,7 +11,7 @@ defmodule RtcWeb.UserSocket do
 
   def build_context(params) do
     with {:ok, token} <- fetch_token(params) do
-      {:ok, current_user, _claims} = Rtc.Guardian.resource_from_token(token)
+      {:ok, current_user, _claims} = Core.Guardian.resource_from_token(token)
       %{current_user: current_user}
     else
       _ -> %{current_user: nil}

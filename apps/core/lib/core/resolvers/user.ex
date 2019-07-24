@@ -18,9 +18,25 @@ defmodule Core.Resolvers.User do
   def create_user(%{attributes: attrs}, %{context: %{current_user: user}}),
     do: Users.create_user(attrs, user)
 
+  def signup(%{attributes: attrs}, _) do
+    Users.create_user(attrs)
+    |> with_jwt()
+  end
+
   def update_user(%{id: id, attributes: attrs}, %{context: %{current_user: user}}),
     do: Users.update_user(id, attrs, user)
 
   def delete_user(%{id: id}, %{context: %{current_user: user}}),
     do: Users.delete_user(id, user)
+
+  def login_user(%{email: email, password: pwd}, _) do
+    Users.login_user(email, pwd)
+    |> with_jwt()
+  end
+
+  def with_jwt({:ok, user}) do
+      with {:ok, token, _} <- Core.Guardian.encode_and_sign(user),
+        do: {:ok, %{user | jwt: token}}
+  end
+  def with_jwt(error), do: error
 end

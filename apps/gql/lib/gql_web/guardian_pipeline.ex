@@ -1,6 +1,6 @@
 defmodule GqlWeb.GuardianPipeline do
   use Guardian.Plug.Pipeline, otp_app: :gql,
-                              module: Gql.Guardian,
+                              module: Core.Guardian,
                               error_handler: GqlWeb.Plug.AuthErrorHandler
 
   plug Guardian.Plug.VerifySession

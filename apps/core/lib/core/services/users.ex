@@ -32,6 +32,13 @@ defmodule Core.Services.Users do
     |> notify(:create)
   end
 
+  def create_user(attrs) do
+    %User{}
+    |> User.changeset(attrs)
+    |> Core.Repo.insert()
+    |> notify(:create)
+  end
+
   def update_user(id, attrs, user) do
     Core.Repo.get!(User, id)
     |> User.changeset(attrs)

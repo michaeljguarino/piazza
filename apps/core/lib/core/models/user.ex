@@ -9,6 +9,7 @@ defmodule Core.Models.User do
     field :name,          :string
     field :handle,        :string
     field :password,      :string, virtual: true
+    field :jwt,           :string, virtual: true
     field :password_hash, :string
     field :bio,           :string
     field :bot,           :boolean, default: false

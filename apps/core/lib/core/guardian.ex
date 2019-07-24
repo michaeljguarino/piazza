@@ -1,5 +1,5 @@
-defmodule Rtc.Guardian do
-  use Guardian, otp_app: :rtc
+defmodule Core.Guardian do
+  use Guardian, otp_app: :core
   alias Core.Models.User
   alias Core.Services.Users
 

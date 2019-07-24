@@ -26,3 +26,5 @@ erl_crash.dump
 *.ez
 
 charts/**/config.secrets.yaml
+www/node_modules
+www/build

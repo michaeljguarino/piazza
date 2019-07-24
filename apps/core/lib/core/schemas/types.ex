@@ -11,6 +11,12 @@ defmodule Core.Schemas.Types do
     field :roles, :roles
     field :deleted_at, :datetime
     field :notification_preferences, :notification_preferences
+    field :jwt, :string, resolve: fn
+      %{jwt: jwt, id: id}, _, %{context: %{current_user: %{id: id}}} ->
+        {:ok, jwt}
+      _, _, %{context: %{current_user: _}} -> {:error, "you can only view your own jwt"}
+      %{jwt: jwt}, _, _ -> {:ok, jwt}
+    end
 
     timestamps()
   end

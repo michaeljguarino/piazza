@@ -7,7 +7,7 @@ defmodule Mix.Tasks.Gen.BearerToken do
     Application.ensure_all_started(:core)
 
     user = Core.Services.Users.get_user_by_email!(email)
-    {:ok, token, _} = Gql.Guardian.encode_and_sign(user)
+    {:ok, token, _} = Core.Guardian.encode_and_sign(user)
     IO.puts "Bearer #{token}"
   end
 end

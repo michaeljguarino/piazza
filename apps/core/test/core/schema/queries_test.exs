@@ -3,8 +3,8 @@ defmodule Core.Schema.QueriesTest do
 
   describe "User" do
     test "It will fetch a user by id" do
-      user = insert(:user)
-      insert(:user)
+      user  = insert(:user)
+      other = insert(:user)
 
 
       {:ok, %{data: %{"user" => found}}} = run_query("""
@@ -14,7 +14,7 @@ defmodule Core.Schema.QueriesTest do
               name
             }
           }
-      """, %{"id" => user.id})
+      """, %{"id" => user.id}, %{current_user: other})
 
       assert found["id"] == user.id
       assert found["name"] == user.name
@@ -41,7 +41,7 @@ defmodule Core.Schema.QueriesTest do
             }
           }
         }
-      """, %{"userCount" => 2})
+      """, %{"userCount" => 2}, %{current_user: insert(:user)})
 
       refute found["pageInfo"]["hasPreviousPage"]
       assert found["pageInfo"]["hasNextPage"]
@@ -140,7 +140,7 @@ defmodule Core.Schema.QueriesTest do
             }
           }
         }
-      """, %{"conversationCount" => 2, "public" => true})
+      """, %{"conversationCount" => 2, "public" => true}, %{current_user: insert(:user)})
 
       refute found["pageInfo"]["hasPreviousPage"]
       assert found["pageInfo"]["hasNextPage"]
@@ -167,7 +167,7 @@ defmodule Core.Schema.QueriesTest do
             }
           }
         }
-      """, %{})
+      """, %{}, %{current_user: insert(:user)})
 
       commands = from_connection(commands)
       assert Enum.all?(commands, & &1["name"])
