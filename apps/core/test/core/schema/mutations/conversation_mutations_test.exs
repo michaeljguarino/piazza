@@ -108,4 +108,34 @@ defmodule Core.Schema.ConversationMutationsTest do
       assert submap?(params, result)
     end
   end
+
+  describe "updateParticipant" do
+    test "it will update a conversation by id" do
+      user         = insert(:user)
+      conversation = insert(:conversation)
+      insert(:participant, conversation: conversation, user: user)
+
+      params = %{"conversationId" => conversation.id, "userId" => user.id}
+      {:ok, %{data: %{"updateParticipant" => result}}} = run_query("""
+        mutation UpdateParticipant($conversationId: ID!, $userId: ID!) {
+          updateParticipant(
+            conversationId: $conversationId,
+            userId: $userId,
+            notificationPreferences: {mention: true, message: false}
+          ) {
+            id
+            conversationId
+            userId
+            notificationPreferences {
+              mention
+              message
+            }
+          }
+        }
+      """, params, %{current_user: user})
+
+      assert result["notificationPreferences"]["mention"]
+      refute result["notificationPreferences"]["message"]
+    end
+  end
 end

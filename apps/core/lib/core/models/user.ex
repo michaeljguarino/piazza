@@ -1,5 +1,6 @@
 defmodule Core.Models.User do
   use Core.DB.Schema
+  alias Core.Models.NotificationPreferences
 
   @email_re ~r/^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9-\.]+\.[a-zA-Z]{2,}$/
 
@@ -19,6 +20,8 @@ defmodule Core.Models.User do
       field :admin, :boolean, default: true
     end
 
+    embeds_one :notification_preferences, NotificationPreferences, on_replace: :update
+
     timestamps()
   end
 
@@ -36,6 +39,7 @@ defmodule Core.Models.User do
   def changeset(model, attrs \\ %{}) do
     model
     |> cast(attrs, @valid)
+    |> cast_embed(:notification_preferences)
     |> validate_required([:email, :name, :handle])
     |> unique_constraint(:email)
     |> unique_constraint(:handle)

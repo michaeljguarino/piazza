@@ -14,6 +14,7 @@ defmodule Core.Policies.Conversation do
     %{conversation: conv} = Core.Repo.preload(participant, [:conversation])
     can?(user, conv, :update)
   end
+  def can?(%User{id: uid}, %Participant{user_id: uid}, :update), do: :pass
 
   def can?(%User{}, %Conversation{public: true}, :access), do: :pass
   def can?(%User{id: uid}, %Conversation{id: conv_id} , :access),

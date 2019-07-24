@@ -42,6 +42,14 @@ defmodule Core.Services.Conversations do
     |> notify(:update, user)
   end
 
+  def update_participant(conv_id, user_id, attrs, user) do
+    get_participant!(user_id, conv_id)
+    |> Participant.changeset(attrs)
+    |> allow(user, :update)
+    |> when_ok(:update)
+    |> notify(:update, user)
+  end
+
   def create_message(conv_id, attrs, user) do
     start_transaction()
     |> add_operation(:message, fn _ ->

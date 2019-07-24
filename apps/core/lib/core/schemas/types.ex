@@ -10,6 +10,7 @@ defmodule Core.Schemas.Types do
     field :bio, :string
     field :roles, :roles
     field :deleted_at, :datetime
+    field :notification_preferences, :notification_preferences
 
     timestamps()
   end
@@ -34,6 +35,7 @@ defmodule Core.Schemas.Types do
     field :id, :id
     field :conversation_id, non_null(:id)
     field :user_id, non_null(:id)
+    field :notification_preferences, :notification_preferences
     field :user, :user, resolve: dataloader(User)
     field :conversation, :conversation, resolve: dataloader(Conversation)
 
@@ -77,6 +79,12 @@ defmodule Core.Schemas.Types do
     field :seen_at, :datetime
 
     timestamps()
+  end
+
+  object :notification_preferences do
+    field :mention, :boolean
+    field :message, :boolean
+    field :participant, :boolean
   end
 
   object :roles do

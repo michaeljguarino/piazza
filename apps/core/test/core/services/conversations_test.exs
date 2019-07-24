@@ -139,4 +139,30 @@ defmodule Core.Services.ConversationsTest do
       {:error, _} = Conversations.delete_participant(conversation.id, participant.user_id, user)
     end
   end
+
+  describe "#update_participant" do
+    test "A user can update their own participants" do
+      part = insert(:participant)
+
+      {:ok, updated} = Conversations.update_participant(
+        part.conversation_id,
+        part.user_id,
+        %{notification_preferences: %{mention: false}},
+        part.user
+      )
+
+      refute updated.notification_preferences.mention
+    end
+
+    test "Other users cannot update" do
+      part = insert(:participant)
+
+      {:error, _} = Conversations.update_participant(
+        part.conversation_id,
+        part.user_id,
+        %{notification_preferences: %{mention: false}},
+        insert(:user)
+      )
+    end
+  end
 end

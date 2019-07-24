@@ -59,4 +59,12 @@ defmodule Core.Resolvers.Conversation do
 
   def delete_participant(%{conversation_id: cid, user_id: uid}, %{context: %{current_user: user}}),
     do: Conversations.delete_participant(cid, uid, user)
+
+  def update_participant(%{
+    conversation_id: cid,
+    user_id: uid,
+    notification_preferences: prefs
+  }, %{context: %{current_user: user}}) do
+    Conversations.update_participant(cid, uid, %{notification_preferences: prefs}, user)
+  end
 end

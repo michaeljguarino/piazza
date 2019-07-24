@@ -8,6 +8,7 @@ defmodule Core.Schemas.Inputs do
     field :handle,   :string
     field :bio,      :string
     field :roles,    :role_attributes
+    field :notification_preferences, :notification_prefs
   end
 
   input_object :role_attributes do
@@ -44,5 +45,11 @@ defmodule Core.Schemas.Inputs do
     field :name, :string
     field :email, :string
     field :handle, :string
+  end
+
+  input_object :notification_prefs do
+    field :mention,     :boolean
+    field :message,     :boolean
+    field :participant, :boolean
   end
 end

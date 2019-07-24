@@ -5,14 +5,14 @@ defmodule Core.PubSub.Consumers.Notifications do
   alias Core.Models.Notification
 
   def handle_event(event) do
-    with {:ok, event} <- Notifiable.preload(event) do
-      user_ids = Notifiable.user_ids(event)
-      msg   = Notifiable.message(event)
-      actor = Notifiable.actor(event)
-      data = Enum.map(user_ids, fn user_id ->
+    with {:ok, event} <- Notifiable.preload(event),
+         [_ | _] = notifs <- Notifiable.notifs(event) do
+      msg    = Notifiable.message(event)
+      actor  = Notifiable.actor(event)
+      data = Enum.map(notifs, fn {type, user_id} ->
         timestamped(%{
           user_id: user_id,
-          type: :mention,
+          type: type,
           actor_id: actor.id,
           message_id: msg.id
         })
@@ -21,6 +21,8 @@ defmodule Core.PubSub.Consumers.Notifications do
       {_, notifications} = Core.Repo.insert_all(Notification, data, returning: true)
       Enum.each(notifications, &handle_notify(Core.PubSub.NotificationCreated, &1))
       {:ok, notifications}
+    else
+      _ -> :ok
     end
   end
 end

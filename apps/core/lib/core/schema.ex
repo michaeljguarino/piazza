@@ -128,6 +128,15 @@ defmodule Core.Schema do
       resolve safe_resolver(&Conversation.delete_participant/2)
     end
 
+    @desc "Updates the attributes on a participant (use to modify conversation level notification settings)"
+    field :update_participant, :participant do
+      arg :conversation_id, non_null(:id)
+      arg :user_id, non_null(:id)
+      arg :notification_preferences, non_null(:notification_prefs)
+
+      resolve safe_resolver(&Conversation.update_participant/2)
+    end
+
     field :create_command, :command do
       arg :attributes, non_null(:command_attributes)
 
