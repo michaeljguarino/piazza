@@ -92,14 +92,14 @@ defmodule Core.Schema.UserMutationsTest do
     test "You can login by email/password" do
       user = build(:user, email: "user@example.com") |> with_password("really strong password")
       {:ok, %{data: %{"login" => login}}} = run_query("""
-        mutation {
-          login(email: "user@example.com", password: "really strong password") {
+        mutation Login($email: String!, $password: String!) {
+          login(email: $email, password: $password) {
             id
             email
             jwt
           }
         }
-      """, %{})
+      """, %{"email" => "user@example.com", "password" => "really strong password"})
 
       assert login["id"] == user.id
       assert is_binary(login["jwt"])

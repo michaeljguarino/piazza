@@ -14,7 +14,7 @@ defmodule Core.Schemas.Types do
     field :jwt, :string, resolve: fn
       %{jwt: jwt, id: id}, _, %{context: %{current_user: %{id: id}}} ->
         {:ok, jwt}
-      _, _, %{context: %{current_user: _}} -> {:error, "you can only view your own jwt"}
+      _, _, %{context: %{current_user: %{}}} -> {:error, "you can only view your own jwt"}
       %{jwt: jwt}, _, _ -> {:ok, jwt}
     end
 

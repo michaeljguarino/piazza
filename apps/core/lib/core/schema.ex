@@ -30,11 +30,13 @@ defmodule Core.Schema do
   query do
     @desc "Returns yourself"
     field :me, :user do
+      middleware Core.Schemas.Authenticated
       resolve fn _, %{context: %{current_user: user}} -> {:ok, user} end
     end
 
     @desc "Get a user by id"
     field :user, :user do
+      middleware Core.Schemas.Authenticated
       arg :id, :id
       arg :handle, :string
       arg :email, :string
@@ -43,17 +45,20 @@ defmodule Core.Schema do
 
     @desc "Fetches a list of users in the system"
     connection field :users, node_type: :user do
+      middleware Core.Schemas.Authenticated
       resolve &User.list_users/2
     end
 
     @desc "Fetches a list of public or private conversations, don't attempt to preload participants or messages plz"
     connection field :conversations, node_type: :conversation do
+      middleware Core.Schemas.Authenticated
       arg :public, non_null(:boolean)
       resolve &Conversation.list_conversations/2
     end
 
     @desc "Fetches an individual conversation"
     field :conversation, :conversation do
+      middleware Core.Schemas.Authenticated
       arg :id, :id
       arg :name, :string
 
@@ -61,10 +66,12 @@ defmodule Core.Schema do
     end
 
     connection field :commands, node_type: :command do
+      middleware Core.Schemas.Authenticated
       resolve &Platform.list_commands/2
     end
 
     connection field :notifications, node_type: :notification do
+      middleware Core.Schemas.Authenticated
       resolve &Notification.list_notifications/2
     end
   end
@@ -85,6 +92,7 @@ defmodule Core.Schema do
 
     @desc "Creates a new user for this piazza instance"
     field :create_user, :user do
+      middleware Core.Schemas.Authenticated
       arg :attributes, non_null(:user_attributes)
 
       resolve safe_resolver(&User.create_user/2)
@@ -92,6 +100,7 @@ defmodule Core.Schema do
 
     @desc "Updates the attributes on a single user"
     field :update_user, :user do
+      middleware Core.Schemas.Authenticated
       arg :id, non_null(:id)
       arg :attributes, non_null(:user_attributes)
 
@@ -100,6 +109,7 @@ defmodule Core.Schema do
 
     @desc "Deletes a user by id"
     field :delete_user, :user do
+      middleware Core.Schemas.Authenticated
       arg :id, non_null(:id)
 
       resolve safe_resolver(&User.delete_user/2)
@@ -107,6 +117,7 @@ defmodule Core.Schema do
 
     @desc "Creates a new conversation"
     field :create_conversation, :conversation do
+      middleware Core.Schemas.Authenticated
       arg :attributes, non_null(:conversation_attributes)
 
       resolve safe_resolver(&Conversation.create_conversation/2)
@@ -114,6 +125,7 @@ defmodule Core.Schema do
 
     @desc "Updates a conversation by id"
     field :update_conversation, :conversation do
+      middleware Core.Schemas.Authenticated
       arg :id, non_null(:id)
       arg :attributes, non_null(:conversation_attributes)
 
@@ -122,6 +134,7 @@ defmodule Core.Schema do
 
     @desc "Creates a message in a conversation"
     field :create_message, :message do
+      middleware Core.Schemas.Authenticated
       arg :conversation_id, non_null(:id)
       arg :attributes, non_null(:message_attributes)
 
@@ -129,12 +142,14 @@ defmodule Core.Schema do
     end
 
     field :create_participant, :participant do
+      middleware Core.Schemas.Authenticated
       arg :attributes, non_null(:participant_attributes)
 
       resolve safe_resolver(&Conversation.create_participant/2)
     end
 
     field :delete_participant, :participant do
+      middleware Core.Schemas.Authenticated
       arg :conversation_id, non_null(:id)
       arg :user_id, non_null(:id)
 
@@ -143,6 +158,7 @@ defmodule Core.Schema do
 
     @desc "Updates the attributes on a participant (use to modify conversation level notification settings)"
     field :update_participant, :participant do
+      middleware Core.Schemas.Authenticated
       arg :conversation_id, non_null(:id)
       arg :user_id, non_null(:id)
       arg :notification_preferences, non_null(:notification_prefs)
@@ -151,12 +167,14 @@ defmodule Core.Schema do
     end
 
     field :create_command, :command do
+      middleware Core.Schemas.Authenticated
       arg :attributes, non_null(:command_attributes)
 
       resolve safe_resolver(&Platform.create_command/2)
     end
 
     field :view_notifications, list_of(:notification) do
+      middleware Core.Schemas.Authenticated
       resolve safe_resolver(&Notification.view_notifications/2)
     end
   end
@@ -215,16 +233,6 @@ defmodule Core.Schema do
       end
     end
   end
-
-  @unauthed ~w(login signup)
-  @root_types ~w(query subscription mutation)
-
-
-  def middleware(mdlware, _field, %Absinthe.Type.Object{identifier: id}) when id in @root_types,
-    do: [Core.Schemas.Authenticated | mdlware]
-  def middleware(mdlware, _, %Absinthe.Type.Object{identifier: id}) when id in @unauthed,
-    do: Enum.reject(mdlware, & &1 == Core.Schemas.Authenticated)
-  def middleware(mdlware, _field, _object), do: mdlware
 
   def safe_resolver(fun) do
     fn args, ctx ->

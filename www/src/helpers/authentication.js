@@ -9,10 +9,12 @@ const ME_Q = gql`
   }
 `
 
-const isLoggedIn = () => {
-  return client.query({
+async function isLoggedIn() {
+  let result = await client.query({
     query: ME_Q
-  }).then(response => response.data && response.data.id);
+  }).then(response => response.data && response.data.id).catch(_ => false);
+  console.log(result);
+  return result
 }
 
 export { isLoggedIn }

@@ -11,11 +11,9 @@ const httpLink = createHttpLink({
 
 const authLink = setContext((_, { headers }) => {
   const token = localStorage.getItem(AUTH_TOKEN)
+  let authHeaders = token ? {authorization: `Bearer ${token}`} : {}
   return {
-    headers: {
-      ...headers,
-      authorization: token ? `Bearer ${token}` : ''
-    }
+    headers: Object.assign(headers || {}, authHeaders)
   }
 })
 

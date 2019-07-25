@@ -31,22 +31,25 @@ defmodule GqlWeb.GqlTest do
     end
 
     test "unauthorized users cannot query", %{conn: conn} do
-      conn
-      |> post("/gql", wrap_gql(
-        """
-        query {
-          conversations(public: true, first: 3) {
-            edges {
-              node {
-                id
-                name
+      %{"errors" => errors} =
+        conn
+        |> post("/gql", wrap_gql(
+          """
+          query {
+            conversations(public: true, first: 3) {
+              edges {
+                node {
+                  id
+                  name
+                }
               }
             }
           }
-        }
-        """
-      ))
-      |> json_response(401)
+          """
+        ))
+        |> json_response(200)
+
+      refute Enum.empty?(errors)
     end
   end
 
@@ -76,6 +79,27 @@ defmodule GqlWeb.GqlTest do
       assert conversation["name"]
       assert conversation["creator"]["id"]
       assert conversation["creator"]["name"]
+    end
+
+    test "Allows unauthed endpoints", %{conn: conn} do
+      build(:user, email: "user@example.com")
+      |> with_password("strongpassword")
+
+      %{"data" => %{"login" => user}} =
+        conn
+        |> post("/gql", wrap_gql(
+          """
+          mutation Login($email: String!, $password: String!) {
+            login(email: $email, password: $password) {
+              jwt
+            }
+          }
+          """,
+          %{"email" => "user@example.com", "password" => "strongpassword"}
+        ))
+        |> json_response(200)
+
+      assert user["jwt"]
     end
   end
 end

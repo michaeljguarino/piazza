@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import { Redirect } from 'react-router'
 import Message from './Message'
 import { Query } from 'react-apollo'
 import gql from 'graphql-tag'
@@ -25,21 +26,24 @@ const MESSAGES_Q = gql`
 
 class MessageList extends Component {
   render() {
-    if (!isLoggedIn()) {
-      this.props.history.push('/login')
-    }
-
+    let authed = isLoggedIn()
+    console.log(authed)
     return (
-      <Query query={MESSAGES_Q}>
-        {({loading, error, data}) => {
-          if (loading) return <div>loading...</div>
-          if (error) return <div>wtf</div>
+      <div>
+        {!authed && (
+          <Redirect to="/login"/>
+        )}
+        <Query query={MESSAGES_Q}>
+          {({loading, error, data}) => {
+            if (loading) return <div>loading...</div>
+            if (error) return <div>wtf</div>
 
-          return (<div>
-            {data.conversation.messages.edges.map(edge => <Message key={edge.message.id} message={edge.message} />)}
-          </div>)
-        }}
-      </Query>
+            return (<div>
+              {data.conversation.messages.edges.map(edge => <Message key={edge.message.id} message={edge.message} />)}
+            </div>)
+          }}
+        </Query>
+      </div>
     )
   }
 }

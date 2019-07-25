@@ -4,17 +4,17 @@ defmodule RtcWeb.UserSocket do
     schema: Core.Schema
 
   def connect(params, socket) do
-    socket = Absinthe.Phoenix.Socket.put_options(socket, context: build_context(params))
-
-    {:ok, socket}
+    case build_context(params) do
+      {:ok, context} ->
+        {:ok, Absinthe.Phoenix.Socket.put_options(socket, context: context)}
+      _ -> {:error, :unauthorized}
+    end
   end
 
   def build_context(params) do
-    with {:ok, token} <- fetch_token(params) do
-      {:ok, current_user, _claims} = Core.Guardian.resource_from_token(token)
-      %{current_user: current_user}
-    else
-      _ -> %{current_user: nil}
+    with {:ok, token} <- fetch_token(params),
+         {:ok, current_user, _claims} = Core.Guardian.resource_from_token(token) do
+      {:ok, %{current_user: current_user}}
     end
   end
 
