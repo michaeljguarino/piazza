@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import Message from './Message'
 import { Query } from 'react-apollo'
 import gql from 'graphql-tag'
+import { isLoggedIn } from '../../helpers/authentication'
 
 const MESSAGES_Q = gql`
 {
@@ -24,7 +25,9 @@ const MESSAGES_Q = gql`
 
 class MessageList extends Component {
   render() {
-    const messages = [{id: '1', text: 'A message', insertedAt: 'now', user: {name: 'Michael Guarino'}}]
+    if (!isLoggedIn()) {
+      this.props.history.push('/login')
+    }
 
     return (
       <Query query={MESSAGES_Q}>

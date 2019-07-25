@@ -47,6 +47,7 @@ defmodule Gql.MixProject do
       {:jason, "~> 1.0"},
       {:plug_cowboy, "~> 2.0"},
       {:guardian, "~> 1.2.1"},
+      {:cors_plug, "~> 2.0"},
 
       {:core, in_umbrella: true},
     ]

@@ -48,6 +48,7 @@ defmodule Rtc.MixProject do
       {:absinthe_phoenix, "~> 1.4.0"},
       {:guardian, "~> 1.2.1"},
       {:libcluster, "~> 3.1.1"},
+      {:cors_plug, "~> 2.0"},
 
       {:core, in_umbrella: true},
       {:aquaduct, in_umbrella: true}
