@@ -53,7 +53,7 @@ config :rtc,
 
 # Configures the endpoint
 config :rtc, RtcWeb.Endpoint,
-  socket_hosts: ["localhost"],
+  url: [host: "localhost"],
   secret_key_base: "5I9XpAotX5ZpsPNRlduXNwVbCllaC/sLKr9nHf/BsGdlIkfAK0Sxvd0F4slKP1j0",
   render_errors: [view: RtcWeb.ErrorView, accepts: ~w(html json)],
   pubsub: [name: Rtc.PubSub, adapter: Phoenix.PubSub.PG2]
