@@ -7,7 +7,8 @@ config :gql, GqlWeb.Endpoint,
 
 config :rtc, RtcWeb.Endpoint,
   url: [host: get_env("HOST"), port: 80],
-  check_origin: ["//#{get_env("HOST")}", "//piazza-rtc"]
+  check_origin: ["//#{get_env("HOST")}", "//piazza-rtc"],
+  socket_hosts: ["//#{get_env("HOST")}", "//localhost:3000"]
 
 config :core, Core.Guardian,
   issuer: "piazza",

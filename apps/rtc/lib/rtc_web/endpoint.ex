@@ -3,7 +3,9 @@ defmodule RtcWeb.Endpoint do
   use Absinthe.Phoenix.Endpoint
 
   socket "/socket", RtcWeb.UserSocket,
-    websocket: true,
+    websocket: [
+      check_origin: Application.get_env(:rtc, __MODULE__)[:socket_hosts]
+    ],
     longpoll: false
 
   # Serve at "/" the static files from "priv/static" directory.

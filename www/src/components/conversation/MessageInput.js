@@ -10,7 +10,7 @@ const MESSAGE_MUTATION = gql`
       id
       text
       insertedAt
-      user {
+      creator {
         name
       }
     }
@@ -35,7 +35,7 @@ class MessageInput extends Component {
             placeholder="Whatever is on your mind"
           />
         </div>
-        <Mutation mutation={POST_MUTATION} variables={{ conversationId: '1', text }}>
+        <Mutation mutation={MESSAGE_MUTATION} variables={{ conversationId: this.props.conversation.id, text }}>
           {postMutation => (
             <button onClick={postMutation}>
               Submit
@@ -47,4 +47,4 @@ class MessageInput extends Component {
   }
 }
 
-export default CreateLink
+export default MessageInput

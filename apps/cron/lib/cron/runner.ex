@@ -1,7 +1,7 @@
 defmodule Cron.Runner do
   use Task, restart: :transient
 
-  def start_link() do
+  def start_link(_) do
     Task.start_link(&run_cron/0)
   end
 

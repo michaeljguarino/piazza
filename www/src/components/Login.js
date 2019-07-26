@@ -13,7 +13,9 @@ const SIGNUP_MUTATION = gql`
 
 const LOGIN_MUTATION = gql`
   mutation Login($email: String!, $password: String!) {
-    jwt
+    login(email: $email, password: $password) {
+      jwt
+    }
   }
 `;
 
@@ -86,6 +88,7 @@ class Login extends Component {
   }
 
   _confirm = async (data) => {
+    console.log(data)
     const { jwt } = this.state.login ? data.login : data.signup
     this._saveUserData(jwt)
     this.props.history.push(`/`)
@@ -93,6 +96,8 @@ class Login extends Component {
 
   _saveUserData = token => {
     localStorage.setItem(AUTH_TOKEN, token)
+    let jwt = localStorage.getItem(AUTH_TOKEN)
+    console.log(jwt)
   }
 }
 
