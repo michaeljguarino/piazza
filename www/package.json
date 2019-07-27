@@ -10,6 +10,8 @@
     "apollo-link-context": "^1.0.18",
     "apollo-link-ws": "^1.0.18",
     "graphql": "^14.4.2",
+    "grommet": "^2.7.4",
+    "grommet-icons": "^4.2.0",
     "phoenix": "^1.4.9",
     "react": "^16.8.6",
     "react-apollo": "^2.5.8",
@@ -17,6 +19,7 @@
     "react-router": "^5.0.1",
     "react-router-dom": "^5.0.1",
     "react-scripts": "3.0.1",
+    "styled-components": "^4.3.2",
     "subscriptions-transport-ws": "^0.9.16"
   },
   "scripts": {

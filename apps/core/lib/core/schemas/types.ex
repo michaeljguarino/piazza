@@ -17,6 +17,9 @@ defmodule Core.Schemas.Types do
       _, _, %{context: %{current_user: %{}}} -> {:error, "you can only view your own jwt"}
       %{jwt: jwt}, _, _ -> {:ok, jwt}
     end
+    field :background_color, :string, resolve: fn user, _, _ ->
+      {:ok, User.background_color(user)}
+    end
 
     timestamps()
   end

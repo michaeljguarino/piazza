@@ -1,0 +1,2 @@
+export const MESSAGE_INPUT_SIZE='80'
+export const MESSAGE_LIST_MARGIN='100'

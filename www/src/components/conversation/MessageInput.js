@@ -1,6 +1,8 @@
 import React, { Component } from 'react'
 import { Mutation } from 'react-apollo'
 import gql from 'graphql-tag'
+import {TextInput, Button, Box, } from 'grommet'
+import {Edit} from 'grommet-icons'
 
 const MESSAGE_MUTATION = gql`
   mutation CreateMessage($conversationId: ID!, $text: String!) {
@@ -25,24 +27,33 @@ class MessageInput extends Component {
   render() {
     const { text } = this.state
     return (
-      <div>
-        <div className="flex flex-column mt3">
-          <input
-            className="mb2"
+      <Box fill='horizontal' pad='small'>
+        <Box
+          fill='horizontal'
+          direction="row"
+          align="center"
+          border
+          round='xsmall'
+        >
+          <TextInput
+            plain
+            type='text'
             value={text}
             onChange={e => this.setState({ text: e.target.value })}
-            type="text"
             placeholder="Whatever is on your mind"
           />
-        </div>
-        <Mutation mutation={MESSAGE_MUTATION} variables={{ conversationId: this.props.conversation.id, text }}>
-          {postMutation => (
-            <button onClick={postMutation}>
-              Submit
-            </button>
-          )}
-        </Mutation>
-      </div>
+          <Mutation mutation={MESSAGE_MUTATION} variables={{ conversationId: this.props.conversation.id, text }}>
+            {postMutation => (
+              <Button
+                icon={<Edit/>}
+                onClick={postMutation}
+              >
+                Send
+              </Button>
+            )}
+          </Mutation>
+        </Box>
+      </Box>
     )
   }
 }

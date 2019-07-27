@@ -12,12 +12,14 @@ defmodule Core.Schema.QueriesTest do
             user(id: $id) {
               id
               name
+              backgroundColor
             }
           }
       """, %{"id" => user.id}, %{current_user: other})
 
       assert found["id"] == user.id
       assert found["name"] == user.name
+      assert found["backgroundColor"]
     end
   end
 
@@ -90,6 +92,9 @@ defmodule Core.Schema.QueriesTest do
                   node {
                     id
                     text
+                    creator {
+                      backgroundColor
+                    }
                   }
                 }
               }

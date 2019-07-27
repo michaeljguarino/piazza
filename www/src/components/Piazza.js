@@ -5,6 +5,7 @@ import gql from 'graphql-tag'
 import MessageList from './conversation/MessageList'
 import MessageInput from './conversation/MessageInput'
 import Conversations from './conversation/Conversations'
+import {Box, Grid} from 'grommet'
 
 const ME_Q=gql`
 query {
@@ -29,9 +30,6 @@ const CONVERSATIONS_Q = gql`
 const Piazza = () => (
   <Query query={ME_Q}>
     { ({loading, error, data}) => {
-      console.log(loading)
-      console.log(error)
-      console.log(data)
       if (loading) {
         return (<div>Loading...</div>)
       }
@@ -45,11 +43,25 @@ const Piazza = () => (
             if (loading) return <div>Loading...</div>
             let first = data.conversations.edges[0].node
             return (
-              <div>
-                <Conversations conversations={data.conversations.edges} />
-                <MessageList conversation={first} />
-                <MessageInput conversation={first} />
-              </div>
+              <Grid
+                gap='xsmall'
+                rows={['auto']}
+                columns={['150px', 'auto']}
+                areas={[
+                  {name: 'convs', start: [0, 0], end: [0, 0]},
+                  {name: 'msgs', start: [1, 0], end: [1, 0]},
+                  // {name: 'notifs', start: [2, 0], end: [2, 0]}
+                ]}
+                >
+                {/* <AppBar/> */}
+                <Box gridArea='convs' background='brand' elevation='small'>
+                  <Conversations conversations={data.conversations.edges} />
+                </Box>
+                <Box gridArea='msgs'>
+                  <MessageInput conversation={first} />
+                  <MessageList conversation={first} />
+                </Box>
+              </Grid>
             )
           }}
         </Query>

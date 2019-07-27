@@ -39,4 +39,12 @@ defmodule Core.Resolvers.User do
         do: {:ok, %{user | jwt: token}}
   end
   def with_jwt(error), do: error
+
+  @colors ~w(#6b5b95 #feb236 #d64161 #ff7b25)
+
+  def background_color(%{id: id}) do
+    stripped = String.replace(id, "-", "")
+    {integral, _} = Integer.parse(stripped, 16)
+    Enum.at(@colors, rem(integral, length(@colors)))
+  end
 end
