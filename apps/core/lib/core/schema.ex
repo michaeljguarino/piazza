@@ -123,6 +123,14 @@ defmodule Core.Schema do
       resolve safe_resolver(&Conversation.create_conversation/2)
     end
 
+    @desc "Delete a conversation"
+    field :delete_conversation, :conversation do
+      middleware Core.Schemas.Authenticated
+      arg :id, non_null(:id)
+
+      resolve safe_resolver(&Conversation.delete_conversation/2)
+    end
+
     @desc "Updates a conversation by id"
     field :update_conversation, :conversation do
       middleware Core.Schemas.Authenticated

@@ -39,6 +39,28 @@ defmodule Core.Services.ConversationsTest do
     end
   end
 
+  describe "delete_conversation/2" do
+    test "participants can delete conversations" do
+      user = insert(:user)
+      conversation = insert(:conversation)
+      insert(:participant, user: user, conversation: conversation)
+
+      {:ok, deleted} = Conversations.delete_conversation(conversation.id, user)
+
+      assert deleted.id == conversation.id
+      assert deleted.name == conversation.name
+
+      assert_receive {:event, %PubSub.ConversationDeleted{item: ^deleted}}
+    end
+
+    test "Nonparticipants cannot delete conversations" do
+      user = insert(:user)
+      conversation = insert(:conversation)
+
+      {:error, _} = Conversations.delete_conversation(conversation.id, user)
+    end
+  end
+
   describe "create_message/3" do
     test "Anyone can create messages in public conversations" do
       user = insert(:user)

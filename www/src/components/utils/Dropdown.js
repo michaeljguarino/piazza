@@ -4,7 +4,7 @@ import {Drop} from 'grommet'
 function Dropdown(props) {
   const node = useRef();
   const targetRef = useRef();
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(!!props.open);
 
   const handleClickOutside = e => {
     console.log("clicking anywhere");

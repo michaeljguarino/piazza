@@ -82,8 +82,7 @@ class Login extends Component {
                   <Button
                     type='submit'
                     primary
-                    label={login ? 'login' : 'signup'}
-                    onClick={mutation} />
+                    label={login ? 'login' : 'signup'} />
                   <Anchor margin={{left: '10px'}} size="small" fontWeight="400" onClick={() => this.setState({login: !login})}>
                     {login ? 'need to create an account?' : 'already have an account?'}
                   </Anchor>

@@ -44,6 +44,27 @@ defmodule Core.Schema.ConversationMutationsTest do
     end
   end
 
+  describe "deleteConversation" do
+    test "it will update a conversation by id" do
+      user         = insert(:user)
+      conversation = insert(:conversation)
+      insert(:participant, conversation: conversation, user: user)
+
+      {:ok, %{data: %{"deleteConversation" => result}}} = run_query("""
+        mutation DeleteConversation($id: ID!) {
+          deleteConversation(id: $id) {
+            id
+            name
+            public
+          }
+        }
+      """, %{"id" => conversation.id}, %{current_user: user})
+
+      assert result["name"]
+      refute refetch(conversation)
+    end
+  end
+
   describe "createMessage" do
     test "it will update a conversation by id" do
       user         = insert(:user)

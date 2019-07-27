@@ -15,7 +15,10 @@ class ConversationPanel extends Component {
       <Box>
         <Me me={this.props.me} pad={padding} />
         <Box margin={{bottom: 'large'}}>
-          <ConversationCreator padding={padding} textColor={textColor} />
+          <ConversationCreator
+            padding={padding}
+            textColor={textColor}
+            setCurrentConversation={this.props.setCurrentConversation} />
           <Scroller
               id='conversations-list'
               style={{
@@ -29,6 +32,7 @@ class ConversationPanel extends Component {
                 color={textColor}
                 key={edge.node.id}
                 currentConversation={this.props.currentConversation}
+                setCurrentConversation={this.props.setCurrentConversation}
                 conversation={edge.node} />
               } />
         </Box>

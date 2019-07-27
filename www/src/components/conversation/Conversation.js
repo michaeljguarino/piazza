@@ -14,6 +14,7 @@ function Conversation(props) {
       style={{cursor: 'pointer'}}
       onMouseOver={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
+      onClick={() => props.setCurrentConversation(props.conversation)}
       pad={props.pad}
       {...boxProps}
       >

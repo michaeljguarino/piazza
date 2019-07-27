@@ -14,6 +14,8 @@ defmodule Core.PubSub.ConversationCreated, do: use Core.PubSub.Event
 
 defmodule Core.PubSub.ConversationUpdated, do: use Core.PubSub.Event
 
+defmodule Core.PubSub.ConversationDeleted, do: use Core.PubSub.Event
+
 defmodule Core.PubSub.MessageCreated, do: use Core.PubSub.Event
 
 defmodule Core.PubSub.ParticipantCreated, do: use Core.PubSub.Event

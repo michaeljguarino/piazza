@@ -7,13 +7,14 @@ import {CREATE_CONVERSATION, CONVERSATIONS_Q} from './queries'
 
 function ConversationCreator(props) {
   const [state, setState] = useState({})
+  const [open, setOpen] = useState(false)
   return (
     <Box fill='horizontal' pad={{right: '10px'}}>
       <Box pad={props.padding} fill='horizontal' direction="row" align="center" margin={{bottom: '5px'}}>
         <Box width='100%'>
           <Text size='small' width='100%' weight='bold' color={props.textColor}>Conversations</Text>
         </Box>
-        <Dropdown>
+        <Dropdown open={open}>
           <Box
             style={{cursor: 'pointer'}}
             border
@@ -28,17 +29,20 @@ function ConversationCreator(props) {
             <Mutation
               mutation={CREATE_CONVERSATION}
               variables={state}
-              update={(cache, {data: {createConversation}}) => {
-                console.log(createConversation)
+              update={(cache, { data: { createConversation } }) => {
+                props.setCurrentConversation(createConversation)
                 const {conversations} = cache.readQuery({ query: CONVERSATIONS_Q });
+                const newData = {
+                  conversations: {
+                    ...conversations,
+                    edges: [{__typename: "ConversationEdge", node: createConversation}, ...conversations.edges],
+                }}
+                console.log(newData)
                 cache.writeQuery({
                   query: CONVERSATIONS_Q,
-                  data: {
-                    conversations: {
-                      edges: [{__typename: "ConversationEdge", node: createConversation.data}, ...conversations.edges],
-                      ...conversations
-                    },
-                }});
+                  data: newData
+                });
+                setOpen(false)
               }}
             >
               {mutation => (
@@ -49,7 +53,7 @@ function ConversationCreator(props) {
                     value="new conversation"
                     onChange={(e) => setState({name: e.target.value})}
                     />
-                  <Button type='submit' primary label='create' onClick={mutation} />
+                  <Button type='submit' primary label='create'/>
                 </Form>
               )}
             </Mutation>

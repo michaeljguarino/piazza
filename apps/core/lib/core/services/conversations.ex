@@ -42,6 +42,13 @@ defmodule Core.Services.Conversations do
     |> notify(:update, user)
   end
 
+  def delete_conversation(id, user) do
+    get_conversation!(id)
+    |> allow(user, :delete)
+    |> when_ok(:delete)
+    |> notify(:delete, user)
+  end
+
   def update_participant(conv_id, user_id, attrs, user) do
     get_participant!(user_id, conv_id)
     |> Participant.changeset(attrs)
@@ -103,6 +110,8 @@ defmodule Core.Services.Conversations do
 
   def notify({:ok, %Conversation{} = conv}, :update, actor),
     do: handle_notify(PubSub.ConversationUpdated, conv, actor: actor)
+  def notify({:ok, %Conversation{} = conv}, :delete, actor),
+    do: handle_notify(PubSub.ConversationDeleted, conv, actor: actor)
 
   def notify({:ok, %Participant{} = part}, :delete, actor),
     do: handle_notify(PubSub.ParticipantDeleted, part, actor: actor)

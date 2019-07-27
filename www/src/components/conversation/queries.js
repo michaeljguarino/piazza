@@ -5,10 +5,6 @@ export const CREATE_CONVERSATION = gql`
     createConversation(attributes: {name: $name}) {
       id
       name
-      insertedAt
-      creator {
-        name
-      }
     }
   }
 `
@@ -25,3 +21,35 @@ export const CONVERSATIONS_Q = gql`
     }
   }
 `
+
+export const PARTICIPANTS_Q = gql`
+  query ConversationQuery($conversationId: ID!, $cursor: String) {
+    conversation(id: $conversationId) {
+      id
+      participants(first: 25, after: $cursor) {
+        pageInfo {
+          endCursor
+          hasNextPage
+        }
+        edges {
+          node {
+            id
+            user {
+              name
+              handle
+              backgroundColor
+            }
+          }
+        }
+      }
+    }
+  }
+`
+
+export const DELETE_CONVERSATION = gql`
+  mutation DeleteConversation($conversationId: ID!) {
+    deleteConversation(conversationId: $conversationId) {
+      id
+    }
+  }
+`;

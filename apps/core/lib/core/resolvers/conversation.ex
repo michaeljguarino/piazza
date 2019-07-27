@@ -51,6 +51,9 @@ defmodule Core.Resolvers.Conversation do
   def update_conversation(%{id: id, attributes: attrs}, %{context: %{current_user: user}}),
     do: Conversations.update_conversation(id, attrs, user)
 
+  def delete_conversation(%{id: id}, %{context: %{current_user: user}}),
+    do: Conversations.delete_conversation(id, user)
+
   def create_message(%{conversation_id: conv_id, attributes: attrs}, %{context: %{current_user: user}}),
     do: Conversations.create_message(conv_id, attrs, user)
 

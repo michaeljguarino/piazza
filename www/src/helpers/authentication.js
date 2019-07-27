@@ -1,5 +1,6 @@
 import { client } from './client'
 import gql from 'graphql-tag'
+import {AUTH_TOKEN} from '../constants'
 
 const ME_Q = gql`
   query {
@@ -17,4 +18,8 @@ async function validateLogin() {
   })
 }
 
-export { validateLogin }
+function wipeToken() {
+  localStorage.removeItem(AUTH_TOKEN)
+}
+
+export { validateLogin, wipeToken }
