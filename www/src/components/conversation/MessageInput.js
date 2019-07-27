@@ -45,11 +45,9 @@ class MessageInput extends Component {
           <Mutation mutation={MESSAGE_MUTATION} variables={{ conversationId: this.props.conversation.id, text }}>
             {postMutation => (
               <Button
-                icon={<Edit/>}
+                icon={<Edit size='small' />}
                 onClick={postMutation}
-              >
-                Send
-              </Button>
+              />
             )}
           </Mutation>
         </Box>

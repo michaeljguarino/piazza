@@ -12,6 +12,7 @@
     "graphql": "^14.4.2",
     "grommet": "^2.7.4",
     "grommet-icons": "^4.2.0",
+    "moment": "^2.24.0",
     "phoenix": "^1.4.9",
     "react": "^16.8.6",
     "react-apollo": "^2.5.8",

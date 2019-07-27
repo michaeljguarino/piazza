@@ -10,7 +10,7 @@ import Login from './Login'
 const theme = {
   global: {
     colors: {
-      brand: '#3b5998'
+      brand: '#1A1D21'
     },
     font: {
       family: 'Roboto',

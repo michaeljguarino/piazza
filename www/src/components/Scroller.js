@@ -10,16 +10,25 @@ class Scroller extends Component {
   }
 
   handleOnScroll = () => {
-    let elem = document.getElementById(this.props.id);
-    if (elem.scrollTop >= (elem.scrollHeight - elem.offsetHeight)) {
-      this.props.onLoadMore();
+    let direction = this.props.direction || 'down'
+    if (direction === 'down') {
+      let elem = document.getElementById(this.props.id);
+      if (elem.scrollTop >= (elem.scrollHeight - elem.offsetHeight)) {
+        this.props.onLoadMore();
+      }
+    } else {
+      let elem = document.getElementById(this.props.id);
+      console.log(elem.scrollTop)
+      if (elem.scrollTop <= 0) {
+        this.props.onLoadMore()
+      }
     }
   };
 
   render() {
     return (
       <div id={this.props.id} onScroll={this.handleOnScroll} style={this.props.style}>
-        {this.props.edges.map(this.props.mapper)}
+        {Array.from(this.props.edges, this.props.mapper)}
       </div>
     );
   }

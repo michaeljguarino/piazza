@@ -1,14 +1,29 @@
-import React, { Component } from 'react'
-import {Box} from 'grommet'
+import React, { useState } from 'react'
+import {Box, Text} from 'grommet'
 
-class Conversation extends Component {
-  render() {
-    return (
-      <Box margin='small'>
-        {this.props.conversation.name}
-      </Box>
-    )
-  }
+function Conversation(props) {
+  const [hover, setHover] = useState(false);
+  let selected = props.conversation.id === props.currentConversation.id
+  let boxProps = (selected) ? {background: '#0576B9'} : (hover ? {background: '#474A4D'} : {})
+  let textProps = (selected) ? {} : {color: props.color}
+  return (
+    <Box
+      fill='horizontal'
+      direction='row'
+      align='center'
+      onMouseOver={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      pad={props.pad}
+      {...boxProps}
+      >
+      <Text margin={{right: '5px'}} {...textProps}>#</Text>
+      <Text
+        size='small'
+        weight={(hover && !selected) ? 'bold' : 'normal'} {...textProps}>
+        {props.conversation.name}
+      </Text>
+    </Box>
+  )
 }
 
 export default Conversation

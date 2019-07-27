@@ -7,6 +7,7 @@ defmodule Core.Schemas.Types do
     field :name, non_null(:string)
     field :handle, non_null(:string)
     field :email, non_null(:string)
+    field :bot, :boolean
     field :bio, :string
     field :roles, :roles
     field :deleted_at, :datetime

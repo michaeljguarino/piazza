@@ -21,7 +21,7 @@ const MESSAGES_Q = gql`
             creator {
               name
               handle
-
+              backgroundColor
             }
           }
         }
@@ -37,6 +37,8 @@ const NEW_MESSAGES_SUB = gql`
       insertedAt
       creator {
         name
+        handle
+        backgroundColor
       }
     }
   }
@@ -81,7 +83,15 @@ class MessageList extends Component {
             <Scroller
               id='message-viewport'
               edges={messageEdges}
-              style={{overflow: 'auto', height: 'calc(100vh - 62px)'}}
+              direction='up'
+              style={{
+                overflow: 'auto',
+                height: 'calc(100vh - 125px)',
+                display: 'flex',
+                justifyContent: 'flex-start',
+                flexDirection: 'column-reverse',
+                padTop: '5px'
+              }}
               mapper={(edge) => <Message key={edge.node.id} message={edge.node} />}
               onLoadMore={() => {
                 if (!pageInfo.hasNextPage) {
