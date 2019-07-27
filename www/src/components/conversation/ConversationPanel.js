@@ -3,7 +3,8 @@ import Conversation from './Conversation'
 import Me from '../users/Me'
 import Users from '../users/Users'
 import Commands from '../commands/Commands'
-import {Box, Text} from 'grommet'
+import {Box} from 'grommet'
+import ConversationCreator from './ConversationCreator'
 import Scroller from '../Scroller'
 
 class ConversationPanel extends Component {
@@ -14,9 +15,7 @@ class ConversationPanel extends Component {
       <Box>
         <Me me={this.props.me} pad={padding} />
         <Box margin={{bottom: 'large'}}>
-          <Box pad={padding}>
-            <Text size='small' margin={{bottom: '5px'}} weight='bold' color={textColor}>Conversations</Text>
-          </Box>
+          <ConversationCreator padding={padding} textColor={textColor} />
           <Scroller
               id='conversations-list'
               style={{

@@ -7,7 +7,7 @@ defmodule Core.Repo.Migrations.AddNotifications do
       add :type, :integer
       add :user_id, references(:users, type: :uuid)
       add :actor_id, references(:users, type: :uuid)
-      add :message_id, references(:messages, type: :uuid)
+      add :message_id, references(:messages, type: :uuid, on_delete: :delete_all)
 
       add :seen_at, :utc_datetime_usec
 
@@ -19,7 +19,7 @@ defmodule Core.Repo.Migrations.AddNotifications do
     create table(:message_entities, primary_key: false) do
       add :id, :uuid, primary_key: true
       add :type, :integer
-      add :message_id, references(:messages, type: :uuid)
+      add :message_id, references(:messages, type: :uuid, on_delete: :delete_all)
       add :user_id, references(:users, type: :uuid)
       add :start_index, :integer
       add :length, :integer

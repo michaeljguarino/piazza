@@ -46,7 +46,7 @@ function ConversationHeader(props) {
                 </Box>
                 <Box pad="small">
                   {data.conversation.participants.edges.map((p) => (
-                    <UserListEntry key={p.id} user={p.node.user} color='normal' />
+                    <UserListEntry key={p.node.id} user={p.node.user} color='normal' />
                   ))}
                 </Box>
               </Dropdown>

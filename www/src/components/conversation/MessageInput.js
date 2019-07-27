@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { Mutation } from 'react-apollo'
 import gql from 'graphql-tag'
-import {TextInput, Box, Form} from 'grommet'
+import {TextInput, Box, Form, Text} from 'grommet'
 
 const MESSAGE_MUTATION = gql`
   mutation CreateMessage($conversationId: ID!, $text: String!) {
@@ -34,7 +34,6 @@ class MessageInput extends Component {
                 fill='horizontal'
                 direction="row"
                 align="center"
-                justify="right"
                 border
                 round='xsmall'
               >
@@ -54,7 +53,7 @@ class MessageInput extends Component {
                   width="100px"
                   height="40px"
                   onClick={postMutation}>
-                  Send
+                  <Text size="medium">Send</Text>
                 </Box>
               </Box>
             </Form>)}

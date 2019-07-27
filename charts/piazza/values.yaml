@@ -34,6 +34,7 @@ external-dns:
     project: piazza-247002
     serviceAccountSecret: externaldns-serviceaccount
 
+dropDB: true
 image:
   tag: "0.2.1"
   pullPolicy: Always

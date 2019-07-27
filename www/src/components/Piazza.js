@@ -8,6 +8,7 @@ import ConversationPanel from './conversation/ConversationPanel'
 import ConversationHeader from './conversation/ConversationHeader'
 import Loading from './utils/Loading'
 import {Box, Grid} from 'grommet'
+import {CONVERSATIONS_Q} from './conversation/queries'
 
 const ME_Q=gql`
 query {
@@ -16,18 +17,6 @@ query {
     name
     handle
     backgroundColor
-  }
-}
-`
-const CONVERSATIONS_Q = gql`
-{
-  conversations(public: true, first: 20) {
-    edges {
-      node {
-        id
-        name
-      }
-    }
   }
 }
 `

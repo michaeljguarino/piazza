@@ -11,10 +11,10 @@ class Message extends Component {
         <Avatar user={this.props.message.creator} />
         <Box>
           <Box direction='row' align='center'>
-            <Text weight='900' size='15px' margin={{right: '5px'}}>
+            <Text weight='bold' size='15px' margin={{right: '5px'}}>
               {this.props.message.creator.name}
             </Text>
-            <Text size='10px' weight='400'>
+            <Text size='10px'>
               {date.fromNow()}
             </Text>
           </Box>

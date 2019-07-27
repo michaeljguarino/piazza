@@ -29,13 +29,13 @@ defmodule Core.Repo.Migrations.Initial do
       timestamps()
     end
 
-    create index(:conversations, [:name])
+    create unique_index(:conversations, [:name])
 
     create table(:messages, primary_key: false) do
       add :id,  :uuid, primary_key: true
       add :text, :string
       add :creator_id, references(:users, type: :uuid)
-      add :conversation_id, references(:conversations, type: :uuid)
+      add :conversation_id, references(:conversations, type: :uuid, on_delete: :delete_all)
 
       timestamps()
     end
@@ -46,7 +46,7 @@ defmodule Core.Repo.Migrations.Initial do
     create table(:participants, primary_key: false) do
       add :id, :uuid, primary_key: true
       add :user_id, references(:users, type: :uuid)
-      add :conversation_id, references(:conversations, type: :uuid)
+      add :conversation_id, references(:conversations, type: :uuid, on_delete: :delete_all)
 
       timestamps()
     end
