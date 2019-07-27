@@ -6,6 +6,7 @@ import MessageList from './conversation/MessageList'
 import MessageInput from './conversation/MessageInput'
 import ConversationPanel from './conversation/ConversationPanel'
 import ConversationHeader from './conversation/ConversationHeader'
+import Loading from './utils/Loading'
 import {Box, Grid} from 'grommet'
 
 const ME_Q=gql`
@@ -35,7 +36,7 @@ const Piazza = () => (
   <Query query={ME_Q}>
     { ({loading, error, data}) => {
       if (loading) {
-        return (<div>Loading...</div>)
+        return (<Loading/>)
       }
       if (error || !data.me || !data.me.id) {
         return (<Redirect to='/login'/>)
@@ -44,7 +45,7 @@ const Piazza = () => (
       return (
         <Query query={CONVERSATIONS_Q}>
           {({loading, _error, data}) => {
-            if (loading) return <div>Loading...</div>
+            if (loading) return <Loading />
             let first = data.conversations.edges[0].node
             return (
               <Grid

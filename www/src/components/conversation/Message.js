@@ -1,12 +1,11 @@
 import React, { Component } from 'react'
-import {Box, Text} from 'grommet'
+import {Box, Text, Markdown} from 'grommet'
 import Avatar from '../users/Avatar'
 import moment from 'moment'
 
 class Message extends Component {
   render() {
     let date = moment(this.props.message.insertedAt)
-    console.log(date)
     return (
       <Box flex={false} direction='row' margin={{left: 'small', top: '10px'}}>
         <Avatar user={this.props.message.creator} />
@@ -20,7 +19,9 @@ class Message extends Component {
             </Text>
           </Box>
           <Box>
-            <Text size='xsmall'>{this.props.message.text}</Text>
+            <Text size='xsmall'>
+              <Markdown>{this.props.message.text}</Markdown>
+            </Text>
           </Box>
         </Box>
       </Box>

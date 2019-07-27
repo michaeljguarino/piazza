@@ -3,6 +3,7 @@ import Message from './Message'
 import { Query } from 'react-apollo'
 import gql from 'graphql-tag'
 import Scroller from '../Scroller'
+import Loading from '../utils/Loading'
 
 const MESSAGES_Q = gql`
   query ConversationQuery($conversationId: ID!, $cursor: String) {
@@ -74,7 +75,7 @@ class MessageList extends Component {
     return (
       <Query query={MESSAGES_Q} variables={{conversationId: this.props.conversation.id}}>
         {({loading, error, data, fetchMore, subscribeToMore}) => {
-          if (loading) return <div>loading...</div>
+          if (loading) return <Loading />
           if (error) return <div>wtf</div>
           this._subscribeToNewMessages(subscribeToMore)
           let messageEdges = data.conversation.messages.edges
@@ -100,7 +101,6 @@ class MessageList extends Component {
                 fetchMore({
                   variables: {conversationId: this.props.conversation.id, cursor: pageInfo.endCursor},
                   updateQuery: (prev, {fetchMoreResult}) => {
-                    console.log(fetchMoreResult)
                     const edges = fetchMoreResult.conversation.messages.edges
                     const pageInfo = fetchMoreResult.conversation.messages.pageInfo
                     if (messageEdges.find((edge) => edge.node.id === edges[0].node.id)) {

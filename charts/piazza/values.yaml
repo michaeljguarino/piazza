@@ -65,7 +65,7 @@ cron:
       cpu: .2
       memory: 256Mi
 
-retentionPolicy: 180
+retentionPolicy: 2
 
 dbPasswordSecret: piazza-postgresql
 rabbitPasswordSecret: piazza-rabbitmq

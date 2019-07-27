@@ -11,6 +11,7 @@ function Conversation(props) {
       fill='horizontal'
       direction='row'
       align='center'
+      style={{cursor: 'pointer'}}
       onMouseOver={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
       pad={props.pad}

@@ -18,7 +18,7 @@ defmodule GqlWeb.WebhookControllerTest do
           |> post(path, %{"text" => "/giphy doggos"})
           |> json_response(200)
 
-        assert result["message"] == "I found #{gif_url}"
+        assert result["message"] == "I found [doggos](#{gif_url})"
       end
     end
 
