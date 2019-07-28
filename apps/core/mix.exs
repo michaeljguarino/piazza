@@ -23,7 +23,7 @@ defmodule Core.MixProject do
   def application do
     [
       mod: {Core.Application, []},
-      extra_applications: [:logger, :runtime_tools, :furlex]
+      extra_applications: [:logger, :runtime_tools]
     ]
   end
 

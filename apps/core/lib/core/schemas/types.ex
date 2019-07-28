@@ -60,6 +60,7 @@ defmodule Core.Schemas.Types do
     field :creator, :user, resolve: dataloader(User)
     field :conversation, :conversation, resolve: dataloader(Conversation)
     field :entities, list_of(:message_entity), resolve: dataloader(Conversation)
+    field :embed, :embed
 
     timestamps()
   end
@@ -78,6 +79,22 @@ defmodule Core.Schemas.Types do
 
   enum :notification_type do
     value :mention
+  end
+
+  object :embed do
+    field :type,        :embed_type
+    field :url,         :string
+    field :title,       :string
+    field :description, :string
+    field :height,      :integer
+    field :width,       :integer
+  end
+
+  enum :embed_type do
+    value :image
+    value :video
+    value :attachment
+    value :other
   end
 
   object :notification do

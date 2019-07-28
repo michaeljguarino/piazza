@@ -38,6 +38,12 @@ defmodule Core.Models.Embed do
     |> Map.put(:description, attrs["og:description"])
     |> ok()
   end
+  def from_furlex(%Furlex{facebook: %{"og:url" => url} = attrs}) do
+    %{type: type(attrs["og:type"]), url: url}
+    |> Map.put(:title, attrs["og:title"])
+    |> Map.put(:description, attrs["og:description"])
+    |> ok()
+  end
   def from_furlex(_), do: {:error, :noembed}
 
   def type("video" <> _), do: :video

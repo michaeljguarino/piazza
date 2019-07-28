@@ -76,7 +76,7 @@ defmodule Core.PubSub.Consumers.Recurse.ConversationsTest do
       event = %PubSub.MessageCreated{item: message, actor: message.creator}
       {:ok, new_message} = Recurse.handle_event(event)
 
-      assert new_message.embed.type == :image
+      assert new_message.embed.type == :video
       assert new_message.embed.url
     end
 
