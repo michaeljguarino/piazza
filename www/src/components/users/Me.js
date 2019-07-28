@@ -14,24 +14,26 @@ class Me extends Component {
 
   render() {
     return (
-      <Dropdown>
-        <Box style={{cursor: 'pointer'}} height='40px' margin={{bottom: 'large', top: '10px'}} pad={this.props.pad} direction='row'>
-          <Avatar user={this.props.me} rightMargin='10px' />
-          <Box>
-            <Text size='small' weight='bold'>{"@" + this.props.me.handle}</Text>
-            <Text size='small' color='dark-6'>{this.props.me.name}</Text>
-          </Box>
-        </Box>
-        <Box pad={{left: '20px', top: "20px", bottom: "20px"}} width="200px" gap='small'>
-          <Box direction="row" align="center">
+      <Box style={{cursor: 'pointer'}} height='40px' margin={{bottom: 'large', top: '10px'}} pad={this.props.pad} direction='row'>
+        <Dropdown>
+          <Box direction='row' margin={{bottom: '5px'}}>
             <Avatar user={this.props.me} rightMargin='10px' />
-            <Text size="small" weight='bold'>{this.props.me.name}</Text>
+            <Box>
+              <Text size='small' weight='bold'>{"@" + this.props.me.handle}</Text>
+              <Text size='small' color='dark-6'>{this.props.me.name}</Text>
+            </Box>
           </Box>
-          <Anchor onClick={this._logout}>
-            logout
-          </Anchor>
-        </Box>
-      </Dropdown>
+          <Box pad={{left: '20px', top: "20px", bottom: "20px"}} width="200px" gap='small'>
+            <Box direction="row" align="center">
+              <Avatar user={this.props.me} rightMargin='10px' />
+              <Text size="small" weight='bold'>{this.props.me.name}</Text>
+            </Box>
+            <Anchor onClick={this._logout}>
+              logout
+            </Anchor>
+          </Box>
+        </Dropdown>
+      </Box>
     )
   }
 }

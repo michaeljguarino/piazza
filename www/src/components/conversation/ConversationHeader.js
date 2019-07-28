@@ -1,10 +1,11 @@
 import React, {useState} from 'react'
 import { Query, Mutation } from 'react-apollo'
-import {Box, Text, Collapsible, Markdown} from 'grommet'
+import {Box, Text, Markdown} from 'grommet'
 import {UserNew, Trash, Edit} from 'grommet-icons'
 import Dropdown from '../utils/Dropdown'
 import UserListEntry from '../users/UserListEntry'
-import {PARTICIPANTS_Q, DELETE_CONVERSATION, CONVERSATIONS_Q} from './queries'
+import {PARTICIPANTS_Q, DELETE_CONVERSATION, UPDATE_CONVERSATION, CONVERSATIONS_Q} from './queries'
+import ConversationEditForm from './ConversationEditForm'
 
 const BOX_ATTRS = {
   direction: "row",
@@ -21,22 +22,69 @@ function ConversationDelete(props) {
       variables={{id: props.conversation.id}}
       update={(cache, {data: {deleteConversation}}) => {
       props.setCurrentConversation(null)
-      const {conversations} = cache.readQuery({ query: CONVERSATIONS_Q });
-      const newData = {
-        conversations: {
-          ...conversations,
-          edges: conversations.edges.filter((edge) => edge.node.id !== deleteConversation.id),
-      }}
+        const {conversations} = cache.readQuery({ query: CONVERSATIONS_Q });
+        const newData = {
+          conversations: {
+            ...conversations,
+            edges: conversations.edges.filter((edge) => edge.node.id !== deleteConversation.id),
+        }}
 
-      cache.writeQuery({
-        query: CONVERSATIONS_Q,
-        data: newData
-      });
+        cache.writeQuery({
+          query: CONVERSATIONS_Q,
+          data: newData
+        });
       }}>
       {(mutation) => (
-        <Text height='15px' style={{lineHeight: '15px'}}>
-          <Trash size="15px" onClick={mutation} />
-        </Text>
+        <Trash size="15px" onClick={mutation} />
+      )}
+    </Mutation>
+  )
+}
+
+function ConversationUpdate(props) {
+  const [attributes, setAttributes] = useState({
+    name: props.conversation.name,
+    topic: props.conversation.topic
+  })
+  const [open, setOpen] = useState(false)
+  return (
+    <Mutation
+      mutation={UPDATE_CONVERSATION}
+      variables={{id: props.conversation.id, attributes: attributes}}
+      update={(cache, {data: {updateConversation}}) => {
+        const {conversations} = cache.readQuery({ query: CONVERSATIONS_Q });
+        const newData = {
+          conversations: {
+            ...conversations,
+            edges: conversations.edges.map((edge) => {
+              if (edge.node.id !== updateConversation.id) return edge
+
+              return {
+                ...edge,
+                node: updateConversation
+              }
+            })
+          }
+        }
+
+        cache.writeQuery({
+          query: CONVERSATIONS_Q,
+          data: newData
+        });
+        setOpen(false)
+      }} >
+      {(mutation) => (
+        <Dropdown open={open}>
+          <Text syle={{lineHeight: '15px'}} size='xsmall' margin={{right: '3px'}}>
+            <Markdown>{props.conversation.topic || "Add a description"}</Markdown>
+          </Text>
+          <ConversationEditForm
+            state={{name: props.conversation.name, topic: props.conversation.topic}}
+            mutation={mutation}
+            onStateChange={(update) => setAttributes({...attributes, ...update})}
+            open={open}
+            action='update' />
+        </Dropdown>
       )}
     </Mutation>
   )
@@ -66,13 +114,10 @@ function ConversationHeader(props) {
                 </Box>
               </Dropdown>
               <Box {...BOX_ATTRS} align='center' justify='center' border={null} onMouseOver={() => setEditing(true)} onMouseOut={() => setEditing(false)}>
-                <Text syle={{lineHeight: '15px'}} size='xsmall' margin={{right: '3px'}}>
-                  <Markdown>{data.conversation.topic || "Add a description"}</Markdown>
-                </Text>
-                <div style={editing ? {} : {visibility: 'hidden'}}>
-                  <Text height='15px' style={{lineHeight: '15px'}} margin={{right: '5px'}}><Edit size='15px' /></Text>
+                <ConversationUpdate editing={editing} {...props} />
+                <Text style={editing ? {lineHeight: '15px'} : {lineHeight: '15px', visibility: 'hidden'}}>
                   <ConversationDelete {...props} />
-                </div>
+                </Text>
               </Box>
             </Box>
           )

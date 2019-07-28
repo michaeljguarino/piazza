@@ -1,13 +1,25 @@
 import gql from 'graphql-tag'
 
 export const CREATE_CONVERSATION = gql`
-  mutation CreateConversation($name: String!) {
-    createConversation(attributes: {name: $name}) {
+  mutation CreateConversation($attributes: ConversationAttributes!) {
+    createConversation(attributes: $attributes) {
       id
       name
+      topic
     }
   }
 `
+
+
+export const UPDATE_CONVERSATION = gql`
+  mutation UpdateConversation($id: ID!, $attributes: ConversationAttributes!) {
+    updateConversation(id: $id, attributes: $attributes) {
+      id
+      name
+      topic
+    }
+  }
+`;
 
 export const CONVERSATIONS_Q = gql`
   query Conversations($cursor: String) {
@@ -16,6 +28,7 @@ export const CONVERSATIONS_Q = gql`
         node {
           id
           name
+          topic
         }
       }
     }
@@ -26,6 +39,8 @@ export const PARTICIPANTS_Q = gql`
   query ConversationQuery($conversationId: ID!, $cursor: String) {
     conversation(id: $conversationId) {
       id
+      name
+      topic
       participants(first: 25, after: $cursor) {
         pageInfo {
           endCursor

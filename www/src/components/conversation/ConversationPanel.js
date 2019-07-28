@@ -14,27 +14,27 @@ class ConversationPanel extends Component {
     return (
       <Box>
         <Me me={this.props.me} pad={padding} />
-        <Box margin={{bottom: 'large'}}>
+        <Box margin={{bottom: 'medium'}}>
           <ConversationCreator
             padding={padding}
             textColor={textColor}
             setCurrentConversation={this.props.setCurrentConversation} />
           <Scroller
-              id='conversations-list'
-              style={{
-                overflow: 'auto',
-                height: '30vh'
-              }}
-              edges={this.props.conversations}
-              onLoadMore={() => console.log('end of conversations')}
-              mapper={(edge) => <Conversation
-                pad={padding}
-                color={textColor}
-                key={edge.node.id}
-                currentConversation={this.props.currentConversation}
-                setCurrentConversation={this.props.setCurrentConversation}
-                conversation={edge.node} />
-              } />
+            id='conversations-list'
+            style={{
+              overflow: 'auto',
+              height: '40vh'
+            }}
+            edges={this.props.conversations}
+            onLoadMore={() => console.log('end of convs')}
+            mapper={(edge) => <Conversation
+              pad={padding}
+              color={textColor}
+              key={edge.node.id}
+              currentConversation={this.props.currentConversation}
+              setCurrentConversation={this.props.setCurrentConversation}
+              conversation={edge.node} />
+            } />
         </Box>
         <Users pad={padding} color={textColor} />
         <Commands pad={padding} color={textColor} />

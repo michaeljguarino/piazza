@@ -8,10 +8,10 @@ function Dropdown(props) {
   let first = props.children[0]
   let rest  = props.children.slice(1)
   return (
-    <div>
-      <div onClick={() => setOpen(true)} ref={targetRef}>
+    <span>
+      <span onClick={() => setOpen(true)} ref={targetRef}>
         {first}
-      </div>
+      </span>
       {open && (
         <Drop
           align={props.align || { top: "bottom", left: "left" }}
@@ -21,7 +21,7 @@ function Dropdown(props) {
         >
           {rest}
         </Drop>)}
-    </div>
+    </span>
   )
 }
 

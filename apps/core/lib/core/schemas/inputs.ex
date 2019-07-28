@@ -18,7 +18,7 @@ defmodule Core.Schemas.Inputs do
   input_object :conversation_attributes do
     field :public, :boolean
     field :name,   :string
-    field :topic,   :string
+    field :topic,  :string
     field :global, :boolean
   end
 

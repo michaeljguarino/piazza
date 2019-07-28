@@ -9,7 +9,7 @@ function dimensions(props) {
 
 function VideoEmbed(props) {
   return (
-    <img alt={props.title} style={{width: props.width, height: props.height}} src={props.url} />
+    <Video autoPlay loop src={props.url} />
   )
 }
 
@@ -32,7 +32,6 @@ function EmbedMedia(props) {
 }
 
 function MessageEmbed(props) {
-  console.log(props)
   let dims = dimensions(props)
   props = {...props, ...dims}
   return (

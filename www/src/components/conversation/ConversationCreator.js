@@ -4,6 +4,7 @@ import {Add} from 'grommet-icons'
 import { Mutation } from 'react-apollo'
 import Dropdown from '../utils/Dropdown'
 import {CREATE_CONVERSATION, CONVERSATIONS_Q} from './queries'
+import ConversationEditForm from './ConversationEditForm'
 
 function ConversationCreator(props) {
   const [state, setState] = useState({})
@@ -25,39 +26,30 @@ function ConversationCreator(props) {
             align='center'>
             <Add size="small" />
           </Box>
-          <Box pad="small" width="300px">
-            <Mutation
-              mutation={CREATE_CONVERSATION}
-              variables={state}
-              update={(cache, { data: { createConversation } }) => {
-                props.setCurrentConversation(createConversation)
-                const {conversations} = cache.readQuery({ query: CONVERSATIONS_Q });
-                const newData = {
-                  conversations: {
-                    ...conversations,
-                    edges: [{__typename: "ConversationEdge", node: createConversation}, ...conversations.edges],
-                }}
-                console.log(newData)
-                cache.writeQuery({
-                  query: CONVERSATIONS_Q,
-                  data: newData
-                });
-                setOpen(false)
+
+          <Mutation
+            mutation={CREATE_CONVERSATION}
+            variables={{attributes: state}}
+            update={(cache, { data: { createConversation } }) => {
+              props.setCurrentConversation(createConversation)
+              const {conversations} = cache.readQuery({ query: CONVERSATIONS_Q });
+              const newData = {
+                conversations: {
+                  ...conversations,
+                  edges: [{__typename: "ConversationEdge", node: createConversation}, ...conversations.edges],
               }}
-            >
-              {mutation => (
-                <Form onSubmit={mutation}>
-                  <FormField
-                    label="Conversation Name"
-                    name="name"
-                    value="new conversation"
-                    onChange={(e) => setState({name: e.target.value})}
-                    />
-                  <Button type='submit' primary label='create'/>
-                </Form>
-              )}
-            </Mutation>
-          </Box>
+              console.log(newData)
+              cache.writeQuery({
+                query: CONVERSATIONS_Q,
+                data: newData
+              });
+              setOpen(false)
+            }}
+          >
+            {mutation => (
+              <ConversationEditForm state={state} mutation={mutation} onStateChange={(update) => setState({...state, ...update})} />
+            )}
+          </Mutation>
         </Dropdown>
       </Box>
     </Box>
