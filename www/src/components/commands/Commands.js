@@ -16,6 +16,7 @@ query Commands($cursor: String) {
       node {
         id
         name
+        documentation
       }
     }
   }

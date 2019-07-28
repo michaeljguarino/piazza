@@ -34,4 +34,27 @@ defmodule Core.Schema.PlatformMutationsTest do
       assert command["bot"]["email"]
     end
   end
+
+  describe "updateCommand" do
+    test "A user can create a new command" do
+      user    = insert(:user)
+      command = insert(:command, name: "giphy")
+
+      {:ok, %{data: %{"updateCommand" => result}}} = run_query("""
+        mutation {
+          updateCommand(name: "giphy", attributes: {
+            documentation: "Sends you gifs"
+          }) {
+            id
+            name
+            documentation
+          }
+        }
+      """, %{}, %{current_user: user})
+
+      assert result["id"] == command.id
+      assert result["name"] == "giphy"
+      assert result["documentation"] == "Sends you gifs"
+    end
+  end
 end

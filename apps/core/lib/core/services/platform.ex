@@ -12,6 +12,8 @@ defmodule Core.Services.Platform do
 
   def get_command(name), do: Core.Repo.get_by(Command, name: name)
 
+  def get_command!(name), do: Core.Repo.get_by!(Command, name: name)
+
   def create_command(%{webhook: webhook_args, name: name} = args, user) do
     start_transaction()
     |> add_operation(:bot, fn _ ->
@@ -35,6 +37,14 @@ defmodule Core.Services.Platform do
     |> notify(:create, user)
   end
 
+  def update_command(name, attrs, user) do
+    get_command!(name)
+    |> Command.changeset(attrs)
+    |> allow(user, :create)
+    |> when_ok(:update)
+    |> notify(:update, user)
+  end
+
   defp inflated_bot_args(args, name) do
     args
     |> Map.put_new(:name, name)
@@ -45,6 +55,8 @@ defmodule Core.Services.Platform do
 
   defp notify({:ok, %Command{} = c}, :create, actor),
     do: handle_notify(PubSub.CommandCreated, c, actor: actor)
+  defp notify({:ok, %Command{} = c}, :update, actor),
+    do: handle_notify(PubSub.CommandUpdated, c, actor: actor)
 
   defp notify(ignored, _, _), do: ignored
 end

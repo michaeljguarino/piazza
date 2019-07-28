@@ -37,6 +37,11 @@ defmodule Core.Schemas.Inputs do
     field :bot, :bot_attributes
   end
 
+  input_object :command_update_attributes do
+    field :name, :string
+    field :documentation, :string
+  end
+
   input_object :webhook_attributes do
     field :url, non_null(:string)
   end

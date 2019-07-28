@@ -23,6 +23,7 @@ const MESSAGES_Q = gql`
               name
               handle
               backgroundColor
+              bot
             }
           }
         }
@@ -40,6 +41,7 @@ const NEW_MESSAGES_SUB = gql`
         name
         handle
         backgroundColor
+        bot
       }
     }
   }

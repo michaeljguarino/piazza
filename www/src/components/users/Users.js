@@ -17,7 +17,8 @@ query Users($cursor: String) {
         id
         name
         handle
-
+        bot
+        bio
       }
     }
   }

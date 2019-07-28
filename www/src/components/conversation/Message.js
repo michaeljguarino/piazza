@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import {Box, Text, Markdown} from 'grommet'
+import {Robot} from 'grommet-icons'
 import Avatar from '../users/Avatar'
 import moment from 'moment'
 
@@ -14,6 +15,9 @@ class Message extends Component {
             <Text weight='bold' size='15px' margin={{right: '5px'}}>
               {this.props.message.creator.name}
             </Text>
+            {this.props.message.creator.bot && (
+              <Text margin={{right: '5px'}}><Robot size='15px'/></Text>
+            )}
             <Text size='10px'>
               {date.fromNow()}
             </Text>

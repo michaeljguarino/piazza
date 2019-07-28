@@ -26,4 +26,16 @@ defmodule Core.Services.PlatformTest do
       assert_receive {:event, %PubSub.CommandCreated{item: ^command}}
     end
   end
+
+  describe "#update_command/2" do
+    test "any user can update commands" do
+      command = insert(:command)
+
+      {:ok, updated} = Platform.update_command(command.name, %{documentation: "docs"}, insert(:user))
+
+      assert updated.documentation == "docs"
+
+      assert_receive {:event, %PubSub.CommandUpdated{item: ^updated}}
+    end
+  end
 end

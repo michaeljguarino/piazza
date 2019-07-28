@@ -181,6 +181,14 @@ defmodule Core.Schema do
       resolve safe_resolver(&Platform.create_command/2)
     end
 
+    field :update_command, :command do
+      middleware Core.Schemas.Authenticated
+      arg :name, non_null(:string)
+      arg :attributes, non_null(:command_update_attributes)
+
+      resolve safe_resolver(&Platform.update_command/2)
+    end
+
     field :view_notifications, list_of(:notification) do
       middleware Core.Schemas.Authenticated
       resolve safe_resolver(&Notification.view_notifications/2)

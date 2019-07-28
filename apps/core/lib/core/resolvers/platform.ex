@@ -16,4 +16,8 @@ defmodule Core.Resolvers.Platform do
   def create_command(%{attributes: attrs}, %{context: %{current_user: user}}) do
     Platform.create_command(attrs, user)
   end
+
+  def update_command(%{name: name, attributes: attrs}, %{context: %{current_user: user}}) do
+    Platform.update_command(name, attrs, user)
+  end
 end
