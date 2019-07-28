@@ -98,5 +98,16 @@ defmodule Core.PubSub.Consumers.Recurse.ConversationsTest do
       event = %PubSub.MessageCreated{item: message, actor: message.creator}
       :ok = Recurse.handle_event(event)
     end
+
+    test "It can handle github links" do
+      message = insert(:message, text: "https://github.com/kubernetes/kubernetes")
+      event = %PubSub.MessageCreated{item: message, actor: message.creator}
+      {:ok, new_msg} = Recurse.handle_event(event)
+
+      assert new_msg.embed.type == :site
+      assert new_msg.embed.image_url
+      assert new_msg.embed.title
+      assert new_msg.embed.description
+    end
   end
 end

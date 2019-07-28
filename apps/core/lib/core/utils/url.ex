@@ -51,10 +51,10 @@ defmodule Core.Utils.Url do
     end
   end
 
-  defp proceed(%{"content-type" => "text/html"}), do: :continue
+  defp proceed(%{"content-type" => "text/html" <> _}), do: :continue
   defp proceed(_), do: :stop
 
-  defp parse(body, %{"content-type" => "text/html"}) do
+  defp parse(body, %{"content-type" => "text/html" <> _}) do
     parse = &Task.async(&1, :parse, [ body ])
     tasks = Enum.map([
       Furlex.Parser.Facebook,

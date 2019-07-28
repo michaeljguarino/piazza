@@ -181,7 +181,7 @@ spec:
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         env:
         - name: DEPLOYED_AT
-        value: {{ .Release.Time }}
+          value: {{ .Release.Time }}
         ports:
         - name: http
           containerPort: {{ .Values.www.port }}
