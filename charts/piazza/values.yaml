@@ -58,6 +58,16 @@ rtc:
       cpu: .15
       memory: 256Mi
 
+www:
+  dns: chat.piazzaapp.com
+  port: 80
+  image: gcr.io/piazza-247002/www
+  replicas: 2
+  resources:
+    requests:
+      cpu: .1
+      memory: 256Mi
+
 cron:
   image: gcr.io/piazza-247002/cron
   resources:

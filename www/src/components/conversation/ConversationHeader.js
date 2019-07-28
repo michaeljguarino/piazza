@@ -4,7 +4,7 @@ import {Box, Text} from 'grommet'
 import {UserNew, Trash} from 'grommet-icons'
 import Dropdown from '../utils/Dropdown'
 import UserListEntry from '../users/UserListEntry'
-import {PARTICIPANTS_Q} from './queries'
+import {PARTICIPANTS_Q, DELETE_CONVERSATION, CONVERSATIONS_Q} from './queries'
 
 function ConversationHeader(props) {
   return (
@@ -28,13 +28,29 @@ function ConversationHeader(props) {
                 </Box>
               </Dropdown>
               <Text margin={{right: '5px', left: '5px'}}>|</Text>
-              {/* <Mutation query={""}>
-                {(mutation) => ( */}
+              <Mutation
+                mutation={DELETE_CONVERSATION}
+                variables={{id: props.conversation.id}}
+                update={(cache, {data: {deleteConversation}}) => {
+                  props.setCurrentConversation(null)
+                  const {conversations} = cache.readQuery({ query: CONVERSATIONS_Q });
+                  const newData = {
+                    conversations: {
+                      ...conversations,
+                      edges: conversations.edges.filter((edge) => edge.node.id !== deleteConversation.id),
+                  }}
+
+                  cache.writeQuery({
+                    query: CONVERSATIONS_Q,
+                    data: newData
+                  });
+                }}>
+                {(mutation) => (
                   <div style={{cursor: 'pointer'}}>
-                    <Trash size="15px" />
+                    <Trash size="15px" onClick={mutation} />
                   </div>
-                {/* )}
-              </Mutation> */}
+                )}
+              </Mutation>
             </Box>
           )
         }}

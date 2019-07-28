@@ -54,3 +54,7 @@ blocks:
       commands:
       - make build APP_NAME=cron
       - make push APP_NAME=cron
+    - name: "Build www"
+      commands:
+      - make build APP_NAME=www
+      - make push APP_NAME=www

@@ -13,11 +13,17 @@ help:
 	@perl -nle'print $& if m{^[a-zA-Z_-]+:.*?## .*$$}' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
 build: ## Build the Docker image
+ifeq ($(APP_NAME), www)
+	cd www && docker build -t $(APP_NAME):`cat ../VERSION` \
+							-t $(APP_NAME):latest \
+							-t gcr.io/$(GCR_PROJECT)/$(APP_NAME):`cat ../VERSION` .
+else
 	docker build --build-arg APP_NAME=$(APP_NAME) \
 		--build-arg APP_VSN=$(APP_VSN) \
 		-t $(APP_NAME):$(APP_VSN) \
 		-t $(APP_NAME):latest \
 		-t gcr.io/$(GCR_PROJECT)/$(APP_NAME):$(APP_VSN) .
+endif
 
 run: ## Run the app in Docker
 	docker run --env-file config/docker.env \

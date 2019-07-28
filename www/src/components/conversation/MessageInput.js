@@ -21,10 +21,11 @@ const MESSAGE_MUTATION = gql`
 class MessageInput extends Component {
   state = {
     text: '',
+    hover: false
   }
 
   render() {
-    const { text } = this.state
+    const { text, hover } = this.state
     return (
       <Box fill='horizontal' pad='10px'>
         <Mutation mutation={MESSAGE_MUTATION} variables={{ conversationId: this.props.conversation.id, text }}>
@@ -45,13 +46,15 @@ class MessageInput extends Component {
                   placeholder="Whatever is on your mind"
                   />
                 <Box
-                  background='accent-1'
+                  background={hover ? '#001a0c' : '#004d23'}
                   direction="row"
                   align="center"
                   justify="center"
                   style={{cursor: "pointer"}}
                   width="100px"
                   height="40px"
+                  onMouseOver={() => this.setState({hover: true})}
+                  onMouseOut={() => this.setState({hover: false})}
                   onClick={postMutation}>
                   <Text size="medium">Send</Text>
                 </Box>

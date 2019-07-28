@@ -49,4 +49,10 @@ spec:
       - backend:
           serviceName: piazza-gql
           servicePort: http
+  - host: {{ .Values.www.dns | quote }}
+    http:
+      paths:
+      - backend:
+          serviceName: piazza-www
+          servicePort: http
 {{- end }}

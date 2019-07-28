@@ -46,3 +46,23 @@ spec:
   selector:
     app.kubernetes.io/name: piazza-rtc
     app.kubernetes.io/instance: {{ .Release.Name }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: piazza-www
+  labels:
+    app: www
+{{ include "piazza.labels" . | indent 4 }}
+  annotations:
+    cloud.google.com/neg: '{"ingress": true}'
+spec:
+  type: NodePort
+  ports:
+  - port: {{ .Values.www.port }}
+    targetPort: http
+    protocol: TCP
+    name: http
+  selector:
+    app.kubernetes.io/name: piazza-www
+    app.kubernetes.io/instance: {{ .Release.Name }}

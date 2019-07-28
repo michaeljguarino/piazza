@@ -47,8 +47,8 @@ export const PARTICIPANTS_Q = gql`
 `
 
 export const DELETE_CONVERSATION = gql`
-  mutation DeleteConversation($conversationId: ID!) {
-    deleteConversation(conversationId: $conversationId) {
+  mutation DeleteConversation($id: ID!) {
+    deleteConversation(id: $id) {
       id
     }
   }
