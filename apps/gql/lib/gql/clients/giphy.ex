@@ -19,13 +19,13 @@ defmodule Gql.Clients.Giphy do
     end
   end
 
-  def select_url(%{"embed_url" => url}), do: {:ok, url}
   def select_url(%{"images" => %{"original" => %{"mp4" => url}}}), do: {:ok, url}
   def select_url(%{"images" => %{"original" => %{"url" => url}}}), do: {:ok, url}
   def select_url(%{"images" => %{"fixed_height" => %{"mp4" => url}}}), do: {:ok, url}
   def select_url(%{"images" => %{"fixed_height" => %{"url" => url}}}), do: {:ok, url}
   def select_url(%{"images" => %{"fixed_width" => %{"mp4" => url}}}), do: {:ok, url}
   def select_url(%{"images" => %{"fixed_width" => %{"url" => url}}}), do: {:ok, url}
+  def select_url(%{"embed_url" => url}), do: {:ok, url}
   def select_url(_), do: {:error, :not_found}
 
   def endpoint(), do: "https://api.giphy.com/v1/"

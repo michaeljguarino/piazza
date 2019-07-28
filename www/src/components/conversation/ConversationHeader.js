@@ -1,6 +1,6 @@
 import React, {useState} from 'react'
 import { Query, Mutation } from 'react-apollo'
-import {Box, Text, Collapsible} from 'grommet'
+import {Box, Text, Collapsible, Markdown} from 'grommet'
 import {UserNew, Trash, Edit} from 'grommet-icons'
 import Dropdown from '../utils/Dropdown'
 import UserListEntry from '../users/UserListEntry'
@@ -66,7 +66,9 @@ function ConversationHeader(props) {
                 </Box>
               </Dropdown>
               <Box {...BOX_ATTRS} align='center' justify='center' border={null} onMouseOver={() => setEditing(true)} onMouseOut={() => setEditing(false)}>
-                <Text syle={{lineHeight: '15px'}} size='xsmall' margin={{right: '3px'}}>{data.conversation.topic || "Add a description"}</Text>
+                <Text syle={{lineHeight: '15px'}} size='xsmall' margin={{right: '3px'}}>
+                  <Markdown>{data.conversation.topic || "Add a description"}</Markdown>
+                </Text>
                 <div style={editing ? {} : {visibility: 'hidden'}}>
                   <Text height='15px' style={{lineHeight: '15px'}} margin={{right: '5px'}}><Edit size='15px' /></Text>
                   <ConversationDelete {...props} />

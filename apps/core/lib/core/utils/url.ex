@@ -7,8 +7,8 @@ defmodule Core.Utils.Url do
   end
 
   def unfurl(url, opts \\ []) do
-    with {:ok, {body, status_code}} <- fetch(url, opts),
-         {:ok, results}             <- parse(body)
+    with {:ok, {body, headers, status_code}} <- fetch(url, opts),
+         {:ok, results}                      <- parse(body, Map.new(headers))
     do
       {:ok, %Furlex{
         canonical_url: Furlex.Parser.extract_canonical(body),
@@ -18,23 +18,43 @@ defmodule Core.Utils.Url do
         other: results.other,
         status_code: status_code,
       }}
+    else
+      :plain -> {:ok, {:plain, url}}
+      error -> error
     end
   end
 
   defp fetch(url, opts) do
-    fetch        = Task.async Furlex.Fetcher, :fetch,        [ url, opts ]
-    yield        = Task.yield_many [ fetch ]
+    fetch        = Task.async(fn -> intelligent_fetch(url, opts) end)
 
-    with [ fetch ]                                 <- yield,
-         {_fetch, {:ok, {:ok, body, status_code}}} <- fetch
-    do
-      {:ok, {body, status_code}}
+    with {:ok, {:ok, body, headers, status_code}} <- Task.yield(fetch, 10_000) do
+      {:ok, {body, headers, status_code}}
     else
       _ -> {:error, :fetch_error}
     end
   end
 
-  defp parse(body) do
+  defp intelligent_fetch(url, opts) do
+    with {:ok, %{headers: headers, status_code: code}} <- Mojito.head(url, [], [pool: false] ++ opts),
+         :stop <- proceed(Map.new(headers)) do
+      {:ok, "", headers, code}
+    else
+      :continue -> do_fetch(url, opts)
+      error -> error
+    end
+  end
+
+  defp do_fetch(url, opts) do
+    case Mojito.get(url, [], [pool: false] ++ opts) do
+      {:ok, %{body: body, headers: headers, status_code: status_code}} -> {:ok, body, headers, status_code}
+      other -> other
+    end
+  end
+
+  defp proceed(%{"content-type" => "text/html"}), do: :continue
+  defp proceed(_), do: :stop
+
+  defp parse(body, %{"content-type" => "text/html"}) do
     parse = &Task.async(&1, :parse, [ body ])
     tasks = Enum.map([
       Furlex.Parser.Facebook,
@@ -59,4 +79,5 @@ defmodule Core.Utils.Url do
       _ -> {:error, :parse_error}
     end
   end
+  defp parse(_, _), do: :plain
 end

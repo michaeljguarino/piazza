@@ -1,5 +1,5 @@
 import React from 'react'
-import {Box, Text} from 'grommet'
+import {Box, Text, Image, Video} from 'grommet'
 
 function dimensions(props) {
   let width = props.width || '200px'
@@ -15,8 +15,7 @@ function VideoEmbed(props) {
 
 function ImageEmbed(props) {
   return (
-    <img alt={props.title} src={props.url} height={props.height} width={props.width}>
-    </img>
+    <Image src={props.url} />
   )
 }
 

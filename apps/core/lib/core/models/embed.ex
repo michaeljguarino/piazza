@@ -19,7 +19,7 @@ defmodule Core.Models.Embed do
   def changeset(model, attrs \\ %{}) do
     model
     |> cast(attrs, @valid)
-    |> validate_required([:type])
+    |> validate_required([:type, :url])
   end
 
   def from_furlex(%Furlex{oembed: %{"url" => url, "type" => type, "height" => height, "width" => width} = attrs}) do
@@ -46,12 +46,26 @@ defmodule Core.Models.Embed do
     |> Map.put(:author, attrs["og:site_name"])
     |> ok()
   end
+  def from_furlex({:plain, url}), do: {:ok, %{type: type_from_ext(url), url: url}}
   def from_furlex(_), do: {:error, :noembed}
 
   def type(type, url) do
     case Path.extname(url) do
       ".gif" -> :image
       _ -> type(type)
+    end
+  end
+
+  def type_from_ext(url) do
+    case Path.extname(url) do
+      ".gif"  -> :image
+      ".jpeg" -> :image
+      ".jpg"  -> :image
+      ".png"  -> :image
+      ".mp4"  -> :video
+      ".mp3"  -> :video
+      ".webm" -> :video
+      _       -> :attachment
     end
   end
 

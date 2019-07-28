@@ -17,18 +17,22 @@ defimpl Core.Recurse.Traversable, for: Core.PubSub.MessageCreated do
     |> unfurl_urls(message, actor)
   end
 
-  def unfurl_urls(_, %{embed: %{title: t}}, _) when not is_nil(t), do: :ok
+  def unfurl_urls(_, %{embed: %{url: t}}, _) when not is_nil(t), do: :ok
   def unfurl_urls([url | _], message, user) do
     with {:ok, furlex} <- Core.Utils.Url.unfurl(url),
          {:ok, embed}  <- Core.Models.Embed.from_furlex(furlex) do
       Core.Services.Conversations.create_message(
         message.conversation_id,
-        %{text: embed.title, embed: embed},
+        %{text: text(embed), embed: embed},
         user
       )
     end
   end
   def unfurl_urls(_, _, _), do: :ok
+
+  defp text(%{title: title}), do: title
+  defp text(%{description: description}), do: description
+  defp text(%{url: url}), do: url
 
   def parse_command(%{actor: %{bot: true}}), do: :ok # prevent recursive commands
   def parse_command(%{item: %{text: "/" <> text} = msg}) do

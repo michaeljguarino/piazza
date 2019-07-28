@@ -83,8 +83,18 @@ defmodule Core.PubSub.Consumers.Recurse.ConversationsTest do
       assert new_message.embed.author
     end
 
+    test "It will handle non-html content" do
+      url = "https://media1.giphy.com/media/Y4pAQv58ETJgRwoLxj/giphy.gif?cid=790b76115d3df1ac77494f414156f84b&rid=giphy.gif"
+      msg = insert(:message, text: url)
+      event = %PubSub.MessageCreated{item: msg, actor: msg.creator}
+      {:ok, new_msg} = Recurse.handle_event(event)
+
+      assert new_msg.embed.type == :image
+      assert new_msg.embed.url  == url
+    end
+
     test "It will ignore previous embeds" do
-      message = insert(:message, embed: %{title: "something"}, text: "I found [doggo](https://giphy.com/embed/Y4pAQv58ETJgRwoLxj)")
+      message = insert(:message, embed: %{url: "something"}, text: "I found [doggo](https://giphy.com/embed/Y4pAQv58ETJgRwoLxj)")
       event = %PubSub.MessageCreated{item: message, actor: message.creator}
       :ok = Recurse.handle_event(event)
     end
