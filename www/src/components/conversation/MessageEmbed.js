@@ -15,7 +15,7 @@ function VideoEmbed(props) {
 
 function ImageEmbed(props) {
   return (
-    <img alt={props.title} src={props.url} height={props.height} width={props.width} fill>
+    <img alt={props.title} src={props.url} height={props.height} width={props.width}>
     </img>
   )
 }
@@ -40,7 +40,7 @@ function MessageEmbed(props) {
     <Box direction='row' align='center' gap='small'>
       <EmbedMedia {...props} />
       <Box direction='column' align='start'>
-        <Text weight='bold' size='small'>{props.tile}</Text>
+        <Text weight='bold' size='small'>{props.title}</Text>
         <Text size='small'>{props.description}</Text>
       </Box>
     </Box>

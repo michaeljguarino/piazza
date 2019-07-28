@@ -6,6 +6,7 @@ defmodule Core.Models.Conversation do
     field :name,   :string
     field :public, :boolean, default: true
     field :global, :boolean, default: false
+    field :topic,  :string
 
     has_many :participants, Participant
     has_many :messages, Message
@@ -15,7 +16,7 @@ defmodule Core.Models.Conversation do
     timestamps()
   end
 
-  @valid ~w(name public global)a
+  @valid ~w(name public global topic)a
 
   def for_user(query \\ any(), user_id) do
     from(c in query,

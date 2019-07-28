@@ -23,9 +23,9 @@ class Me extends Component {
           </Box>
         </Box>
         <Box pad={{left: '20px', top: "20px", bottom: "20px"}} width="200px" gap='small'>
-          <Box direction="row">
+          <Box direction="row" align="center">
             <Avatar user={this.props.me} rightMargin='10px' />
-            <Text size="medium" weight='bold'>{this.props.me.name}</Text>
+            <Text size="small" weight='bold'>{this.props.me.name}</Text>
           </Box>
           <Anchor onClick={this._logout}>
             logout

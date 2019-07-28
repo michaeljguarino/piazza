@@ -30,7 +30,9 @@ defmodule Core.Schemas.Types do
     field :name, non_null(:string)
     field :public, non_null(:boolean)
     field :global, non_null(:boolean)
+    field :topic, :string
     field :creator, :user, resolve: dataloader(User)
+
     connection field :messages, node_type: :message do
       resolve &Conversation.list_messages/2
     end

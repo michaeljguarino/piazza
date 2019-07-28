@@ -51,6 +51,14 @@ const NEW_MESSAGES_SUB = gql`
         backgroundColor
         bot
       }
+      embed {
+        type
+        url
+        title
+        description
+        width
+        height
+      }
     }
   }
 `;
