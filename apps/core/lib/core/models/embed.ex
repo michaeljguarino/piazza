@@ -6,14 +6,15 @@ defmodule Core.Models.Embed do
 
   embedded_schema do
     field :type, Type
-    field :url, :string
+    field :author,      :string
+    field :url,         :string
     field :description, :string
-    field :title, :string
-    field :height, :integer
-    field :width, :integer
+    field :title,       :string
+    field :height,      :integer
+    field :width,       :integer
   end
 
-  @valid ~w(type url description title height width)a
+  @valid ~w(type url description title height width author)a
 
   def changeset(model, attrs \\ %{}) do
     model
@@ -22,7 +23,7 @@ defmodule Core.Models.Embed do
   end
 
   def from_furlex(%Furlex{oembed: %{"url" => url, "type" => type, "height" => height, "width" => width} = attrs}) do
-    %{type: type(type), url: url, width: width, height: height}
+    %{type: type(type, url), url: url, width: width, height: height}
     |> Map.put(:title, attrs["title"])
     |> ok()
   end
@@ -39,12 +40,20 @@ defmodule Core.Models.Embed do
     |> ok()
   end
   def from_furlex(%Furlex{facebook: %{"og:url" => url} = attrs}) do
-    %{type: type(attrs["og:type"]), url: url}
+    %{type: type(attrs["og:type"], url), url: url}
     |> Map.put(:title, attrs["og:title"])
     |> Map.put(:description, attrs["og:description"])
+    |> Map.put(:author, attrs["og:site_name"])
     |> ok()
   end
   def from_furlex(_), do: {:error, :noembed}
+
+  def type(type, url) do
+    case Path.extname(url) do
+      ".gif" -> :image
+      _ -> type(type)
+    end
+  end
 
   def type("video" <> _), do: :video
   def type("image" <> _), do: :image

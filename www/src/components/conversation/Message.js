@@ -3,6 +3,15 @@ import {Box, Text, Markdown} from 'grommet'
 import {Robot} from 'grommet-icons'
 import Avatar from '../users/Avatar'
 import moment from 'moment'
+import MessageEmbed from './MessageEmbed'
+
+function TextMessage(props) {
+  return (
+    <Text size='xsmall'>
+      <Markdown>{props.text}</Markdown>
+    </Text>
+  )
+}
 
 class Message extends Component {
   render() {
@@ -23,9 +32,10 @@ class Message extends Component {
             </Text>
           </Box>
           <Box>
-            <Text size='xsmall'>
-              <Markdown>{this.props.message.text}</Markdown>
-            </Text>
+            {this.props.message.embed ?
+              <MessageEmbed {...this.props.message.embed} /> :
+              <TextMessage {...this.props.message} />
+            }
           </Box>
         </Box>
       </Box>

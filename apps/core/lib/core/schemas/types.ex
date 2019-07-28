@@ -84,6 +84,7 @@ defmodule Core.Schemas.Types do
   object :embed do
     field :type,        :embed_type
     field :url,         :string
+    field :author,      :string
     field :title,       :string
     field :description, :string
     field :height,      :integer

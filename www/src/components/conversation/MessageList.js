@@ -25,6 +25,14 @@ const MESSAGES_Q = gql`
               backgroundColor
               bot
             }
+            embed {
+              type
+              url
+              title
+              description
+              width
+              height
+            }
           }
         }
       }

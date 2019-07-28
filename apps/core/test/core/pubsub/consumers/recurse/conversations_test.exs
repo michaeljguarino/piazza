@@ -76,8 +76,11 @@ defmodule Core.PubSub.Consumers.Recurse.ConversationsTest do
       event = %PubSub.MessageCreated{item: message, actor: message.creator}
       {:ok, new_message} = Recurse.handle_event(event)
 
-      assert new_message.embed.type == :video
+      assert new_message.embed.type == :image
       assert new_message.embed.url
+      assert new_message.embed.description
+      assert new_message.embed.title
+      assert new_message.embed.author
     end
 
     test "It will ignore previous embeds" do
