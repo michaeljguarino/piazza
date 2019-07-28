@@ -9,6 +9,6 @@ seed do
   Core.Services.Platform.create_command(%{
     webhook: %{url: "http://piazza-gql:4000/webhooks/giphy"},
     name: "giphy",
-    documentation: "* /giphy _string_\nWill query the giphy API and return back a link to the gif"
+    documentation: "* /giphy _string_ - Will query the giphy API and return back a link to the gif"
   }, admin)
 end

@@ -17,6 +17,15 @@ query Commands($cursor: String) {
         id
         name
         documentation
+        bot {
+          id
+          name
+          handle
+          bot
+        }
+        webhook {
+          url
+        }
       }
     }
   }

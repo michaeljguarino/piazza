@@ -9,9 +9,29 @@ defimpl Core.Recurse.Traversable, for: Core.PubSub.MessageCreated do
   """
   alias Core.Services.Platform
   alias Core.Models.{Command}
+  alias Core.Utils.Url
 
-  def traverse(%{actor: %{bot: true}}), do: :ok # prevent recursive commands
-  def traverse(%{item: %{text: "/" <> text} = msg}) do
+  def traverse(%{item: %{text: text} = message, actor: actor} = event) do
+    parse_command(event)
+    Url.find_urls(text)
+    |> unfurl_urls(message, actor)
+  end
+
+  def unfurl_urls(_, %{embed: %{title: t}}, _) when not is_nil(t), do: :ok
+  def unfurl_urls([url | _], message, user) do
+    with {:ok, furlex} <- Furlex.unfurl(url),
+         {:ok, embed} <- Core.Models.Embed.from_furlex(furlex) do
+      Core.Services.Conversations.create_message(
+        message.conversation_id,
+        %{text: embed.title, embed: embed},
+        user
+      )
+    end
+  end
+  def unfurl_urls(_, _, _), do: :ok
+
+  def parse_command(%{actor: %{bot: true}}), do: :ok # prevent recursive commands
+  def parse_command(%{item: %{text: "/" <> text} = msg}) do
     with [command | _] <- String.split(text, " "),
          %Command{} = c <- Platform.get_command(command),
          %{webhook: webhook, bot: bot} <- Core.Repo.preload(c, [:webhook, :bot]) do
@@ -19,7 +39,7 @@ defimpl Core.Recurse.Traversable, for: Core.PubSub.MessageCreated do
       Core.Aquaduct.Broker.publish(%Conduit.Message{body: payload}, :webhook)
     end
   end
-  def traverse(_), do: :ok
+  def parse_command(_), do: :ok
 end
 
 defimpl Core.Recurse.Traversable, for: Core.PubSub.ConversationCreated do

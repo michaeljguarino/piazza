@@ -23,7 +23,7 @@ defmodule Core.MixProject do
   def application do
     [
       mod: {Core.Application, []},
-      extra_applications: [:logger, :runtime_tools]
+      extra_applications: [:logger, :runtime_tools, :furlex]
     ]
   end
 
@@ -38,7 +38,9 @@ defmodule Core.MixProject do
     [
       {:ecto_sql, "~> 3.1"},
       {:ecto, "~> 3.1.7", override: true},
+      {:plug_cowboy, "~> 2.1.0", override: true},
       {:postgrex, ">= 0.0.0"},
+      {:furlex, "~> 0.4.2"},
       {:jason, "~> 1.0"},
       {:absinthe, "~> 1.4.6"},
       {:absinthe_relay, "~> 1.4.6"},

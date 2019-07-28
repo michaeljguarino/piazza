@@ -43,7 +43,7 @@ const Piazza = () => {
               let current = currentConversation || data.conversations.edges[0].node
               return (
                 <Grid
-                  rows={['auto']}
+                  rows={['100vh']}
                   columns={['200px', 'auto']}
                   areas={[
                     {name: 'convs', start: [0, 0], end: [0, 0]},

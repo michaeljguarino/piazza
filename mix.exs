@@ -21,7 +21,8 @@ defmodule Piazza.MixProject do
   defp deps do
     [
       {:ecto, "~> 3.1.7", override: true},
-      {:distillery, "~> 2.1"}
+      {:distillery, "~> 2.1"},
+      {:plug_cowboy, "~> 2.0", override: true}
     ]
   end
 

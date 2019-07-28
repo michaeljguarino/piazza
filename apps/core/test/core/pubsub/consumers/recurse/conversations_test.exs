@@ -54,7 +54,7 @@ defmodule Core.PubSub.Consumers.Recurse.ConversationsTest do
     test "It will ignore if no command exists" do
       message = insert(:message, text: "/nocommand help")
       event = %PubSub.MessageCreated{item: message}
-      nil = Recurse.handle_event(event)
+      :ok = Recurse.handle_event(event)
     end
 
     test "It will ignore if the actor was a bot" do
@@ -68,6 +68,21 @@ defmodule Core.PubSub.Consumers.Recurse.ConversationsTest do
     test "It will ignore when there is no command" do
       message = insert(:message, text: "not a command")
       event = %PubSub.MessageCreated{item: message}
+      :ok = Recurse.handle_event(event)
+    end
+
+    test "It will auto-unfurl urls" do
+      message = insert(:message, text: "I found [doggo](https://giphy.com/embed/Y4pAQv58ETJgRwoLxj)")
+      event = %PubSub.MessageCreated{item: message, actor: message.creator}
+      {:ok, new_message} = Recurse.handle_event(event)
+
+      assert new_message.embed.type == :image
+      assert new_message.embed.url
+    end
+
+    test "It will ignore previous embeds" do
+      message = insert(:message, embed: %{title: "something"}, text: "I found [doggo](https://giphy.com/embed/Y4pAQv58ETJgRwoLxj)")
+      event = %PubSub.MessageCreated{item: message, actor: message.creator}
       :ok = Recurse.handle_event(event)
     end
   end

@@ -1,6 +1,6 @@
 defmodule Core.Models.Message do
   use Core.DB.Schema
-  alias Core.Models.{User, Conversation, MessageEntity}
+  alias Core.Models.{User, Conversation, MessageEntity, Embed}
 
   schema "messages" do
     field :text, :string
@@ -8,6 +8,8 @@ defmodule Core.Models.Message do
     belongs_to :creator, User
     belongs_to :conversation, Conversation
     has_many :entities, MessageEntity
+
+    embeds_one :embed, Embed, on_replace: :update
 
     timestamps()
   end
@@ -39,6 +41,7 @@ defmodule Core.Models.Message do
   def changeset(model, attrs \\ %{}) do
     model
     |> cast(attrs, @valid)
+    |> cast_embed(:embed)
     |> validate_required([:text, :creator_id, :conversation_id])
     |> foreign_key_constraint(:creator_id)
     |> foreign_key_constraint(:conversation_id)

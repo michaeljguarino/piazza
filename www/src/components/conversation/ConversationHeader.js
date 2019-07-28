@@ -12,7 +12,7 @@ function ConversationHeader(props) {
       <Text weight='bold' margin={{bottom: '5px'}}>#{props.conversation.name}</Text>
       <Query query={PARTICIPANTS_Q} variables={{conversationId: props.conversation.id}}>
         {({loading, error, data}) => {
-          if (loading) return (<Box direction='row'><UserNew/>...</Box>)
+          if (loading) return (<Box direction='row'>...</Box>)
 
           return (
             <Box direction='row' align='end' justify='start' margin={{top: '5px', bottom: '5px'}}>
