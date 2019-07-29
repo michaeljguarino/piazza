@@ -4,7 +4,8 @@ import {Box, Text} from 'grommet'
 function Conversation(props) {
   const [hover, setHover] = useState(false);
   let selected = props.conversation.id === props.currentConversation.id
-  let boxProps = (selected) ? {background: '#0576B9'} : (hover ? {background: '#474A4D'} : {})
+  // #0576B9'
+  let boxProps = (selected) ? {background: 'accent-1'} : (hover ? {background: '#474A4D'} : {})
   let textProps = (selected) ? {} : {color: props.color}
   return (
     <Box

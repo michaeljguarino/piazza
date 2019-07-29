@@ -40,7 +40,7 @@ defmodule Core.Resolvers.User do
   end
   def with_jwt(error), do: error
 
-  @colors ~w(#6b5b95 #feb236 #d64161 #ff7b25)
+  @colors ~w(#6b5b95 #feb236 #d64161 #ff7b25 #103A50 #CDCCC2 #FDC401 #8E5B3C #020001 #2F415B)
 
   def background_color(%{id: id}) do
     stripped = String.replace(id, "-", "")

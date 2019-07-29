@@ -3,6 +3,7 @@ import { AUTH_TOKEN } from '../constants'
 import { Mutation } from 'react-apollo'
 import gql from 'graphql-tag'
 import {Box, Form, FormField, Button, Text, Anchor} from 'grommet'
+import Error from './utils/Error'
 
 const SIGNUP_MUTATION = gql`
   mutation Signup($email: String!, $password: String!, $handle: String!, $name: String!) {
@@ -33,14 +34,16 @@ class Login extends Component {
     const { login, email, password, name, handle } = this.state
     this._checkLoggedIn()
     return (
-      <Box direction="column" align="center" justify="center" height="100vh">
+      <Box background='brand' direction="column" align="center" justify="center" height="100vh">
         <Mutation
                 mutation={login ? LOGIN_MUTATION : SIGNUP_MUTATION}
                 variables={{ email, password, name, handle }}
                 onCompleted={data => this._confirm(data)}
               >
-          {mutation => (
+          { (mutation, {error}) => {
+            return (
             <Box width="400px" background="light-1" pad='medium' border={{style: "hidden"}} round="small" elevation="small">
+              {error && <Error errors={error} />}
               <Form onSubmit={mutation}>
                 <Box margin={{bottom: '10px'}}>
                   <Box direction="column" justify="center" align="center">
@@ -72,7 +75,7 @@ class Login extends Component {
                   <FormField
                     value={password}
                     name="password"
-                    label="Password"
+                    label="Password (at least 10 chars)"
                     type="password"
                     onChange={e => this.setState({ password: e.target.value })}
                     placeholder="battery horse fire stapler"
@@ -88,8 +91,8 @@ class Login extends Component {
                   </Anchor>
                 </Box>
               </Form>
-            </Box>
-          )}
+            </Box>)
+          }}
         </Mutation>
       </Box>
     )

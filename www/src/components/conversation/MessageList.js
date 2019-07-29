@@ -20,6 +20,7 @@ const MESSAGES_Q = gql`
             text
             insertedAt
             creator {
+              id
               name
               handle
               backgroundColor
@@ -28,6 +29,7 @@ const MESSAGES_Q = gql`
             embed {
               type
               url
+              image_url
               title
               description
               width
@@ -46,6 +48,7 @@ const NEW_MESSAGES_SUB = gql`
       text
       insertedAt
       creator {
+        id
         name
         handle
         backgroundColor
@@ -55,6 +58,7 @@ const NEW_MESSAGES_SUB = gql`
         type
         url
         title
+        image_url
         description
         width
         height
@@ -111,7 +115,7 @@ class MessageList extends Component {
                 flexDirection: 'column-reverse',
                 padTop: '5px'
               }}
-              mapper={(edge) => <Message key={edge.node.id} message={edge.node} />}
+              mapper={(edge, prev) => <Message key={edge.node.id} message={edge.node} prev={prev.node} />}
               onLoadMore={() => {
                 if (!pageInfo.hasNextPage) {
                   return

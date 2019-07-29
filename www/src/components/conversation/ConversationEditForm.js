@@ -17,7 +17,9 @@ function ConversationEditForm(props) {
           value={props.state.topic || 'conversation topic'}
           onChange={(e) => props.onStateChange({topic: e.target.value})}
           />
-        <Button type='submit' primary label={props.action || 'create'} />
+        <Box margin={{top: '5px'}}>
+          <Button type='submit' primary label={props.action || 'create'} />
+        </Box>
       </Form>
     </Box>
   )

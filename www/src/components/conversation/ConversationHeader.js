@@ -1,7 +1,7 @@
 import React, {useState} from 'react'
 import { Query, Mutation } from 'react-apollo'
 import {Box, Text, Markdown} from 'grommet'
-import {UserNew, Trash, Edit} from 'grommet-icons'
+import {UserNew, Trash} from 'grommet-icons'
 import Dropdown from '../utils/Dropdown'
 import UserListEntry from '../users/UserListEntry'
 import {PARTICIPANTS_Q, DELETE_CONVERSATION, UPDATE_CONVERSATION, CONVERSATIONS_Q} from './queries'
@@ -78,6 +78,9 @@ function ConversationUpdate(props) {
           <Text syle={{lineHeight: '15px'}} size='xsmall' margin={{right: '3px'}}>
             <Markdown>{props.conversation.topic || "Add a description"}</Markdown>
           </Text>
+          <Box align='center' justify='center' pad='small'>
+            <Text>Update #{props.conversation.name}</Text>
+          </Box>
           <ConversationEditForm
             state={{name: props.conversation.name, topic: props.conversation.topic}}
             mutation={mutation}

@@ -82,9 +82,9 @@ rabbitPasswordSecret: piazza-rabbitmq
 
 ingress:
   enabled: true
-  dns: api.piazzaapp.com
+  dns: chat.piazzaapp.com
   annotations:
-    networking.gke.io/managed-certificates: piazza-certificate
+    networking.gke.io/managed-certificates: piazza-cert
   hosts:
     - host: chart-example.local
       paths: []

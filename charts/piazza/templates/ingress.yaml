@@ -13,7 +13,7 @@ spec:
 apiVersion: networking.gke.io/v1beta1
 kind: ManagedCertificate
 metadata:
-  name: piazza-certificate
+  name: piazza-cert
 spec:
   domains:
   - {{ .Values.ingress.dns }}
@@ -42,16 +42,14 @@ spec:
         backend:
           serviceName: piazza-rtc
           servicePort: http
-      - path: /cluster
+      - path: /gql
         backend:
-          serviceName: piazza-rtc
-          servicePort: http
-      - backend:
           serviceName: piazza-gql
           servicePort: http
-  - host: {{ .Values.www.dns | quote }}
-    http:
-      paths:
+      - path: /graphiql
+        backend:
+          serviceName: piazza-gql
+          servicePort: http
       - backend:
           serviceName: piazza-www
           servicePort: http

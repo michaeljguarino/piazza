@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import {rollup} from '../utils/array'
 
 class Scroller extends Component {
   componentDidMount() {
@@ -28,7 +29,7 @@ class Scroller extends Component {
   render() {
     return (
       <div id={this.props.id} onScroll={this.handleOnScroll} style={this.props.style}>
-        {Array.from(this.props.edges, this.props.mapper)}
+        {Array.from(rollup(this.props.edges, this.props.mapper))}
       </div>
     );
   }

@@ -1,5 +1,5 @@
 import React, {useState} from 'react'
-import {Box, Text, Form, FormField, Button} from 'grommet'
+import {Box, Text} from 'grommet'
 import {Add} from 'grommet-icons'
 import { Mutation } from 'react-apollo'
 import Dropdown from '../utils/Dropdown'
@@ -47,7 +47,12 @@ function ConversationCreator(props) {
             }}
           >
             {mutation => (
-              <ConversationEditForm state={state} mutation={mutation} onStateChange={(update) => setState({...state, ...update})} />
+              <Box>
+                <Box align='center' justify='center' pad='small'>
+                  <Text>Create a new conversation</Text>
+                </Box>
+                <ConversationEditForm state={state} mutation={mutation} onStateChange={(update) => setState({...state, ...update})} />
+              </Box>
             )}
           </Mutation>
         </Dropdown>

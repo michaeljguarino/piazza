@@ -4,7 +4,6 @@ import {Box, Text} from 'grommet'
 const background='#ff7b25'
 
 function Avatar(props) {
-  console.log(props.user.backgroundColor)
   return (
     <Box
       border={{style: 'hidden'}}

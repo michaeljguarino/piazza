@@ -17,9 +17,9 @@ const theme = {
   },
   global: {
     colors: {
-      brand: '#1A1D21',
-      'accent-1': '#0576B9',
-      focus: '#0576B9'
+      brand: '#2F415B',
+      'accent-1': '#CF6D57',
+      focus: '#CF6D57'
     },
     drop: {
       border: {

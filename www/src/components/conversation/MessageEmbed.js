@@ -1,5 +1,5 @@
 import React from 'react'
-import {Box, Text, Image, Video} from 'grommet'
+import {Box, Text, Image, Video, Anchor} from 'grommet'
 
 function dimensions(props) {
   let width = props.width || '200px'
@@ -19,6 +19,13 @@ function ImageEmbed(props) {
   )
 }
 
+function SiteEmbed(props) {
+  return (props.image_url ?
+    <img style={{maxHeight: '200px', maxWidth: '200px'}} src={props.image_url} fit='contain'/> :
+    <span></span>
+  )
+}
+
 
 function EmbedMedia(props) {
   switch (props.type) {
@@ -26,6 +33,8 @@ function EmbedMedia(props) {
       return <VideoEmbed {...props} />
     case "IMAGE":
       return <ImageEmbed {...props} />
+    case "SITE":
+      return <SiteEmbed {...props} />
     default:
       return (<div></div>)
   }
@@ -37,8 +46,8 @@ function MessageEmbed(props) {
   return (
     <Box direction='row' align='center' gap='small'>
       <EmbedMedia {...props} />
-      <Box direction='column' align='start'>
-        <Text weight='bold' size='small'>{props.title}</Text>
+      <Box direction='column' align='start' gap='xsmall'>
+        <Anchor _target='blank' href={props.url} weight='bold' size='medium'>{props.title}</Anchor>
         <Text size='small'>{props.description}</Text>
       </Box>
     </Box>
