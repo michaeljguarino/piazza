@@ -80,3 +80,4 @@ bootstrap: ## initialize your helm/kubernetes environment
 	# setup the piazza namespace
 	kubectl create namespace piazza
 	kubectl create secret generic externaldns-serviceaccount --from-file=credentials.json=creds/externaldns.json -n piazza
+	kubectl create secret generic piazza-serviceaccount --from-file=credentials.json=creds/gcp.json -n piazza

@@ -15,5 +15,8 @@ config :core, :consumers, [
   Core.PubSub.Consumers.Rtc,
 ]
 
+config :goth, json: {:system, "GCP_CREDENTIALS"}
+
+
 # Do not print debug messages in production
 config :logger, level: :info

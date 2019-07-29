@@ -6,7 +6,6 @@ function* reverse(array, mapper = (i) => i) {
 
 function* rollup(array, mapper = (i) => i) {
   let prev = {}
-  let len = array.length
   for (let item of array) {
     yield mapper(item, prev)
     prev = item

@@ -43,6 +43,7 @@ imagePullSecrets: []
 gql:
   port: 4000
   image: gcr.io/piazza-247002/gql
+  gcsBucket: mguarino-piazza
   resources:
     requests:
       cpu: .15

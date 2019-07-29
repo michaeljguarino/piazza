@@ -90,6 +90,13 @@ config :libcluster, :topologies, []
 
 config :core, :start_broker, true
 
+config :arc,
+  storage: Arc.Storage.GCS,
+  bucket: "mguarino-piazza"
+
+config :goth,
+  json: {:system, "GOOGLE_APPLICATION_CREDENTIALS"}
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{Mix.env()}.exs"

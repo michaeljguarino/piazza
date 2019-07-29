@@ -8,6 +8,8 @@ blocks:
 - name: test
   dependencies: []
   task:
+    secrets:
+    - name: gcp-test
     jobs:
     - name: Test
       commands:
@@ -34,6 +36,7 @@ blocks:
   task:
     secrets:
     - name: GCP
+    - name: gcp-test
     prologue:
       commands:
       # Authenticate using the file injected from the secret

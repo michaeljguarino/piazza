@@ -1,5 +1,5 @@
 import React from 'react'
-import {Box, Text} from 'grommet'
+import {Box, Text, Image} from 'grommet'
 
 const background='#ff7b25'
 
@@ -14,7 +14,10 @@ function Avatar(props) {
       width='40px'
       height='40px'
       margin={{right: props.rightMargin || '5px'}}>
-      <Text>{props.user.handle.charAt(0).toUpperCase()}</Text>
+      {props.user.avatar ?
+        <Image fit='contain' src={props.user.avatar}/> :
+        <Text>{props.user.handle.charAt(0).toUpperCase()}</Text>
+      }
     </Box>
   )
 }

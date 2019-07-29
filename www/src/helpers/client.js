@@ -1,6 +1,7 @@
 import { ApolloClient } from 'apollo-client'
 import { setContext } from 'apollo-link-context'
 import { createHttpLink } from 'apollo-link-http'
+import { createLink } from "apollo-absinthe-upload-link";
 import { InMemoryCache } from 'apollo-cache-inmemory'
 import { AUTH_TOKEN } from '../constants'
 import { split } from 'apollo-link'
@@ -12,7 +13,7 @@ import {Socket as PhoenixSocket} from "phoenix";
 const GQL_URL='http://chat.piazzaapp.com/gql'
 const WS_URI='ws://chat.piazzaapp.com/socket'
 
-const httpLink = createHttpLink({
+const httpLink = createLink({
   uri: GQL_URL
 })
 

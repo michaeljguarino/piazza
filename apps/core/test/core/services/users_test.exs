@@ -58,6 +58,15 @@ defmodule Core.Services.UsersTest do
       assert_receive {:event, %PubSub.UserUpdated{item: ^updated}}
     end
 
+    @tag :skip
+    test "A user can add avatars" do
+      user = build(:user) |> with_password("super strong pwd")
+      url  = "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/Mona_Lisa%2C_by_Leonardo_da_Vinci%2C_from_C2RMF_retouched.jpg/600px-Mona_Lisa%2C_by_Leonardo_da_Vinci%2C_from_C2RMF_retouched.jpg"
+      {:ok, user} = Users.update_user(user.id, %{avatar: url}, user)
+
+      assert Core.Avatar.url({user.avatar, user})
+    end
+
     test "Admins can modify user roles" do
       admin = insert(:user, roles: %{admin: true})
       user = build(:user) |> with_password("super strong pwd")

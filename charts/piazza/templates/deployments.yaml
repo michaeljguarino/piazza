@@ -37,11 +37,18 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: status.podIP
+        - name: GCS_BUCKET
+          value: {{ .Values.gql.gcsBucket }}
         - name: RABBITMQ_PASSWORD
           valueFrom:
             secretKeyRef:
               name: {{ .Values.rabbitPasswordSecret }}
               key: rabbitmq-password
+        - name: GCP_CREDENTIALS
+          valueFrom:
+            secretKeyRef:
+              name: piazza-serviceaccount
+              key: credentials.json
         - name: POSTGRES_PASSWORD
           valueFrom:
             secretKeyRef:
@@ -116,6 +123,11 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: status.podIP
+        - name: GCP_CREDENTIALS
+          valueFrom:
+            secretKeyRef:
+              name: piazza-serviceaccount
+              key: credentials.json
         - name: RABBITMQ_PASSWORD
           valueFrom:
             secretKeyRef:

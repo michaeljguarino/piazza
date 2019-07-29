@@ -28,3 +28,7 @@ config :core, Core.Repo,
   hostname: "piazza-postgresql"
 
 config :gql, :giphy_secret, get_env("GIPHY_SECRET")
+
+config :arc,
+  storage: Arc.Storage.GCS,
+  bucket: get_env("GCS_BUCKET")

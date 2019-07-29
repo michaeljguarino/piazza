@@ -18,6 +18,10 @@ defmodule Core.Schemas.Types do
       _, _, %{context: %{current_user: %{}}} -> {:error, "you can only view your own jwt"}
       %{jwt: jwt}, _, _ -> {:ok, jwt}
     end
+    field :avatar, :string, resolve: fn
+      %{avatar: nil}, _, _ -> {:ok, nil}
+      user, _, _ -> {:ok, Core.Avatar.url({user.avatar, user}, :original, signed: true)}
+    end
     field :background_color, :string, resolve: fn user, _, _ ->
       {:ok, User.background_color(user)}
     end

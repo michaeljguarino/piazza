@@ -19,6 +19,8 @@ query Users($cursor: String) {
         handle
         bot
         bio
+        avatar
+        backgroundColor
       }
     }
   }

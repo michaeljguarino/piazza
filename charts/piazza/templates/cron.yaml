@@ -22,6 +22,11 @@ spec:
             env:
             - name: CRON
               value: Prune.Messages
+            - name: GCP_CREDENTIALS
+              valueFrom:
+                secretKeyRef:
+                  name: piazza-serviceaccount
+                  key: credentials.json
             - name: RETENTION_POLICY
               value: "{{ .Values.retentionPolicy }}"
             - name: HOST

@@ -1,6 +1,8 @@
 defmodule Core.Schemas.Inputs do
   use Absinthe.Schema.Notation
 
+  import_types Absinthe.Plug.Types
+
   input_object :user_attributes do
     field :name,     :string
     field :email,    :string
@@ -8,6 +10,7 @@ defmodule Core.Schemas.Inputs do
     field :handle,   :string
     field :bio,      :string
     field :roles,    :role_attributes
+    field :avatar,   :upload
     field :notification_preferences, :notification_prefs
   end
 

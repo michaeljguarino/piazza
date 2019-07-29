@@ -25,6 +25,7 @@ const MESSAGES_Q = gql`
               handle
               backgroundColor
               bot
+              avatar
             }
             embed {
               type
@@ -53,6 +54,7 @@ const NEW_MESSAGES_SUB = gql`
         handle
         backgroundColor
         bot
+        avatar
       }
       embed {
         type

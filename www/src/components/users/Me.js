@@ -1,8 +1,25 @@
 import React, {Component } from 'react'
 import {Box, Text, Anchor} from 'grommet'
 import Avatar from './Avatar'
+import gql from 'graphql-tag'
+import { Mutation } from 'react-apollo'
 import Dropdown from '../utils/Dropdown'
 import {AUTH_TOKEN} from '../../constants'
+import { FilePicker } from 'react-file-picker'
+
+const UPDATE_USER=gql`
+mutation UpdateUser($id: ID!, $attributes: UserAttributes!) {
+  updateUser(id: $id, attributes: $attributes) {
+    id
+    name
+    email
+    handle
+    bot
+    avatar
+    backgroundColor
+  }
+}
+`;
 
 class Me extends Component {
   state = {};
@@ -13,26 +30,37 @@ class Me extends Component {
   }
 
   render() {
+    console.log(this.props.me)
     return (
       <Box style={{cursor: 'pointer'}} height='40px' margin={{bottom: 'large', top: '10px'}} pad={this.props.pad} direction='row'>
-        <Dropdown>
-          <Box direction='row' margin={{bottom: '5px'}}>
-            <Avatar user={this.props.me} rightMargin='10px' />
+        <Box direction='row' margin={{bottom: '5px'}}>
+          <Mutation mutation={UPDATE_USER} >
+            {mutate => (
+              <FilePicker
+                extensions={['jpg', 'jpeg', 'png']}
+                dims={{minWidth: 100, maxWidth: 500, minHeight: 100, maxHeight: 500}}
+                onChange={ (file) => mutate({variables: {id: this.props.me.id, attributes: {avatar: file}}})}
+              >
+                <span><Avatar user={this.props.me} rightMargin='10px' /></span>
+              </FilePicker>
+            )}
+          </Mutation>
+          <Dropdown>
             <Box>
               <Text size='small' weight='bold'>{"@" + this.props.me.handle}</Text>
               <Text size='small' color='dark-6'>{this.props.me.name}</Text>
             </Box>
-          </Box>
-          <Box pad={{left: '20px', top: "20px", bottom: "20px"}} width="200px" gap='small'>
-            <Box direction="row" align="center">
-              <Avatar user={this.props.me} rightMargin='10px' />
-              <Text size="small" weight='bold'>{this.props.me.name}</Text>
+            <Box pad={{left: '20px', top: "20px", bottom: "20px"}} width="200px" gap='small'>
+              <Box direction="row" align="center">
+                <Avatar user={this.props.me} rightMargin='10px' />
+                <Text size="small" weight='bold'>{this.props.me.name}</Text>
+              </Box>
+              <Anchor onClick={this._logout}>
+                logout
+              </Anchor>
             </Box>
-            <Anchor onClick={this._logout}>
-              logout
-            </Anchor>
-          </Box>
-        </Dropdown>
+          </Dropdown>
+        </Box>
       </Box>
     )
   }
