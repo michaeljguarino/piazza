@@ -14,4 +14,14 @@ defmodule Core.Services.NotificationsTest do
       assert Enum.all?(notifs, & &1.seen_at)
     end
   end
+
+  describe "#unseen_count/1" do
+    test "It can tally unseen notifs for a user" do
+      user = insert(:user)
+      insert_list(2, :notification, user: user)
+      insert_list(3, :notification, seen_at: DateTime.utc_now(), user: user)
+
+      assert Notifications.unseen_count(user) == 2
+    end
+  end
 end

@@ -1,7 +1,6 @@
 import React, {useState} from 'react'
 import { Query } from 'react-apollo'
 import { Redirect } from 'react-router'
-import gql from 'graphql-tag'
 import MessageList from './conversation/MessageList'
 import MessageInput from './conversation/MessageInput'
 import ConversationPanel from './conversation/ConversationPanel'
@@ -10,18 +9,7 @@ import Loading from './utils/Loading'
 import {wipeToken} from '../helpers/authentication'
 import {Box, Grid} from 'grommet'
 import {CONVERSATIONS_Q} from './conversation/queries'
-
-const ME_Q=gql`
-query {
-  me {
-    id
-    name
-    handle
-    backgroundColor
-    avatar
-  }
-}
-`
+import {ME_Q} from './users/queries'
 
 const Piazza = () => {
   const [currentConversation, setCurrentConversation] = useState(null)

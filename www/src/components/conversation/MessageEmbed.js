@@ -21,7 +21,7 @@ function ImageEmbed(props) {
 
 function SiteEmbed(props) {
   return (props.image_url ?
-    <img style={{maxHeight: '200px', maxWidth: '200px'}} src={props.image_url} fit='contain'/> :
+    <img alt='' style={{maxHeight: '200px', maxWidth: '200px'}} src={props.image_url} fit='contain'/> :
     <span></span>
   )
 }

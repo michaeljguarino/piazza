@@ -4,6 +4,7 @@ import { Query } from 'react-apollo'
 import gql from 'graphql-tag'
 import Scroller from '../Scroller'
 import Loading from '../utils/Loading'
+import {mergeAppend} from '../../utils/array'
 
 const MESSAGES_Q = gql`
   query ConversationQuery($conversationId: ID!, $cursor: String) {
@@ -19,6 +20,18 @@ const MESSAGES_Q = gql`
             id
             text
             insertedAt
+            entities {
+              type
+              startIndex
+              length
+              user {
+                id
+                name
+                handle
+                backgroundColor
+                avatar
+              }
+            }
             creator {
               id
               name
@@ -55,6 +68,18 @@ const NEW_MESSAGES_SUB = gql`
         backgroundColor
         bot
         avatar
+      }
+      entities {
+        type
+        startIndex
+        length
+        user {
+          id
+          name
+          handle
+          backgroundColor
+          avatar
+        }
       }
       embed {
         type
@@ -117,7 +142,7 @@ class MessageList extends Component {
                 flexDirection: 'column-reverse',
                 padTop: '5px'
               }}
-              mapper={(edge, prev) => <Message key={edge.node.id} message={edge.node} prev={prev.node} />}
+              mapper={(edge, next) => <Message key={edge.node.id} message={edge.node} next={next.node} />}
               onLoadMore={() => {
                 if (!pageInfo.hasNextPage) {
                   return
@@ -127,14 +152,11 @@ class MessageList extends Component {
                   updateQuery: (prev, {fetchMoreResult}) => {
                     const edges = fetchMoreResult.conversation.messages.edges
                     const pageInfo = fetchMoreResult.conversation.messages.pageInfo
-                    if (messageEdges.find((edge) => edge.node.id === edges[0].node.id)) {
-                      return prev;
-                    }
                     return edges.length ? {
                       conversation: {
                         messages: {
-                          __typename: prev.conversation.__typename,
-                          edges: [...prev.conversation.messages.edges, ...edges],
+                          __typename: prev.conversation.messages.__typename,
+                          edges: mergeAppend(edges, prev.conversation.messages.edges, (e) => e.node.id),
                           pageInfo
                         },
                         ...this.props.conversation

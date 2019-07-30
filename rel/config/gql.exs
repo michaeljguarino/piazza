@@ -6,7 +6,8 @@ config :gql, GqlWeb.Endpoint,
 
 config :core, :consumers, [
   Core.PubSub.Consumers.Recurse,
-  Core.PubSub.Consumers.Rtc
+  Core.PubSub.Consumers.Rtc,
+  Core.PubSub.Consumers.Notifications
 ]
 
 config :gql, :giphy_secret, get_env("GIPHY_SECRET")

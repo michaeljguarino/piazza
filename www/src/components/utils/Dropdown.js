@@ -14,7 +14,7 @@ function Dropdown(props) {
       </span>
       {open && (
         <Drop
-          align={props.align || { top: "bottom", left: "left" }}
+          align={props.align || { top: "bottom"}}
           target={targetRef.current}
           onClickOutside={() => setOpen(false)}
           onEsc={() => setOpen(false)}

@@ -8,7 +8,7 @@ defimpl Core.Notifications.Notifiable, for: Core.PubSub.MessageCreated do
 
   def notifs(%{item: %{entities: entities} = msg}) do
     participants = get_participants(msg.conversation_id)
-    by_user      = Enum.map(participants, & {&1.user_id, &1}) |> Map.new()
+    by_user      = Enum.into(participants, %{}, & {&1.user_id, &1})
     mentions     = filter_mentions(entities, by_user)
 
     mentioned_users = Enum.map(entities, & &1.user_id) |> MapSet.new()

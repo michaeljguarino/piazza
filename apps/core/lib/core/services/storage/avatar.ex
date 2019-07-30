@@ -2,6 +2,7 @@ defmodule Core.Avatar do
   use Arc.Definition
   use Arc.Ecto.Definition
 
+  @acl :public_read
   @versions [:original]
   @extension_whitelist ~w(.jpg .jpeg .gif .png)
 

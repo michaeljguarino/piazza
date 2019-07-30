@@ -6,6 +6,7 @@ import Dropdown from '../utils/Dropdown'
 import UserListEntry from '../users/UserListEntry'
 import {PARTICIPANTS_Q, DELETE_CONVERSATION, UPDATE_CONVERSATION, CONVERSATIONS_Q} from './queries'
 import ConversationEditForm from './ConversationEditForm'
+import NotificationIcon from '../notifications/NotificationIcon'
 
 const BOX_ATTRS = {
   direction: "row",
@@ -96,36 +97,39 @@ function ConversationUpdate(props) {
 function ConversationHeader(props) {
   const [editing, setEditing] = useState(false)
   return (
-    <Box border='bottom' pad={{left: '20px', top: '10px'}} margin={{bottom: '10px'}}>
-      <Text weight='bold' margin={{bottom: '5px'}}>#{props.conversation.name}</Text>
-      <Query query={PARTICIPANTS_Q} variables={{conversationId: props.conversation.id}}>
-        {({loading, error, data}) => {
-          if (loading) return (<Box direction='row'>...</Box>)
+    <Box direction='row' border='bottom' pad={{left: '20px', top: '10px'}} margin={{bottom: '10px'}}>
+      <Box fill='horizontal' direction='column'>
+        <Text weight='bold' margin={{bottom: '5px'}}>#{props.conversation.name}</Text>
+        <Query query={PARTICIPANTS_Q} variables={{conversationId: props.conversation.id}}>
+          {({loading, error, data}) => {
+            if (loading) return (<Box direction='row'>...</Box>)
 
-          return (
-            <Box height='25px' direction='row' align='end' justify='start' pad={{top: '5px', bottom: '5px'}}>
-              <Dropdown>
-                <Box {...BOX_ATTRS}>
-                  <Text height='15px' style={{lineHeight: '15px'}} margin={{right: '3px'}}><UserNew size='15px' /></Text>
-                  <Text size='xsmall'>{data.conversation.participants.edges.length}</Text>
+            return (
+              <Box height='25px' direction='row' align='end' justify='start' pad={{top: '5px', bottom: '5px'}}>
+                <Dropdown>
+                  <Box {...BOX_ATTRS}>
+                    <Text height='15px' style={{lineHeight: '15px'}} margin={{right: '3px'}}><UserNew size='15px' /></Text>
+                    <Text size='xsmall'>{data.conversation.participants.edges.length}</Text>
+                  </Box>
+                  <Box pad="small" gap='small'>
+                    <Text size='small' weight='bold'>Participants</Text>
+                    {data.conversation.participants.edges.map((p) => (
+                      <UserListEntry key={p.node.id} user={p.node.user} color='normal' />
+                    ))}
+                  </Box>
+                </Dropdown>
+                <Box {...BOX_ATTRS} align='center' justify='center' border={null} onMouseOver={() => setEditing(true)} onMouseOut={() => setEditing(false)}>
+                  <ConversationUpdate editing={editing} {...props} />
+                  <Text style={editing ? {lineHeight: '15px'} : {lineHeight: '15px', visibility: 'hidden'}}>
+                    <ConversationDelete {...props} />
+                  </Text>
                 </Box>
-                <Box pad="small" gap='small'>
-                  <Text size='small' weight='bold'>Participants</Text>
-                  {data.conversation.participants.edges.map((p) => (
-                    <UserListEntry key={p.node.id} user={p.node.user} color='normal' />
-                  ))}
-                </Box>
-              </Dropdown>
-              <Box {...BOX_ATTRS} align='center' justify='center' border={null} onMouseOver={() => setEditing(true)} onMouseOut={() => setEditing(false)}>
-                <ConversationUpdate editing={editing} {...props} />
-                <Text style={editing ? {lineHeight: '15px'} : {lineHeight: '15px', visibility: 'hidden'}}>
-                  <ConversationDelete {...props} />
-                </Text>
               </Box>
-            </Box>
-          )
-        }}
-      </Query>
+            )
+          }}
+        </Query>
+      </Box>
+      <NotificationIcon {...props} />
     </Box>
   )
 }

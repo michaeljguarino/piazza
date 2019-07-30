@@ -10,4 +10,10 @@ defmodule Core.Services.Notifications do
     |> elem(1)
     |> ok()
   end
+
+  def unseen_count(user) do
+    Notification.for_user(user.id)
+    |> Notification.unseen()
+    |> Core.Repo.aggregate(:count, :id)
+  end
 end
