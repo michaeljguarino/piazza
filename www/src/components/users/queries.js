@@ -25,6 +25,7 @@ export const ME_Q=gql`
       notificationPreferences {
         mention
       }
+      unseenNotifications
     }
   }
 `

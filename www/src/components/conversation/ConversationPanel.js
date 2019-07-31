@@ -6,6 +6,7 @@ import Commands from '../commands/Commands'
 import {Box} from 'grommet'
 import ConversationCreator from './ConversationCreator'
 import Scroller from '../Scroller'
+import {mergeAppend} from '../../utils/array'
 
 class ConversationPanel extends Component {
   render() {
@@ -26,7 +27,24 @@ class ConversationPanel extends Component {
               height: '40vh'
             }}
             edges={this.props.conversations}
-            onLoadMore={() => console.log('end of convs')}
+            onLoadMore={() => {
+              if (!this.props.pageInfo.hasNextPage) return
+
+              this.props.fetchMore({
+                variables: {cursor: this.props.pageInfo.endCursor},
+                updateQuery: (prev, {fetchMoreResult}) => {
+                  const edges = fetchMoreResult.conversations.edges
+                  const pageInfo = fetchMoreResult.conversations.pageInfo
+
+                  return edges.length ? {
+                    conversations: {
+                      ...prev.conversations,
+                      pageInfo,
+                      edges: mergeAppend(edges, prev.conversations.edges, (e) => e.node.id),
+                    }
+                  } : prev;
+                }
+              })}}
             mapper={(edge) => <Conversation
               pad={padding}
               color={textColor}

@@ -34,3 +34,38 @@ export const NOTIFICATIONS_Q=gql`
     }
   }
 `;
+
+export const VIEW_NOTIFICATIONS = gql`
+  mutation {
+    viewNotifications {
+      id
+    }
+  }
+`;
+
+export const NEW_NOTIFICATIONS_SUB = gql`
+  subscription {
+    newNotifications {
+      id
+      type
+      actor {
+        id
+        name
+        handle
+        email
+        backgroundColor
+        avatar
+        bot
+      }
+      message {
+        id
+        text
+        conversation {
+          id
+          name
+          topic
+        }
+      }
+    }
+  }
+`;

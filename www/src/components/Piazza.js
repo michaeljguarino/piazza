@@ -27,7 +27,7 @@ const Piazza = () => {
         let me = data.me
         return (
           <Query query={CONVERSATIONS_Q}>
-            {({loading, _error, data}) => {
+            {({loading, _error, data, loadMore}) => {
               if (loading) return <Loading />
               let current = currentConversation || data.conversations.edges[0].node
               return (
@@ -46,11 +46,13 @@ const Piazza = () => {
                       currentConversation={current}
                       conversations={data.conversations.edges}
                       setCurrentConversation={setCurrentConversation}
+                      loadMore={loadMore}
+                      pageInfo={data.conversations.pageInfo}
                       />
                   </Box>
                   <Box gridArea='msgs'>
                     <Box height='75px'>
-                      <ConversationHeader conversation={current} setCurrentConversation={setCurrentConversation} />
+                      <ConversationHeader me={me} conversation={current} setCurrentConversation={setCurrentConversation} />
                     </Box>
                     <MessageList conversation={current} />
                     <Box height='60px'>

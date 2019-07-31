@@ -18,7 +18,7 @@ rabbitmq:
 
   resources:
     requests:
-      cpu: .2
+      cpu: .1
       memory: 256Mi
   replicas: 3
 

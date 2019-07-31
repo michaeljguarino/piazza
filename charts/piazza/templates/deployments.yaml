@@ -128,6 +128,8 @@ spec:
             secretKeyRef:
               name: piazza-serviceaccount
               key: credentials.json
+        - name: GCS_BUCKET
+          value: {{ .Values.gql.gcsBucket }}
         - name: RABBITMQ_PASSWORD
           valueFrom:
             secretKeyRef:

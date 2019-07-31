@@ -4,6 +4,8 @@ import gql from 'graphql-tag'
 import { Query } from 'react-apollo'
 import Scroller from '../Scroller'
 import UserListEntry from './UserListEntry'
+import {mergeAppend} from '../../utils/array'
+
 
 const USERS_Q=gql`
 query Users($cursor: String) {
@@ -52,7 +54,6 @@ function Users(props) {
                 fetchMore({
                   variables: {cursor: pageInfo.endCursor},
                   updateQuery: (prev, {fetchMoreResult}) => {
-                    console.log(fetchMoreResult)
                     const edges = fetchMoreResult.users.edges
                     const pageInfo = fetchMoreResult.users.pageInfo
                     if (userEdges.find((edge) => edge.node.id === edges[0].node.id)) {
@@ -60,9 +61,9 @@ function Users(props) {
                     }
                     return edges.length ? {
                       users: {
-                        edges: [...prev.users.edges, ...edges],
-                        pageInfo,
-                        ...prev
+                        ...prev,
+                        edges: mergeAppend(prev.users.edges, ...edges, (e) => e.node.id),
+                        pageInfo
                       }
                     } : prev;
                   }

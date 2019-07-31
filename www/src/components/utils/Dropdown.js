@@ -9,7 +9,10 @@ function Dropdown(props) {
   let rest  = props.children.slice(1)
   return (
     <span>
-      <span onClick={() => setOpen(true)} ref={targetRef}>
+      <span onClick={() => {
+          props.onClick && props.onClick()
+          setOpen(true)
+        }} ref={targetRef}>
         {first}
       </span>
       {open && (
