@@ -24,18 +24,19 @@ const authLink = setContext((_, { headers }) => {
   }
 })
 
-const absintheSocket = AbsintheSocket.create(
-  new PhoenixSocket(WS_URI, {
-    params: () => {
-      let token = localStorage.getItem(AUTH_TOKEN)
-      if (token) {
-        return { Authorization: `Bearer ${token}` };
-      } else {
-        return {};
-      }
-    },
-  }),
-);
+const socket = new PhoenixSocket(WS_URI, {
+  params: () => {
+    let token = localStorage.getItem(AUTH_TOKEN)
+    if (token) {
+      return { Authorization: `Bearer ${token}` };
+    } else {
+      return {};
+    }
+  },
+});
+
+
+const absintheSocket = AbsintheSocket.create(socket);
 
 const socketLink = createAbsintheSocketLink(absintheSocket);
 
@@ -50,4 +51,4 @@ const client = new ApolloClient({
   cache: new InMemoryCache()
 })
 
-export { client }
+export { client, socket }

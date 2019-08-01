@@ -1,5 +1,5 @@
 import React from 'react'
-import {Box, Text, Image, Video, Anchor} from 'grommet'
+import {Box, Text, Image, Anchor} from 'grommet'
 
 function dimensions(props) {
   let width = props.width || '200px'
@@ -9,7 +9,7 @@ function dimensions(props) {
 
 function VideoEmbed(props) {
   return (
-    <Video autoPlay loop src={props.url} />
+    <video autoPlay loop src={props.url}></video>
   )
 }
 

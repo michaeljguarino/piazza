@@ -5,6 +5,8 @@ import Avatar from '../users/Avatar'
 import moment from 'moment'
 import MessageEmbed from './MessageEmbed'
 import UserHandle from '../users/UserHandle'
+import PresenceIndicator from '../users/PresenceIndicator'
+import WithPresence from '../utils/presence'
 
 function TextMessage(props) {
   return (
@@ -64,6 +66,9 @@ function Message(props) {
             {props.message.creator.bot && (
               <Text margin={{right: '5px'}}><Robot size='15px'/></Text>
             )}
+            <WithPresence id={props.message.creator.id} >
+              {present => <PresenceIndicator present={present} />}
+            </WithPresence>
             <Text size='10px'>
               {date.fromNow()}
             </Text>

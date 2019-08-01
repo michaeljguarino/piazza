@@ -16,7 +16,6 @@ class Me extends Component {
   }
 
   render() {
-    console.log(this.props.me)
     return (
       <Box style={{cursor: 'pointer'}} height='40px' margin={{bottom: 'large', top: '10px'}} pad={this.props.pad} direction='row'>
         <Box direction='row' margin={{bottom: '5px'}}>
