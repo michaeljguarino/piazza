@@ -5,9 +5,18 @@ defmodule Core.Services.Conversations do
   alias Core.Services.Messages
   import Core.Policies.Conversation
 
-  def get_conversation!(id), do: Core.Repo.get!(Conversation, id)
+  def get_conversation!(id),
+    do: Core.Repo.get!(Conversation, id)
 
-  def get_conversation(id), do: Core.Repo.get(Conversation, id)
+  def get_conversation(id),
+    do: Core.Repo.get(Conversation, id)
+
+  def authorize(conv_id, user, policy) do
+    case get_conversation(conv_id) do
+      %Conversation{} = conv -> allow(conv, user, policy)
+      _ -> {:error, :not_found}
+    end
+  end
 
   def get_conversation_by_name(name), do: Core.Repo.get_by(Conversation, name: name)
 

@@ -4,11 +4,13 @@ defmodule RtcWeb.UserSocket do
     schema: Core.Schema
 
   channel "lobby", RtcWeb.LobbyChannel
+  channel "conversation:*", RtcWeb.ConversationChannel
 
   def connect(params, socket) do
     case build_context(params) do
       {:ok, context} ->
         socket = assign(socket, :user_id, context.current_user.id)
+        socket = assign(socket, :user, context.current_user)
         {:ok, Absinthe.Phoenix.Socket.put_options(socket, context: context)}
       _ -> {:error, :unauthorized}
     end

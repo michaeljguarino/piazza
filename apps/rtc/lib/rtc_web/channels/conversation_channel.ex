@@ -1,17 +1,15 @@
 defmodule RtcWeb.ConversationChannel do
   use RtcWeb, :channel
-  alias Rtc.Presence
+  alias Core.Services.Conversations
 
-  def join("some:topic", _params, socket) do
-    send(self(), :after_join)
-    {:ok, socket}
+  def join("conversation:" <> id, _params, socket) do
+    with {:ok, _conv} <- Conversations.authorize(id, socket.assigns[:user], :access) do
+      {:ok, socket}
+    end
   end
 
-  def handle_info(:after_join, socket) do
-    push(socket, "presence_state", Presence.list(socket))
-    {:ok, _} = Presence.track(socket, socket.assigns.user_id, %{
-      online_at: inspect(System.system_time(:second))
-    })
+  def handle_in("typing", _, socket) do
+    broadcast!(socket, "typing", %{handle: socket.assigns.user.handle})
     {:noreply, socket}
   end
 end
