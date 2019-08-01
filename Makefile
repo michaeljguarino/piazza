@@ -62,6 +62,10 @@ web:
 testsetup: ## setup test dependencies
 	docker-compose up -d
 
+connectdb: # proxies the db in kubernetes via kubectl
+	@echo "run psql -U piazza -h 127.0.0.1 piazza to connect"
+	kubectl port-forward statefulset/piazza-postgresql 5432 -n piazza
+
 bootstrap: ## initialize your helm/kubernetes environment
 	# create the cluster
 	gcloud container clusters create piazza \

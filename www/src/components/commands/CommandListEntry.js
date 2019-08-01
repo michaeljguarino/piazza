@@ -11,7 +11,7 @@ function CommandListEntry(props) {
           <Text size='small' color={props.color}>/{props.command.name}</Text>
         </Anchor>
         <Box pad='small' width='400px'>
-          <Box direction='row' align='center'>
+          <Box direction='row' align='center' margin={{bottom: 'small'}}>
             <Text weight="bold" size='small' margin='5px'>/{props.command.name}</Text>
             <Text size='small'>help</Text>
           </Box>

@@ -7,6 +7,7 @@ defmodule Rtc.Application do
     topologies = Application.get_env(:libcluster, :topologies)
     children = [
       RtcWeb.Endpoint,
+      Rtc.Presence,
       {Absinthe.Subscription, [RtcWeb.Endpoint]},
       {Cluster.Supervisor, [topologies, [name: MyApp.ClusterSupervisor]]}
     ] ++ broker()

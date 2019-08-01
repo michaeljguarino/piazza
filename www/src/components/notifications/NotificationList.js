@@ -43,14 +43,14 @@ function NotificationList(props) {
       {props.edges.length > 0 &&
         <Mutation mutation={VIEW_NOTIFICATIONS} update={(cache, {data: {viewNotifications}}) => {
           const {notifications} = cache.readQuery({ query: NOTIFICATIONS_Q });
-          const newData = {
-            notifications: {
-              ...notifications,
-              edges: [],
-          }}
           cache.writeQuery({
             query: NOTIFICATIONS_Q,
-            data: newData
+            data: {
+              notifications: {
+                ...notifications,
+                edges: [],
+              }
+            }
           });
           props.setUnseen(0)
         }}>

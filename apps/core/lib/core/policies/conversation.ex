@@ -22,6 +22,7 @@ defmodule Core.Policies.Conversation do
   def can?(%User{id: uid}, %Conversation{id: conv_id} , :access),
     do: allow_in_conversation(uid, conv_id, "Only participants can access private conversations")
 
+  def can?(%User{roles: %{admin: true}}, %Conversation{}, :update), do: :continue
   def can?(%User{id: uid}, %Conversation{id: conv_id} , :update),
     do: allow_in_conversation(uid, conv_id, "Only participants can update conversations")
 

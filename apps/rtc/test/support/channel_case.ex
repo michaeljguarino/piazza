@@ -28,8 +28,12 @@ defmodule RtcWeb.ChannelCase do
       @endpoint RtcWeb.Endpoint
 
       def establish_socket(user) do
-        {:ok, socket} = connect(RtcWeb.UserSocket, %{"token" => Rtc.TestUtils.jwt(user)}, %{})
+        {:ok, socket} = mk_socket(user)
         Absinthe.Phoenix.SubscriptionTest.join_absinthe(socket)
+      end
+
+      def mk_socket(user) do
+        connect(RtcWeb.UserSocket, %{"token" => Rtc.TestUtils.jwt(user)}, %{})
       end
     end
   end
