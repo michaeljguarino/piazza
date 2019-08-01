@@ -1,4 +1,6 @@
 import React, { Component } from 'react'
+import {socket} from '../../helpers/client'
+import TimedCache from '../utils/TimedCache'
 import { Mutation } from 'react-apollo'
 import gql from 'graphql-tag'
 import {TextInput, Box, Form, Text} from 'grommet'
@@ -18,16 +20,48 @@ const MESSAGE_MUTATION = gql`
   }
 `
 
+function Typing(props) {
+  const size='xsmall'
+  const color='dark-4'
+  let typists = props.typists.filter((handle) => handle !== props.ignore)
+  if (typists.length === 0) {
+    return null
+  }
+
+  if (typists.length === 1) {
+    return <Text color={color} size={size}>{typists[0]} is typing...</Text>
+  }
+
+  if (typists.length < 3) {
+    return <Text color={color} size={size}>{Array.join(typists, ", ")} are typing...</Text>
+  }
+
+  return <Text color={color} size={size}>{typists.length} people are typing...</Text>
+}
+
 class MessageInput extends Component {
   state = {
     text: '',
-    hover: false
+    hover: false,
+    typists: []
+  }
+
+  componentWillMount() {
+    this.channel = socket.channel("conversation:" + this.props.conversation.id)
+    this.channel.join()
+    this.cache = new TimedCache(2000, (handles) => this.setState({typists: handles}))
+    this.channel.on("typing", (msg) => this.cache.add(msg.handle))
+  }
+
+  componentWillUnmount() {
+    this.channel.leave()
+    this.cache.clear()
   }
 
   render() {
     const { text, hover } = this.state
     return (
-      <Box fill='horizontal' pad='10px'>
+      <Box fill='horizontal' pad={{top: '10px', right: '10px', left: '10px'}}>
         <Mutation mutation={MESSAGE_MUTATION} variables={{ conversationId: this.props.conversation.id, text }}>
           {postMutation => (
             <Form onSubmit={postMutation}>
@@ -42,7 +76,10 @@ class MessageInput extends Component {
                   plain
                   type='text'
                   value={text}
-                  onChange={e => this.setState({ text: e.target.value })}
+                  onChange={e => {
+                    this.channel.push("typing", {who: "cares"})
+                    this.setState({ text: e.target.value })
+                  }}
                   placeholder="Whatever is on your mind"
                   />
                 <Box
@@ -61,6 +98,9 @@ class MessageInput extends Component {
               </Box>
             </Form>)}
         </Mutation>
+        <Box align='center' justify='left' direction='row'>
+          <Typing typists={this.state.typists} ignore={this.props.me.handle} />
+        </Box>
       </Box>
     )
   }
