@@ -6,7 +6,8 @@ function Conversation(props) {
   let selected = props.conversation.id === props.currentConversation.id
   // #0576B9'
   let boxProps = (selected) ? {background: 'accent-1'} : (hover ? {background: '#474A4D'} : {})
-  let textProps = (selected) ? {} : {color: props.color}
+  let unread = (props.conversation.unreadMessages > 0 && !selected)
+  let textProps = (props.selected) ? {} : {color: (unread ? 'white' : props.color)}
   return (
     <Box
       fill='horizontal'

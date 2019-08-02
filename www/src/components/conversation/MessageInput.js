@@ -4,6 +4,8 @@ import TimedCache from '../utils/TimedCache'
 import { Mutation } from 'react-apollo'
 import gql from 'graphql-tag'
 import {TextInput, Box, Form, Text} from 'grommet'
+import debounce from 'lodash/debounce';
+
 
 const MESSAGE_MUTATION = gql`
   mutation CreateMessage($conversationId: ID!, $text: String!) {
@@ -51,6 +53,7 @@ class MessageInput extends Component {
     this.channel.join()
     this.cache = new TimedCache(2000, (handles) => this.setState({typists: handles}))
     this.channel.on("typing", (msg) => this.cache.add(msg.handle))
+    this.interval = setInterval(() => this.channel.push("ping", {who: "cares"}), 10000)
   }
 
   componentWillUnmount() {
@@ -58,7 +61,18 @@ class MessageInput extends Component {
     this.cache.clear()
   }
 
+  setupChannel() {
+    this.channel.leave()
+    this.channel = socket.channel("conversation:" + this.props.conversation.id)
+    this.channel.join()
+  }
+
+  notifyTyping = debounce(() => {
+    this.channel.push("typing", {who: "cares"})
+  }, 500)
+
   render() {
+    this.setupChannel()
     const { text, hover } = this.state
     return (
       <Box fill='horizontal' pad={{top: '10px', right: '10px', left: '10px'}}>
@@ -77,7 +91,7 @@ class MessageInput extends Component {
                   type='text'
                   value={text}
                   onChange={e => {
-                    this.channel.push("typing", {who: "cares"})
+                    this.notifyTyping()
                     this.setState({ text: e.target.value })
                   }}
                   placeholder="Whatever is on your mind"
@@ -98,7 +112,7 @@ class MessageInput extends Component {
               </Box>
             </Form>)}
         </Mutation>
-        <Box align='center' justify='left' direction='row'>
+        <Box align='center' justify='start' direction='row'>
           <Typing typists={this.state.typists} ignore={this.props.me.handle} />
         </Box>
       </Box>

@@ -33,6 +33,7 @@ export const CONVERSATIONS_Q = gql`
           id
           name
           topic
+          unreadMessages
         }
       }
     }

@@ -10,10 +10,16 @@ import {wipeToken} from '../helpers/authentication'
 import {Box, Grid} from 'grommet'
 import {CONVERSATIONS_Q} from './conversation/queries'
 import {ME_Q} from './users/queries'
+import {updateUnreadMessages} from './conversation/utils'
+import {client} from '../helpers/client'
 
 const Piazza = () => {
   const [currentConversation, setCurrentConversation] = useState(null)
-
+  const wrappedSetCurrentConversation = (conv) => {
+    console.log("setting current conversation")
+    updateUnreadMessages(client, conv.id, () => 0)
+    setCurrentConversation(conv)
+  }
   return (
     <Query query={ME_Q}>
       { ({loading, error, data}) => {
@@ -26,7 +32,7 @@ const Piazza = () => {
         }
         let me = data.me
         return (
-          <Query query={CONVERSATIONS_Q}>
+          <Query query={CONVERSATIONS_Q} pollInterval={10000}>
             {({loading, _error, data, loadMore}) => {
               if (loading) return <Loading />
               let current = currentConversation || data.conversations.edges[0].node
@@ -45,14 +51,14 @@ const Piazza = () => {
                       me={me}
                       currentConversation={current}
                       conversations={data.conversations.edges}
-                      setCurrentConversation={setCurrentConversation}
+                      setCurrentConversation={wrappedSetCurrentConversation}
                       loadMore={loadMore}
                       pageInfo={data.conversations.pageInfo}
                       />
                   </Box>
                   <Box gridArea='msgs'>
                     <Box height='75px'>
-                      <ConversationHeader me={me} conversation={current} setCurrentConversation={setCurrentConversation} />
+                      <ConversationHeader me={me} conversation={current} setCurrentConversation={wrappedSetCurrentConversation} />
                     </Box>
                     <MessageList conversation={current} />
                     <Box height='70px'>
