@@ -61,6 +61,9 @@ spec:
         - name: epmd
           containerPort: 4369
           protocol: TCP
+        - name: thrift
+          containerPort: 9090
+          protocol: TCP
         livenessProbe:
           httpGet:
             path: /ping

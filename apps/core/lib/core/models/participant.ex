@@ -3,6 +3,8 @@ defmodule Core.Models.Participant do
   alias Core.Models.{User, Conversation, NotificationPreferences}
 
   schema "participants" do
+    field :last_seen_at, :utc_datetime_usec
+
     belongs_to :user, User
     belongs_to :conversation, Conversation
 
@@ -11,7 +13,7 @@ defmodule Core.Models.Participant do
     timestamps()
   end
 
-  @valid ~w(user_id conversation_id)a
+  @valid ~w(user_id conversation_id last_seen_at)a
 
   def for_user(query \\ __MODULE__, user_id),
     do: from(p in query, where: p.user_id == ^user_id)

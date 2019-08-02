@@ -109,6 +109,25 @@ defmodule Core.Services.ConversationsTest do
     end
   end
 
+  describe "#bump_last_seen/2" do
+    test "It will set the last_seen_at ts on the user's participant record" do
+      participant = insert(:participant)
+
+      {:ok, updated} = Conversations.bump_last_seen(participant.conversation.id, participant.user)
+
+      assert updated.last_seen_at
+    end
+
+    test "It will create a participant if not present and set last_seen_at" do
+      user         = insert(:user)
+      conversation = insert(:conversation)
+
+      {:ok, updated} = Conversations.bump_last_seen(conversation.id, user)
+
+      assert updated.last_seen_at
+    end
+  end
+
   describe "#create_participant/2" do
     test "Participants can create other participants" do
       user         = insert(:user)

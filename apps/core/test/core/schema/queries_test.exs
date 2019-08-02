@@ -149,10 +149,44 @@ defmodule Core.Schema.QueriesTest do
 
       refute found["pageInfo"]["hasPreviousPage"]
       assert found["pageInfo"]["hasNextPage"]
-      users = from_connection(found)
+      conversations = from_connection(found)
 
-      assert Enum.all?(users, & &1["name"])
-      assert ids_equal(users, expected)
+      assert Enum.all?(conversations, & &1["name"])
+      assert ids_equal(conversations, expected)
+    end
+
+    test "It will sideload unread messages" do
+      user = insert(:user)
+      first = insert(:conversation)
+      second = insert(:conversation)
+      last_seen = Timex.now() |> Timex.shift(days: -2)
+      before = Timex.shift(last_seen, days: -1)
+      insert(:participant, conversation: first, user: user, last_seen_at: last_seen)
+      insert(:message, conversation: first, inserted_at: before)
+      insert_list(2, :message, conversation: first)
+      insert_list(3, :message, conversation: second)
+
+      {:ok, %{data: %{"conversations" => found}}} = run_query("""
+        query Conversations($public: Boolean!, $conversationCount: Int!) {
+          conversations(public: $public, first: $conversationCount) {
+            pageInfo {
+              hasPreviousPage
+              hasNextPage
+            }
+            edges {
+              node {
+                id
+                name
+                unreadMessages
+              }
+            }
+          }
+        }
+      """, %{"conversationCount" => 2, "public" => true}, %{current_user: user})
+
+      conversations = from_connection(found) |> by_ids()
+      assert conversations[first.id]["unreadMessages"] == 2
+      assert conversations[second.id]["unreadMessages"] == 3
     end
   end
 

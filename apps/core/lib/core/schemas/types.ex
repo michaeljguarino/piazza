@@ -44,6 +44,16 @@ defmodule Core.Schemas.Types do
     field :global, non_null(:boolean)
     field :topic, :string
     field :creator, :user, resolve: dataloader(User)
+    field :unread_messages, :integer do
+      resolve fn conversation, _, %{context: %{loader: loader, current_user: user}} ->
+        queryable = {:one, Core.Models.Conversation}
+        loader
+        |> Dataloader.load(Conversation, queryable, unread_messages: {user, conversation})
+        |> on_load(fn loader ->
+          {:ok, Dataloader.get(loader, Conversation, queryable, unread_messages: {user, conversation})}
+        end)
+      end
+    end
 
     connection field :messages, node_type: :message do
       resolve &Conversation.list_messages/2

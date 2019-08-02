@@ -7,7 +7,7 @@ defmodule Cron.Runner do
 
   def run_cron() do
     module = resolve_module()
-    module.run()
+    module.execute()
   after
     :init.stop()
   end

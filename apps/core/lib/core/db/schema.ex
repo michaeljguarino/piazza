@@ -16,6 +16,9 @@ defmodule Core.DB.Schema do
 
       def for_id(query \\ __MODULE__, id), do: from(r in query, where: r.id == ^id)
 
+      def for_ids(query \\ __MODULE__, ids),
+        do: from(r in query, where: r.id in ^ids)
+
       def selected(query \\ __MODULE__),
         do: from(r in query, select: r)
 

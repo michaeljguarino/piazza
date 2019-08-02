@@ -18,4 +18,6 @@ config :libcluster,
     ]
   ]
 
+config :rtc, :gql_host, "piazza-gql"
+
 config :core, :start_broker, false

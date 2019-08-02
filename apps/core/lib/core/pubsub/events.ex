@@ -20,6 +20,8 @@ defmodule Core.PubSub.MessageCreated, do: use Core.PubSub.Event
 
 defmodule Core.PubSub.ParticipantCreated, do: use Core.PubSub.Event
 
+defmodule Core.PubSub.ParticipantUpdated, do: use Core.PubSub.Event
+
 defmodule Core.PubSub.ParticipantDeleted, do: use Core.PubSub.Event
 
 defmodule Core.PubSub.CommandCreated, do: use Core.PubSub.Event

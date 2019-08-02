@@ -3,6 +3,9 @@ defmodule Core.Resolvers.Conversation do
   alias Core.Services.Conversations
   alias Core.Models.{Message, Participant, MessageEntity}
 
+  def data(args),
+    do: Dataloader.Ecto.new(Core.Repo, query: &query/2, default_params: args, run_batch: &run_batch/5)
+
   def query(Message, _args), do: Message
   def query(Participant, _args), do: Participant
   def query(Conversation, _args), do: Conversation
@@ -14,6 +17,23 @@ defmodule Core.Resolvers.Conversation do
     |> Conversation.private()
   end
   def query(_, %{current_user: user}), do: Conversation.for_user(user.id)
+  def query(:unread_messages, _), do: Conversation.any()
+
+  def run_batch(_, _, :unread_messages, args, repo_opts) do
+    [{%{id: user_id}, _} | _] = args
+    conversation_ids = Enum.map(args, fn {_, %{id: id}} -> id end)
+    default_count = 0
+    result =
+      Conversation.for_ids(conversation_ids)
+      |> Conversation.unread_message_count(user_id)
+      |> Core.Repo.all(repo_opts)
+      |> Map.new()
+
+    Enum.map(conversation_ids, & [Map.get(result, &1, default_count)])
+  end
+  def run_batch(queryable, query, col, inputs, repo_opts) do
+    Dataloader.Ecto.run_batch(Core.Repo, queryable, query, col, inputs, repo_opts)
+  end
 
   def resolve_conversation(_parent, %{id: id}, %{context: %{current_user: user}}),
     do: {:ok, Conversation.for_user(user.id) |> Core.Repo.get(id)}

@@ -20,7 +20,7 @@ defmodule Core.Resolvers.Base do
 
       def query(_queryable, _args), do: unquote(model).any()
 
-      defoverridable [query: 2]
+      defoverridable [query: 2, data: 1]
     end
   end
 

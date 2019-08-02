@@ -9,13 +9,17 @@ defmodule Core.TestHelpers do
     MapSet.equal?(found, expected)
   end
 
-  def ids(list) do
-    Enum.map(list, fn
-      %{id: id} -> id
-      %{"id" => id} -> id
-      id when is_binary(id) -> id
-    end)
+  def by_ids(models) do
+    Enum.into(models, %{}, & {id(&1), &1})
   end
+
+  def ids(list) do
+    Enum.map(list, &id/1)
+  end
+
+  def id(%{id: id}), do: id
+  def id(%{"id" => id}), do: id
+  def id(id) when is_binary(id), do: id
 
   def from_connection(%{"edges" => edges}), do: Enum.map(edges, & &1["node"])
 

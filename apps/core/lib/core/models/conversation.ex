@@ -26,6 +26,17 @@ defmodule Core.Models.Conversation do
     )
   end
 
+  def unread_message_count(query \\ __MODULE__, user_id) do
+    from(c in query,
+      left_join: p in ^Participant.for_user(user_id),
+        on: p.conversation_id == c.id,
+      join: m in assoc(c, :messages),
+      where: is_nil(p.last_seen_at) or m.inserted_at > p.last_seen_at,
+      group_by: c.id,
+      select: {c.id, count(m.id)}
+    )
+  end
+
   def global(query \\ __MODULE__), do: from(c in query, where: c.global)
 
   def public(query \\ any()), do: from(c in query, where: c.public)

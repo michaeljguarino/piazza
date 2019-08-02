@@ -1,8 +1,14 @@
 defmodule Core.Services.Conversations do
   use Core.Services.Base
-  alias Core.Models.{Conversation, Message, Participant, MessageEntity}
   alias Core.PubSub
   alias Core.Services.Messages
+  alias Core.Models.{
+    Conversation,
+    Message,
+    Participant,
+    MessageEntity,
+    User
+  }
   import Core.Policies.Conversation
 
   def get_conversation!(id),
@@ -16,6 +22,18 @@ defmodule Core.Services.Conversations do
       %Conversation{} = conv -> allow(conv, user, policy)
       _ -> {:error, :not_found}
     end
+  end
+
+  def bump_last_seen(conversation_id, %User{id: uid} = user) do
+    participant = get_participant(uid, conversation_id)
+
+    case participant do
+      %Participant{} = p -> p
+      _ -> %Participant{conversation_id: conversation_id, user_id: uid}
+    end
+    |> Participant.changeset(%{last_seen_at: DateTime.utc_now()})
+    |> Core.Repo.insert_or_update()
+    |> notify(:upsert, user, participant)
   end
 
   def get_conversation_by_name(name), do: Core.Repo.get_by(Conversation, name: name)
@@ -110,6 +128,12 @@ defmodule Core.Services.Conversations do
     |> notify(:delete, user)
   end
 
+  def notify({:ok, %Participant{} = p}, :upsert, actor, nil),
+    do: handle_notify(PubSub.ParticipantCreated, p, actor: actor)
+  def notify({:ok, %Participant{} = p}, :upsert, actor, _),
+    do: handle_notify(PubSub.ParticipantUpdated, p, actor: actor)
+  def notify(error, _, _, _), do: error
+
   def notify({:ok, %Conversation{} = conv}, :create, actor),
     do: handle_notify(PubSub.ConversationCreated, conv, actor: actor)
   def notify({:ok, %Message{} = msg}, :create, actor),
@@ -119,9 +143,9 @@ defmodule Core.Services.Conversations do
 
   def notify({:ok, %Conversation{} = conv}, :update, actor),
     do: handle_notify(PubSub.ConversationUpdated, conv, actor: actor)
+
   def notify({:ok, %Conversation{} = conv}, :delete, actor),
     do: handle_notify(PubSub.ConversationDeleted, conv, actor: actor)
-
   def notify({:ok, %Participant{} = part}, :delete, actor),
     do: handle_notify(PubSub.ParticipantDeleted, part, actor: actor)
   def notify(error, _, _), do: error

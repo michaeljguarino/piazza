@@ -12,6 +12,10 @@ defmodule Core.MixProject do
       elixir: "~> 1.5",
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
+      compilers: [:thrift | Mix.compilers],
+      thrift: [
+        files: Path.wildcard("../../thrift/*.thrift")
+      ],
       aliases: aliases(),
       deps: deps()
     ]
@@ -37,8 +41,10 @@ defmodule Core.MixProject do
   defp deps do
     [
       {:ecto_sql, "~> 3.1"},
+      {:thrift, github: "pinterest/elixir-thrift"},
       {:ecto, "~> 3.1.7", override: true},
       {:plug_cowboy, "~> 2.1.0", override: true},
+      {:timex, "~> 3.5"},
       {:postgrex, ">= 0.0.0"},
       {:furlex, "~> 0.4.2"},
       {:jason, "~> 1.0"},
