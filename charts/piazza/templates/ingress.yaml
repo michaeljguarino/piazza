@@ -4,7 +4,7 @@ kind: BackendConfig
 metadata:
   name: piazza-backendconfig
 spec:
-  timeoutSec: 120
+  timeoutSec: 43200
   connectionDraining:
     drainingTimeoutSec: 60
   sessionAffinity:

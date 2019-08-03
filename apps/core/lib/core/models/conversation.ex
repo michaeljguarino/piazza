@@ -20,6 +20,13 @@ defmodule Core.Models.Conversation do
 
   def for_user(query \\ any(), user_id) do
     from(c in query,
+      join: p in ^Participant.for_user(user_id),
+        on: p.conversation_id == c.id
+    )
+  end
+
+  def accessible(query \\ any(), user_id) do
+    from(c in query,
       left_join: p in ^Participant.for_user(user_id),
         on: p.conversation_id == c.id,
       where: c.public or not is_nil(p.id)
@@ -34,6 +41,14 @@ defmodule Core.Models.Conversation do
       where: is_nil(p.last_seen_at) or m.inserted_at > p.last_seen_at,
       group_by: c.id,
       select: {c.id, count(m.id)}
+    )
+  end
+
+  def participant_count(query \\ __MODULE__) do
+    from(c in query,
+      join: p in assoc(c, :participants),
+      group_by: c.id,
+      select: {c.id, count(p.id)}
     )
   end
 

@@ -126,13 +126,16 @@ defmodule Core.Schema.QueriesTest do
   end
 
   describe "Conversations" do
-    test "It will list public conversations" do
+    test "It will list conversations you'are a participant of" do
+      user = insert(:user)
       conversations = insert_list(3, :conversation)
       expected = Enum.sort_by(conversations, & &1.name) |> Enum.take(2)
+      for conv <- expected,
+        do: insert(:participant, user: user, conversation: conv)
 
       {:ok, %{data: %{"conversations" => found}}} = run_query("""
-        query Conversations($public: Boolean!, $conversationCount: Int!) {
-          conversations(public: $public, first: $conversationCount) {
+        query Conversations($conversationCount: Int!) {
+          conversations(first: $conversationCount) {
             pageInfo {
               hasPreviousPage
               hasNextPage
@@ -145,10 +148,10 @@ defmodule Core.Schema.QueriesTest do
             }
           }
         }
-      """, %{"conversationCount" => 2, "public" => true}, %{current_user: insert(:user)})
+      """, %{"conversationCount" => 2}, %{current_user: user})
 
       refute found["pageInfo"]["hasPreviousPage"]
-      assert found["pageInfo"]["hasNextPage"]
+      refute found["pageInfo"]["hasNextPage"]
       conversations = from_connection(found)
 
       assert Enum.all?(conversations, & &1["name"])
@@ -162,13 +165,14 @@ defmodule Core.Schema.QueriesTest do
       last_seen = Timex.now() |> Timex.shift(days: -2)
       before = Timex.shift(last_seen, days: -1)
       insert(:participant, conversation: first, user: user, last_seen_at: last_seen)
+      insert(:participant, conversation: second, user: user)
       insert(:message, conversation: first, inserted_at: before)
       insert_list(2, :message, conversation: first)
       insert_list(3, :message, conversation: second)
 
       {:ok, %{data: %{"conversations" => found}}} = run_query("""
-        query Conversations($public: Boolean!, $conversationCount: Int!) {
-          conversations(public: $public, first: $conversationCount) {
+        query Conversations($conversationCount: Int!) {
+          conversations(first: $conversationCount) {
             pageInfo {
               hasPreviousPage
               hasNextPage
@@ -182,11 +186,40 @@ defmodule Core.Schema.QueriesTest do
             }
           }
         }
-      """, %{"conversationCount" => 2, "public" => true}, %{current_user: user})
+      """, %{"conversationCount" => 2}, %{current_user: user})
 
       conversations = from_connection(found) |> by_ids()
       assert conversations[first.id]["unreadMessages"] == 2
       assert conversations[second.id]["unreadMessages"] == 3
+    end
+
+    test "It will sideload participant counts" do
+      user = insert(:user)
+      %{conversation: first} = insert(:participant, user: user)
+      %{conversation: second} = insert(:participant, user: user)
+      insert_list(2, :participant, conversation: first)
+
+      {:ok, %{data: %{"conversations" => found}}} = run_query("""
+        query Conversations($conversationCount: Int!) {
+          conversations(first: $conversationCount) {
+            pageInfo {
+              hasPreviousPage
+              hasNextPage
+            }
+            edges {
+              node {
+                id
+                name
+                participantCount
+              }
+            }
+          }
+        }
+      """, %{"conversationCount" => 2}, %{current_user: user})
+
+      conversations = from_connection(found) |> by_ids()
+      assert conversations[first.id]["participantCount"] == 3
+      assert conversations[second.id]["participantCount"] == 1
     end
   end
 

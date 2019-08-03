@@ -1,16 +1,14 @@
 import React, {useState} from 'react'
-import { Query, Mutation } from 'react-apollo'
+import {Mutation} from 'react-apollo'
 import {Box, Text, Markdown} from 'grommet'
-import {UserNew, Trash} from 'grommet-icons'
+import {Trash} from 'grommet-icons'
 import Dropdown from '../utils/Dropdown'
-import UserListEntry from '../users/UserListEntry'
-import {PARTICIPANTS_Q, DELETE_CONVERSATION, UPDATE_CONVERSATION, CONVERSATIONS_Q} from './queries'
+import {DELETE_CONVERSATION, UPDATE_CONVERSATION, CONVERSATIONS_Q} from './queries'
 import ConversationEditForm from './ConversationEditForm'
 import NotificationIcon from '../notifications/NotificationIcon'
-import Scroller from '../Scroller'
-import {mergeAppend} from '../../utils/array'
+import Participants from './Participants'
 
-const BOX_ATTRS = {
+export const BOX_ATTRS = {
   direction: "row",
   align: "center",
   style: {cursor: 'pointer', lineHeight: '15px'},
@@ -24,7 +22,7 @@ function ConversationDelete(props) {
       mutation={DELETE_CONVERSATION}
       variables={{id: props.conversation.id}}
       update={(cache, {data: {deleteConversation}}) => {
-      props.setCurrentConversation(null)
+        props.setCurrentConversation(null)
         const {conversations} = cache.readQuery({ query: CONVERSATIONS_Q });
         const newData = {
           conversations: {
@@ -102,57 +100,15 @@ function ConversationHeader(props) {
     <Box direction='row' border='bottom' pad={{left: '20px', top: '10px'}} margin={{bottom: '10px'}}>
       <Box fill='horizontal' direction='column'>
         <Text weight='bold' margin={{bottom: '5px'}}>#{props.conversation.name}</Text>
-        <Query query={PARTICIPANTS_Q} variables={{conversationId: props.conversation.id}}>
-          {({loading, data, fetchMore}) => {
-            if (loading) return (<Box direction='row'>...</Box>)
-            let pageInfo = data.conversation.participants.pageInfo
-            let edges = data.conversation.participants.edges
-            return (
-              <Box height='25px' direction='row' align='end' justify='start' pad={{top: '5px', bottom: '5px'}}>
-                <Dropdown>
-                  <Box {...BOX_ATTRS}>
-                    <Text height='15px' style={{lineHeight: '15px'}} margin={{right: '3px'}}><UserNew size='15px' /></Text>
-                    <Text size='xsmall'>{data.conversation.participants.edges.length}</Text>
-                  </Box>
-                  <Box pad="small" gap='small' style={{maxHeight: '300px'}}>
-                    <Text size='small' weight='bold'>Participants</Text>
-                    <Scroller
-                      edges={edges}
-                      mapper={(p) => (<UserListEntry key={p.node.id} user={p.node.user} color='normal' />)}
-                      onLoadMore={() => {
-                        if (!pageInfo.hasNextPage) return
-                        fetchMore({
-                          variables: {cursor: pageInfo.endCursor},
-                          updateQuery: (prev, {fetchMoreResult}) => {
-                            const edges = fetchMoreResult.notifications.participants.edges
-                            const pageInfo = fetchMoreResult.notifications.participants.pageInfo
-
-                            return edges.length ? {
-                              ...prev,
-                              notifications: {
-                                ...prev.notifications,
-                                participants: {
-                                  ...prev.notifications.participants,
-                                  pageInfo,
-                                  edges: mergeAppend(edges, prev.notifications.participants.edges, (e) => e.node.id)
-                                }
-                              }
-                            } : prev;
-                          }
-                        })
-                      }} />
-                  </Box>
-                </Dropdown>
-                <Box {...BOX_ATTRS} align='center' justify='center' border={null} onMouseOver={() => setEditing(true)} onMouseOut={() => setEditing(false)}>
-                  <ConversationUpdate editing={editing} {...props} />
-                  <Text style={editing ? {lineHeight: '15px'} : {lineHeight: '15px', visibility: 'hidden'}}>
-                    <ConversationDelete {...props} />
-                  </Text>
-                </Box>
-              </Box>
-            )
-          }}
-        </Query>
+        <Box height='25px' direction='row' align='end' justify='start' pad={{top: '5px', bottom: '5px'}}>
+          <Participants {...props} />
+          <Box {...BOX_ATTRS} align='center' justify='center' border={null} onMouseOver={() => setEditing(true)} onMouseOut={() => setEditing(false)}>
+            <ConversationUpdate editing={editing} {...props} />
+            <Text style={editing ? {lineHeight: '15px'} : {lineHeight: '15px', visibility: 'hidden'}}>
+              <ConversationDelete {...props} />
+            </Text>
+          </Box>
+        </Box>
       </Box>
       <NotificationIcon {...props} />
     </Box>

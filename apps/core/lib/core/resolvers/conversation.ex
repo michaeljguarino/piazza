@@ -10,35 +10,48 @@ defmodule Core.Resolvers.Conversation do
   def query(Participant, _args), do: Participant
   def query(Conversation, _args), do: Conversation
   def query(MessageEntity, _args), do: MessageEntity
+  def query(:unread_messages, _), do: Conversation.any()
 
-  def query(_, %{public: true}), do: Conversation.public()
+  def query(_, %{public: true, current_user: user}) do
+    Conversation.public()
+    |> Conversation.for_user(user.id)
+  end
   def query(_, %{public: false, current_user: user}) do
     Conversation.for_user(user.id)
     |> Conversation.private()
   end
   def query(_, %{current_user: user}), do: Conversation.for_user(user.id)
-  def query(:unread_messages, _), do: Conversation.any()
+
 
   def run_batch(_, _, :unread_messages, args, repo_opts) do
     [{%{id: user_id}, _} | _] = args
     conversation_ids = Enum.map(args, fn {_, %{id: id}} -> id end)
-    default_count = 0
     result =
       Conversation.for_ids(conversation_ids)
       |> Conversation.unread_message_count(user_id)
       |> Core.Repo.all(repo_opts)
       |> Map.new()
 
-    Enum.map(conversation_ids, & [Map.get(result, &1, default_count)])
+    Enum.map(conversation_ids, & [Map.get(result, &1, 0)])
+  end
+  def run_batch(_, _, :participant_count, args, repo_opts) do
+    conversation_ids = Enum.map(args, fn %{id: id} -> id end)
+    result =
+      Conversation.for_ids(conversation_ids)
+      |> Conversation.participant_count()
+      |> Core.Repo.all(repo_opts)
+      |> Map.new()
+
+    Enum.map(conversation_ids, & [Map.get(result, &1, 0)])
   end
   def run_batch(queryable, query, col, inputs, repo_opts) do
     Dataloader.Ecto.run_batch(Core.Repo, queryable, query, col, inputs, repo_opts)
   end
 
   def resolve_conversation(_parent, %{id: id}, %{context: %{current_user: user}}),
-    do: {:ok, Conversation.for_user(user.id) |> Core.Repo.get(id)}
+    do: {:ok, Conversation.accessible(user.id) |> Core.Repo.get(id)}
   def resolve_conversation(_, %{name: name}, %{context: %{current_user: user}}),
-    do: {:ok, Conversation.for_user(user.id) |> Core.Repo.get_by(name: name)}
+    do: {:ok, Conversation.accessible(user.id) |> Core.Repo.get_by(name: name)}
 
   def authorize_subscription(conversation_id, current_user, topic) do
     with %Conversation{} = conv <- Conversations.get_conversation(conversation_id),

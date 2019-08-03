@@ -4,7 +4,7 @@ defmodule GqlWeb.GqlTest do
   describe "queries" do
     test "will respect authorization", %{conn: conn} do
       user = insert(:user)
-      conversations = insert_list(3, :conversation)
+      participants = insert_list(3, :participant, user: user)
 
       %{"data" => %{"conversations" => edges}} =
         conn
@@ -12,7 +12,7 @@ defmodule GqlWeb.GqlTest do
         |> post("/gql", wrap_gql(
           """
           query {
-            conversations(public: true, first: 3) {
+            conversations(first: 3) {
               edges {
                 node {
                   id
@@ -26,7 +26,7 @@ defmodule GqlWeb.GqlTest do
         |> json_response(200)
 
       found = from_connection(edges)
-      assert ids_equal(found, conversations)
+      assert ids_equal(found, Enum.map(participants, & &1.conversation))
       assert Enum.all?(found, & &1["name"])
     end
 

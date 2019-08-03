@@ -17,7 +17,9 @@ const Piazza = () => {
   const [currentConversation, setCurrentConversation] = useState(null)
   const wrappedSetCurrentConversation = (conv) => {
     console.log("setting current conversation")
-    updateUnreadMessages(client, conv.id, () => 0)
+    if (conv) {
+      updateUnreadMessages(client, conv.id, () => 0)
+    }
     setCurrentConversation(conv)
   }
   return (
