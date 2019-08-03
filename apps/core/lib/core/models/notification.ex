@@ -26,6 +26,11 @@ defmodule Core.Models.Notification do
   def ordered(query \\ __MODULE__, order \\ [desc: :inserted_at]),
     do: from(n in query, order_by: ^order)
 
+  def older_than(query \\ __MODULE__, date) do
+    expired = DateTime.utc_now() |> Timex.shift(days: -date)
+    from(m in query, where: m.inserted_at < ^expired)
+  end
+
   def changeset(model, attrs \\ %{}) do
     model
     |> cast(attrs, @valid)

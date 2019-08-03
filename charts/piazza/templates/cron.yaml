@@ -1,11 +1,17 @@
+{{- define "piazza.envvar" -}}
+- name: {{ .name }}
+  value: {{ .value | quote }}
+{{- end -}}
+
+{{- define "piazza.cron" -}}
 apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
-  name: piazza-prune-messages
+  name: {{ .cronName }}
   labels:
 {{ include "piazza.labels" . | indent 4 }}
 spec:
-  schedule: "0 0 * * *"
+  schedule: {{ .crontab }}
   jobTemplate:
     spec:
       template:
@@ -21,7 +27,7 @@ spec:
                 name: piazza-env
             env:
             - name: CRON
-              value: Prune.Messages
+              value: {{ .cronModule }}
             - name: GCP_CREDENTIALS
               valueFrom:
                 secretKeyRef:
@@ -51,5 +57,18 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.dbPasswordSecret }}
                   key: postgresql-password
+            {{ range .envVars }}
+              {{ include "piazza.envvar" . | nindent 12 }}
+            {{ end }}
             resources:
               {{- toYaml .Values.cron.resources | nindent 14 }}
+{{- end -}}
+
+{{ $context := . }}
+{{ range $index, $cron := .Values.crons }}
+  {{- $args := mergeOverwrite $context $cron }}
+  {{ if $index }}
+---
+  {{ end }}
+  {{ include "piazza.cron" $args | nindent 0 }}
+{{- end -}}

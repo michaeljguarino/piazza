@@ -76,7 +76,25 @@ cron:
       cpu: .1
       memory: 256Mi
 
-retentionPolicy: 2
+retentionPolicy: &retentionPolicy
+  value: 2
+notificationRetentionPolicy: &notificationRetentionPolicy
+  value: 5
+
+crons:
+  - cronName: piazza-prune-messages
+    cronModule: Prune.Messages
+    crontab: "0 0 * * *"
+    envVars:
+    - <<: *retentionPolicy
+      name: RETENTION_POLICY
+  - cronName: piazza-prune-notifications
+    cronModule: Prune.Notifications
+    crontab: "30 0 * * *"
+    envVars:
+    - <<: *notificationRetentionPolicy
+      name: RETENTION_POLICY
+
 
 dbPasswordSecret: piazza-postgresql
 rabbitPasswordSecret: piazza-rabbitmq
