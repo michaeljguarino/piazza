@@ -34,7 +34,7 @@ const Piazza = () => {
         }
         let me = data.me
         return (
-          <Query query={CONVERSATIONS_Q} pollInterval={10000}>
+          <Query query={CONVERSATIONS_Q} pollInterval={60000}>
             {({loading, _error, data, loadMore}) => {
               if (loading) return <Loading />
               let current = currentConversation || data.conversations.edges[0].node

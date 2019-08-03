@@ -25,7 +25,7 @@ export const UPDATE_CONVERSATION = gql`
 
 export const CONVERSATIONS_Q = gql`
   query Conversations($cursor: String) {
-    conversations(public: true, first: 20, after: $cursor) {
+    conversations(first: 20, after: $cursor) {
       pageInfo {
         hasNextPage
         endCursor

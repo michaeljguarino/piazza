@@ -49,7 +49,8 @@ class MessageInput extends Component {
   }
 
   componentWillMount() {
-    this.channel = socket.channel("conversation:" + this.props.conversation.id)
+    this.topic = "conversation:" + this.props.conversation.id
+    this.channel = socket.channel(this.topic)
     this.channel.join()
     this.cache = new TimedCache(2000, (handles) => this.setState({typists: handles}))
     this.channel.on("typing", (msg) => this.cache.add(msg.handle))
@@ -62,9 +63,13 @@ class MessageInput extends Component {
   }
 
   setupChannel() {
-    this.channel.leave()
-    this.channel = socket.channel("conversation:" + this.props.conversation.id)
-    this.channel.join()
+    const newTopic = "conversation:" + this.props.conversation.id
+    if (newTopic !== this.topic) {
+      this.topic = newTopic
+      this.channel.leave()
+      this.channel = socket.channel(this.topic)
+      this.channel.join()
+    }
   }
 
   notifyTyping = debounce(() => {
