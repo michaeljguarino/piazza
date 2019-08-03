@@ -17,7 +17,7 @@ defmodule Core.Commands.Base do
         @commands
         |> Enum.map(fn command ->
           formatted_args = Enum.map(@args[command], &"_#{&1}_")
-          "* /#{@base_command} *#{command}* #{Enum.join(formatted_args, " ")} - #{@docs[command]}"
+          "* /#{@base_command} **#{command}** #{Enum.join(formatted_args, " ")} - #{@docs[command]}"
         end)
         |> Enum.join("\n")
       end

@@ -3,7 +3,7 @@ import {socket} from '../../helpers/client'
 import TimedCache from '../utils/TimedCache'
 import { Mutation } from 'react-apollo'
 import gql from 'graphql-tag'
-import {TextInput, Box, Form, Text} from 'grommet'
+import {TextInput, Box, Form, Text, Markdown} from 'grommet'
 import debounce from 'lodash/debounce';
 
 
@@ -22,23 +22,34 @@ const MESSAGE_MUTATION = gql`
   }
 `
 
+const TEXT_SIZE='xsmall'
+const TEXT_COLOR='dark-4'
+
 function Typing(props) {
-  const size='xsmall'
-  const color='dark-4'
   let typists = props.typists.filter((handle) => handle !== props.ignore)
   if (typists.length === 0) {
     return null
   }
 
   if (typists.length === 1) {
-    return <Text color={color} size={size}>{typists[0]} is typing...</Text>
+    return <Text color={TEXT_COLOR} size={TEXT_SIZE}>{typists[0]} is typing...</Text>
   }
 
   if (typists.length < 3) {
-    return <Text color={color} size={size}>{Array.join(typists, ", ")} are typing...</Text>
+    return <Text color={TEXT_COLOR} size={TEXT_SIZE}>{Array.join(typists, ", ")} are typing...</Text>
   }
 
-  return <Text color={color} size={size}>{typists.length} people are typing...</Text>
+  return <Text color={TEXT_COLOR} size={TEXT_SIZE}>{typists.length} people are typing...</Text>
+}
+
+function HelpDoc(props) {
+  return (
+    <Box width="600px" direction='row' justify='end'>
+      <Text color={TEXT_COLOR} size={TEXT_SIZE}>
+        Use <strong>/command</strong> to issue a command, <strong>@handle</strong> to mention other users, and <Markdown>**Markdown** is _also_ supported!</Markdown>
+      </Text>
+    </Box>
+  )
 }
 
 class MessageInput extends Component {
@@ -74,7 +85,7 @@ class MessageInput extends Component {
 
   notifyTyping = debounce(() => {
     this.channel.push("typing", {who: "cares"})
-  }, 500)
+  }, 500, {leading: true})
 
   render() {
     this.setupChannel()
@@ -117,8 +128,11 @@ class MessageInput extends Component {
               </Box>
             </Form>)}
         </Mutation>
-        <Box align='center' justify='start' direction='row'>
-          <Typing typists={this.state.typists} ignore={this.props.me.handle} />
+        <Box align='center' direction='row' fill='horizontal'>
+          <div style={{width: 'calc(100% - 600px)'}}>
+            <Typing typists={this.state.typists} ignore={this.props.me.handle} />
+          </div>
+          <HelpDoc/>
         </Box>
       </Box>
     )
