@@ -1,102 +1,11 @@
 import React, { Component } from 'react'
 import Message from './Message'
 import { Query } from 'react-apollo'
-import gql from 'graphql-tag'
 import Scroller from '../Scroller'
 import Loading from '../utils/Loading'
 import {mergeAppend} from '../../utils/array'
 import SubscriptionWrapper from '../utils/SubscriptionWrapper'
-
-const MESSAGES_Q = gql`
-  query ConversationQuery($conversationId: ID!, $cursor: String) {
-    conversation(id: $conversationId) {
-      id
-      messages(first: 100, after: $cursor) {
-        pageInfo {
-          endCursor
-          hasNextPage
-        }
-        edges {
-          node {
-            id
-            text
-            insertedAt
-            entities {
-              type
-              startIndex
-              length
-              user {
-                id
-                name
-                handle
-                backgroundColor
-                avatar
-              }
-            }
-            creator {
-              id
-              name
-              handle
-              backgroundColor
-              bot
-              avatar
-            }
-            embed {
-              type
-              url
-              image_url
-              title
-              description
-              width
-              height
-            }
-          }
-        }
-      }
-    }
-  }
-`
-const NEW_MESSAGES_SUB = gql`
-  subscription MessageDeltas($conversationId: ID!) {
-    messageDelta(conversationId: $conversationId) {
-      delta
-      payload {
-        id
-        text
-        insertedAt
-        creator {
-          id
-          name
-          handle
-          backgroundColor
-          bot
-          avatar
-        }
-        entities {
-          type
-          startIndex
-          length
-          user {
-            id
-            name
-            handle
-            backgroundColor
-            avatar
-          }
-        }
-        embed {
-          type
-          url
-          title
-          image_url
-          description
-          width
-          height
-        }
-      }
-    }
-  }
-`;
+import {MESSAGES_Q, NEW_MESSAGES_SUB} from './queries'
 
 function applyNewMessage(prev, message) {
   const messages = prev.conversation.messages.edges

@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import {Stack, Meter, Box, Text} from 'grommet'
+import {Box, Clock} from 'grommet'
 
 class Loading extends Component {
   state = {
@@ -20,21 +20,7 @@ class Loading extends Component {
   render() {
     return (
       <Box height="100%" direction='column' justify='center' align='center'>
-        <Stack anchor="center">
-          <Meter
-            type="circle"
-            background="light-2"
-            values={[{ value: this.state.value }]}
-            size="xsmall"
-            thickness="small"
-          />
-          <Box direction="row" align="center" pad={{ bottom: "xsmall" }}>
-            <Text size="xlarge" weight="bold">
-              {this.state.value}
-            </Text>
-            <Text size="small">%</Text>
-          </Box>
-        </Stack>
+        <Clock type="digital" />
       </Box>
     )
   }

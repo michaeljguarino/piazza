@@ -1,13 +1,14 @@
 import React from 'react'
 
 class SubscriptionWrapper extends React.Component {
-  componentDidMount() {
+  componentWillMount() {
     this.reregister()
   }
 
   componentWillReceiveProps(props) {
     if (props.id !== this.props.id) {
-      if (this.unsubscribe) this._unsubscribe()
+      console.log(`subscribing to ${props.id}`)
+      this._unsubscribe()
       this.reregister()
     }
   }
@@ -18,12 +19,14 @@ class SubscriptionWrapper extends React.Component {
 
   _unsubscribe() {
     if (this.unsubscribe) {
+      console.log(`unsubscribing from ${this.props.id}`)
       this.unsubscribe()
+      this.unsubscribe = null
     }
   }
 
   reregister() {
-    this.unsubscribe = null
+    console.log(`subscribing to ${this.props.id}`)
     this.props.startSubscription().then((unsub) => {
       this.unsubscribe = unsub
     })

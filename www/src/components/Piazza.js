@@ -9,6 +9,7 @@ import Loading from './utils/Loading'
 import {wipeToken} from '../helpers/authentication'
 import {Box, Grid} from 'grommet'
 import {CONVERSATIONS_Q} from './conversation/queries'
+import {subscribeToNewConversations} from './conversation/utils'
 import {ME_Q} from './users/queries'
 import {updateUnreadMessages} from './conversation/utils'
 import {client} from '../helpers/client'
@@ -34,9 +35,10 @@ const Piazza = () => {
         let me = data.me
         return (
           <Query query={CONVERSATIONS_Q} pollInterval={30000}>
-            {({loading, _error, data, loadMore}) => {
-              if (loading) return <Loading />
+            {({loading, _error, data, loadMore, subscribeToMore}) => {
+              if (loading) return (<Box height="100vh"><Loading /></Box>)
               let current = currentConversation || data.conversations.edges[0].node
+              subscribeToNewConversations(subscribeToMore)
               return (
                 <Grid
                   rows={['100vh']}
@@ -46,7 +48,6 @@ const Piazza = () => {
                     {name: 'msgs', start: [1, 0], end: [1, 0]},
                   ]}
                   >
-                  {/* <AppBar/> */}
                   <Box gridArea='convs' background='brand' elevation='medium'>
                     <ConversationPanel
                       me={me}
