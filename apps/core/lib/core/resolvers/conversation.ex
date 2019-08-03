@@ -22,7 +22,6 @@ defmodule Core.Resolvers.Conversation do
   end
   def query(_, %{current_user: user}), do: Conversation.for_user(user.id)
 
-
   def run_batch(_, _, :unread_messages, args, repo_opts) do
     [{%{id: user_id}, _} | _] = args
     conversation_ids = Enum.map(args, fn {_, %{id: id}} -> id end)

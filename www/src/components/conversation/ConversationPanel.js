@@ -5,16 +5,18 @@ import Users from '../users/Users'
 import Commands from '../commands/Commands'
 import {Box} from 'grommet'
 import ConversationCreator from './ConversationCreator'
+import ConversationSearch from '../search/ConversationSearch'
 import Scroller from '../Scroller'
 import {mergeAppend} from '../../utils/array'
 
 class ConversationPanel extends Component {
   render() {
     let padding = {left: '10px'}
-    let textColor = 'dark-6'
+    let textColor = '#C0C0C0'
     return (
       <Box>
         <Me me={this.props.me} pad={padding} />
+        <ConversationSearch setCurrentConversation={this.props.setCurrentConversation} />
         <Box margin={{bottom: 'medium'}}>
           <ConversationCreator
             padding={padding}
@@ -30,7 +32,7 @@ class ConversationPanel extends Component {
             onLoadMore={() => {
               if (!this.props.pageInfo.hasNextPage) return
 
-              this.props.fetchMore({
+              this.props.loadMore({
                 variables: {cursor: this.props.pageInfo.endCursor},
                 updateQuery: (prev, {fetchMoreResult}) => {
                   const edges = fetchMoreResult.conversations.edges

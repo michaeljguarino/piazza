@@ -16,7 +16,6 @@ import {client} from '../helpers/client'
 const Piazza = () => {
   const [currentConversation, setCurrentConversation] = useState(null)
   const wrappedSetCurrentConversation = (conv) => {
-    console.log("setting current conversation")
     if (conv) {
       updateUnreadMessages(client, conv.id, () => 0)
     }
@@ -34,7 +33,7 @@ const Piazza = () => {
         }
         let me = data.me
         return (
-          <Query query={CONVERSATIONS_Q} pollInterval={60000}>
+          <Query query={CONVERSATIONS_Q} pollInterval={30000}>
             {({loading, _error, data, loadMore}) => {
               if (loading) return <Loading />
               let current = currentConversation || data.conversations.edges[0].node
