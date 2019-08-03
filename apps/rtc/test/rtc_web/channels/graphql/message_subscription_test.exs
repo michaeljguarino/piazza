@@ -2,7 +2,7 @@ defmodule RtcWeb.Channels.MessageSubscriptionTest do
   use RtcWeb.ChannelCase, async: false
   alias Core.PubSub
 
-  describe "newMessages" do
+  describe "message delta" do
     test "participants can see new messages in private conversations" do
       user = insert(:user)
       conv = insert(:conversation, public: false)
@@ -11,9 +11,12 @@ defmodule RtcWeb.Channels.MessageSubscriptionTest do
 
       ref = push_doc(socket, """
         subscription NewMessages($id: ID!) {
-          newMessages(conversationId: $id) {
-            id
-            text
+          messageDelta(conversationId: $id) {
+            delta
+            payload {
+              id
+              text
+            }
           }
         }
       """, variables: %{"id" => conv.id})
@@ -21,9 +24,10 @@ defmodule RtcWeb.Channels.MessageSubscriptionTest do
       assert_reply(ref, :ok, %{subscriptionId: _})
 
       publish_event(%PubSub.MessageCreated{item: insert(:message, conversation: conv)})
-      assert_push("subscription:data", %{result: %{data: %{"newMessages" => doc}}})
-      assert doc["id"]
-      assert doc["text"]
+      assert_push("subscription:data", %{result: %{data: %{"messageDelta" => doc}}})
+      assert doc["delta"] == "CREATE"
+      assert doc["payload"]["id"]
+      assert doc["payload"]["text"]
     end
 
     test "you won't see new messages in other conversations" do
@@ -33,10 +37,13 @@ defmodule RtcWeb.Channels.MessageSubscriptionTest do
       {:ok, socket} = establish_socket(user)
 
       ref = push_doc(socket, """
-        subscription NewMessages($id: ID!) {
-          newMessages(conversationId: $id) {
-            id
-            text
+        subscription MessageDelta($id: ID!) {
+          messageDelta(conversationId: $id) {
+            delta
+            payload {
+              id
+              text
+            }
           }
         }
       """, variables: %{"id" => conv.id})
@@ -44,7 +51,7 @@ defmodule RtcWeb.Channels.MessageSubscriptionTest do
       assert_reply(ref, :ok, %{subscriptionId: _})
 
       publish_event(%PubSub.MessageCreated{item: insert(:message)})
-      refute_push("subscription:data", %{result: %{data: %{"newMessages" => _doc}}})
+      refute_push("subscription:data", %{result: %{data: %{"messageDelta" => _doc}}})
     end
 
     test "nonparticipants cannot see new messages in private conversations" do
@@ -53,10 +60,13 @@ defmodule RtcWeb.Channels.MessageSubscriptionTest do
       {:ok, socket} = establish_socket(user)
 
       ref = push_doc(socket, """
-        subscription NewMessages($id: ID!) {
-          newMessages(conversationId: $id) {
-            id
-            text
+        subscription MessageDelta($id: ID!) {
+          messageDelta(conversationId: $id) {
+            delta
+            payload {
+              id
+              text
+            }
           }
         }
       """, variables: %{"id" => conv.id})
@@ -70,10 +80,13 @@ defmodule RtcWeb.Channels.MessageSubscriptionTest do
       {:ok, socket} = establish_socket(user)
 
       ref = push_doc(socket, """
-        subscription NewMessages($id: ID!) {
-          newMessages(conversationId: $id) {
-            id
-            text
+        subscription MessageDelta($id: ID!) {
+          messageDelta(conversationId: $id) {
+            delta
+            payload {
+              id
+              text
+            }
           }
         }
       """, variables: %{"id" => conv.id})
@@ -81,9 +94,10 @@ defmodule RtcWeb.Channels.MessageSubscriptionTest do
       assert_reply(ref, :ok, %{subscriptionId: _})
 
       publish_event(%PubSub.MessageCreated{item: insert(:message, conversation: conv)})
-      assert_push("subscription:data", %{result: %{data: %{"newMessages" => doc}}})
-      assert doc["id"]
-      assert doc["text"]
+      assert_push("subscription:data", %{result: %{data: %{"messageDelta" => doc}}})
+      assert doc["delta"] == "CREATE"
+      assert doc["payload"]["id"]
+      assert doc["payload"]["text"]
     end
   end
 end

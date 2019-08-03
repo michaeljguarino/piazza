@@ -37,6 +37,8 @@ defmodule Core.Schemas.Types do
     timestamps()
   end
 
+  delta :user
+
   object :conversation do
     field :id, :id
     field :name, non_null(:string)
@@ -77,6 +79,8 @@ defmodule Core.Schemas.Types do
     timestamps()
   end
 
+  delta :conversation
+
   object :participant do
     field :id, :id
     field :conversation_id, non_null(:id)
@@ -87,6 +91,8 @@ defmodule Core.Schemas.Types do
 
     timestamps()
   end
+
+  delta :participant
 
   object :message do
     field :id, :id
@@ -100,6 +106,8 @@ defmodule Core.Schemas.Types do
 
     timestamps()
   end
+
+  delta :message
 
   enum :entity_type do
     value :mention
@@ -147,6 +155,8 @@ defmodule Core.Schemas.Types do
     timestamps()
   end
 
+  delta :notification
+
   object :notification_preferences do
     field :mention, :boolean
     field :message, :boolean
@@ -176,6 +186,8 @@ defmodule Core.Schemas.Types do
 
     timestamps()
   end
+
+  delta :command
 
   object :webhook do
     field :id, :id

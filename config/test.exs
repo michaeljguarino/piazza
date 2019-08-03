@@ -22,7 +22,7 @@ config :core, Core.TestBroker,
 config :rtc, :start_broker, false
 
 config :cron, :run, false
-config :rtc, :start_client, true
-config :rtc, :start_server, true
+config :rtc, :start_client, false
+config :rtc, :start_server, false
 
 config :logger, level: :warn

@@ -3,49 +3,58 @@ defprotocol Rtc.Channels.Negotiator do
   def negotiate(event)
 end
 
+defmodule Rtc.Channels.NegotiatorHelper do
+  def delta(payload, delta) do
+    %{delta: delta, payload: payload}
+  end
+end
+
 defimpl Rtc.Channels.Negotiator, for: Any do
   def negotiate(_), do: :ok
 end
 
 defimpl Rtc.Channels.Negotiator, for: Core.PubSub.UserCreated do
-  def negotiate(%{item: user}), do: {user, [new_users: "users"]}
+  import Rtc.Channels.NegotiatorHelper
+  def negotiate(%{item: user}), do: {delta(user, :create), [user_delta: "users"]}
 end
 
 defimpl Rtc.Channels.Negotiator, for: Core.PubSub.UserUpdated do
-  def negotiate(%{item: user}), do: {user, [updated_users: "users:#{user.id}"]}
-end
-
-defimpl Rtc.Channels.Negotiator, for: Core.PubSub.ConversationCreated do
-  def negotiate(%{item: %{public: true} = conversation}),
-    do: {conversation, [new_conversations: "conversations"]}
-  def negotiate(_), do: :ok
+  import Rtc.Channels.NegotiatorHelper
+  def negotiate(%{item: user}), do: {delta(user, :update), [user_delta: "users"]}
 end
 
 defimpl Rtc.Channels.Negotiator, for: Core.PubSub.ConversationUpdated do
+  import Rtc.Channels.NegotiatorHelper
   def negotiate(%{item: %{id: id} = conversation}),
-    do: {conversation, [updated_conversations: "conversations:#{id}"]}
+    do: {delta(conversation, :update), [conversation_delta: "conversations:#{id}"]}
 end
 
 defimpl Rtc.Channels.Negotiator, for: Core.PubSub.ConversationDeleted do
-  def negotiate(%{item: %{public: true, id: id} = conv}),
-    do: {conv, [deleted_conversations: "conversations:#{id}", deleted_conversations: "conversations:deleted"]}
+  import Rtc.Channels.NegotiatorHelper
   def negotiate(%{item: %{id: id} = conversation}),
-    do: {conversation, [deleted_conversations: "conversations:#{id}"]}
+    do: {delta(conversation, :delete), [conversation_delta: "conversations:#{id}"]}
 end
 
 defimpl Rtc.Channels.Negotiator, for: Core.PubSub.MessageCreated do
+  import Rtc.Channels.NegotiatorHelper
   def negotiate(%{item: %{conversation_id: id} = message}),
-    do: {message, [new_messages: "messages:#{id}"]}
+    do: {delta(message, :create), [message_delta: "messages:#{id}"]}
 end
 
 defimpl Rtc.Channels.Negotiator, for: Core.PubSub.ParticipantCreated do
-  def negotiate(%{item: %{conversation_id: id, user_id: uid} = participant}),
-    do: {participant, [new_participants: "participants:#{id}", my_participants: "participants:mine:#{uid}"]}
+  import Rtc.Channels.NegotiatorHelper
+  def negotiate(%{item: %{conversation_id: id, user_id: uid} = participant}) do
+    {delta(participant, :create),
+     [participant_delta: "participants:#{id}", participant_delta: "participants:mine:#{uid}"]}
+  end
 end
 
 defimpl Rtc.Channels.Negotiator, for: Core.PubSub.ParticipantDeleted do
-  def negotiate(%{item: %{conversation_id: id} = participant}),
-    do: {participant, [deleted_participants: "participants:#{id}"]}
+  import Rtc.Channels.NegotiatorHelper
+  def negotiate(%{item: %{conversation_id: id, user_id: uid} = participant}) do
+    {delta(participant, :delete),
+     [participant_delta: "participants:#{id}", participant_delta: "participants:mine:#{uid}"]}
+  end
 end
 
 defimpl Rtc.Channels.Negotiator, for: Core.PubSub.NotificationCreated do

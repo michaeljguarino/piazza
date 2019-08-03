@@ -195,50 +195,31 @@ defmodule Core.Schema do
   end
 
   subscription do
-    field :new_users, :user do
+    field :user_delta, :user_delta do
       config fn _args, _info -> {:ok, topic: "users"} end
     end
 
-    field :updated_users, :user do
-      arg :id, non_null(:id)
-      config fn %{id: id}, _info -> {:ok, topic: "users:#{id}"} end
-    end
-
-    field :new_conversations, :conversation do
-      config fn _args, _info -> {:ok, topic: "conversations"} end
-    end
-
-    field :updated_conversations, :conversation do
+    field :conversation_delta, :conversation_delta do
       arg :id, non_null(:id)
       config fn %{id: id}, %{context: %{current_user: user}} ->
         Conversation.authorize_subscription(id, user, "conversations:#{id}")
       end
     end
 
-    field :new_messages, :message do
+    field :message_delta, :message_delta do
       arg :conversation_id, non_null(:id)
       config fn %{conversation_id: id}, %{context: %{current_user: user}} ->
         Conversation.authorize_subscription(id, user, "messages:#{id}")
       end
     end
 
-    field :new_participants, :participant do
-      arg :conversation_id, non_null(:id)
-      config fn %{conversation_id: id}, %{context: %{current_user: user}} ->
-        Conversation.authorize_subscription(id, user, "participants:#{id}")
-      end
-    end
-
-    field :deleted_participants, :participant do
-      arg :conversation_id, non_null(:id)
-      config fn %{conversation_id: id}, %{context: %{current_user: user}} ->
-        Conversation.authorize_subscription(id, user, "participants:#{id}")
-      end
-    end
-
-    field :my_participants, :participant do
-      config fn _, %{context: %{current_user: %{id: id}}} ->
-        {:ok, topic: "participants:mine:#{id}"}
+    field :participant_delta, :participant_delta do
+      arg :conversation_id, :id
+      config fn
+        %{conversation_id: id}, %{context: %{current_user: user}} ->
+          Conversation.authorize_subscription(id, user, "participants:#{id}")
+        _, %{context: %{current_user: %{id: id}}} ->
+          {:ok, topic: "participants:mine:#{id}"}
       end
     end
 

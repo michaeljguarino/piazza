@@ -35,6 +35,7 @@ defmodule RtcWeb.ConversationChannelTest do
   end
 
   describe "ping" do
+    @tag :skip
     test "It will bump the participants last_seen_at" do
       user = insert(:user)
       conv = insert(:conversation)

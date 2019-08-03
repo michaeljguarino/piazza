@@ -32,11 +32,15 @@ defmodule Rtc.Application do
   end
 
   def gql_client() do
-    [%{
-      id: Client,
-      start: {Client, :start_link, [host(), 9090, [name: Rtc.GqlClient]]},
-      type: :supervisor
-    }]
+    if Application.get_env(:rtc, :start_client) do
+      [%{
+        id: Client,
+        start: {Client, :start_link, [host(), 9090, [name: Rtc.GqlClient]]},
+        type: :supervisor
+      }]
+    else
+      []
+    end
   end
 
   def gql_server() do

@@ -6,6 +6,12 @@ defmodule Core.Schemas.Base do
       import Absinthe.Resolution.Helpers
       import Core.Schemas.Base
       import_types Absinthe.Type.Custom
+
+      enum :delta do
+        value :create
+        value :update
+        value :delete
+      end
     end
   end
 
@@ -13,6 +19,16 @@ defmodule Core.Schemas.Base do
     quote do
       field :inserted_at, :datetime
       field :updated_at, :datetime
+    end
+  end
+
+  defmacro delta(type) do
+    delta_type = :"#{type}_delta"
+    quote do
+      object unquote(delta_type) do
+        field :delta, :delta
+        field :payload, unquote(type)
+      end
     end
   end
 end
