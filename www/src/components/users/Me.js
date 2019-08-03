@@ -12,7 +12,7 @@ class Me extends Component {
 
   _logout = () => {
     localStorage.removeItem(AUTH_TOKEN)
-    window.location.href = "/login"
+    window.location.href = "/"
   }
 
   render() {

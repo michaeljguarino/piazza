@@ -97,7 +97,7 @@ function ConversationUpdate(props) {
 function ConversationHeader(props) {
   const [editing, setEditing] = useState(false)
   return (
-    <Box direction='row' border='bottom' pad={{left: '20px', top: '10px'}} margin={{bottom: '10px'}}>
+    <Box direction='row' border='bottom' pad={{left: '20px', top: '10px'}}>
       <Box fill='horizontal' direction='column'>
         <Text weight='bold' margin={{bottom: '5px'}}>#{props.conversation.name}</Text>
         <Box height='25px' direction='row' align='end' justify='start' pad={{top: '5px', bottom: '5px'}}>

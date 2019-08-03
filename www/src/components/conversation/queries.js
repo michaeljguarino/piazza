@@ -106,6 +106,7 @@ export const MESSAGES_Q = gql`
             id
             text
             insertedAt
+            attachment
             entities {
               type
               startIndex
@@ -149,6 +150,7 @@ export const NEW_MESSAGES_SUB = gql`
         id
         text
         insertedAt
+        attachment
         creator {
           id
           name

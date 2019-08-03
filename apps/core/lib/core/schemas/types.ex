@@ -99,6 +99,9 @@ defmodule Core.Schemas.Types do
     field :text, non_null(:string)
     field :creator_id, non_null(:id)
     field :conversation_id, non_null(:id)
+    field :attachment, :string, resolve: fn
+      message, _, _ -> {:ok, Core.Storage.url({message.attachment, message}, :original)}
+    end
     field :creator, :user, resolve: dataloader(User)
     field :conversation, :conversation, resolve: dataloader(Conversation)
     field :entities, list_of(:message_entity), resolve: dataloader(Conversation)

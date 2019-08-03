@@ -47,7 +47,7 @@ class MessageList extends Component {
     return (
       <Query query={MESSAGES_Q} variables={{conversationId: this.props.conversation.id}} fetchPolicy='cache-and-network'>
         {({loading, error, data, fetchMore, subscribeToMore}) => {
-          if (loading) return <Loading height='calc(100vh - 145px)' />
+          if (loading) return <Loading height='calc(100vh - 135px)' />
           if (error) return <div>wtf</div>
           let messageEdges = data.conversation.messages.edges
           let pageInfo = data.conversation.messages.pageInfo
@@ -61,11 +61,10 @@ class MessageList extends Component {
                 direction='up'
                 style={{
                   overflow: 'auto',
-                  height: 'calc(100vh - 145px)',
+                  height: 'calc(100vh - 135px)',
                   display: 'flex',
                   justifyContent: 'flex-start',
                   flexDirection: 'column-reverse',
-                  padTop: '5px'
                 }}
                 mapper={(edge, next) => <Message key={edge.node.id} message={edge.node} next={next.node} />}
                 onLoadMore={() => {

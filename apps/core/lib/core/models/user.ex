@@ -14,7 +14,7 @@ defmodule Core.Models.User do
     field :password_hash, :string
     field :bio,           :string
     field :bot,           :boolean, default: false
-    field :avatar,        Core.Avatar.Type
+    field :avatar,        Core.Storage.Type
 
     field :profile_img,   :map
     field :deleted_at,    :utc_datetime_usec
@@ -46,12 +46,12 @@ defmodule Core.Models.User do
     |> validate_required([:email, :name, :handle])
     |> unique_constraint(:email)
     |> unique_constraint(:handle)
-    |> cast_attachments(attrs, [:avatar], allow_urls: true)
     |> validate_length(:email,    max: 255)
     |> validate_length(:handle,   max: 255)
     |> validate_length(:name,     max: 255)
     |> validate_length(:password, min: 10)
     |> validate_format(:email, @email_re)
+    |> cast_attachments(attrs, [:avatar], allow_urls: true)
     |> cast_embed(:roles, with: &role_changeset/2)
     |> hash_password()
   end

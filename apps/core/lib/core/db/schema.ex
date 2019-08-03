@@ -56,4 +56,11 @@ defmodule Core.DB.Schema do
     |> Map.new()
     |> Map.put(:_type, external_type(module))
   end
+
+  def generate_uuid(changeset, field) do
+    case get_field(changeset, field) do
+      nil -> put_change(changeset, field, Ecto.UUID.generate())
+      _ -> changeset
+    end
+  end
 end

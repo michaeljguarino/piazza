@@ -1,9 +1,12 @@
 defmodule Core.Models.Message do
   use Core.DB.Schema
+  use Arc.Ecto.Schema
   alias Core.Models.{User, Conversation, MessageEntity, Embed}
 
   schema "messages" do
-    field :text, :string
+    field :text,          :string
+    field :attachment,    Core.Storage.Type
+    field :attachment_id, :binary_id
 
     belongs_to :creator, User
     belongs_to :conversation, Conversation
@@ -46,5 +49,7 @@ defmodule Core.Models.Message do
     |> foreign_key_constraint(:creator_id)
     |> foreign_key_constraint(:conversation_id)
     |> validate_length(:text, max: 255)
+    |> generate_uuid(:attachment_id)
+    |> cast_attachments(attrs, [:attachment], allow_urls: true)
   end
 end

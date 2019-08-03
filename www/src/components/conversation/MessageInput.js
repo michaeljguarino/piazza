@@ -4,14 +4,14 @@ import TimedCache from '../utils/TimedCache'
 import { Mutation } from 'react-apollo'
 import gql from 'graphql-tag'
 import {TextInput, Box, Form, Text, Markdown} from 'grommet'
+import {Attachment} from 'grommet-icons'
+import {FilePicker} from 'react-file-picker'
 import debounce from 'lodash/debounce';
 
 
 const MESSAGE_MUTATION = gql`
-  mutation CreateMessage($conversationId: ID!, $text: String!) {
-    createMessage(
-      conversationId: $conversationId,
-      attributes: {text: $text}) {
+  mutation CreateMessage($conversationId: ID!, $attributes: MessageAttributes!) {
+    createMessage(conversationId: $conversationId, attributes: $attributes) {
       id
       text
       insertedAt
@@ -24,6 +24,7 @@ const MESSAGE_MUTATION = gql`
 
 const TEXT_SIZE='xsmall'
 const TEXT_COLOR='dark-4'
+const SEND_COLOR='#004d23'
 
 function Typing(props) {
   let typists = props.typists.filter((handle) => handle !== props.ignore)
@@ -89,12 +90,15 @@ class MessageInput extends Component {
 
   render() {
     this.setupChannel()
-    const { text, hover } = this.state
+    const { text, attachment, hover } = this.state
     return (
       <Box fill='horizontal' pad={{top: '10px', right: '10px', left: '10px'}}>
-        <Mutation mutation={MESSAGE_MUTATION} variables={{ conversationId: this.props.conversation.id, text }}>
+        <Mutation mutation={MESSAGE_MUTATION} variables={{ conversationId: this.props.conversation.id, attributes: {text, attachment}}}>
           {postMutation => (
-            <Form onSubmit={postMutation}>
+            <Form onSubmit={() => {
+              postMutation()
+              this.setState({attachment: null})
+            }}>
               <Box
                 fill='horizontal'
                 direction="row"
@@ -102,6 +106,15 @@ class MessageInput extends Component {
                 border
                 round='xsmall'
               >
+                <FilePicker
+                  onChange={ (file) => this.setState({attachment: file})}
+                  maxSize={2000}
+                  onError={(msg) => console.log(msg)}
+                >
+                  <Box style={{cursor: "pointer"}} align='center' justify='center' width="30px">
+                    <Attachment color={this.state.attachment ? SEND_COLOR : null} size='15px' />
+                  </Box>
+                </FilePicker>
                 <TextInput
                   plain
                   type='text'
@@ -113,7 +126,7 @@ class MessageInput extends Component {
                   placeholder="Whatever is on your mind"
                   />
                 <Box
-                  background={hover ? '#001a0c' : '#004d23'}
+                  background={hover ? '#001a0c' : SEND_COLOR}
                   direction="row"
                   align="center"
                   justify="center"

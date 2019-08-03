@@ -26,7 +26,8 @@ defmodule Core.Schemas.Inputs do
   end
 
   input_object :message_attributes do
-    field :text, :string
+    field :text,       :string
+    field :attachment, :upload
   end
 
   input_object :participant_attributes do

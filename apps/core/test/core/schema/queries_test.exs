@@ -284,12 +284,12 @@ defmodule Core.Schema.QueriesTest do
   describe "notifications" do
     test "it will paginate notifications for a user" do
       user = insert(:user)
-      notifications = insert_list(3, :notification, user: user)
+      now = Timex.now()
+      notifications = for day <- 1..3,
+        do: insert(:notification, user: user, inserted_at: Timex.shift(now, days: -day))
+
       insert_list(2, :notification)
-      expected =
-        Enum.sort_by(notifications, & &1.inserted_at)
-        |> Enum.reverse()
-        |> Enum.take(2)
+      expected = Enum.take(notifications, 2)
 
       {:ok, %{data: %{"notifications" => notifications}}} = run_query("""
         query {
