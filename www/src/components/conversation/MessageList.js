@@ -57,43 +57,63 @@ const MESSAGES_Q = gql`
   }
 `
 const NEW_MESSAGES_SUB = gql`
-  subscription NewMessages($conversationId: ID!) {
-    newMessages(conversationId: $conversationId) {
-      id
-      text
-      insertedAt
-      creator {
+  subscription MessageDeltas($conversationId: ID!) {
+    messageDelta(conversationId: $conversationId) {
+      delta
+      payload {
         id
-        name
-        handle
-        backgroundColor
-        bot
-        avatar
-      }
-      entities {
-        type
-        startIndex
-        length
-        user {
+        text
+        insertedAt
+        creator {
           id
           name
           handle
           backgroundColor
+          bot
           avatar
         }
-      }
-      embed {
-        type
-        url
-        title
-        image_url
-        description
-        width
-        height
+        entities {
+          type
+          startIndex
+          length
+          user {
+            id
+            name
+            handle
+            backgroundColor
+            avatar
+          }
+        }
+        embed {
+          type
+          url
+          title
+          image_url
+          description
+          width
+          height
+        }
       }
     }
   }
 `;
+
+function applyNewMessage(prev, message) {
+  const messages = prev.conversation.messages.edges
+  const exists = messages.find((edge) => edge.node.id === message.id);
+  if (exists) return prev;
+
+  let messageNode = {node: message, __typename: "MessageEdge"}
+  return Object.assign({}, prev, {
+    conversation: {
+      ...prev.conversation,
+      messages: {
+        ...prev.conversation.messages,
+        edges: [messageNode, ...messages],
+      }
+    }
+  })
+}
 
 class MessageList extends Component {
   _subscribeToNewMessages = async (subscribeToMore) => {
@@ -102,21 +122,14 @@ class MessageList extends Component {
       variables: {conversationId: this.props.conversation.id},
       updateQuery: (prev, { subscriptionData }) => {
         if (!subscriptionData.data) return prev
-        const newMessage = subscriptionData.data.newMessages
-        const messages = prev.conversation.messages.edges
-        const exists = messages.find((edge) => edge.node.id === newMessage.id);
-        if (exists) return prev;
-
-        let newMessageNode = {node: newMessage, __typename: "MessageEdge"}
-        return Object.assign({}, prev, {
-          conversation: {
-            ...prev.conversation,
-            messages: {
-              ...prev.conversation.messages,
-              edges: [newMessageNode, ...messages],
-            }
-          }
-        })
+        const messageDelta = subscriptionData.data.messageDelta
+        const message = messageDelta.payload
+        switch(messageDelta.delta) {
+          case "CREATE":
+            return applyNewMessage(prev, message)
+          default:
+            return prev
+        }
       }
     })
   }

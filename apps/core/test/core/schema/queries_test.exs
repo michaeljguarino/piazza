@@ -223,6 +223,40 @@ defmodule Core.Schema.QueriesTest do
     end
   end
 
+  describe "searchConversations" do
+    test "A user can search accessible conversations" do
+      user = insert(:user)
+      public  = insert(:conversation, name: "conv1")
+      ignored = insert(:conversation, name: "conv2", public: false)
+      private = insert(:conversation, name: "conv3", public: false)
+      miss    = insert(:conversation, name: "nomatch")
+      insert(:participant, conversation: private, user: user)
+
+      {:ok, %{data: %{"searchConversations" => found}}} = run_query("""
+        query SearchConversations($name: String!, $conversationCount: Int!) {
+          searchConversations(name: $name, first: $conversationCount) {
+            pageInfo {
+              hasPreviousPage
+              hasNextPage
+            }
+            edges {
+              node {
+                id
+                name
+              }
+            }
+          }
+        }
+      """, %{"conversationCount" => 5, "name" => "conv"}, %{current_user: user})
+
+      conversations = from_connection(found) |> by_ids()
+      assert conversations[public.id]["name"]
+      assert conversations[private.id]["name"]
+      refute conversations[ignored.id]
+      refute conversations[miss.id]
+    end
+  end
+
   describe "Commands" do
     test "It will list available commands" do
       commands = insert_list(3, :command)

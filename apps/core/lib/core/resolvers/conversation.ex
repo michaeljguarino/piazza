@@ -67,6 +67,12 @@ defmodule Core.Resolvers.Conversation do
     |> paginate(args)
   end
 
+  def search_conversations(%{name: name} = args, %{context: %{current_user: user}}) do
+    Conversation.accessible(user.id)
+    |> Conversation.search(name)
+    |> paginate(args)
+  end
+
   def list_messages(args, %{source: conversation}) do
     Message.any()
     |> Message.for_conversation(conversation.id)

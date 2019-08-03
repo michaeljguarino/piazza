@@ -76,27 +76,17 @@ export const DELETE_CONVERSATION = gql`
   }
 `;
 
-export const NEW_PARTICIPANTS_SUB = gql`
-  subscription NewParticipants($conversationId: ID!) {
-    newParticipants(conversationId: $conversationId) {
-      id
-      user {
-        name
-        handle
-        backgroundColor
-      }
-    }
-  }
-`;
-
-export const DELETED_PARTICIPANTS_SUB = gql`
-  subscription NewParticipants($conversationId: ID!) {
-    deletedParticipants(conversationId: $conversationId) {
-      id
-      user {
-        name
-        handle
-        backgroundColor
+export const PARTICIPANT_SUB = gql`
+  subscription ParticipantDeltas($conversationId: ID!) {
+    participantDelta(conversationId: $conversationId) {
+      delta
+      payload {
+        id
+        user {
+          name
+          handle
+          backgroundColor
+        }
       }
     }
   }

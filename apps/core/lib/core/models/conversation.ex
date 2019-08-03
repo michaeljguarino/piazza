@@ -33,6 +33,12 @@ defmodule Core.Models.Conversation do
     )
   end
 
+  def search(query \\ __MODULE__, name) do
+    from(c in query,
+      where: like(c.name, ^"#{name}%")
+    )
+  end
+
   def unread_message_count(query \\ __MODULE__, user_id) do
     from(c in query,
       left_join: p in ^Participant.for_user(user_id),
