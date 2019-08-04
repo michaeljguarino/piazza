@@ -1,7 +1,7 @@
 import React from 'react'
 import {Mutation} from 'react-apollo'
 import {Box, Button} from 'grommet'
-import Scroller from '../Scroller'
+import Scroller from '../utils/Scroller'
 import {NOTIFICATIONS_Q, VIEW_NOTIFICATIONS} from './queries'
 import Notification from './Notification'
 import {mergeAppend} from '../../utils/array'

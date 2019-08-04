@@ -6,6 +6,7 @@ import Dropdown from '../utils/Dropdown'
 import {DELETE_CONVERSATION, UPDATE_CONVERSATION, CONVERSATIONS_Q} from './queries'
 import ConversationEditForm from './ConversationEditForm'
 import NotificationIcon from '../notifications/NotificationIcon'
+import {CurrentUserContext} from '../login/EnsureLogin'
 import Participants from './Participants'
 
 export const BOX_ATTRS = {
@@ -80,7 +81,7 @@ function ConversationUpdate(props) {
             <Markdown>{props.conversation.topic || "Add a description"}</Markdown>
           </Text>
           <Box align='center' justify='center' pad='small'>
-            <Text>Update #{props.conversation.name}</Text>
+            <Text>Update # {props.conversation.name}</Text>
           </Box>
           <ConversationEditForm
             state={{name: props.conversation.name, topic: props.conversation.topic}}
@@ -99,7 +100,7 @@ function ConversationHeader(props) {
   return (
     <Box direction='row' border='bottom' pad={{left: '20px', top: '10px'}}>
       <Box fill='horizontal' direction='column'>
-        <Text weight='bold' margin={{bottom: '5px'}}>#{props.conversation.name}</Text>
+        <Text weight='bold' margin={{bottom: '5px'}}># {props.conversation.name}</Text>
         <Box height='25px' direction='row' align='end' justify='start' pad={{top: '5px', bottom: '5px'}}>
           <Participants {...props} />
           <Box {...BOX_ATTRS} align='center' justify='center' border={null} onMouseOver={() => setEditing(true)} onMouseOut={() => setEditing(false)}>
@@ -110,7 +111,9 @@ function ConversationHeader(props) {
           </Box>
         </Box>
       </Box>
-      <NotificationIcon {...props} />
+      <CurrentUserContext.Consumer>
+      {me => (<NotificationIcon me={me} {...props} />)}
+      </CurrentUserContext.Consumer>
     </Box>
   )
 }

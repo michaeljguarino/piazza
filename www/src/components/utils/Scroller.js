@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import {lookahead} from '../utils/array'
+import {lookahead} from '../../utils/array'
 
 class Scroller extends Component {
   componentDidMount() {

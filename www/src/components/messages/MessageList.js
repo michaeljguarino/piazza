@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import Message from './Message'
 import { Query } from 'react-apollo'
-import Scroller from '../Scroller'
+import Scroller from '../utils/Scroller'
 import Loading from '../utils/Loading'
 import {mergeAppend} from '../../utils/array'
 import SubscriptionWrapper from '../utils/SubscriptionWrapper'

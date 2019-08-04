@@ -6,7 +6,7 @@ import Commands from '../commands/Commands'
 import {Box} from 'grommet'
 import ConversationCreator from './ConversationCreator'
 import ConversationSearch from '../search/ConversationSearch'
-import Scroller from '../Scroller'
+import Scroller from '../utils/Scroller'
 import {mergeAppend} from '../../utils/array'
 
 class ConversationPanel extends Component {

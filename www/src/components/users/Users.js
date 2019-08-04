@@ -2,7 +2,7 @@ import React from 'react'
 import {Box, Text} from 'grommet'
 import gql from 'graphql-tag'
 import { Query } from 'react-apollo'
-import Scroller from '../Scroller'
+import Scroller from '../utils/Scroller'
 import UserListEntry from './UserListEntry'
 import {mergeAppend} from '../../utils/array'
 

@@ -2,25 +2,12 @@ import React, { Component } from 'react'
 import {socket} from '../../helpers/client'
 import TimedCache from '../utils/TimedCache'
 import { Mutation } from 'react-apollo'
-import gql from 'graphql-tag'
 import {TextInput, Box, Form, Text, Markdown} from 'grommet'
 import {Attachment} from 'grommet-icons'
 import {FilePicker} from 'react-file-picker'
-import debounce from 'lodash/debounce';
-
-
-const MESSAGE_MUTATION = gql`
-  mutation CreateMessage($conversationId: ID!, $attributes: MessageAttributes!) {
-    createMessage(conversationId: $conversationId, attributes: $attributes) {
-      id
-      text
-      insertedAt
-      creator {
-        name
-      }
-    }
-  }
-`
+import debounce from 'lodash/debounce'
+import {CurrentUserContext} from '../login/EnsureLogin'
+import {MESSAGE_MUTATION} from './queries'
 
 const TEXT_SIZE='xsmall'
 const TEXT_COLOR='dark-4'
@@ -93,57 +80,64 @@ class MessageInput extends Component {
     const { text, attachment, hover } = this.state
     return (
       <Box fill='horizontal' pad={{top: '10px', right: '10px', left: '10px'}}>
-        <Mutation mutation={MESSAGE_MUTATION} variables={{ conversationId: this.props.conversation.id, attributes: {text, attachment}}}>
-          {postMutation => (
-            <Form onSubmit={() => {
-              postMutation()
-              this.setState({attachment: null})
-            }}>
+        <Mutation
+            mutation={MESSAGE_MUTATION}
+            variables={{ conversationId: this.props.conversation.id, attributes: {text, attachment}}}
+        >
+        {postMutation => (
+          <Form onSubmit={() => {
+            postMutation()
+            this.setState({attachment: null})
+          }}>
+            <Box
+              fill='horizontal'
+              direction="row"
+              align="center"
+              border
+              round='xsmall'
+            >
+              <FilePicker
+                onChange={ (file) => this.setState({attachment: file})}
+                maxSize={2000}
+                onError={(msg) => console.log(msg)}
+              >
+                <Box style={{cursor: "pointer"}} align='center' justify='center' width="30px">
+                  <Attachment color={this.state.attachment ? SEND_COLOR : null} size='15px' />
+                </Box>
+              </FilePicker>
+              <TextInput
+                plain
+                type='text'
+                value={text}
+                onChange={e => {
+                  this.notifyTyping()
+                  this.setState({ text: e.target.value })
+                }}
+                placeholder="Whatever is on your mind"
+                />
               <Box
-                fill='horizontal'
+                background={hover ? '#001a0c' : SEND_COLOR}
                 direction="row"
                 align="center"
-                border
-                round='xsmall'
-              >
-                <FilePicker
-                  onChange={ (file) => this.setState({attachment: file})}
-                  maxSize={2000}
-                  onError={(msg) => console.log(msg)}
-                >
-                  <Box style={{cursor: "pointer"}} align='center' justify='center' width="30px">
-                    <Attachment color={this.state.attachment ? SEND_COLOR : null} size='15px' />
-                  </Box>
-                </FilePicker>
-                <TextInput
-                  plain
-                  type='text'
-                  value={text}
-                  onChange={e => {
-                    this.notifyTyping()
-                    this.setState({ text: e.target.value })
-                  }}
-                  placeholder="Whatever is on your mind"
-                  />
-                <Box
-                  background={hover ? '#001a0c' : SEND_COLOR}
-                  direction="row"
-                  align="center"
-                  justify="center"
-                  style={{cursor: "pointer"}}
-                  width="100px"
-                  height="40px"
-                  onMouseOver={() => this.setState({hover: true})}
-                  onMouseOut={() => this.setState({hover: false})}
-                  onClick={postMutation}>
-                  <Text size="medium">Send</Text>
-                </Box>
+                justify="center"
+                style={{cursor: "pointer"}}
+                width="100px"
+                height="40px"
+                onMouseOver={() => this.setState({hover: true})}
+                onMouseOut={() => this.setState({hover: false})}
+                onClick={postMutation}>
+                <Text size="medium">Send</Text>
               </Box>
-            </Form>)}
+            </Box>
+          </Form>
+          )
+        }
         </Mutation>
         <Box align='center' direction='row' fill='horizontal'>
           <div style={{width: 'calc(100% - 600px)'}}>
-            <Typing typists={this.state.typists} ignore={this.props.me.handle} />
+            <CurrentUserContext.Consumer>
+              {me => (<Typing typists={this.state.typists} ignore={me.handle} />)}
+            </CurrentUserContext.Consumer>
           </div>
           <HelpDoc/>
         </Box>

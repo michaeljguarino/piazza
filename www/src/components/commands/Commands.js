@@ -3,7 +3,7 @@ import {Box, Text} from 'grommet'
 import gql from 'graphql-tag'
 import { Query } from 'react-apollo'
 import CommandListEntry from './CommandListEntry'
-import Scroller from '../Scroller'
+import Scroller from '../utils/Scroller'
 
 const COMMANDS_Q=gql`
 query Commands($cursor: String) {
@@ -56,7 +56,6 @@ function Commands(props) {
                 fetchMore({
                   variables: {cursor: pageInfo.endCursor},
                   updateQuery: (prev, {fetchMoreResult}) => {
-                    console.log(fetchMoreResult)
                     const edges = fetchMoreResult.commands.edges
                     const pageInfo = fetchMoreResult.commands.pageInfo
                     if (commandEdges.find((edge) => edge.node.id === edges[0].node.id)) {
@@ -64,9 +63,9 @@ function Commands(props) {
                     }
                     return edges.length ? {
                       commands: {
+                        ...prev,
                         edges: [...prev.commands.edges, ...edges],
-                        pageInfo,
-                        ...prev
+                        pageInfo
                       }
                     } : prev;
                   }

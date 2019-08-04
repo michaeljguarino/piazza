@@ -38,7 +38,7 @@ function ConversationCreator(props) {
                   ...conversations,
                   edges: [{__typename: "ConversationEdge", node: createConversation}, ...conversations.edges],
               }}
-              console.log(newData)
+
               cache.writeQuery({
                 query: CONVERSATIONS_Q,
                 data: newData
@@ -46,14 +46,14 @@ function ConversationCreator(props) {
               setOpen(false)
             }}
           >
-            {mutation => (
-              <Box>
-                <Box align='center' justify='center' pad='small'>
-                  <Text>Create a new conversation</Text>
-                </Box>
-                <ConversationEditForm state={state} mutation={mutation} onStateChange={(update) => setState({...state, ...update})} />
+          {mutation => (
+            <Box>
+              <Box align='center' justify='center' pad='small'>
+                <Text>Create a new conversation</Text>
               </Box>
-            )}
+              <ConversationEditForm state={state} mutation={mutation} onStateChange={(update) => setState({...state, ...update})} />
+            </Box>
+          )}
           </Mutation>
         </Dropdown>
       </Box>
