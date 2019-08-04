@@ -39,6 +39,12 @@ defmodule Core.Models.User do
     from(u in query, where: u.handle in ^handles)
   end
 
+  def search(query \\ __MODULE__, handle) do
+    from(u in query,
+      where: like(u.handle, ^"#{handle}%")
+    )
+  end
+
   def changeset(model, attrs \\ %{}) do
     model
     |> cast(attrs, @valid)

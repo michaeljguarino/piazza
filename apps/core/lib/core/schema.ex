@@ -62,6 +62,13 @@ defmodule Core.Schema do
       resolve &Conversation.search_conversations/2
     end
 
+    connection field :search_users, node_type: :user do
+      middleware Core.Schemas.Authenticated
+      arg :name, non_null(:string)
+
+      resolve &User.search_users/2
+    end
+
     @desc "Fetches an individual conversation"
     field :conversation, :conversation do
       middleware Core.Schemas.Authenticated

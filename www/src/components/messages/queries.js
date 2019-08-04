@@ -105,3 +105,19 @@ export const MESSAGE_MUTATION = gql`
     }
   }
 `
+
+export const SEARCH_USERS=gql`
+  query SearchUsers($name: ID!) {
+    searchUsers(name: $name, first: 10) {
+      edges {
+        node {
+          id
+          name
+          handle
+          backgroundColor
+          avatar
+        }
+      }
+    }
+  }
+`;

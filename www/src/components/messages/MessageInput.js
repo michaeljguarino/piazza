@@ -1,17 +1,28 @@
 import React, { Component } from 'react'
+import {ApolloProvider} from 'react-apollo'
 import {socket} from '../../helpers/client'
 import TimedCache from '../utils/TimedCache'
 import { Mutation } from 'react-apollo'
-import {TextInput, Box, Form, Text, Markdown} from 'grommet'
+import {Box, Form, Text, Markdown} from 'grommet'
 import {Attachment} from 'grommet-icons'
 import {FilePicker} from 'react-file-picker'
 import debounce from 'lodash/debounce'
 import {CurrentUserContext} from '../login/EnsureLogin'
-import {MESSAGE_MUTATION} from './queries'
+import {MentionsInput, Mention} from 'react-mentions'
+import {SUGGESTIONS_STYLES, MENTION_STYLE} from './suggestionStyles'
+import {MESSAGE_MUTATION, SEARCH_USERS} from './queries'
 
 const TEXT_SIZE='xsmall'
 const TEXT_COLOR='dark-4'
 const SEND_COLOR='#004d23'
+
+function fetchUsers(client, query, callback) {
+  client.query({
+    query: SEARCH_USERS,
+    variables: {name: query}})
+  .then(({data}) => (data.searchUsers.edges.map(user => ({display: user.node.handle, id: user.node.handle}))))
+  .then(callback)
+}
 
 function Typing(props) {
   let typists = props.typists.filter((handle) => handle !== props.ignore)
@@ -105,16 +116,26 @@ class MessageInput extends Component {
                   <Attachment color={this.state.attachment ? SEND_COLOR : null} size='15px' />
                 </Box>
               </FilePicker>
-              <TextInput
-                plain
-                type='text'
+              <ApolloProvider>
+              {client => (
+                <MentionsInput
                 value={text}
+                style={SUGGESTIONS_STYLES}
+                placeholder="Whatever is on your mind"
                 onChange={e => {
                   this.notifyTyping()
                   this.setState({ text: e.target.value })
                 }}
-                placeholder="Whatever is on your mind"
+              >
+                <Mention
+                  displayTransform={login => `@${login}`}
+                  trigger="@"
+                  data={(query, callback) => fetchUsers(client, query, callback)}
+                  style={MENTION_STYLE}
                 />
+              </MentionsInput>
+              )}
+              </ApolloProvider>
               <Box
                 background={hover ? '#001a0c' : SEND_COLOR}
                 direction="row"

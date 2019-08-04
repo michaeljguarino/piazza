@@ -18,6 +18,11 @@ defmodule Core.Resolvers.User do
   def create_user(%{attributes: attrs}, %{context: %{current_user: user}}),
     do: Users.create_user(attrs, user)
 
+  def search_users(%{name: name} = args, _) do
+    User.search(name)
+    |> paginate(args)
+  end
+
   def signup(%{attributes: attrs}, _) do
     Users.create_user(attrs)
     |> with_jwt()

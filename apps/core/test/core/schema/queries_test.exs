@@ -53,6 +53,32 @@ defmodule Core.Schema.QueriesTest do
     end
   end
 
+  describe "searchUsers" do
+    test "It will search users by handle" do
+      users = for i <- 1..3, do: insert(:user, handle: "found-#{i}")
+      ignored = insert(:user, handle: "ignored")
+
+      {:ok, %{data: %{"searchUsers" => found}}} = run_query("""
+        query Users($name: String!, $userCount: Int!) {
+          searchUsers(name: $name, first: $userCount) {
+            edges {
+              node {
+                id
+                handle
+              }
+            }
+          }
+        }
+      """, %{"userCount" => 4, "name" => "found"}, %{current_user: insert(:user)})
+
+      found_users = from_connection(found) |> by_ids()
+
+      for user <- users,
+        do: assert found_users[user.id]
+      refute found_users[ignored.id]
+    end
+  end
+
   describe "Conversation" do
     test "It will fetch a conversation" do
       conversation = insert(:conversation)
