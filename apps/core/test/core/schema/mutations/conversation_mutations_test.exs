@@ -22,6 +22,28 @@ defmodule Core.Schema.ConversationMutationsTest do
     end
   end
 
+  describe "createChat" do
+    test "it will create a private chat be" do
+      user  = insert(:user)
+      other = insert(:user)
+
+      params = %{"userId" => other.id}
+      {:ok, %{data: %{"createChat" => result}}} = run_query("""
+        mutation CreateChat($userId: ID!) {
+          createChat(userId: $userId) {
+            id
+            name
+            public
+          }
+        }
+      """, params, %{current_user: user})
+
+      assert result["id"]
+      assert result["name"] == Core.Services.Conversations.chat_name([user, other])
+      refute result["public"]
+    end
+  end
+
   describe "updateConversation" do
     test "it will update a conversation by id" do
       user         = insert(:user)

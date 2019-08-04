@@ -18,6 +18,10 @@ defmodule Core.Models.Command do
   def ordered(query \\ __MODULE__, order \\ [asc: :name]),
     do: from(c in query, order_by: ^order)
 
+  def search(query \\ __MODULE__, name) do
+    from(c in query, where: like(c.name, ^"#{name}%"))
+  end
+
   def changeset(schema, attrs \\ %{}) do
     schema
     |> cast(attrs, @valid)

@@ -1,7 +1,7 @@
 defmodule Core.Services.Conversations do
   use Core.Services.Base
   alias Core.PubSub
-  alias Core.Services.Messages
+  alias Core.Services.{Messages, Users}
   alias Core.Models.{
     Conversation,
     Message,
@@ -16,6 +16,15 @@ defmodule Core.Services.Conversations do
 
   def get_conversation(id),
     do: Core.Repo.get(Conversation, id)
+
+  def get_conversation_by_name(name),
+    do: Core.Repo.get_by(Conversation, name: name)
+
+  def get_participant(user_id, conv_id),
+    do: Core.Repo.get_by(Participant, user_id: user_id, conversation_id: conv_id)
+
+  def get_participant!(user_id, conv_id),
+    do: Core.Repo.get_by!(Participant, user_id: user_id, conversation_id: conv_id)
 
   def authorize(conv_id, user, policy) do
     case get_conversation(conv_id) do
@@ -36,13 +45,19 @@ defmodule Core.Services.Conversations do
     |> notify(:upsert, user, participant)
   end
 
-  def get_conversation_by_name(name), do: Core.Repo.get_by(Conversation, name: name)
+  def chat_name(users) do
+    names      = Enum.map(users, & &1.name) |> Enum.sort()
+    "Chat with #{Enum.join(names, ",")}"
+  end
 
-  def get_participant(user_id, conv_id),
-    do: Core.Repo.get_by(Participant, user_id: user_id, conversation_id: conv_id)
+  def create_chat(user_id, %User{} = user) do
+    other_user = Users.get_user!(user_id)
+    chat_name  = chat_name([user, other_user])
 
-  def get_participant!(user_id, conv_id),
-    do: Core.Repo.get_by!(Participant, user_id: user_id, conversation_id: conv_id)
+    with {:ok, conv} <- upsert_conversation(chat_name, %{public: false}, user),
+         {:ok, _}    <- bump_last_seen(conv.id, other_user),
+      do: {:ok, conv}
+  end
 
   def create_conversation(attrs, user) do
     start_transaction()
@@ -59,6 +74,25 @@ defmodule Core.Services.Conversations do
     end)
     |> execute(extract: :conversation)
     |> notify(:create, user)
+  end
+
+  def upsert_conversation(name, attrs, user) do
+    conversation = get_conversation_by_name(name)
+
+    start_transaction()
+    |> add_operation(:conversation, fn _ ->
+      case conversation do
+        %Conversation{} = conv -> conv
+        nil -> %Conversation{name: name}
+      end
+      |> Conversation.changeset(attrs)
+      |> Core.Repo.insert_or_update()
+    end)
+    |> add_operation(:participant, fn %{conversation: conv} ->
+      bump_last_seen(conv.id, user)
+    end)
+    |> execute(extract: :conversation)
+    |> notify(:upsert, user, conversation)
   end
 
   def update_conversation(id, attrs, user) do
@@ -127,6 +161,11 @@ defmodule Core.Services.Conversations do
     |> when_ok(:delete)
     |> notify(:delete, user)
   end
+
+  def notify({:ok, %Conversation{} = c}, :upsert, actor, nil),
+    do: handle_notify(PubSub.ConversationCreated, c, actor: actor)
+  def notify({:ok, %Conversation{} = c}, :upsert, actor, _),
+    do: handle_notify(PubSub.ConversationUpdated, c, actor: actor)
 
   def notify({:ok, %Participant{} = p}, :upsert, actor, nil),
     do: handle_notify(PubSub.ParticipantCreated, p, actor: actor)

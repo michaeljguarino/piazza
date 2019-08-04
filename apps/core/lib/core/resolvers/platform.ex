@@ -13,6 +13,12 @@ defmodule Core.Resolvers.Platform do
     |> paginate(args)
   end
 
+  def search_commands(%{name: name} = args, _) do
+    Command.any()
+    |> Command.search(name)
+    |> paginate(args)
+  end
+
   def create_command(%{attributes: attrs}, %{context: %{current_user: user}}) do
     Platform.create_command(attrs, user)
   end

@@ -83,6 +83,13 @@ defmodule Core.Schema do
       resolve &Platform.list_commands/2
     end
 
+    connection field :search_commands, node_type: :command do
+      middleware Core.Schemas.Authenticated
+      arg :name, non_null(:string)
+
+      resolve &Platform.search_commands/2
+    end
+
     connection field :notifications, node_type: :notification do
       middleware Core.Schemas.Authenticated
       resolve &Notification.list_notifications/2
@@ -134,6 +141,14 @@ defmodule Core.Schema do
       arg :attributes, non_null(:conversation_attributes)
 
       resolve safe_resolver(&Conversation.create_conversation/2)
+    end
+
+    @desc "Creates a private conversation between the current user and the user specified by user_id"
+    field :create_chat, :conversation do
+      middleware Core.Schemas.Authenticated
+      arg :user_id, non_null(:id)
+
+      resolve safe_resolver(&Conversation.create_chat/2)
     end
 
     @desc "Delete a conversation"
@@ -246,10 +261,14 @@ defmodule Core.Schema do
 
   def safe_resolver(fun) do
     fn args, ctx ->
-      case fun.(args, ctx) do
-        {:ok, res} -> {:ok, res}
-        {:error, %Ecto.Changeset{} = cs} -> {:error, resolve_changeset(cs)}
-        error -> error
+      try do
+        case fun.(args, ctx) do
+          {:ok, res} -> {:ok, res}
+          {:error, %Ecto.Changeset{} = cs} -> {:error, resolve_changeset(cs)}
+          error -> error
+        end
+      rescue
+        error -> {:error, Exception.message(error)}
       end
     end
   end

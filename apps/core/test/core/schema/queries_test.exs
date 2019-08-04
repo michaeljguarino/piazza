@@ -307,6 +307,31 @@ defmodule Core.Schema.QueriesTest do
     end
   end
 
+  describe "searchCommands" do
+    test "It will search for commands by name" do
+      commands = for i <- 1..3, do: insert(:command, name: "found-#{i}")
+      ignore  = insert(:command)
+
+      {:ok, %{data: %{"searchCommands" => found}}} = run_query("""
+        query {
+          searchCommands(name: "found", first: 4) {
+            edges {
+              node {
+                id
+                name
+              }
+            }
+          }
+        }
+      """, %{}, %{current_user: insert(:user)})
+
+      found = from_connection(found) |> by_ids()
+
+      for command <- commands, do: assert found[command.id]
+      refute found[ignore.id]
+    end
+  end
+
   describe "notifications" do
     test "it will paginate notifications for a user" do
       user = insert(:user)

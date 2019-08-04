@@ -17,6 +17,34 @@ defmodule Core.Services.ConversationsTest do
     end
   end
 
+  describe "#create_chat/2" do
+    test "A user can create a chat with another user" do
+      user = insert(:user)
+      other_user = insert(:user)
+
+      {:ok, conv} = Conversations.create_chat(other_user.id, user)
+
+      refute conv.public
+      assert Conversations.get_participant(user.id, conv.id)
+      assert Conversations.get_participant(other_user.id, conv.id)
+      assert_receive {:event, %PubSub.ConversationCreated{item: ^conv}}
+    end
+
+    test "It will upsert against existing chats" do
+      user       = insert(:user)
+      other_user = insert(:user)
+      existing   = insert(:conversation, name: Conversations.chat_name([user, other_user]))
+
+      {:ok, conv} = Conversations.create_chat(other_user.id, user)
+
+      assert conv.id == existing.id
+      refute conv.public
+      assert Conversations.get_participant(user.id, conv.id)
+      assert Conversations.get_participant(other_user.id, conv.id)
+      assert_receive {:event, %PubSub.ConversationUpdated{item: ^conv}}
+    end
+  end
+
   describe "update_conversation/2" do
     test "participants can update conversations" do
       user = insert(:user)

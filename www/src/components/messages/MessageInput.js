@@ -1,5 +1,4 @@
-import React, { Component } from 'react'
-import {ApolloProvider} from 'react-apollo'
+import React, { Component, createRef } from 'react'
 import {socket} from '../../helpers/client'
 import TimedCache from '../utils/TimedCache'
 import { Mutation } from 'react-apollo'
@@ -8,21 +7,12 @@ import {Attachment} from 'grommet-icons'
 import {FilePicker} from 'react-file-picker'
 import debounce from 'lodash/debounce'
 import {CurrentUserContext} from '../login/EnsureLogin'
-import {MentionsInput, Mention} from 'react-mentions'
-import {SUGGESTIONS_STYLES, MENTION_STYLE} from './suggestionStyles'
-import {MESSAGE_MUTATION, SEARCH_USERS} from './queries'
+import {MESSAGE_MUTATION} from './queries'
+import MentionManager from './MentionManager'
 
 const TEXT_SIZE='xsmall'
 const TEXT_COLOR='dark-4'
 const SEND_COLOR='#004d23'
-
-function fetchUsers(client, query, callback) {
-  client.query({
-    query: SEARCH_USERS,
-    variables: {name: query}})
-  .then(({data}) => (data.searchUsers.edges.map(user => ({display: user.node.handle, id: user.node.handle}))))
-  .then(callback)
-}
 
 function Typing(props) {
   let typists = props.typists.filter((handle) => handle !== props.ignore)
@@ -57,6 +47,8 @@ class MessageInput extends Component {
     hover: false,
     typists: []
   }
+
+  boxRef = createRef()
 
   componentWillMount() {
     this.topic = "conversation:" + this.props.conversation.id
@@ -112,30 +104,22 @@ class MessageInput extends Component {
                 maxSize={2000}
                 onError={(msg) => console.log(msg)}
               >
-                <Box style={{cursor: "pointer"}} align='center' justify='center' width="30px">
+                <Box
+                  style={{cursor: "pointer"}}
+                  align='center'
+                  justify='center'
+                  border="right"
+                  height='40px'
+                  width="40px">
                   <Attachment color={this.state.attachment ? SEND_COLOR : null} size='15px' />
                 </Box>
               </FilePicker>
-              <ApolloProvider>
-              {client => (
-                <MentionsInput
-                value={text}
-                style={SUGGESTIONS_STYLES}
-                placeholder="Whatever is on your mind"
-                onChange={e => {
+              <MentionManager
+                parentRef={this.boxRef}
+                onChange={text => {
                   this.notifyTyping()
-                  this.setState({ text: e.target.value })
-                }}
-              >
-                <Mention
-                  displayTransform={login => `@${login}`}
-                  trigger="@"
-                  data={(query, callback) => fetchUsers(client, query, callback)}
-                  style={MENTION_STYLE}
-                />
-              </MentionsInput>
-              )}
-              </ApolloProvider>
+                  this.setState({ text: text })
+                }} />
               <Box
                 background={hover ? '#001a0c' : SEND_COLOR}
                 direction="row"

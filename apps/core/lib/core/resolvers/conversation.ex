@@ -86,6 +86,9 @@ defmodule Core.Resolvers.Conversation do
   def create_conversation(%{attributes: attrs}, %{context: %{current_user: user}}),
     do: Conversations.create_conversation(attrs, user)
 
+  def create_chat(%{user_id: user_id}, %{context: %{current_user: user}}),
+    do: Conversations.create_chat(user_id, user)
+
   def update_conversation(%{id: id, attributes: attrs}, %{context: %{current_user: user}}),
     do: Conversations.update_conversation(id, attrs, user)
 

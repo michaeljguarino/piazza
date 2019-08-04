@@ -6,12 +6,12 @@ import Loading from '../utils/Loading'
 import {ME_Q} from '../users/queries'
 import {wipeToken} from '../../helpers/authentication'
 
-const POLL_INTERVAL=30000
+// const POLL_INTERVAL=30000
 export const CurrentUserContext = React.createContext({})
 
 function CurrentUser(props) {
   return (
-    <Query query={ME_Q} pollInterval={POLL_INTERVAL}>
+    <Query query={ME_Q}>
       { ({loading, error, data}) => {
         if (loading) {
           return (<Box height='100vh'><Loading/></Box>)
