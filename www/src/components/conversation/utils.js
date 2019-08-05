@@ -35,7 +35,7 @@ export function subscribeToNewConversations(subscribeToMore) {
   })
 }
 
-function addConversation(prev, conv) {
+export function addConversation(prev, conv) {
   let edges = prev.conversations.edges
   if (edges.find((e) => e.node.id === conv.id))
     return prev
@@ -49,7 +49,7 @@ function addConversation(prev, conv) {
   }
 }
 
-function removeConversation(prev, conv) {
+export function removeConversation(prev, conv) {
   let edges = prev.conversations.edges.filter((e) => e.node.id !== conv.id)
   return {
     ...prev,

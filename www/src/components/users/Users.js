@@ -44,7 +44,7 @@ function Users(props) {
               edges={userEdges}
               style={{
                 overflow: 'auto',
-                height: '20vh'
+                height: '40vh'
               }}
               mapper={(edge) => <UserListEntry key={edge.node.id} user={edge.node} color={props.color} />}
               onLoadMore={() => {

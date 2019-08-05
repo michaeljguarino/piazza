@@ -8,6 +8,7 @@ import ConversationEditForm from './ConversationEditForm'
 import NotificationIcon from '../notifications/NotificationIcon'
 import {CurrentUserContext} from '../login/EnsureLogin'
 import Participants from './Participants'
+import Commands from '../commands/Commands'
 
 export const BOX_ATTRS = {
   direction: "row",
@@ -98,7 +99,7 @@ function ConversationUpdate(props) {
 function ConversationHeader(props) {
   const [editing, setEditing] = useState(false)
   return (
-    <Box direction='row' border='bottom' pad={{left: '20px', top: '10px'}}>
+    <Box direction='row' border='bottom' pad={{left: '20px', top: '7px', bottom: '7px'}}>
       <Box fill='horizontal' direction='column'>
         <Text weight='bold' margin={{bottom: '5px'}}># {props.conversation.name}</Text>
         <Box height='25px' direction='row' align='end' justify='start' pad={{top: '5px', bottom: '5px'}}>
@@ -111,6 +112,7 @@ function ConversationHeader(props) {
           </Box>
         </Box>
       </Box>
+      <Commands />
       <CurrentUserContext.Consumer>
       {me => (<NotificationIcon me={me} {...props} />)}
       </CurrentUserContext.Consumer>

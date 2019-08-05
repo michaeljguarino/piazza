@@ -46,8 +46,8 @@ defmodule Core.Services.Conversations do
   end
 
   def chat_name(users) do
-    names      = Enum.map(users, & &1.name) |> Enum.sort()
-    "Chat with #{Enum.join(names, ",")}"
+    handles      = Enum.map(users, & &1.handle) |> Enum.sort()
+    Enum.join(handles, " <> ")
   end
 
   def create_chat(user_id, %User{} = user) do

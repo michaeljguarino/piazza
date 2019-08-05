@@ -5,7 +5,7 @@ function Conversation(props) {
   const [hover, setHover] = useState(false);
   let selected = props.conversation.id === props.currentConversation.id
   // #0576B9'
-  let boxProps = (selected) ? {background: 'accent-1'} : (hover ? {background: '#474A4D'} : {})
+  let boxProps = (selected) ? {background: 'accent-1'} : (hover ? {background: '#2b3c54'} : {})
   let unread = (props.conversation.unreadMessages > 0 && !selected)
   let textProps = (props.selected) ? {} : {color: (unread ? 'white' : props.color)}
   return (
@@ -23,7 +23,7 @@ function Conversation(props) {
       <Text margin={{right: '5px'}} {...textProps}>#</Text>
       <Text
         size='small'
-        weight={(hover && !selected) ? 'bold' : 'normal'} {...textProps}>
+        {...textProps} >
         {props.conversation.name}
       </Text>
     </Box>

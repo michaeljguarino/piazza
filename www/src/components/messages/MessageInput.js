@@ -7,7 +7,8 @@ import {Attachment} from 'grommet-icons'
 import {FilePicker} from 'react-file-picker'
 import debounce from 'lodash/debounce'
 import {CurrentUserContext} from '../login/EnsureLogin'
-import {MESSAGE_MUTATION} from './queries'
+import {MESSAGE_MUTATION, MESSAGES_Q} from './queries'
+import {applyNewMessage} from './utils'
 import MentionManager from './MentionManager'
 
 const TEXT_SIZE='xsmall'
@@ -86,6 +87,14 @@ class MessageInput extends Component {
         <Mutation
             mutation={MESSAGE_MUTATION}
             variables={{ conversationId: this.props.conversation.id, attributes: {text, attachment}}}
+            update={(cache, {data: {createMessage}}) => {
+              const data = cache.readQuery({query: MESSAGES_Q, variables: {conversationId: this.props.conversation.id}})
+              cache.writeQuery({
+                query: MESSAGES_Q,
+                variables: {conversationId: this.props.conversation.id},
+                data: applyNewMessage(data, createMessage)
+              })
+            }}
         >
         {postMutation => (
           <Form onSubmit={() => {

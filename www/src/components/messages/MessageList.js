@@ -6,25 +6,12 @@ import Loading from '../utils/Loading'
 import {mergeAppend} from '../../utils/array'
 import SubscriptionWrapper from '../utils/SubscriptionWrapper'
 import {MESSAGES_Q, NEW_MESSAGES_SUB} from './queries'
-
-function applyNewMessage(prev, message) {
-  const messages = prev.conversation.messages.edges
-  const exists = messages.find((edge) => edge.node.id === message.id);
-  if (exists) return prev;
-
-  let messageNode = {node: message, __typename: "MessageEdge"}
-  return Object.assign({}, prev, {
-    conversation: {
-      ...prev.conversation,
-      messages: {
-        ...prev.conversation.messages,
-        edges: [messageNode, ...messages],
-      }
-    }
-  })
-}
+import {applyNewMessage} from './utils'
 
 class MessageList extends Component {
+  state = {
+    loaded: false
+  }
   _subscribeToNewMessages = async (subscribeToMore) => {
     return subscribeToMore({
       document: NEW_MESSAGES_SUB,
@@ -47,7 +34,7 @@ class MessageList extends Component {
     return (
       <Query query={MESSAGES_Q} variables={{conversationId: this.props.conversation.id}} fetchPolicy='cache-and-network'>
         {({loading, error, data, fetchMore, subscribeToMore}) => {
-          if (loading) return <Loading height='calc(100vh - 135px)' />
+          if (loading && !data.conversation) return <Loading height='calc(100vh - 135px)' />
           if (error) return <div>wtf</div>
           let messageEdges = data.conversation.messages.edges
           let pageInfo = data.conversation.messages.pageInfo
@@ -61,13 +48,15 @@ class MessageList extends Component {
                 direction='up'
                 style={{
                   overflow: 'auto',
-                  height: 'calc(100vh - 135px)',
+                  height: 'calc(100vh - 140px)',
                   display: 'flex',
                   justifyContent: 'flex-start',
                   flexDirection: 'column-reverse',
                 }}
                 mapper={(edge, next) => <Message key={edge.node.id} message={edge.node} next={next.node} />}
                 onLoadMore={() => {
+                  console.log('fetching more')
+                  this.setState({loaded: true})
                   if (!pageInfo.hasNextPage) {
                     return
                   }

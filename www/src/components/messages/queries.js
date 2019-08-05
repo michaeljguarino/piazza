@@ -4,7 +4,7 @@ export const MESSAGES_Q = gql`
   query ConversationQuery($conversationId: ID!, $cursor: String) {
     conversation(id: $conversationId) {
       id
-      messages(first: 100, after: $cursor) {
+      messages(first: 15, after: $cursor) {
         pageInfo {
           endCursor
           hasNextPage
@@ -99,8 +99,35 @@ export const MESSAGE_MUTATION = gql`
       id
       text
       insertedAt
+      attachment
+      entities {
+        type
+        startIndex
+        length
+        user {
+          id
+          name
+          handle
+          backgroundColor
+          avatar
+        }
+      }
       creator {
+        id
         name
+        handle
+        backgroundColor
+        bot
+        avatar
+      }
+      embed {
+        type
+        url
+        image_url
+        title
+        description
+        width
+        height
       }
     }
   }

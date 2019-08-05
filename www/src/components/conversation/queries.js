@@ -201,3 +201,14 @@ export const CONVERSATIONS_SUB = gql`
     }
   }
 `;
+
+export const CREATE_CHAT = gql`
+  mutation CreateChat($userId: ID!) {
+    createChat(userId: $userId) {
+      id
+      name
+      topic
+      unreadMessages
+    }
+  }
+`;

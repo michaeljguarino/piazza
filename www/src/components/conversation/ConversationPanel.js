@@ -2,7 +2,6 @@ import React, { Component } from 'react'
 import Conversation from './Conversation'
 import Me from '../users/Me'
 import Users from '../users/Users'
-import Commands from '../commands/Commands'
 import {Box} from 'grommet'
 import ConversationCreator from './ConversationCreator'
 import ConversationSearch from '../search/ConversationSearch'
@@ -57,7 +56,6 @@ class ConversationPanel extends Component {
             } />
         </Box>
         <Users pad={padding} color={textColor} />
-        <Commands pad={padding} color={textColor} />
       </Box>
     )
   }

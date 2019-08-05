@@ -6,7 +6,7 @@ import UserListEntry from '../users/UserListEntry'
 function CommandListEntry(props) {
   return (
     <Box direction='row' align='center' fill='horizontal' overflow='none'>
-      <Dropdown align={{left: 'right'}}>
+      <Dropdown align={{right: 'left', top: 'bottom'}}>
         <Anchor>
           <Text size='small' color={props.color}>/{props.command.name}</Text>
         </Anchor>

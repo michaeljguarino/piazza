@@ -4,10 +4,11 @@ import Avatar from '../users/Avatar'
 import UserHandle from '../users/UserHandle'
 import {TextInput, Box, Text} from 'grommet'
 import {SEARCH_USERS} from './queries'
+import {SEARCH_COMMANDS} from '../commands/queries'
 
 function fetchUsers(client, query, callback) {
   if (!query) return
-  console.log(query)
+
   client.query({
     query: SEARCH_USERS,
     variables: {name: query}})
@@ -20,20 +21,45 @@ function fetchUsers(client, query, callback) {
   .then((res) => callback(res))
 }
 
+function fetchCommands(client, query, callback) {
+  if (!query) return
+
+  client.query({
+    query: SEARCH_COMMANDS,
+    variables: {name: query}
+  }).then(({data}) => {
+    return data.searchCommands.edges.map(edge => ({
+      value: edge.node.name,
+      label: commandSuggestion(edge.node)
+    }))
+  }).then((res) => callback(res))
+}
+
 function userSuggestion(user) {
   return (
     <Box direction='row' align='center' pad='small'>
       <Avatar user={user} />
-      <Box justify='center'>
+      <Box justify='center' width='100%'>
         <UserHandle user={user} />
+      </Box>
+      <Box width='150px' direction='row' justify='end'>
         <Text size='small'>{user.name}</Text>
       </Box>
     </Box>
   )
 }
 
+function commandSuggestion(command) {
+  return (
+    <Box direction='row' align='center' pad='small'>
+      <Text size='small' weight='bold'>/{command.name}</Text>
+    </Box>
+  )
+}
+
 const REGEXES=[
-  [/@[^\s@]+$/, fetchUsers, (text) => `@${text}`]
+  [/@[^\s@]+$/, fetchUsers, (text) => `@${text}`],
+  [/^\/[^\s]+$/, fetchCommands, (text) => `/${text} `]
 ]
 
 const DEFAULT_SUGGESTIONS_STATE={
@@ -46,7 +72,9 @@ function validateRegexes(client, text, setSuggestions) {
   for (const [regex, fetcher, transformer] of REGEXES) {
     if (regex.test(text)) {
       const matches = text.match(regex)
-      fetcher(client, matches[0].substring(1), (sugs) => setSuggestions({suggestions: sugs, regex: regex, transformer: transformer}))
+      fetcher(client, matches[0].substring(1), (sugs) => (
+        setSuggestions({suggestions: sugs, regex: regex, transformer: transformer})
+      ))
       return
     }
   }
@@ -70,7 +98,6 @@ function MentionManager(props) {
         ref={dropRef}
         plain
         dropTarget={dropRef.current}
-        dropProps={{stretch: false}}
         value={text}
         suggestions={suggestionState.suggestions}
         onSelect={(event) => {

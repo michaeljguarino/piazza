@@ -30,7 +30,7 @@ const Piazza = () => {
               />
           </Box>
           <Box gridArea='msgs'>
-            <Box height='65px'>
+            <Box height='70px'>
               <ConversationHeader conversation={currentConversation} setCurrentConversation={setCurrentConversation} />
             </Box>
             <MessageList conversation={currentConversation} />
