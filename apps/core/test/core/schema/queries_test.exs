@@ -99,6 +99,30 @@ defmodule Core.Schema.QueriesTest do
       assert found["name"] == conversation.name
     end
 
+    test "It will sideload your current participant" do
+      conversation = insert(:conversation)
+      user = insert(:user)
+      part = insert(:participant, conversation: conversation, user: user)
+      insert(:participant, conversation: conversation)
+
+
+      {:ok, %{data: %{"conversation" => found}}} = run_query("""
+          query Conversation($id: ID) {
+            conversation(id: $id) {
+              id
+              name
+              currentParticipant {
+                id
+              }
+            }
+          }
+      """, %{"id" => conversation.id}, %{current_user: user})
+
+      assert found["id"] == conversation.id
+      assert found["name"] == conversation.name
+      assert found["currentParticipant"]["id"] == part.id
+    end
+
     test "It will sideload messages and participants" do
       conversation = insert(:conversation)
       messages = insert_list(3, :message, conversation: conversation)

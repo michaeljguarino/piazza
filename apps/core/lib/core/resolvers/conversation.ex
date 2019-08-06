@@ -7,7 +7,7 @@ defmodule Core.Resolvers.Conversation do
     do: Dataloader.Ecto.new(Core.Repo, query: &query/2, default_params: args, run_batch: &run_batch/5)
 
   def query(Message, _args), do: Message
-  def query(Participant, _args), do: Participant
+  def query(Participant, %{current_user: user}), do: Participant.for_user(user.id)
   def query(Conversation, _args), do: Conversation
   def query(MessageEntity, _args), do: MessageEntity
   def query(:unread_messages, _), do: Conversation.any()

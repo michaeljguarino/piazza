@@ -57,6 +57,7 @@ export const PARTICIPANTS_Q = gql`
           node {
             id
             user {
+              id
               name
               handle
               backgroundColor
@@ -83,6 +84,7 @@ export const PARTICIPANT_SUB = gql`
       payload {
         id
         user {
+          id
           name
           handle
           backgroundColor

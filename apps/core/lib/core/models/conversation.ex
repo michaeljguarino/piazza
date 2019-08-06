@@ -8,6 +8,7 @@ defmodule Core.Models.Conversation do
     field :global, :boolean, default: false
     field :topic,  :string
 
+    has_one :current_participant, Participant
     has_many :participants, Participant
     has_many :messages, Message
 

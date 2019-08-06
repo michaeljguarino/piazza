@@ -3,6 +3,7 @@ defmodule RtcWeb.Channels.UserSubscriptionTest do
   alias Core.PubSub
 
   describe "user delta" do
+    @tag :skip
     test "users can subscribe to see new users" do
       user = insert(:user)
       {:ok, socket} = establish_socket(user)
