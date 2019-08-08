@@ -1,4 +1,5 @@
 import gql from 'graphql-tag'
+import {CommandFragment} from '../models/commands'
 
 export const COMMANDS_Q = gql`
 query Commands($cursor: String) {
@@ -9,22 +10,12 @@ query Commands($cursor: String) {
     }
     edges {
       node {
-        id
-        name
-        documentation
-        bot {
-          id
-          name
-          handle
-          bot
-        }
-        webhook {
-          url
-        }
+        ...CommandFragment
       }
     }
   }
 }
+${CommandFragment}
 `;
 
 export const SEARCH_COMMANDS = gql`
@@ -32,17 +23,10 @@ export const SEARCH_COMMANDS = gql`
     searchCommands(name: $name, first: 10) {
       edges {
         node {
-          id
-          name
-          bot {
-            id
-            name
-            handle
-            backgroundColor
-            avatar
-          }
+          ...CommandFragment
         }
       }
     }
   }
+  ${CommandFragment}
 `;

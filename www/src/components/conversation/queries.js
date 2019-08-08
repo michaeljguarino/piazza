@@ -1,35 +1,23 @@
 import gql from 'graphql-tag'
+import {ConversationFragment, MessageFragment, ParticipantFragment} from '../models/conversations'
 
 export const CREATE_CONVERSATION = gql`
   mutation CreateConversation($attributes: ConversationAttributes!) {
     createConversation(attributes: $attributes) {
-      id
-      name
-      public
-      topic
-      unreadMessages
-      currentParticipant {
-        notificationPreferences {
-          message
-          mention
-          participant
-        }
-      }
+      ...ConversationFragment
     }
   }
+  ${ConversationFragment}
 `
 
 
 export const UPDATE_CONVERSATION = gql`
   mutation UpdateConversation($id: ID!, $attributes: ConversationAttributes!) {
     updateConversation(id: $id, attributes: $attributes) {
-      id
-      name
-      public
-      topic
-      unreadMessages
+      ...ConversationFragment
     }
   }
+  ${ConversationFragment}
 `;
 
 export const CONVERSATIONS_Q = gql`
@@ -41,22 +29,12 @@ export const CONVERSATIONS_Q = gql`
       }
       edges {
         node {
-          id
-          name
-          public
-          topic
-          unreadMessages
-          currentParticipant {
-            notificationPreferences {
-              mention
-              participant
-              message
-            }
-          }
+          ...ConversationFragment
         }
       }
     }
   }
+  ${ConversationFragment}
 `
 
 export const PARTICIPANTS_Q = gql`
@@ -72,19 +50,13 @@ export const PARTICIPANTS_Q = gql`
         }
         edges {
           node {
-            id
-            user {
-              id
-              bio
-              name
-              handle
-              backgroundColor
-            }
+            ...ParticipantFragment
           }
         }
       }
     }
   }
+  ${ParticipantFragment}
 `
 
 export const DELETE_CONVERSATION = gql`
@@ -100,17 +72,11 @@ export const PARTICIPANT_SUB = gql`
     participantDelta(conversationId: $conversationId) {
       delta
       payload {
-        id
-        user {
-          id
-          bio
-          name
-          handle
-          backgroundColor
-        }
+        ...ParticipantFragment
       }
     }
   }
+  ${ParticipantFragment}
 `;
 
 export const MESSAGES_Q = gql`
@@ -124,90 +90,24 @@ export const MESSAGES_Q = gql`
         }
         edges {
           node {
-            id
-            text
-            insertedAt
-            attachment
-            entities {
-              type
-              startIndex
-              length
-              user {
-                id
-                bio
-                name
-                handle
-                backgroundColor
-                avatar
-              }
-            }
-            creator {
-              id
-              bio
-              name
-              handle
-              backgroundColor
-              bot
-              avatar
-            }
-            embed {
-              type
-              url
-              image_url
-              title
-              description
-              width
-              height
-            }
+            ...MessageFragment
           }
         }
       }
     }
   }
+  ${MessageFragment}
 `
 export const NEW_MESSAGES_SUB = gql`
   subscription MessageDeltas($conversationId: ID!) {
     messageDelta(conversationId: $conversationId) {
       delta
       payload {
-        id
-        text
-        insertedAt
-        attachment
-        creator {
-          id
-          name
-          bio
-          handle
-          backgroundColor
-          bot
-          avatar
-        }
-        entities {
-          type
-          startIndex
-          length
-          user {
-            id
-            bio
-            name
-            handle
-            backgroundColor
-            avatar
-          }
-        }
-        embed {
-          type
-          url
-          title
-          image_url
-          description
-          width
-          height
-        }
+        ...MessageFragment
       }
     }
   }
+  ${MessageFragment}
 `;
 
 export const CONVERSATIONS_SUB = gql`
@@ -217,41 +117,21 @@ export const CONVERSATIONS_SUB = gql`
       payload {
         id
         conversation {
-          id
-          name
-          public
-          topic
-          unreadMessages
-          currentParticipant {
-            notificationPreferences {
-              mention
-              participant
-              message
-            }
-          }
+          ...ConversationFragment
         }
       }
     }
   }
+  ${ConversationFragment}
 `;
 
 export const CREATE_CHAT = gql`
   mutation CreateChat($userId: ID!) {
     createChat(userId: $userId) {
-      id
-      name
-      topic
-      unreadMessages
-      public
-      currentParticipant {
-        notificationPreferences {
-          mention
-          message
-          participant
-        }
-      }
+      ...ConversationFragment
     }
   }
+  ${ConversationFragment}
 `;
 
 export const UPDATE_PARTICIPANT = gql`

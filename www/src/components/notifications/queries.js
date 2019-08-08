@@ -1,4 +1,5 @@
 import gql from 'graphql-tag'
+import {NotificationFragment} from '../models/notifications'
 
 export const NOTIFICATIONS_Q=gql`
   query Notifications($cursor: String) {
@@ -9,30 +10,12 @@ export const NOTIFICATIONS_Q=gql`
       }
       edges {
         node {
-          id
-          type
-          actor {
-            id
-            name
-            handle
-            email
-            backgroundColor
-            avatar
-            bot
-          }
-          message {
-            id
-            text
-            conversation {
-              id
-              name
-              topic
-            }
-          }
+          ...NotificationFragment
         }
       }
     }
   }
+  ${NotificationFragment}
 `;
 
 export const VIEW_NOTIFICATIONS = gql`
@@ -46,26 +29,8 @@ export const VIEW_NOTIFICATIONS = gql`
 export const NEW_NOTIFICATIONS_SUB = gql`
   subscription {
     newNotifications {
-      id
-      type
-      actor {
-        id
-        name
-        handle
-        email
-        backgroundColor
-        avatar
-        bot
-      }
-      message {
-        id
-        text
-        conversation {
-          id
-          name
-          topic
-        }
-      }
+      ...NotificationFragment
     }
   }
+  ${NotificationFragment}
 `;

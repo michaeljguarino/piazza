@@ -14,11 +14,24 @@ function Mention({notif, setCurrentConversation}) {
   )
 }
 
+function Message({notif, setCurrentConversation}) {
+  return (
+    <Box direction='row' margin={{bottom: '5px'}}>
+      <Text size='small' margin={{right: '3px'}}>New message in</Text>
+      <Anchor size='small' onClick={() => setCurrentConversation(notif.message.conversation)}>
+        #{notif.message.conversation.name}
+      </Anchor>
+    </Box>
+  )
+}
+
 function Notification(props) {
   let notif = props.notification
   switch(notif.type) {
     case "MENTION":
       return <Mention notif={notif} setCurrentConversation={props.setCurrentConversation} />
+    case "MESSAGE":
+      return <Message notif={notif} setCurrentConversation={props.setCurrentConversation} />
     default:
       return (<span></span>)
   }
