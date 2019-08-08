@@ -33,14 +33,17 @@ defmodule Core.Services.Conversations do
     end
   end
 
-  def bump_last_seen(conversation_id, %User{id: uid} = user) do
+  def bump_last_seen(conversation_id, user),
+    do: upsert_participant(conversation_id, %{last_seen_at: DateTime.utc_now()}, user)
+
+  defp upsert_participant(conversation_id, attrs, %User{id: uid} = user) do
     participant = get_participant(uid, conversation_id)
 
     case participant do
       %Participant{} = p -> p
       _ -> %Participant{conversation_id: conversation_id, user_id: uid}
     end
-    |> Participant.changeset(%{last_seen_at: DateTime.utc_now()})
+    |> Participant.changeset(attrs)
     |> Core.Repo.insert_or_update()
     |> notify(:upsert, user, participant)
   end
@@ -53,9 +56,10 @@ defmodule Core.Services.Conversations do
   def create_chat(user_id, %User{} = user) do
     other_user = Users.get_user!(user_id)
     chat_name  = chat_name([user, other_user])
+    part_attrs = %{notification_preferences: %{message: true, mention: true}}
 
-    with {:ok, conv} <- upsert_conversation(chat_name, %{public: false}, user),
-         {:ok, _}    <- bump_last_seen(conv.id, other_user),
+    with {:ok, conv} <- upsert_conversation(chat_name, %{public: false, participant: part_attrs}, user),
+         {:ok, _}    <- upsert_participant(conv.id, part_attrs, other_user),
       do: {:ok, conv}
   end
 
@@ -78,6 +82,7 @@ defmodule Core.Services.Conversations do
 
   def upsert_conversation(name, attrs, user) do
     conversation = get_conversation_by_name(name)
+    attrs = Map.put_new(attrs, :participant, %{})
 
     start_transaction()
     |> add_operation(:conversation, fn _ ->
@@ -89,7 +94,7 @@ defmodule Core.Services.Conversations do
       |> Core.Repo.insert_or_update()
     end)
     |> add_operation(:participant, fn %{conversation: conv} ->
-      bump_last_seen(conv.id, user)
+      upsert_participant(conv.id, Map.put(attrs.participant, :last_seen_at, DateTime.utc_now()), user)
     end)
     |> execute(extract: :conversation)
     |> notify(:upsert, user, conversation)

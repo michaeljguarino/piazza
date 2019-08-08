@@ -4,6 +4,7 @@ export const UPDATE_USER=gql`
   mutation UpdateUser($id: ID!, $attributes: UserAttributes!) {
     updateUser(id: $id, attributes: $attributes) {
       id
+      bio
       name
       email
       handle
@@ -18,6 +19,7 @@ export const ME_Q=gql`
   query {
     me {
       id
+      bio
       name
       handle
       backgroundColor

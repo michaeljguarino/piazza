@@ -33,6 +33,7 @@ defmodule Core.Schemas.Inputs do
   input_object :participant_attributes do
     field :conversation_id, non_null(:string)
     field :user_id, non_null(:string)
+    field :notification_preferences, :notification_prefs
   end
 
   input_object :command_attributes do

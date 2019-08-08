@@ -9,7 +9,7 @@ import Dropdown from '../utils/Dropdown'
 
 function Commands(props) {
   return (
-    <Box width='40px' style={{cursor: 'pointer'}} align='center' justify='center'>
+    <Box width='50px' style={{cursor: 'pointer'}} align='center' justify='center'>
       <Dropdown>
         <Code size='25px' />
         <Box width='100px' pad='small'>

@@ -22,6 +22,7 @@ export const MESSAGES_Q = gql`
               user {
                 id
                 name
+                bio
                 handle
                 backgroundColor
                 avatar
@@ -31,6 +32,7 @@ export const MESSAGES_Q = gql`
               id
               name
               handle
+              bio
               backgroundColor
               bot
               avatar
@@ -63,6 +65,7 @@ export const NEW_MESSAGES_SUB = gql`
           id
           name
           handle
+          bio
           backgroundColor
           bot
           avatar
@@ -74,6 +77,7 @@ export const NEW_MESSAGES_SUB = gql`
           user {
             id
             name
+            bio
             handle
             backgroundColor
             avatar
@@ -106,6 +110,7 @@ export const MESSAGE_MUTATION = gql`
         length
         user {
           id
+          bio
           name
           handle
           backgroundColor
@@ -115,6 +120,7 @@ export const MESSAGE_MUTATION = gql`
       creator {
         id
         name
+        bio
         handle
         backgroundColor
         bot
@@ -140,6 +146,7 @@ export const SEARCH_USERS=gql`
         node {
           id
           name
+          bio
           handle
           backgroundColor
           avatar

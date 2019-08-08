@@ -5,19 +5,13 @@ import {Search} from 'grommet-icons'
 import debounce from 'lodash/debounce';
 import {SEARCH_Q} from './queries'
 import {CONVERSATIONS_Q} from '../conversation/queries'
+import {addConversation} from '../conversation/utils'
 
-function addConversation(client, conversation) {
-  const {conversations} = client.readQuery({ query: CONVERSATIONS_Q });
-  if (conversations.edges.find((e) => e.node.id === conversation.id))
-    return
-
+function _addConversation(client, conversation) {
+  const prev = client.readQuery({ query: CONVERSATIONS_Q });
   client.writeQuery({
     query: CONVERSATIONS_Q,
-    data: {
-      conversations: {
-        ...conversations,
-        edges: [{__typename: "ConversationEdge", node: conversation}, ...conversations.edges],
-    }}
+    data: addConversation(prev, conversation)
   });
 }
 
@@ -27,7 +21,7 @@ function ConversationSuggestions(props) {
       return (<span></span>)
 
   function _wrappedSetCurrentConversation(conversation) {
-    addConversation(props.client, conversation)
+    _addConversation(props.client, conversation)
     props.setCurrentConversation(conversation)
   }
 
@@ -45,6 +39,7 @@ function ConversationSuggestions(props) {
           >
             {data.searchConversations.edges.map((e, index, list) => (
               <ConversationResult
+                key={e.node.id}
                 node={e.node}
                 name={e.node.name}
                 index={index}

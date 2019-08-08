@@ -5,8 +5,16 @@ export const CREATE_CONVERSATION = gql`
     createConversation(attributes: $attributes) {
       id
       name
+      public
       topic
       unreadMessages
+      currentParticipant {
+        notificationPreferences {
+          message
+          mention
+          participant
+        }
+      }
     }
   }
 `
@@ -17,6 +25,7 @@ export const UPDATE_CONVERSATION = gql`
     updateConversation(id: $id, attributes: $attributes) {
       id
       name
+      public
       topic
       unreadMessages
     }
@@ -34,8 +43,16 @@ export const CONVERSATIONS_Q = gql`
         node {
           id
           name
+          public
           topic
           unreadMessages
+          currentParticipant {
+            notificationPreferences {
+              mention
+              participant
+              message
+            }
+          }
         }
       }
     }
@@ -58,6 +75,7 @@ export const PARTICIPANTS_Q = gql`
             id
             user {
               id
+              bio
               name
               handle
               backgroundColor
@@ -85,6 +103,7 @@ export const PARTICIPANT_SUB = gql`
         id
         user {
           id
+          bio
           name
           handle
           backgroundColor
@@ -115,6 +134,7 @@ export const MESSAGES_Q = gql`
               length
               user {
                 id
+                bio
                 name
                 handle
                 backgroundColor
@@ -123,6 +143,7 @@ export const MESSAGES_Q = gql`
             }
             creator {
               id
+              bio
               name
               handle
               backgroundColor
@@ -156,6 +177,7 @@ export const NEW_MESSAGES_SUB = gql`
         creator {
           id
           name
+          bio
           handle
           backgroundColor
           bot
@@ -167,6 +189,7 @@ export const NEW_MESSAGES_SUB = gql`
           length
           user {
             id
+            bio
             name
             handle
             backgroundColor
@@ -196,8 +219,16 @@ export const CONVERSATIONS_SUB = gql`
         conversation {
           id
           name
+          public
           topic
           unreadMessages
+          currentParticipant {
+            notificationPreferences {
+              mention
+              participant
+              message
+            }
+          }
         }
       }
     }
@@ -211,6 +242,35 @@ export const CREATE_CHAT = gql`
       name
       topic
       unreadMessages
+      public
+      currentParticipant {
+        notificationPreferences {
+          mention
+          message
+          participant
+        }
+      }
+    }
+  }
+`;
+
+export const UPDATE_PARTICIPANT = gql`
+  mutation UpdateParticipant($conversationId: ID!, $userId: ID!, $prefs: NotificationPrefs!) {
+    updateParticipant(userId: $userId, conversationId: $conversationId, notificationPreferences: $prefs) {
+      notificationPreferences {
+        mention
+        message
+        participant
+      }
+    }
+  }
+`;
+
+export const DELETE_PARTICIPANT = gql`
+  mutation DeleteParticipant($conversationId: ID!, $userId: ID!) {
+    deleteParticipant(userId: $userId, conversationId: $conversationId) {
+      id
+      conversationId
     }
   }
 `;

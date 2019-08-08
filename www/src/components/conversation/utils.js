@@ -1,4 +1,5 @@
 import {CONVERSATIONS_Q, CONVERSATIONS_SUB} from './queries'
+import sortBy from 'lodash/sortBy'
 
 export function updateUnreadMessages(client, conversationId, update) {
   const {conversations} = client.readQuery({ query: CONVERSATIONS_Q });
@@ -40,11 +41,28 @@ export function addConversation(prev, conv) {
   if (edges.find((e) => e.node.id === conv.id))
     return prev
 
+  let newEdges = [{__typename: "ConversationEdge", node: conv}, ...prev.conversations.edges]
   return {
     ...prev,
     conversations: {
       ...prev.conversations,
-      edges: [{__typename: "ConversationEdge", node: conv}, ...prev.conversations.edges],
+      edges: sortBy(newEdges, (e) => e.node.name),
+    }
+  }
+}
+
+export function updateConversation(prev, conv) {
+  return {
+    conversations: {
+      ...prev,
+      edges: prev.edges.map((edge) => {
+        if (edge.node.id !== conv.id) return edge
+
+        return {
+          ...edge,
+          node: conv
+        }
+      })
     }
   }
 }

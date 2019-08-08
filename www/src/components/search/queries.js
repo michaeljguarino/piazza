@@ -10,6 +10,13 @@ query SearchQuery($q : String!) {
         name
         topic
         unreadMessages
+        currentParticipant {
+          notificationPreferences {
+            mention
+            message
+            participant
+          }
+        }
       }
     }
   }

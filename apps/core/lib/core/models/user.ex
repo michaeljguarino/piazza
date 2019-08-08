@@ -28,7 +28,7 @@ defmodule Core.Models.User do
     timestamps()
   end
 
-  @valid ~w(email name handle password bot)a
+  @valid ~w(email name handle password bio bot)a
 
   def ordered(query \\ __MODULE__, order \\ [asc: :email]), do: from(u in query, order_by: ^order)
 

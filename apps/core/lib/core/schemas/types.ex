@@ -127,6 +127,8 @@ defmodule Core.Schemas.Types do
 
   enum :notification_type do
     value :mention
+    value :message
+    value :participant
   end
 
   object :embed do

@@ -17,6 +17,7 @@ query Users($cursor: String) {
     edges {
       node {
         id
+        bio
         name
         handle
         bot

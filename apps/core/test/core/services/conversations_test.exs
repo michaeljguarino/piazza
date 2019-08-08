@@ -25,8 +25,8 @@ defmodule Core.Services.ConversationsTest do
       {:ok, conv} = Conversations.create_chat(other_user.id, user)
 
       refute conv.public
-      assert Conversations.get_participant(user.id, conv.id)
-      assert Conversations.get_participant(other_user.id, conv.id)
+      assert Conversations.get_participant(other_user.id, conv.id).notification_preferences.message
+      assert Conversations.get_participant(user.id, conv.id).notification_preferences.message
       assert_receive {:event, %PubSub.ConversationCreated{item: ^conv}}
     end
 

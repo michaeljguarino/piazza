@@ -15,6 +15,7 @@ defimpl Core.Notifications.Notifiable, for: Core.PubSub.MessageCreated do
 
     participants
     |> Enum.filter(& &1.user_id not in mentioned_users)
+    |> Enum.filter(& &1.user_id != msg.creator_id)
     |> Enum.filter(fn
       %{user: %{notification_preferences: %{message: false}}} -> false
       %{notification_preferences: %{message: true}} -> true

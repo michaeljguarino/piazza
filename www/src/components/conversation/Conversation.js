@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import {Box, Text} from 'grommet'
+import {Lock} from 'grommet-icons'
 
 function Conversation(props) {
   const [hover, setHover] = useState(false);
@@ -20,7 +21,8 @@ function Conversation(props) {
       pad={props.pad}
       {...boxProps}
       >
-      <Text margin={{right: '5px'}} {...textProps}>#</Text>
+      {props.conversation.public && <Text margin={{right: '5px'}} {...textProps}>#</Text>}
+      {!props.conversation.public && <Lock style={{marginRight: '5px'}} size='14px' {...textProps} />}
       <Text
         size='small'
         {...textProps} >
