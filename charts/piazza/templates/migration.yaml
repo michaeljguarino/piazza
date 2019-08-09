@@ -33,6 +33,13 @@ spec:
             secretKeyRef:
               name: {{ .Values.dbPasswordSecret }}
               key: postgresql-password
+        - name: GCP_CREDENTIALS
+          valueFrom:
+            secretKeyRef:
+              name: piazza-serviceaccount
+              key: credentials.json
+        - name: GCS_BUCKET
+          value: {{ .Values.gql.gcsBucket }}
       restartPolicy: Never
   backoffLimit: 5
 {{- else }}
@@ -72,6 +79,13 @@ spec:
             secretKeyRef:
               name: {{ .Values.dbPasswordSecret }}
               key: postgresql-password
+        - name: GCP_CREDENTIALS
+          valueFrom:
+            secretKeyRef:
+              name: piazza-serviceaccount
+              key: credentials.json
+        - name: GCS_BUCKET
+          value: {{ .Values.gql.gcsBucket }}
       restartPolicy: Never
   backoffLimit: 5
 {{- end }}

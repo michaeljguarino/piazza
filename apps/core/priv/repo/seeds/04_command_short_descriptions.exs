@@ -1,6 +1,4 @@
 import Botanist
-import System, only: [get_env: 1]
-
 alias Core.Repo
 alias Core.Services.Platform
 

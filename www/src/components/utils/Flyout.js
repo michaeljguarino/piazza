@@ -3,7 +3,7 @@ import {Layer, Box, Text} from 'grommet'
 
 export function FlyoutHeader(props) {
   return (
-    <Box align='center' background='light-3' elevation='xsmall' pad='small' margin={{bottom: 'small'}}>
+    <Box background='light-3' elevation='xsmall' pad='small' margin={{bottom: 'small'}}>
       <Text size='small' weight='bold'>{props.text}</Text>
     </Box>
   )

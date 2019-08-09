@@ -5,6 +5,8 @@ defmodule Core.DB.ReleaseTasks do
     :ssl,
     :postgrex,
     :ecto,
+    :hackney,
+    :goth,
     :ecto_sql # If using Ecto 3.0 or higher
   ]
 

@@ -9,7 +9,7 @@ function dimensions(props) {
 
 function VideoEmbed(props) {
   return (
-    <video controls loop src={props.url}></video>
+    <video autoPlay loop src={props.url}></video>
   )
 }
 
