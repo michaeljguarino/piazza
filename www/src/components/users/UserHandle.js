@@ -8,7 +8,7 @@ import PresenceIndicator from './PresenceIndicator'
 
 function UserHandle(props) {
   return (
-    <Dropdown align={{left: 'right'}}>
+    <Dropdown align={props.align || {left: 'right'}}>
       <Anchor>
         <Text size={props.size || 'small'} weight={props.weight} color={props.color} margin={props.margin || {right: '5px'}}>@{props.user.handle}</Text>
         {(props.user.bot) ? <Robot color={props.color} size='small' /> : ''}

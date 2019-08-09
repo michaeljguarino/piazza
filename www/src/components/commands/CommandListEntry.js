@@ -2,14 +2,29 @@ import React from 'react'
 import {Box, Text, Anchor, Markdown, Table, TableBody, TableRow, TableCell} from 'grommet'
 import Dropdown from '../utils/Dropdown'
 import UserListEntry from '../users/UserListEntry'
+import Avatar from '../users/Avatar'
+
+function CommandDisplay(props) {
+  return (
+    <Box direction='row' align='center' pad={{bottom: 'small'}}>
+      <Box width='45px' align='center' justify='center'>
+        <Avatar user={props.command.bot} />
+      </Box>
+      <Box>
+        <Anchor>
+          <Text size='small' color={props.color}>/{props.command.name}</Text>
+        </Anchor>
+        <Text size='small'><i>{props.command.description}</i></Text>
+      </Box>
+    </Box>
+  )
+}
 
 function CommandListEntry(props) {
   return (
     <Box direction='row' align='center' fill='horizontal' overflow='none'>
-      <Dropdown align={{right: 'left', top: 'bottom'}}>
-        <Anchor>
-          <Text size='small' color={props.color}>/{props.command.name}</Text>
-        </Anchor>
+      <Dropdown align={{right: 'left', top: 'top'}}>
+        <CommandDisplay {...props} />
         <Box pad='small' width='400px'>
           <Box direction='row' align='center' margin={{bottom: 'small'}}>
             <Text weight="bold" size='small' margin='5px'>/{props.command.name}</Text>

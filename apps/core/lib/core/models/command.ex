@@ -5,6 +5,7 @@ defmodule Core.Models.Command do
   schema "commands" do
     field :name, :string
     field :documentation, :string
+    field :description, :string
 
     belongs_to :bot, User
     belongs_to :creator, User
@@ -13,7 +14,7 @@ defmodule Core.Models.Command do
     timestamps()
   end
 
-  @valid ~w(name documentation bot_id webhook_id)a
+  @valid ~w(name documentation description bot_id webhook_id)a
 
   def ordered(query \\ __MODULE__, order \\ [asc: :name]),
     do: from(c in query, order_by: ^order)

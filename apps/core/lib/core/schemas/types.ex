@@ -185,6 +185,7 @@ defmodule Core.Schemas.Types do
     field :id, :id
     field :name, :string
     field :documentation, :string
+    field :description, :string
 
     field :bot, :user, resolve: dataloader(User)
     field :creator, :user, resolve: dataloader(User)

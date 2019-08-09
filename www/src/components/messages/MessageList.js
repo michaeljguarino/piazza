@@ -55,7 +55,6 @@ class MessageList extends Component {
                 }}
                 mapper={(edge, next) => <Message key={edge.node.id} message={edge.node} next={next.node} />}
                 onLoadMore={() => {
-                  console.log('fetching more')
                   this.setState({loaded: true})
                   if (!pageInfo.hasNextPage) {
                     return

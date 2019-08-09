@@ -3,8 +3,9 @@ import {Query} from 'react-apollo'
 import {Box, Text} from 'grommet'
 import {UserNew} from 'grommet-icons'
 import Scroller from '../utils/Scroller'
-import Dropdown from '../utils/Dropdown'
-import UserListEntry from '../users/UserListEntry'
+import Flyout, {FlyoutHeader} from '../utils/Flyout'
+import Avatar from '../users/Avatar'
+import UserHandle from '../users/UserHandle'
 import {PARTICIPANTS_Q, PARTICIPANT_SUB} from './queries'
 import {mergeAppend} from '../../utils/array'
 import {BOX_ATTRS} from './ConversationHeader'
@@ -41,6 +42,15 @@ function deleteParticipant(participant, prev) {
   })
 }
 
+function Participant(props) {
+  return (
+    <Box width='300px' direction='row' align='center' pad='xsmall'>
+      <Avatar user={props.user} />
+      <Text size='small'>{props.user.name} ( <UserHandle user={props.user} align={{right: 'left'}}/>)</Text>
+    </Box>
+  )
+}
+
 const _subscribeToParticipantDeltas = async (props, subscribeToMore) => {
   return subscribeToMore({
     document: PARTICIPANT_SUB,
@@ -73,40 +83,45 @@ function Participants(props) {
         <SubscriptionWrapper id={props.conversation.id} startSubscription={() => {
           return _subscribeToParticipantDeltas(props, subscribeToMore)
         }}>
-          <Dropdown>
+          <Flyout target={
             <Box {...BOX_ATTRS}>
               <Text height='15px' style={{lineHeight: '15px'}} margin={{right: '3px'}}><UserNew size='15px' /></Text>
               <Text size='xsmall'>{data.conversation.participants.edges.length}</Text>
             </Box>
-            <Box pad="small" gap='small' style={{maxHeight: '300px'}}>
-              <Text size='small' weight='bold'>Participants</Text>
-              <Scroller
-                edges={edges}
-                mapper={(p) => (<UserListEntry key={p.node.id} user={p.node.user} color='normal' />)}
-                onLoadMore={() => {
-                  if (!pageInfo.hasNextPage) return
-                  fetchMore({
-                    variables: {cursor: pageInfo.endCursor},
-                    updateQuery: (prev, {fetchMoreResult}) => {
-                      const edges = fetchMoreResult.conversation.participants.edges
-                      const pageInfo = fetchMoreResult.conversation.participants.pageInfo
+          }>
+          {setOpen => (
+            <Box>
+              <FlyoutHeader text='Participants' />
+              <Box pad="small" gap='small'>
+                <Scroller
+                  edges={edges}
+                  mapper={(p) => (<Participant key={p.node.id} user={p.node.user} />)}
+                  onLoadMore={() => {
+                    if (!pageInfo.hasNextPage) return
+                    fetchMore({
+                      variables: {cursor: pageInfo.endCursor},
+                      updateQuery: (prev, {fetchMoreResult}) => {
+                        const edges = fetchMoreResult.conversation.participants.edges
+                        const pageInfo = fetchMoreResult.conversation.participants.pageInfo
 
-                      return edges.length ? {
-                        ...prev,
-                        conversation: {
-                          ...prev.conversation,
-                          participants: {
-                            ...prev.conversation.participants,
-                            pageInfo,
-                            edges: mergeAppend(edges, prev.conversation.participants.edges, (e) => e.node.id)
+                        return edges.length ? {
+                          ...prev,
+                          conversation: {
+                            ...prev.conversation,
+                            participants: {
+                              ...prev.conversation.participants,
+                              pageInfo,
+                              edges: mergeAppend(edges, prev.conversation.participants.edges, (e) => e.node.id)
+                            }
                           }
-                        }
-                      } : prev;
-                    }
-                  })
-                }} />
+                        } : prev;
+                      }
+                    })
+                  }} />
+              </Box>
             </Box>
-          </Dropdown>
+          )}
+          </Flyout>
         </SubscriptionWrapper>
         )
       }}

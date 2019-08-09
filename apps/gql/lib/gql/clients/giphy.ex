@@ -1,12 +1,14 @@
 defmodule Gql.Clients.Giphy do
+  @sample_size 10
+
   def random(search_query) do
     params = URI.encode_query(%{
       api_key: client_secret(),
       q: search_query,
-      limit: 1
+      limit: @sample_size
     })
     case get("gifs/search?#{params}") do
-      {:ok, %{"data" => [result | _]}} ->  select_url(result)
+      {:ok, %{"data" => [_ | _] = results}} ->  Enum.random(results) |> select_url()
       _ -> {:error, :not_found}
     end
   end

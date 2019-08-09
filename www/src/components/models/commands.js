@@ -6,6 +6,7 @@ export const CommandFragment=gql`
     id
     name
     documentation
+    description
     bot {
       ...UserFragment
     }

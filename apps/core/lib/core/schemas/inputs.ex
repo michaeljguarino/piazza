@@ -39,6 +39,7 @@ defmodule Core.Schemas.Inputs do
   input_object :command_attributes do
     field :name, non_null(:string)
     field :documentation, :string
+    field :description, :string
     field :webhook, non_null(:webhook_attributes)
     field :bot, :bot_attributes
   end
@@ -53,9 +54,10 @@ defmodule Core.Schemas.Inputs do
   end
 
   input_object :bot_attributes do
-    field :name, :string
-    field :email, :string
+    field :name,   :string
+    field :email,  :string
     field :handle, :string
+    field :avatar, :upload
   end
 
   input_object :notification_prefs do
