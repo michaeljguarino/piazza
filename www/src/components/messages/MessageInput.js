@@ -11,6 +11,7 @@ import {MESSAGE_MUTATION, MESSAGES_Q} from './queries'
 import {applyNewMessage} from './utils'
 import MentionManager from './MentionManager'
 
+
 const TEXT_SIZE='xsmall'
 const TEXT_COLOR='dark-4'
 const SEND_COLOR='#004d23'

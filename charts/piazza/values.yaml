@@ -19,7 +19,7 @@ rabbitmq:
   resources:
     requests:
       cpu: .3
-      memory: 256Mi
+      memory: 512Mi
   replicas: 3
 
 external-dns:
@@ -56,8 +56,8 @@ rtc:
   replicas: 2
   resources:
     requests:
-      cpu: .2
-      memory: 512Mi
+      cpu: .3
+      memory: 1Gi
 
 www:
   dns: chat.piazzaapp.com

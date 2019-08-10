@@ -1,13 +1,14 @@
-import React from 'react'
-import {Box, Text, Markdown} from 'grommet'
-import {Robot} from 'grommet-icons'
+import React, {useState} from 'react'
+import {Box, Text, Markdown, Stack, Anchor} from 'grommet'
+import {Robot, More, Emoji} from 'grommet-icons'
 import Avatar from '../users/Avatar'
 import moment from 'moment'
 import MessageEmbed from './MessageEmbed'
 import UserHandle from '../users/UserHandle'
 import PresenceIndicator from '../users/PresenceIndicator'
 import WithPresence from '../utils/presence'
-import FileIcon, { defaultStyles } from 'react-file-icon';
+import CloseableDropdown from '../utils/CloseableDropdown'
+import FileIcon, { defaultStyles } from 'react-file-icon'
 
 function TextMessage(props) {
   return (
@@ -74,11 +75,11 @@ function MessageEntity(props) {
   }
 }
 
-function Message(props) {
-  let date = moment(props.message.insertedAt)
-  let consecutive = props.message.creator.id === (props.next && props.next.creator.id)
+function MessageBody(props) {
+  const date = moment(props.message.insertedAt)
+  const consecutive = props.message.creator.id === (props.next && props.next.creator.id)
   return (
-    <Box flex={false} direction='row' pad={{top: '10px'}} margin={{left: 'small'}}>
+    <Box direction='row' pad={{top: '5px', bottom: '5px', left: 'small'}}>
       {!consecutive && <Avatar user={props.message.creator} /> }
       {consecutive && <Box width='45px'></Box>}
       <Box>
@@ -106,6 +107,42 @@ function Message(props) {
           }
         </Box>
       </Box>
+    </Box>
+  )
+}
+
+function MessageControls(props) {
+  return (
+    <Box background='white' direction='row' height='25px' border='full' round='xsmall' width='50px' margin={{right: '10px'}}>
+      <Box style={{cursor: 'pointer'}} align='center' justify='center' border='right' width='25px'>
+        <Emoji size='15px' />
+      </Box>
+      <Box style={{cursor: 'pointer'}} align='center' justify='center' width='25px'>
+        <CloseableDropdown target={<More size='15px' />} >
+        {setOpen => (
+          <Box pad='small'>
+            <Anchor size='small'>delete</Anchor>
+          </Box>
+        )}
+        </CloseableDropdown>
+      </Box>
+    </Box>
+  )
+}
+
+function Message(props) {
+  const [hover, setHover] = useState(false)
+
+  return (
+    <Box
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      background={hover ? 'light-2' : null}
+      flex={false}>
+      <Stack fill anchor='top-right'>
+        <MessageBody hover {...props} />
+        {hover && <MessageControls {...props} />}
+      </Stack>
     </Box>
   )
 }

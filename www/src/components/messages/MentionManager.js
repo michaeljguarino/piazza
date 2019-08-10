@@ -2,9 +2,14 @@ import React, {useState, useRef} from 'react'
 import {ApolloConsumer} from 'react-apollo'
 import Avatar from '../users/Avatar'
 import UserHandle from '../users/UserHandle'
-import {TextInput, Box, Text} from 'grommet'
+import {TextInput, Box, Text, Drop} from 'grommet'
+import {Emoji} from 'grommet-icons'
 import {SEARCH_USERS} from './queries'
 import {SEARCH_COMMANDS} from '../commands/queries'
+import 'emoji-mart/css/emoji-mart.css'
+import data from 'emoji-mart/data/messenger.json'
+import { emojiIndex, NimblePicker } from 'emoji-mart'
+
 
 function fetchUsers(client, query, callback) {
   if (!query) return
@@ -35,6 +40,36 @@ function fetchCommands(client, query, callback) {
   }).then((res) => callback(res))
 }
 
+function *flattenEmojis(emojis) {
+  for (const emoji of emojis) {
+    if (emoji.colons) {
+      yield emoji
+    } else {
+      for (const subEmoji of flattenEmojis(Object.values(emoji))) {
+        yield subEmoji
+      }
+    }
+  }
+}
+
+const FLATTENED_EMOJIS = Array.from(flattenEmojis(Object.values(emojiIndex.emojis)))
+
+function fetchEmojis(client, query, callback) {
+  if (!query) return
+  const prefix = `:${query}`
+  const found =
+    FLATTENED_EMOJIS.filter((emoji) => emoji.colons.startsWith(prefix))
+        .slice(0, 10)
+        .map((emoji) => {
+          return {
+            value: emoji,
+            label: emojiSuggestion(emoji)
+          }
+        })
+
+  callback(found)
+}
+
 function userSuggestion(user) {
   return (
     <Box direction='row' align='center' pad='small'>
@@ -57,9 +92,18 @@ function commandSuggestion(command) {
   )
 }
 
+function emojiSuggestion(emoji) {
+  return (
+    <Box direction='row' align='center' pad='small'>
+      <Text size='small'>{emoji.native} {emoji.colons}</Text>
+    </Box>
+  )
+}
+
 const REGEXES=[
   [/@[^\s@]+$/, fetchUsers, (text) => `@${text}`],
-  [/^\/[^\s]+$/, fetchCommands, (text) => `/${text} `]
+  [/^\/[^\s]+$/, fetchCommands, (text) => `/${text} `],
+  [/:[^\s]+$/, fetchEmojis, (emoji) => `${emoji.native} `],
 ]
 
 const DEFAULT_SUGGESTIONS_STATE={
@@ -88,31 +132,59 @@ function replaceText(selection, text, regex, transformer) {
 
 function MentionManager(props) {
   const dropRef = useRef()
+  const emojiRef = useRef()
   const [text, setText] = useState(props.text || '')
   const [suggestionState, setSuggestionState] = useState(DEFAULT_SUGGESTIONS_STATE)
+  const [emojiPicker, setEmojiPicker] = useState(false)
 
   return (
     <ApolloConsumer>
     {client => (
-      <TextInput
-        ref={dropRef}
-        plain
-        dropTarget={dropRef.current}
-        value={text}
-        suggestions={suggestionState.suggestions}
-        onSelect={(event) => {
-          let selection = event.suggestion.value
-          let result = replaceText(selection, text, suggestionState.regex, suggestionState.transformer)
-          setText(result)
-        }}
-        onChange={e => {
-          const text = e.target.value
-          setText(text)
-          validateRegexes(client, text, setSuggestionState)
-          props.onChange(text)
-        }}
-        placeholder="Whatever is on your mind"
-      />
+      <>
+        <TextInput
+          ref={dropRef}
+          plain
+          dropTarget={dropRef.current}
+          value={text}
+          suggestions={suggestionState.suggestions}
+          onSelect={(event) => {
+            let selection = event.suggestion.value
+            let result = replaceText(selection, text, suggestionState.regex, suggestionState.transformer)
+            setText(result)
+            props.onChange(result)
+          }}
+          onChange={e => {
+            const text = e.target.value
+            setText(text)
+            validateRegexes(client, text, setSuggestionState)
+            props.onChange(text)
+          }}
+          placeholder="Whatever is on your mind"
+        />
+        <Box
+          align='center'
+          justify='center'
+          ref={emojiRef}
+          width='40px'
+          onClick={() => setEmojiPicker(true)}
+          style={{cursor: 'pointer'}}>
+          <Emoji size='25px' color='dark-6' />
+        </Box>
+        {emojiPicker && (
+          <Drop
+            align={{ bottom: "top"}}
+            target={emojiRef.current}
+            onClickOutside={() => setEmojiPicker(false)}
+            onEsc={() => setEmojiPicker(false)}
+          >
+            <NimblePicker
+              data={data}
+              onSelect={(emoji) => {
+                setText(text + ' ' + emoji.native)
+              }} />
+          </Drop>
+        )}
+      </>
     )}
     </ApolloConsumer>
   )
