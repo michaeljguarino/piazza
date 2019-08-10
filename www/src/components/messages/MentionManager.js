@@ -40,32 +40,17 @@ function fetchCommands(client, query, callback) {
   }).then((res) => callback(res))
 }
 
-function *flattenEmojis(emojis) {
-  for (const emoji of emojis) {
-    if (emoji.colons) {
-      yield emoji
-    } else {
-      for (const subEmoji of flattenEmojis(Object.values(emoji))) {
-        yield subEmoji
-      }
-    }
-  }
-}
-
-const FLATTENED_EMOJIS = Array.from(flattenEmojis(Object.values(emojiIndex.emojis)))
-
 function fetchEmojis(client, query, callback) {
   if (!query) return
-  const prefix = `:${query}`
   const found =
-    FLATTENED_EMOJIS.filter((emoji) => emoji.colons.startsWith(prefix))
-        .slice(0, 10)
-        .map((emoji) => {
-          return {
-            value: emoji,
-            label: emojiSuggestion(emoji)
-          }
-        })
+    emojiIndex.search(query)
+      .slice(0, 10)
+      .map((emoji) => {
+        return {
+          value: emoji,
+          label: emojiSuggestion(emoji)
+        }
+      })
 
   callback(found)
 }

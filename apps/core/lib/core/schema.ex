@@ -177,6 +177,13 @@ defmodule Core.Schema do
       resolve safe_resolver(&Conversation.create_message/2)
     end
 
+    field :delete_message, :message do
+      middleware Core.Schemas.Authenticated
+      arg :message_id, non_null(:id)
+
+      resolve safe_resolver(&Conversation.delete_message/2)
+    end
+
     field :create_participant, :participant do
       middleware Core.Schemas.Authenticated
       arg :attributes, non_null(:participant_attributes)

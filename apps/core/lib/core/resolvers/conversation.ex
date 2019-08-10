@@ -98,6 +98,9 @@ defmodule Core.Resolvers.Conversation do
   def create_message(%{conversation_id: conv_id, attributes: attrs}, %{context: %{current_user: user}}),
     do: Conversations.create_message(conv_id, attrs, user)
 
+  def delete_message(%{message_id: msg_id}, %{context: %{current_user: user}}),
+    do: Conversations.delete_message(msg_id, user)
+
   def create_participant(%{attributes: attrs}, %{context: %{current_user: user}}),
     do: Conversations.create_participant(attrs, user)
 

@@ -1,6 +1,7 @@
 import React, {useState} from 'react'
 import {Box, Text, Markdown, Stack, Anchor} from 'grommet'
 import {Robot, More, Emoji} from 'grommet-icons'
+import {Mutation} from 'react-apollo'
 import Avatar from '../users/Avatar'
 import moment from 'moment'
 import MessageEmbed from './MessageEmbed'
@@ -8,11 +9,13 @@ import UserHandle from '../users/UserHandle'
 import PresenceIndicator from '../users/PresenceIndicator'
 import WithPresence from '../utils/presence'
 import CloseableDropdown from '../utils/CloseableDropdown'
+import {DELETE_MESSAGE, MESSAGES_Q} from './queries'
+import {removeMessage} from './utils'
 import FileIcon, { defaultStyles } from 'react-file-icon'
 
 function TextMessage(props) {
   return (
-    <Text size='xsmall'>
+    <Text size='small'>
       <WithEntities {...props} />
     </Text>
   )
@@ -103,11 +106,30 @@ function MessageBody(props) {
             <MessageEmbed {...props.message.embed} /> :
             (props.message.attachment ?
               <AttachmentMessage {...props.message} /> :
-              <TextMessage {...props.message} />)
-          }
+              <TextMessage {...props.message} />)}
         </Box>
       </Box>
     </Box>
+  )
+}
+
+function DeleteMessage(props) {
+  return (
+    <Mutation
+      mutation={DELETE_MESSAGE}
+      variables={{messageId: props.message.id}}
+      update={(cache, {data: {deleteMessage}}) => {
+        const data = cache.readQuery({query: MESSAGES_Q, variables: {conversationId: props.conversation.id}})
+        cache.writeQuery({
+          query: MESSAGES_Q,
+          variables: {conversationId: props.conversation.id},
+          data: removeMessage(data, deleteMessage)
+        })
+      }}>
+      {mutation => (
+        <Anchor size='small' onClick={mutation}>delete</Anchor>
+      )}
+    </Mutation>
   )
 }
 
@@ -121,7 +143,7 @@ function MessageControls(props) {
         <CloseableDropdown target={<More size='15px' />} >
         {setOpen => (
           <Box pad='small'>
-            <Anchor size='small'>delete</Anchor>
+            <DeleteMessage {...props} />
           </Box>
         )}
         </CloseableDropdown>

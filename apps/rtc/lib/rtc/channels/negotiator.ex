@@ -15,34 +15,47 @@ end
 
 defimpl Rtc.Channels.Negotiator, for: Core.PubSub.UserCreated do
   import Rtc.Channels.NegotiatorHelper
+
   def negotiate(%{item: user}), do: {delta(user, :create), [user_delta: "users"]}
 end
 
 defimpl Rtc.Channels.Negotiator, for: Core.PubSub.UserUpdated do
   import Rtc.Channels.NegotiatorHelper
+
   def negotiate(%{item: user}), do: {delta(user, :update), [user_delta: "users"]}
 end
 
 defimpl Rtc.Channels.Negotiator, for: Core.PubSub.ConversationUpdated do
   import Rtc.Channels.NegotiatorHelper
+
   def negotiate(%{item: %{id: id} = conversation}),
     do: {delta(conversation, :update), [conversation_delta: "conversations:#{id}"]}
 end
 
 defimpl Rtc.Channels.Negotiator, for: Core.PubSub.ConversationDeleted do
   import Rtc.Channels.NegotiatorHelper
+
   def negotiate(%{item: %{id: id} = conversation}),
     do: {delta(conversation, :delete), [conversation_delta: "conversations:#{id}"]}
 end
 
 defimpl Rtc.Channels.Negotiator, for: Core.PubSub.MessageCreated do
   import Rtc.Channels.NegotiatorHelper
+
   def negotiate(%{item: %{conversation_id: id} = message}),
     do: {delta(message, :create), [message_delta: "messages:#{id}"]}
 end
 
+defimpl Rtc.Channels.Negotiator, for: Core.PubSub.MessageDeleted do
+  import Rtc.Channels.NegotiatorHelper
+
+  def negotiate(%{item: %{conversation_id: id} = message}),
+    do: {delta(message, :delete), [message_delta: "messages:#{id}"]}
+end
+
 defimpl Rtc.Channels.Negotiator, for: Core.PubSub.ParticipantCreated do
   import Rtc.Channels.NegotiatorHelper
+
   def negotiate(%{item: %{conversation_id: id, user_id: uid} = participant}) do
     {delta(participant, :create),
      [participant_delta: "participants:#{id}", participant_delta: "participants:mine:#{uid}"]}
@@ -51,6 +64,7 @@ end
 
 defimpl Rtc.Channels.Negotiator, for: Core.PubSub.ParticipantDeleted do
   import Rtc.Channels.NegotiatorHelper
+
   def negotiate(%{item: %{conversation_id: id, user_id: uid} = participant}) do
     {delta(participant, :delete),
      [participant_delta: "participants:#{id}", participant_delta: "participants:mine:#{uid}"]}

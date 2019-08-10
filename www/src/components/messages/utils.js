@@ -14,3 +14,18 @@ export function applyNewMessage(prev, message) {
     }
   })
 }
+
+export function removeMessage(prev, message) {
+  const edges = prev.conversation.messages.edges.filter((e) => e.node.id !== message.id)
+
+  return {
+    ...prev,
+    conversation: {
+      ...prev.conversation,
+      messages: {
+        ...prev.conversation.messages,
+        edges: edges
+      }
+    }
+  }
+}

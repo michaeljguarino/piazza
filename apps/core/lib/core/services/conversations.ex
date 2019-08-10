@@ -152,6 +152,13 @@ defmodule Core.Services.Conversations do
     |> notify(:create, user)
   end
 
+  def delete_message(message_id, user) do
+    Core.Repo.get!(Message, message_id)
+    |> allow(user, :delete)
+    |> when_ok(:delete)
+    |> notify(:delete, user)
+  end
+
   def create_participant(attrs, user) do
     %Participant{}
     |> Participant.changeset(attrs)
@@ -192,5 +199,7 @@ defmodule Core.Services.Conversations do
     do: handle_notify(PubSub.ConversationDeleted, conv, actor: actor)
   def notify({:ok, %Participant{} = part}, :delete, actor),
     do: handle_notify(PubSub.ParticipantDeleted, part, actor: actor)
+  def notify({:ok, %Message{} = msg}, :delete, actor),
+    do: handle_notify(PubSub.MessageDeleted, msg, actor: actor)
   def notify(error, _, _), do: error
 end

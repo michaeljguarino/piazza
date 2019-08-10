@@ -137,6 +137,38 @@ defmodule Core.Services.ConversationsTest do
     end
   end
 
+  describe "#delete_message/2" do
+    test "Users can delete their own messages" do
+      user = insert(:user)
+      msg = insert(:message, creator: user)
+
+      {:ok, deleted} = Conversations.delete_message(msg.id, user)
+
+      assert msg.id == deleted.id
+      refute refetch(msg)
+
+      assert_receive {:event, %PubSub.MessageDeleted{item: ^deleted}}
+    end
+
+    test "Users can delete their others' messages" do
+      user = insert(:user)
+      msg = insert(:message)
+
+      {:error, _} = Conversations.delete_message(msg.id, user)
+    end
+
+    test "Admins can delete messages" do
+      user = insert(:user, roles: %{admin: true})
+
+      msg = insert(:message)
+
+      {:ok, deleted} = Conversations.delete_message(msg.id, user)
+
+      assert msg.id == deleted.id
+      refute refetch(msg)
+    end
+  end
+
   describe "#bump_last_seen/2" do
     test "It will set the last_seen_at ts on the user's participant record" do
       participant = insert(:participant)

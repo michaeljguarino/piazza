@@ -42,6 +42,14 @@ export const MESSAGE_MUTATION = gql`
   ${MessageFragment}
 `
 
+export const DELETE_MESSAGE = gql`
+  mutation DeleteMessage($messageId: ID!) {
+    deleteMessage(messageId: $messageId) {
+      id
+    }
+  }
+`;
+
 export const SEARCH_USERS=gql`
   query SearchUsers($name: ID!) {
     searchUsers(name: $name, first: 10) {

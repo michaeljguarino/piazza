@@ -6,7 +6,7 @@ import Loading from '../utils/Loading'
 import {mergeAppend} from '../../utils/array'
 import SubscriptionWrapper from '../utils/SubscriptionWrapper'
 import {MESSAGES_Q, NEW_MESSAGES_SUB} from './queries'
-import {applyNewMessage} from './utils'
+import {applyNewMessage, removeMessage} from './utils'
 
 class MessageList extends Component {
   state = {
@@ -20,9 +20,12 @@ class MessageList extends Component {
         if (!subscriptionData.data) return prev
         const messageDelta = subscriptionData.data.messageDelta
         const message = messageDelta.payload
+
         switch(messageDelta.delta) {
           case "CREATE":
             return applyNewMessage(prev, message)
+          case "DELETE":
+            return removeMessage(prev, message)
           default:
             return prev
         }
@@ -53,7 +56,13 @@ class MessageList extends Component {
                   justifyContent: 'flex-start',
                   flexDirection: 'column-reverse',
                 }}
-                mapper={(edge, next) => <Message key={edge.node.id} message={edge.node} next={next.node} />}
+                mapper={(edge, next) => (
+                <Message
+                  key={edge.node.id}
+                  conversation={this.props.conversation}
+                  message={edge.node}
+                  next={next.node} />
+                )}
                 onLoadMore={() => {
                   this.setState({loaded: true})
                   if (!pageInfo.hasNextPage) {
