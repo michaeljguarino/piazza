@@ -51,6 +51,7 @@ secretsdown: ## downloads the current secret conf to the canonical yaml file
 		| base64 -D > charts/piazza/config.secrets.yaml
 
 test: ## run tests
+	export GOOGLE_APPLICATION_CREDENTIALS=`cat ~/gcp.json`
 	mix test
 
 serve: ## run as a local server (gql is on port 4001, rtc on 4000)
@@ -59,8 +60,11 @@ serve: ## run as a local server (gql is on port 4001, rtc on 4000)
 web: ## starts a local webserver
 	cd www && npm start
 
-testsetup: ## setup test dependencies
+testup: ## setup test dependencies
 	docker-compose up -d
+
+testdown:
+	docker-compose down
 
 connectdb: ## proxies the db in kubernetes via kubectl
 	@echo "run psql -U piazza -h 127.0.0.1 piazza to connect"

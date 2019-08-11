@@ -72,8 +72,13 @@ defmodule Core.Schemas.Types do
     connection field :messages, node_type: :message do
       resolve &Conversation.list_messages/2
     end
+
     connection field :participants, node_type: :participant do
       resolve &Conversation.list_participants/2
+    end
+
+    connection field :pinned_messages, node_type: :message do
+      resolve &Conversation.list_pinned_messages/2
     end
 
     timestamps()
@@ -99,6 +104,7 @@ defmodule Core.Schemas.Types do
     field :text, non_null(:string)
     field :creator_id, non_null(:id)
     field :conversation_id, non_null(:id)
+    field :pinned_at, :datetime
     field :attachment, :string, resolve: fn
       message, _, _ -> {:ok, Core.Storage.url({message.attachment, message}, :original)}
     end

@@ -255,6 +255,20 @@ defmodule Core.Services.ConversationsTest do
     end
   end
 
+  describe "#create_participants" do
+    test "Participans can create multiple participants (by handle)" do
+      user = insert(:user)
+      other_users = insert_list(3, :user)
+      %{conversation: conv} = insert(:participant, user: user)
+
+      {:ok, participants} = Conversations.create_participants(Enum.map(other_users, & &1.handle), conv.id, user)
+
+      assert Enum.all?(participants, & &1.conversation_id == conv.id)
+      assert Enum.map(participants, & &1.user_id)
+             |> ids_equal(other_users)
+    end
+  end
+
   describe "#delete_participant/3" do
     test "Participants can delete other participants" do
       user         = insert(:user)

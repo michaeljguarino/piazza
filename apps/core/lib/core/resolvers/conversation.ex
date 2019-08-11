@@ -79,6 +79,12 @@ defmodule Core.Resolvers.Conversation do
     |> paginate(args)
   end
 
+  def list_pinned_messages(_, %{source: conversation}) do
+    Message.pinned()
+    |> Message.for_conversation(conversation.id)
+    |> Message.ordered([desc: :pinned_at])
+  end
+
   def list_participants(args, %{source: conversation}) do
     Participant.for_conversation(conversation.id)
     |> paginate(args)
@@ -110,6 +116,9 @@ defmodule Core.Resolvers.Conversation do
 
   def create_participant(%{attributes: attrs}, %{context: %{current_user: user}}),
     do: Conversations.create_participant(attrs, user)
+
+  def create_participants(%{handles: handles, conversation_id: conv_id}, %{context: %{current_user: user}}),
+    do: Conversations.create_participants(handles, conv_id, user)
 
   def delete_participant(%{conversation_id: cid, user_id: uid}, %{context: %{current_user: user}}),
     do: Conversations.delete_participant(cid, uid, user)

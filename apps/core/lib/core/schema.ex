@@ -207,6 +207,14 @@ defmodule Core.Schema do
       resolve safe_resolver(&Conversation.create_participant/2)
     end
 
+    field :create_participants, list_of(:participant) do
+      middleware Core.Schemas.Authenticated
+      arg :handles, list_of(:string)
+      arg :conversation_id, non_null(:id)
+
+      resolve safe_resolver(&Conversation.create_participants/2)
+    end
+
     field :delete_participant, :participant do
       middleware Core.Schemas.Authenticated
       arg :conversation_id, non_null(:id)

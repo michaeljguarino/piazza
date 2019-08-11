@@ -175,7 +175,7 @@ defmodule Core.Schema.ConversationMutationsTest do
   end
 
   describe "createParticipant" do
-    test "it will update a conversation by id" do
+    test "it will create a participant" do
       user         = insert(:user)
       conversation = insert(:conversation)
       other_user   = insert(:user)
@@ -196,8 +196,32 @@ defmodule Core.Schema.ConversationMutationsTest do
     end
   end
 
+  describe "createParticipants" do
+    test "it will create a list of participants" do
+      user         = insert(:user)
+      conversation = insert(:conversation)
+      other_users   = insert_list(3, :user)
+      insert(:participant, conversation: conversation, user: user)
+
+      params = %{"conversationId" => conversation.id, "handles" => Enum.map(other_users, & &1.handle)}
+      {:ok, %{data: %{"createParticipants" => result}}} = run_query("""
+        mutation CreateParticipants($conversationId: ID!, $handles: [String]) {
+          createParticipants(conversationId: $conversationId, handles: $handles) {
+            id
+            conversationId
+            userId
+          }
+        }
+      """, params, %{current_user: user})
+
+      assert Enum.all?(result, & &1["conversationId"] == conversation.id)
+      assert Enum.map(result, & &1["userId"])
+             |> ids_equal(other_users)
+    end
+  end
+
   describe "deleteParticipant" do
-    test "it will update a conversation by id" do
+    test "it will delete a participant" do
       user         = insert(:user)
       conversation = insert(:conversation)
       participant  = insert(:participant, conversation: conversation, user: user)
@@ -219,7 +243,7 @@ defmodule Core.Schema.ConversationMutationsTest do
   end
 
   describe "updateParticipant" do
-    test "it will update a conversation by id" do
+    test "it will update a participant" do
       user         = insert(:user)
       conversation = insert(:conversation)
       insert(:participant, conversation: conversation, user: user)

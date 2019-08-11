@@ -13,6 +13,7 @@ defmodule Core.Models.Message do
     field :text,          :string
     field :attachment,    Core.Storage.Type
     field :attachment_id, :binary_id
+    field :pinned_at,     :utc_datetime_usec
 
     belongs_to :creator,      User
     belongs_to :conversation, Conversation
@@ -33,6 +34,8 @@ defmodule Core.Models.Message do
     do: from(m in query, where: m.creator_id == ^creator_id)
 
   def any(), do: from(m in __MODULE__, order_by: [desc: :inserted_at])
+
+  def pinned(query \\ __MODULE__), do: from(m in __MODULE__, where: not is_nil(m.pinned_at))
 
   def unarchived(query \\ __MODULE__), do: query # haven't implemented archival yet
 

@@ -203,6 +203,31 @@ defmodule Core.Services.Conversations do
     |> notify(:create, user)
   end
 
+  def create_participants(handles, conversation_id, user) do
+    conversation = get_conversation!(conversation_id)
+    with handles when length(handles) < 10 <- handles,
+         {:ok, _} <- allow(conversation, user, :update) do
+      models =
+        Users.get_users_by_handles(handles)
+        |> Enum.map(fn user ->
+          timestamped(%{user_id: user.id, conversation_id: conversation_id})
+        end)
+
+      {_, results} = Core.Repo.insert_all(
+        Participant,
+        models,
+        returning: true,
+        on_conflict: :replace_all_except_primary_key,
+        conflict_target: [:conversation_id, :user_id]
+      )
+      Enum.each(results, &handle_notify(PubSub.ParticipantCreated, &1, actor: user))
+      {:ok, results}
+    else
+      handles when is_list(handles) -> {:error, "Can only proved < 10 handles"}
+      {:error, _} = error -> error
+    end
+  end
+
   def delete_participant(conv_id, user_id, user) do
     get_participant!(user_id, conv_id)
     |> allow(user, :delete)

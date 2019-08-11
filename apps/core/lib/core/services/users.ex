@@ -10,6 +10,11 @@ defmodule Core.Services.Users do
 
   def get_user_by_handle(handle), do: Core.Repo.get_by(User, handle: handle)
 
+  def get_users_by_handles(handles) do
+    User.with_handles(handles)
+    |> Core.Repo.all()
+  end
+
   def get_user!(id), do: Core.Repo.get!(User, id)
 
   def get_user_by_email!(email), do: Core.Repo.get_by!(User, email: email)
