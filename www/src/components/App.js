@@ -19,6 +19,7 @@ const theme = {
     colors: {
       brand: '#2F415B',
       'accent-1': '#CF6D57',
+      'accent-2': '#cdd7e5',
       focus: '#CF6D57'
     },
     drop: {

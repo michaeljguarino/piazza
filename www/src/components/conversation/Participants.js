@@ -10,6 +10,8 @@ import {PARTICIPANTS_Q, PARTICIPANT_SUB} from './queries'
 import {mergeAppend} from '../../utils/array'
 import {BOX_ATTRS} from './ConversationHeader'
 import SubscriptionWrapper from '../utils/SubscriptionWrapper'
+import WithPresence from '../utils/presence'
+import PresenceIndicator from '../users/PresenceIndicator'
 
 function addParticipant(participant, prev) {
   const participants = prev.conversation.participants.edges
@@ -46,7 +48,12 @@ function Participant(props) {
   return (
     <Box width='300px' direction='row' align='center' pad='xsmall'>
       <Avatar user={props.user} />
-      <Text size='small'>{props.user.name} ( <UserHandle user={props.user} align={{right: 'left'}}/>)</Text>
+      <Box>
+        <WithPresence id={props.user.id} >
+          {present => (<Text size='small'>{props.user.name} <PresenceIndicator present={present} /></Text>)}
+        </WithPresence>
+        <Text size='small'><UserHandle user={props.user} align={{right: 'left'}}/></Text>
+      </Box>
     </Box>
   )
 }
