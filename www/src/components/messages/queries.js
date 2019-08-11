@@ -50,6 +50,24 @@ export const DELETE_MESSAGE = gql`
   }
 `;
 
+export const CREATE_REACTION = gql`
+  mutation CreateReaction($messageId: ID!, $name: String!) {
+    createReaction(messageId: $messageId, name: $name) {
+      ...MessageFragment
+    }
+  }
+  ${MessageFragment}
+`;
+
+export const DELETE_REACTION = gql`
+  mutation DeleteReaction($messageId: ID!, $name: String!) {
+    deleteReaction(messageId: $messageId, name: $name) {
+      ...MessageFragment
+    }
+  }
+  ${MessageFragment}
+`;
+
 export const SEARCH_USERS=gql`
   query SearchUsers($name: ID!) {
     searchUsers(name: $name, first: 10) {

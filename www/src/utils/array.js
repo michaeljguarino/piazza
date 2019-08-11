@@ -23,3 +23,14 @@ export function mergeAppend(list, previous, key = (i) => i.id) {
   const ids = new Set(previous.map(key))
   return [...previous, ...list.filter((e) => !ids.has(key(e)))]
 }
+
+export function groupBy(list, key = (i) => i.id) {
+  let grouped = {}
+  for (const item of list) {
+    const k = key(item)
+    let group = grouped[k] || []
+    group.push(item)
+    grouped[k] = group
+  }
+  return grouped
+}

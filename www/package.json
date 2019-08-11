@@ -27,6 +27,7 @@
     "react-router": "^5.0.1",
     "react-router-dom": "^5.0.1",
     "react-scripts": "3.0.1",
+    "react-tiny-popover": "^3.4.5",
     "styled-components": "^4.3.2",
     "subscriptions-transport-ws": "^0.9.16"
   },

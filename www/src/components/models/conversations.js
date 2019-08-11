@@ -30,6 +30,17 @@ export const EmbedFragment = gql`
   }
 `;
 
+export const ReactionFragment = gql`
+  fragment ReactionFragment on MessageReaction {
+    messageId
+    name
+    user {
+      id
+      handle
+    }
+  }
+`;
+
 export const MessageFragment = gql`
   fragment MessageFragment on Message {
     id
@@ -50,9 +61,13 @@ export const MessageFragment = gql`
     embed {
       ...EmbedFragment
     }
+    reactions {
+      ...ReactionFragment
+    }
   }
   ${EmbedFragment}
   ${UserFragment}
+  ${ReactionFragment}
 `;
 
 export const ParticipantFragment = gql`

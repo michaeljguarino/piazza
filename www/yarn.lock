@@ -8541,6 +8541,11 @@ react-scripts@3.0.1:
   optionalDependencies:
     fsevents "2.0.6"
 
+react-tiny-popover@^3.4.5:
+  version "3.4.5"
+  resolved "https://registry.yarnpkg.com/react-tiny-popover/-/react-tiny-popover-3.4.5.tgz#66efb7951b98637d25deff156c9e870a3618a966"
+  integrity sha512-vZHIMCsphBwgUcz6wnwq+BZnukNzZhSXYTpe5qqTYGr+mTyVKN6q8NXsNkokh5QGnTzO3FpB3P33J64F1oiTqg==
+
 react@^16.2.0, react@^16.8.6:
   version "16.8.6"
   resolved "https://registry.yarnpkg.com/react/-/react-16.8.6.tgz#ad6c3a9614fd3a4e9ef51117f54d888da01f2bbe"
