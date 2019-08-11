@@ -6,3 +6,4 @@ config :core, :consumers, [
 ]
 
 config :core, :start_broker, false
+# config :core, :start_rtc_client, true

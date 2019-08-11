@@ -134,6 +134,15 @@ export const CREATE_CHAT = gql`
   ${ConversationFragment}
 `;
 
+export const CREATE_PARTICIPANTS = gql`
+  mutation CreateParticipants($conversationId: ID!, $handles: [String]) {
+    createParticipants(conversationId: $conversationId, handles: $handles) {
+      ...ParticipantFragment
+    }
+  }
+  ${ParticipantFragment}
+`;
+
 export const UPDATE_PARTICIPANT = gql`
   mutation UpdateParticipant($conversationId: ID!, $userId: ID!, $prefs: NotificationPrefs!) {
     updateParticipant(userId: $userId, conversationId: $conversationId, notificationPreferences: $prefs) {

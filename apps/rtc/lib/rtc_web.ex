@@ -55,7 +55,7 @@ defmodule RtcWeb do
 
   def channel do
     quote do
-      use Phoenix.Channel
+      use Phoenix.Channel, hibernate_after: 5_000
       import RtcWeb.Gettext
     end
   end

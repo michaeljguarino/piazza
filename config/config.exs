@@ -97,9 +97,13 @@ config :arc,
 config :goth,
   json: {:system, "GOOGLE_APPLICATION_CREDENTIALS"}
 
-config :gql, :start_thrift_server, false
-config :rtc, :gql_host, "localhost"
-config :rtc, :start_client, true
+config :core, :rtc_host, "localhost"
+config :rtc,  :gql_host, "localhost"
+config :rtc,  :start_client, true
+config :gql,  :start_thrift_server, false
+config :rtc,  :start_thrift_server, true
+config :core, :start_rtc_client, false
+
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.

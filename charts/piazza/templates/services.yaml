@@ -43,6 +43,10 @@ spec:
     targetPort: http
     protocol: TCP
     name: http
+  - port: 9090
+    targetPort: thrift
+    protocol: TCP
+    name: thrift
   - port: 4369
     targetPort: epmd
     protocol: TCP

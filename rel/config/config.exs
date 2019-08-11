@@ -28,6 +28,7 @@ config :core, Core.Repo,
   hostname: "piazza-postgresql"
 
 config :gql, :giphy_secret, get_env("GIPHY_SECRET")
+config :core, :rtc_host, "piazza-rtc"
 
 config :arc,
   storage: Arc.Storage.GCS,

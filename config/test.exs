@@ -20,9 +20,10 @@ config :core, Core.TestBroker,
   url: "amqp://rabbitmq:rabbitmq@localhost"
 
 config :rtc, :start_broker, false
+config :core, :start_rtc_client, false
 
 config :cron, :run, false
 config :rtc, :start_client, false
-config :rtc, :start_server, false
+config :rtc, :start_thrift_server, false
 
 config :logger, level: :warn

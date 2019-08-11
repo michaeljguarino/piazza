@@ -12,6 +12,7 @@ import {BOX_ATTRS} from './ConversationHeader'
 import SubscriptionWrapper from '../utils/SubscriptionWrapper'
 import WithPresence from '../utils/presence'
 import PresenceIndicator from '../users/PresenceIndicator'
+import ParticipantInvite from './ParticipantInvite'
 
 function addParticipant(participant, prev) {
   const participants = prev.conversation.participants.edges
@@ -99,7 +100,7 @@ function Participants(props) {
           {setOpen => (
             <Box>
               <FlyoutHeader text='Participants' />
-              <Box pad="small" gap='small'>
+              <Box pad="small" gap='small' margin={{bottom: 'medium'}} border='bottom'>
                 <Scroller
                   edges={edges}
                   mapper={(p) => (<Participant key={p.node.id} user={p.node.user} />)}
@@ -126,6 +127,8 @@ function Participants(props) {
                     })
                   }} />
               </Box>
+              <Text margin={{left: '10px', bottom: 'small'}}>Add more:</Text>
+              <ParticipantInvite conversation={props.conversation} />
             </Box>
           )}
           </Flyout>
