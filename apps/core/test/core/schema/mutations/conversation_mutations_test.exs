@@ -109,7 +109,7 @@ defmodule Core.Schema.ConversationMutationsTest do
   end
 
   describe "deleteMessage" do
-    test "it will update a conversation by id" do
+    test "it will delete a message by id" do
       user= insert(:user)
       msg = insert(:message, creator: user)
 
@@ -124,6 +124,53 @@ defmodule Core.Schema.ConversationMutationsTest do
 
       assert result["id"] == msg.id
       refute refetch(msg)
+    end
+  end
+
+  describe "createReaction" do
+    test "participants can react" do
+      user= insert(:user)
+      msg = insert(:message)
+      insert(:participant, user: user, conversation: msg.conversation)
+
+      {:ok, %{data: %{"createReaction" => result}}} = run_query("""
+        mutation  CreateReaction($messageId: ID!, $name: String!) {
+          createReaction(messageId: $messageId, name: $name) {
+            id
+            reactions {
+              userId
+              name
+            }
+          }
+        }
+      """, %{"messageId" => msg.id, "name" => "dog"}, %{current_user: user})
+
+      assert result["id"] == msg.id
+      assert hd(result["reactions"])["name"] == "dog"
+      assert hd(result["reactions"])["userId"] == user.id
+    end
+  end
+
+  describe "deleteReaction" do
+    test "participants can react" do
+      user= insert(:user)
+      msg = insert(:message)
+      insert(:message_reaction, user: user, message: msg, name: "dog")
+
+      {:ok, %{data: %{"deleteReaction" => result}}} = run_query("""
+        mutation  DeleteReaction($messageId: ID!, $name: String!) {
+          deleteReaction(messageId: $messageId, name: $name) {
+            id
+            reactions {
+              userId
+              name
+            }
+          }
+        }
+      """, %{"messageId" => msg.id, "name" => "dog"}, %{current_user: user})
+
+      assert result["id"] == msg.id
+      assert Enum.empty?(result["reactions"])
     end
   end
 

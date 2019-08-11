@@ -105,7 +105,18 @@ defmodule Core.Schemas.Types do
     field :creator, :user, resolve: dataloader(User)
     field :conversation, :conversation, resolve: dataloader(Conversation)
     field :entities, list_of(:message_entity), resolve: dataloader(Conversation)
+    field :reactions, list_of(:message_reaction), resolve: dataloader(Conversation)
     field :embed, :embed
+
+    timestamps()
+  end
+
+  object :message_reaction do
+    field :id, non_null(:id)
+    field :user_id, non_null(:id)
+    field :message_id, non_null(:id)
+    field :name, non_null(:string)
+    field :user, :user, resolve: dataloader(User)
 
     timestamps()
   end

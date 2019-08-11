@@ -169,6 +169,43 @@ defmodule Core.Services.ConversationsTest do
     end
   end
 
+  describe "#create_reaction/2" do
+    test "Participants can create reactions to messages" do
+      user = insert(:user)
+      conversation = insert(:conversation)
+      msg = insert(:message, conversation: conversation)
+      insert(:participant, conversation: conversation, user: user)
+
+      {:ok, updated} = Conversations.create_reaction(msg.id, "dog", user)
+      %{reactions: [reaction]} = Core.Repo.preload(updated, [:reactions])
+
+      assert reaction.name == "dog"
+      assert reaction.user_id == user.id
+
+      assert_receive {:event, %PubSub.MessageUpdated{item: ^updated}}
+    end
+
+    test "Nonparticipants cannot create reactions" do
+      user = insert(:user)
+      conversation = insert(:conversation, public: false)
+      msg = insert(:message, conversation: conversation)
+
+      {:error, _} = Conversations.create_reaction(msg.id, "dog", user)
+    end
+  end
+
+  describe "delete reaction" do
+    test "A user can delete his reactions" do
+      reaction = insert(:message_reaction)
+
+      {:ok, msg} = Conversations.delete_reaction(reaction.message_id, reaction.name, reaction.user)
+
+      %{reactions: []} = Core.Repo.preload(msg, [:reactions])
+
+      assert_receive {:event, %PubSub.MessageUpdated{item: ^msg}}
+    end
+  end
+
   describe "#bump_last_seen/2" do
     test "It will set the last_seen_at ts on the user's participant record" do
       participant = insert(:participant)

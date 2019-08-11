@@ -1,7 +1,7 @@
 defmodule Core.Resolvers.Conversation do
   use Core.Resolvers.Base, model: Core.Models.Conversation
   alias Core.Services.Conversations
-  alias Core.Models.{Message, Participant, MessageEntity}
+  alias Core.Models.{Message, Participant, MessageEntity, MessageReaction}
 
   def data(args),
     do: Dataloader.Ecto.new(Core.Repo, query: &query/2, default_params: args, run_batch: &run_batch/5)
@@ -10,6 +10,7 @@ defmodule Core.Resolvers.Conversation do
   def query(Participant, %{current_user: user}), do: Participant.for_user(user.id)
   def query(Conversation, _args), do: Conversation
   def query(MessageEntity, _args), do: MessageEntity
+  def query(MessageReaction, _args), do: MessageReaction
   def query(:unread_messages, _), do: Conversation.any()
 
   def query(_, %{public: true, current_user: user}) do
@@ -100,6 +101,12 @@ defmodule Core.Resolvers.Conversation do
 
   def delete_message(%{message_id: msg_id}, %{context: %{current_user: user}}),
     do: Conversations.delete_message(msg_id, user)
+
+  def create_reaction(%{message_id: msg_id, name: name}, %{context: %{current_user: user}}),
+    do: Conversations.create_reaction(msg_id, name, user)
+
+  def delete_reaction(%{message_id: msg_id, name: name}, %{context: %{current_user: user}}),
+    do: Conversations.delete_reaction(msg_id, name, user)
 
   def create_participant(%{attributes: attrs}, %{context: %{current_user: user}}),
     do: Conversations.create_participant(attrs, user)

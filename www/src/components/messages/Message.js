@@ -135,7 +135,7 @@ function DeleteMessage(props) {
 
 function MessageControls(props) {
   return (
-    <Box background='white' direction='row' height='25px' border='full' round='xsmall' width='50px' margin={{right: '10px'}}>
+    <Box elevation='xsmall' background='white' direction='row' height='25px' border='full' round='xsmall' width='50px' margin={{right: '10px'}}>
       <Box style={{cursor: 'pointer'}} align='center' justify='center' border='right' width='25px'>
         <Emoji size='15px' />
       </Box>

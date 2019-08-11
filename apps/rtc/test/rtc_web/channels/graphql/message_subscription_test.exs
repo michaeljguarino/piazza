@@ -57,6 +57,33 @@ defmodule RtcWeb.Channels.MessageSubscriptionTest do
       assert doc["payload"]["text"]
     end
 
+    test "participants can see updated messages" do
+      user = insert(:user)
+      conv = insert(:conversation)
+      insert(:participant, user: user, conversation: conv)
+      {:ok, socket} = establish_socket(user)
+
+      ref = push_doc(socket, """
+        subscription NewMessages($id: ID!) {
+          messageDelta(conversationId: $id) {
+            delta
+            payload {
+              id
+              text
+            }
+          }
+        }
+      """, variables: %{"id" => conv.id})
+
+      assert_reply(ref, :ok, %{subscriptionId: _})
+
+      publish_event(%PubSub.MessageUpdated{item: insert(:message, conversation: conv)})
+      assert_push("subscription:data", %{result: %{data: %{"messageDelta" => doc}}})
+      assert doc["delta"] == "UPDATE"
+      assert doc["payload"]["id"]
+      assert doc["payload"]["text"]
+    end
+
     test "you won't see new messages in other conversations" do
       user = insert(:user)
       conv = insert(:conversation, public: false)

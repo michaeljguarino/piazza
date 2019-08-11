@@ -1,16 +1,23 @@
 defmodule Core.Models.Message do
   use Core.DB.Schema
   use Arc.Ecto.Schema
-  alias Core.Models.{User, Conversation, MessageEntity, Embed}
+  alias Core.Models.{
+    User,
+    Conversation,
+    MessageEntity,
+    MessageReaction,
+    Embed
+  }
 
   schema "messages" do
     field :text,          :string
     field :attachment,    Core.Storage.Type
     field :attachment_id, :binary_id
 
-    belongs_to :creator, User
+    belongs_to :creator,      User
     belongs_to :conversation, Conversation
-    has_many :entities, MessageEntity
+    has_many   :entities,     MessageEntity
+    has_many   :reactions,    MessageReaction
 
     embeds_one :embed, Embed, on_replace: :update
 

@@ -184,6 +184,22 @@ defmodule Core.Schema do
       resolve safe_resolver(&Conversation.delete_message/2)
     end
 
+    field :create_reaction, :message do
+      middleware Core.Schemas.Authenticated
+      arg :message_id, non_null(:id)
+      arg :name, non_null(:string)
+
+      resolve safe_resolver(&Conversation.create_reaction/2)
+    end
+
+    field :delete_reaction, :message do
+      middleware Core.Schemas.Authenticated
+      arg :message_id, non_null(:id)
+      arg :name, non_null(:string)
+
+      resolve safe_resolver(&Conversation.delete_reaction/2)
+    end
+
     field :create_participant, :participant do
       middleware Core.Schemas.Authenticated
       arg :attributes, non_null(:participant_attributes)

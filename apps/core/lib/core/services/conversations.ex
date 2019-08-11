@@ -7,9 +7,13 @@ defmodule Core.Services.Conversations do
     Message,
     Participant,
     MessageEntity,
-    User
+    User,
+    MessageReaction
   }
   import Core.Policies.Conversation
+
+  def get_message!(id),
+    do: Core.Repo.get!(Message, id)
 
   def get_conversation!(id),
     do: Core.Repo.get!(Conversation, id)
@@ -152,8 +156,40 @@ defmodule Core.Services.Conversations do
     |> notify(:create, user)
   end
 
+  def create_reaction(message_id, name, user) do
+    start_transaction()
+    |> add_operation(:allow, fn _ ->
+      get_message!(message_id)
+      |> allow(user, :create)
+    end)
+    |> add_operation(:reaction, fn _ ->
+      %MessageReaction{user_id: user.id}
+      |> MessageReaction.changeset(%{message_id: message_id, name: name})
+      |> Core.Repo.insert(
+        on_conflict: :replace_all_except_primary_key,
+        conflict_target: [:name, :message_id, :user_id]
+      )
+    end)
+    |> execute(extract: :allow)
+    |> notify(:update, user)
+  end
+
+  def delete_reaction(message_id, name, user) do
+    start_transaction()
+    |> add_operation(:reaction, fn _ ->
+      Core.Repo.get_by!(MessageReaction,
+        message_id: message_id, name: name, user_id: user.id)
+      |> Core.Repo.delete()
+    end)
+    |> add_operation(:msg, fn _ ->
+      {:ok, get_message!(message_id)}
+    end)
+    |> execute(extract: :msg)
+    |> notify(:update, user)
+  end
+
   def delete_message(message_id, user) do
-    Core.Repo.get!(Message, message_id)
+    get_message!(message_id)
     |> allow(user, :delete)
     |> when_ok(:delete)
     |> notify(:delete, user)
@@ -194,6 +230,8 @@ defmodule Core.Services.Conversations do
 
   def notify({:ok, %Conversation{} = conv}, :update, actor),
     do: handle_notify(PubSub.ConversationUpdated, conv, actor: actor)
+  def notify({:ok, %Message{} = msg}, :update, actor),
+    do: handle_notify(PubSub.MessageUpdated, msg, actor: actor)
 
   def notify({:ok, %Conversation{} = conv}, :delete, actor),
     do: handle_notify(PubSub.ConversationDeleted, conv, actor: actor)

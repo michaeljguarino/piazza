@@ -53,6 +53,13 @@ defimpl Rtc.Channels.Negotiator, for: Core.PubSub.MessageDeleted do
     do: {delta(message, :delete), [message_delta: "messages:#{id}"]}
 end
 
+defimpl Rtc.Channels.Negotiator, for: Core.PubSub.MessageUpdated do
+  import Rtc.Channels.NegotiatorHelper
+
+  def negotiate(%{item: %{conversation_id: id} = message}),
+    do: {delta(message, :update), [message_delta: "messages:#{id}"]}
+end
+
 defimpl Rtc.Channels.Negotiator, for: Core.PubSub.ParticipantCreated do
   import Rtc.Channels.NegotiatorHelper
 

@@ -57,6 +57,14 @@ defmodule Core.Factory do
     }
   end
 
+  def message_reaction_factory do
+    %Models.MessageReaction{
+      name: "emoji",
+      message: build(:message),
+      user: build(:user)
+    }
+  end
+
   def notification_factory do
     %Models.Notification{
       type: :mention,
