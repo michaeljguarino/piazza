@@ -79,10 +79,11 @@ defmodule Core.Resolvers.Conversation do
     |> paginate(args)
   end
 
-  def list_pinned_messages(_, %{source: conversation}) do
+  def list_pinned_messages(args, %{source: conversation}) do
     Message.pinned()
     |> Message.for_conversation(conversation.id)
     |> Message.ordered([desc: :pinned_at])
+    |> paginate(args)
   end
 
   def list_participants(args, %{source: conversation}) do

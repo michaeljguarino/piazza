@@ -3,15 +3,17 @@ defmodule Core.Schemas.Types do
   alias Core.Resolvers.{Conversation, User, Platform}
 
   object :user do
-    field :id, :id
-    field :name, non_null(:string)
-    field :handle, non_null(:string)
-    field :email, non_null(:string)
-    field :bot, :boolean
-    field :bio, :string
-    field :roles, :roles
+    field :id,         :id
+    field :name,       non_null(:string)
+    field :handle,     non_null(:string)
+    field :email,      non_null(:string)
+    field :bot,        :boolean
+    field :bio,        :string
+    field :roles,      :roles
     field :deleted_at, :datetime
+
     field :notification_preferences, :notification_preferences
+
     field :jwt, :string, resolve: fn
       %{jwt: jwt, id: id}, _, %{context: %{current_user: %{id: id}}} ->
         {:ok, jwt}
@@ -39,14 +41,17 @@ defmodule Core.Schemas.Types do
   delta :user
 
   object :conversation do
-    field :id, :id
-    field :name, non_null(:string)
-    field :public, non_null(:boolean)
-    field :global, non_null(:boolean)
-    field :topic, :string
-    field :creator, :user, resolve: dataloader(User)
-    field :pinned_messages, :integer
+    field :id,                  :id
+    field :name,                non_null(:string)
+    field :public,              non_null(:boolean)
+    field :global,              non_null(:boolean)
+    field :topic,               :string
+    field :creator,             :user, resolve: dataloader(User)
     field :current_participant, :participant, resolve: dataloader(Conversation)
+
+    field :pinned_message_count, :integer, resolve: fn
+      %{pinned_messages: pinned}, _, _ -> {:ok, pinned}
+    end
 
     field :unread_messages, :integer do
       resolve fn conversation, _, %{context: %{loader: loader, current_user: user}} ->

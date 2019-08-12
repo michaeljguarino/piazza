@@ -133,7 +133,7 @@ function ConversationHeader(props) {
         <Text weight='bold' margin={{bottom: '5px'}}># {props.conversation.name}</Text>
         <Box height='25px' direction='row' align='end' justify='start' pad={{top: '5px', bottom: '5px'}}>
           <Participants {...props} />
-          <PinnedMessages />
+          <PinnedMessages {...props}  />
           <Box {...BOX_ATTRS} align='center' justify='center' border={null}>
             <ConversationUpdate {...props} />
           </Box>

@@ -94,6 +94,7 @@ export const PINNED_MESSAGES = gql`
   query ConversationQuery($conversationId: ID!, $cursor: String) {
     conversation(id: $conversationId) {
       id
+      pinnedMessageCount
       pinnedMessages(first: 15, after: $cursor) {
         pageInfo {
           endCursor

@@ -175,6 +175,41 @@ defmodule Core.Schema.QueriesTest do
     end
   end
 
+  describe "pinnedMessages" do
+    test "a participant can list pinned messages for a conversation" do
+      user = insert(:user)
+      conv = insert(:conversation, pinned_messages: 3)
+      messages = insert_list(3, :message, conversation: conv, pinned_at: DateTime.utc_now())
+      insert_list(3, :message, conversation: conv)
+      insert(:participant, conversation: conv, user: user)
+
+      {:ok, %{data: %{"conversation" => found}}} = run_query("""
+          query Conversation($id: ID) {
+            conversation(id: $id) {
+              id
+              pinnedMessageCount
+              pinnedMessages(first: 5) {
+                edges {
+                  node {
+                    id
+                    text
+                    creator {
+                      backgroundColor
+                    }
+                  }
+                }
+              }
+            }
+          }
+      """, %{"id" => conv.id}, %{current_user: user})
+
+      assert found["pinnedMessageCount"] == 3
+      pinned = from_connection(found["pinnedMessages"])
+
+      assert ids_equal(pinned, messages)
+    end
+  end
+
   describe "Conversations" do
     test "It will list conversations you'are a participant of" do
       user = insert(:user)

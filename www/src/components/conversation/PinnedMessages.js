@@ -13,15 +13,24 @@ function PinnedMessages(props) {
   const [hover, setHover] = useState(false)
   const color = hover ? 'accent-1' : null
   return (
-    <Box
-      onMouseEnter={() => setHover(true)}
-      onMouseLeave={() => setHover(false) }
-      {...BOX_ATTRS}>
-      <Text height='15px' style={{lineHeight: '15px'}} margin={{right: '3px'}}>
-        <Pin size='15px' color={color} />
-      </Text>
-      <Text size='xsmall' color={color}>1</Text>
-    </Box>
+    <Query query={PINNED_MESSAGES} variables={{conversationId: props.conversation.id}}>
+    {({loading, data, fetchMore}) => {
+      if (loading) return (<Box direction='row'>...</Box>)
+      const conv = data.conversation
+      return (
+        <Box
+          onMouseEnter={() => setHover(true)}
+          onMouseLeave={() => setHover(false)}
+          {...BOX_ATTRS}>
+          <Text height='15px' style={{lineHeight: '15px'}} margin={{right: '3px'}}>
+            <Pin size='15px' color={color} />
+          </Text>
+          <Text size='xsmall' color={color}>{conv.pinnedMessageCount}</Text>
+        </Box>
+      )
+    }}
+    </Query>
+
   )
 }
 
