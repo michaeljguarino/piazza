@@ -105,6 +105,9 @@ defmodule Core.Resolvers.Conversation do
   def create_message(%{conversation_id: conv_id, attributes: attrs}, %{context: %{current_user: user}}),
     do: Conversations.create_message(conv_id, attrs, user)
 
+  def pin_message(%{message_id: msg_id, pinned: pinned}, %{context: %{current_user: user}}),
+    do: Conversations.toggle_pin(msg_id, pinned, user)
+
   def delete_message(%{message_id: msg_id}, %{context: %{current_user: user}}),
     do: Conversations.delete_message(msg_id, user)
 

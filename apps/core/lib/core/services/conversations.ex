@@ -156,11 +156,19 @@ defmodule Core.Services.Conversations do
     |> notify(:create, user)
   end
 
+  def toggle_pin(message_id, pinned \\ true, user) do
+    get_message!(message_id)
+    |> Ecto.Changeset.change(%{pinned_at: (if !!pinned, do: DateTime.utc_now(), else: nil)})
+    |> allow(user, :edit)
+    |> when_ok(:update)
+    |> notify(:update, user)
+  end
+
   def create_reaction(message_id, name, user) do
     start_transaction()
     |> add_operation(:allow, fn _ ->
       get_message!(message_id)
-      |> allow(user, :create)
+      |> allow(user, :edit)
     end)
     |> add_operation(:reaction, fn _ ->
       %MessageReaction{user_id: user.id}

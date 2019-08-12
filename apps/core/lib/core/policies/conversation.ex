@@ -6,7 +6,7 @@ defmodule Core.Policies.Conversation do
   def can?(%User{bot: true}, %Message{}, :create), do: :pass
   def can?(%User{id: uid}, %Message{creator_id: uid}, :delete), do: :continue
   def can?(%User{roles: %{admin: true}}, %Message{}, :delete), do: :continue
-  def can?(%User{id: uid}, %Message{} = message, :create) do
+  def can?(%User{id: uid}, %Message{} = message, action) when action in [:create, :edit] do
     case Core.Repo.preload(message, [:conversation]) do
       %{conversation: %{public: true}} -> :pass
       %{conversation: conv} -> allow_in_conversation(uid, conv.id, "Only participants can message in private conversations")

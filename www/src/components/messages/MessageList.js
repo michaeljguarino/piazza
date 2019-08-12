@@ -42,7 +42,9 @@ class MessageList extends Component {
           let messageEdges = data.conversation.messages.edges
           let pageInfo = data.conversation.messages.pageInfo
           return (
-            <SubscriptionWrapper id={this.props.conversation.id} startSubscription={() => {
+            <SubscriptionWrapper
+              id={this.props.conversation.id}
+              startSubscription={() => {
               return this._subscribeToNewMessages(subscribeToMore)
             }}>
               <Scroller
@@ -57,17 +59,16 @@ class MessageList extends Component {
                   flexDirection: 'column-reverse',
                 }}
                 mapper={(edge, next) => (
-                <Message
-                  key={edge.node.id}
-                  conversation={this.props.conversation}
-                  message={edge.node}
-                  next={next.node} />
+                  <Message
+                    key={edge.node.id}
+                    conversation={this.props.conversation}
+                    message={edge.node}
+                    next={next.node} />
                 )}
                 onLoadMore={() => {
                   this.setState({loaded: true})
-                  if (!pageInfo.hasNextPage) {
-                    return
-                  }
+                  if (!pageInfo.hasNextPage) return
+
                   fetchMore({
                     variables: {conversationId: this.props.conversation.id, cursor: pageInfo.endCursor},
                     updateQuery: (prev, {fetchMoreResult}) => {

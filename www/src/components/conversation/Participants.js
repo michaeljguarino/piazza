@@ -100,7 +100,11 @@ function Participants(props) {
           {setOpen => (
             <Box>
               <FlyoutHeader text='Participants' />
-              <Box pad="small" gap='small' margin={{bottom: 'medium'}} border='bottom'>
+              <Box
+                pad={{left: "small", right: 'small', bottom: 'small'}}
+                gap='small'
+                margin={{bottom: 'small'}}
+                border='bottom'>
                 <Scroller
                   edges={edges}
                   mapper={(p) => (<Participant key={p.node.id} user={p.node.user} />)}

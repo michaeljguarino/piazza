@@ -169,6 +169,39 @@ defmodule Core.Services.ConversationsTest do
     end
   end
 
+  describe "#toggle_pin/2" do
+    test "Participants can pin a message" do
+      user = insert(:user)
+      %{conversation: conv} = insert(:participant, user: user)
+      msg = insert(:message, conversation: conv)
+
+      {:ok, pinned} = Conversations.toggle_pin(msg.id, true, user)
+
+      assert pinned.id == msg.id
+      assert pinned.pinned_at
+
+      assert_receive {:event, %PubSub.MessageUpdated{item: ^pinned}}
+    end
+
+    test "Participants can unpin messages" do
+      user = insert(:user)
+      %{conversation: conv} = insert(:participant, user: user)
+      msg = insert(:message, conversation: conv, pinned_at: DateTime.utc_now())
+
+      {:ok, pinned} = Conversations.toggle_pin(msg.id, false, user)
+
+      assert pinned.id == msg.id
+      refute pinned.pinned_at
+    end
+
+    test "Nonparticipants cannot pin" do
+      user = insert(:user)
+      msg = insert(:message, conversation: build(:conversation, public: false))
+
+      {:error, _} = Conversations.toggle_pin(msg.id, true, user)
+    end
+  end
+
   describe "#create_reaction/2" do
     test "Participants can create reactions to messages" do
       user = insert(:user)
@@ -194,7 +227,7 @@ defmodule Core.Services.ConversationsTest do
     end
   end
 
-  describe "delete reaction" do
+  describe "#delete_reaction/2" do
     test "A user can delete his reactions" do
       reaction = insert(:message_reaction)
 

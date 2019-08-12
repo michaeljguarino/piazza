@@ -184,6 +184,14 @@ defmodule Core.Schema do
       resolve safe_resolver(&Conversation.delete_message/2)
     end
 
+    field :pin_message, :message do
+      middleware Core.Schemas.Authenticated
+      arg :message_id, non_null(:id)
+      arg :pinned, non_null(:boolean)
+
+      resolve safe_resolver(&Conversation.pin_message/2)
+    end
+
     field :create_reaction, :message do
       middleware Core.Schemas.Authenticated
       arg :message_id, non_null(:id)

@@ -174,6 +174,25 @@ defmodule Core.Schema.ConversationMutationsTest do
     end
   end
 
+  describe "pinMessage" do
+    test "participants can pin" do
+      user= insert(:user)
+      msg = insert(:message)
+
+      {:ok, %{data: %{"pinMessage" => result}}} = run_query("""
+        mutation  PinMessage($messageId: ID!, $pinned: Boolean!) {
+          pinMessage(messageId: $messageId, pinned: $pinned) {
+            id
+            pinnedAt
+          }
+        }
+      """, %{"messageId" => msg.id, "pinned" => true}, %{current_user: user})
+
+      assert result["id"] == msg.id
+      assert result["pinnedAt"]
+    end
+  end
+
   describe "createParticipant" do
     test "it will create a participant" do
       user         = insert(:user)
