@@ -68,7 +68,7 @@ export const DELETE_REACTION = gql`
   ${MessageFragment}
 `;
 
-export const SEARCH_USERS=gql`
+export const SEARCH_USERS = gql`
   query SearchUsers($name: ID!) {
     searchUsers(name: $name, first: 10) {
       edges {
@@ -79,4 +79,33 @@ export const SEARCH_USERS=gql`
     }
   }
   ${UserFragment}
+`;
+
+export const PIN_MESSAGE = gql`
+  mutation PinMessage($messageId: ID!, $pinned: Boolean!) {
+    pinMessage(messageId: $messageId, pinned: $pinned) {
+      ...MessageFragment
+    }
+  }
+  ${MessageFragment}
+`;
+
+export const PINNED_MESSAGES = gql`
+  query ConversationQuery($conversationId: ID!, $cursor: String) {
+    conversation(id: $conversationId) {
+      id
+      pinnedMessages(first: 15, after: $cursor) {
+        pageInfo {
+          endCursor
+          hasNextPage
+        }
+        edges {
+          node {
+            ...MessageFragment
+          }
+        }
+      }
+    }
+  }
+  ${MessageFragment}
 `;

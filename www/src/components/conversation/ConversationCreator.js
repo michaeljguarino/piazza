@@ -43,7 +43,7 @@ function ConversationCreator(props) {
             {mutation => (
               <Box pad='small'>
                 <Box align='center' justify='center'>
-                  <Text>Create a new conversation</Text>
+                  <Text>Start a New Conversation</Text>
                 </Box>
                 <ConversationEditForm
                   state={state}

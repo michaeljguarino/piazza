@@ -30,8 +30,16 @@ async function _subscribeToNewNotifications(subscribeToMore, unseen, setUnseen) 
 
 function NotificationIcon(props) {
   const [unseen, setUnseen] = useState(props.me.unseenNotifications || 0)
+  const [hover, setHover] = useState(false)
+  const color = hover ? 'accent-1' : null
+
   return (
-    <Box width='50px' align='center' justify='center'>
+    <Box
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      width='50px'
+      align='center'
+      justify='center'>
       <Query query={NOTIFICATIONS_Q}>
         {({data, loading, fetchMore, subscribeToMore}) => {
           if (loading) return (<Notification size='25px' />)
@@ -41,7 +49,7 @@ function NotificationIcon(props) {
           return (
             <Dropdown>
               <Stack anchor="top-right" style={{cursor: 'pointer'}}>
-                <Notification size='25px' />
+                <Notification size='25px' color={color} />
                 {(unseen && unseen > 0) ?
                   <Box
                     background="brand"

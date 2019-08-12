@@ -46,6 +46,7 @@ export const MessageFragment = gql`
     id
     text
     insertedAt
+    pinnedAt
     attachment
     entities {
       type

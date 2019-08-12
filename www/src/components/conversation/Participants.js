@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useState} from 'react'
 import {Query} from 'react-apollo'
 import {Box, Text} from 'grommet'
 import {UserNew} from 'grommet-icons'
@@ -81,6 +81,9 @@ const _subscribeToParticipantDeltas = async (props, subscribeToMore) => {
 }
 
 function Participants(props) {
+  const [hover, setHover] = useState(false)
+  const color = hover ? 'accent-1' : null
+
   return (
     <Query query={PARTICIPANTS_Q} variables={{conversationId: props.conversation.id}}>
     {({loading, data, fetchMore, subscribeToMore}) => {
@@ -92,9 +95,11 @@ function Participants(props) {
           return _subscribeToParticipantDeltas(props, subscribeToMore)
         }}>
           <Flyout target={
-            <Box {...BOX_ATTRS}>
-              <Text height='15px' style={{lineHeight: '15px'}} margin={{right: '3px'}}><UserNew size='15px' /></Text>
-              <Text size='xsmall'>{data.conversation.participants.edges.length}</Text>
+            <Box {...BOX_ATTRS} onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}>
+              <Text height='15px' style={{lineHeight: '15px'}} margin={{right: '3px'}}>
+                <UserNew color={color} size='15px' />
+              </Text>
+              <Text color={color} size='xsmall'>{data.conversation.participants.edges.length}</Text>
             </Box>
           }>
           {setOpen => (

@@ -2,11 +2,12 @@ import React, { useState } from 'react'
 import {Box, Text} from 'grommet'
 import {Lock} from 'grommet-icons'
 
+const HOVER_COLOR='#263449'
+
 function Conversation(props) {
   const [hover, setHover] = useState(false);
   let selected = props.conversation.id === props.currentConversation.id
-  // #0576B9'
-  let boxProps = (selected) ? {background: 'accent-1'} : (hover ? {background: '#2b3c54'} : {})
+  let boxProps = (selected) ? {background: 'accent-1'} : (hover ? {background: HOVER_COLOR} : {})
   let unread = (props.conversation.unreadMessages > 0 && !selected)
   let textProps = (props.selected) ? {} : {color: (unread ? 'white' : props.color)}
   return (
@@ -14,6 +15,7 @@ function Conversation(props) {
       fill='horizontal'
       direction='row'
       align='center'
+      height='25px'
       style={{cursor: 'pointer'}}
       onMouseOver={() => setHover(true)}
       onMouseLeave={() => setHover(false)}

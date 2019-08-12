@@ -115,6 +115,24 @@ function replaceText(selection, text, regex, transformer) {
   return text.replace(regex, transformer(selection))
 }
 
+function EmojiTarget(props) {
+  const [hover, setHover] = useState(false)
+
+  return (
+    <Box
+      align='center'
+      justify='center'
+      ref={props.emojiRef}
+      width='40px'
+      onClick={() => props.setEmojiPicker(true)}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      style={{cursor: 'pointer'}}>
+      <Emoji size='25px' color={hover ? 'accent-1' : 'dark-6'} />
+    </Box>
+  )
+}
+
 function MentionManager(props) {
   const dropRef = useRef()
   const emojiRef = useRef()
@@ -146,15 +164,7 @@ function MentionManager(props) {
           }}
           placeholder="Whatever is on your mind"
         />
-        <Box
-          align='center'
-          justify='center'
-          ref={emojiRef}
-          width='40px'
-          onClick={() => setEmojiPicker(true)}
-          style={{cursor: 'pointer'}}>
-          <Emoji size='25px' color='dark-6' />
-        </Box>
+        <EmojiTarget emojiRef={emojiRef} setEmojiPicker={setEmojiPicker} />
         {emojiPicker && (
           <Drop
             align={{ bottom: "top"}}

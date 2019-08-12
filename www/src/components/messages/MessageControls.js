@@ -1,12 +1,12 @@
 import React, {useState, useRef} from 'react'
 import {Mutation} from 'react-apollo'
 import {Box, Drop, Anchor, Text} from 'grommet'
-import {More, Emoji} from 'grommet-icons'
+import {More, Emoji, Pin} from 'grommet-icons'
 import Popover from 'react-tiny-popover'
 import 'emoji-mart/css/emoji-mart.css'
 import data from 'emoji-mart/data/messenger.json'
 import { NimblePicker } from 'emoji-mart'
-import {DELETE_MESSAGE, CREATE_REACTION, MESSAGES_Q} from './queries'
+import {DELETE_MESSAGE, CREATE_REACTION, MESSAGES_Q, PIN_MESSAGE} from './queries'
 import {removeMessage, updateMessage} from './utils'
 
 const CONTROL_ATTRS = {
@@ -39,13 +39,15 @@ function DeleteMessage(props) {
 
 export function MessageReaction(props) {
   const [open, setOpen] = useState(false)
+  const [hovered, setHovered] = useState(false)
+  const color = hovered ? 'accent-1' : null
 
   function toggleOpen(value) {
     props.setPinnedHover && props.setPinnedHover(value)
     setOpen(value)
   }
 
-  const boxAttrs = props.boxAttrs || CONTROL_ATTRS
+  let boxAttrs = props.boxAttrs || CONTROL_ATTRS
   const position = props.position || ['left', 'top', 'bottom']
 
   return (
@@ -72,10 +74,44 @@ export function MessageReaction(props) {
               props.onSelect && props.onSelect()
             }} />
         }>
-        <Box onClick={() => toggleOpen(!open)} {...boxAttrs}>
-          <Emoji size='15px'  /> {props.label && (<Text size='xsmall' margin={{left: '2px'}}>{props.label}</Text>)}
+        <Box
+          onClick={() => toggleOpen(!open)}
+          onMouseEnter={() => setHovered(true)}
+          onMouseLeave={() => setHovered(false)}
+          {...boxAttrs}>
+          <Emoji size='15px' color={color}  />
+          {props.label && (<Text color={color} size='xsmall' margin={{left: '2px'}}>{props.label}</Text>)}
         </Box>
       </Popover>
+    )}
+    </Mutation>
+  )
+}
+
+function PinMessage(props) {
+  const [hovered, setHovered] = useState(false)
+  const pinned = !!props.message.pinnedAt
+  return (
+    <Mutation
+      mutation={PIN_MESSAGE}
+      variables={{messageId: props.message.id, pinned: !pinned}}
+      update={(cache, {data: {PinMessage}}) => {
+        const data = cache.readQuery({query: MESSAGES_Q, variables: {conversationId: props.conversation.id}})
+        cache.writeQuery({
+          query: MESSAGES_Q,
+          variables: {conversationId: props.conversation.id},
+          data: updateMessage(data, PinMessage)
+        })
+      }}
+    >
+    {mutation => (
+      <Box
+        onClick={mutation}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+        {...CONTROL_ATTRS}>
+        <Pin color={hovered ? 'accent-1' : null} size='15px' />
+      </Box>
     )}
     </Mutation>
   )
@@ -84,6 +120,7 @@ export function MessageReaction(props) {
 function MessageControls(props) {
   const dropRef = useRef()
   const [moreOpen, setMoreOpen] = useState(false)
+  const [hovered, setHovered] = useState(false)
   function toggleOpen(value) {
     props.setPinnedHover(value)
     setMoreOpen(value)
@@ -92,8 +129,14 @@ function MessageControls(props) {
   return (
     <Box elevation='xsmall' background='white' direction='row' height='30px' border round='xsmall' margin={{right: '10px'}}>
       <MessageReaction {...props} />
-      <Box ref={dropRef} onClick={() => toggleOpen(!moreOpen)} {...CONTROL_ATTRS}>
-        <More size='15px'  />
+      <PinMessage {...props} />
+      <Box
+        ref={dropRef}
+        onClick={() => toggleOpen(!moreOpen)}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+        {...CONTROL_ATTRS}>
+        <More color={hovered ? 'accent-1' : null} size='15px'  />
       </Box>
       {moreOpen && (
           <Drop

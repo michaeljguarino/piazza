@@ -4,7 +4,7 @@ import UserHandle from './UserHandle'
 
 function UserListEntry(props) {
   return (
-    <Box direction='row' align='center' fill='horizontal'>
+    <Box direction='row' height='23px' align='center' fill='horizontal'>
       <UserHandle includePresence={true} {...props} />
     </Box>
   )

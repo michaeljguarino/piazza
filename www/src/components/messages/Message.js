@@ -1,6 +1,6 @@
 import React, {useState} from 'react'
 import {Box, Text, Markdown, Stack} from 'grommet'
-import {Robot} from 'grommet-icons'
+import {Robot, Pin} from 'grommet-icons'
 import Avatar from '../users/Avatar'
 import moment from 'moment'
 import MessageEmbed from './MessageEmbed'
@@ -91,6 +91,9 @@ function MessageBody(props) {
             </Text>
             {props.message.creator.bot && (
               <Text margin={{right: '5px'}}><Robot size='15px'/></Text>
+            )}
+            {props.message.pinnedAt && (
+              <Text margin={{right: '5px'}}><Pin size='15px'/></Text>
             )}
             <WithPresence id={props.message.creator.id} >
               {present => <PresenceIndicator present={present} />}

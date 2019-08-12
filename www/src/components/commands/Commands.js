@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useState} from 'react'
 import {Box} from 'grommet'
 import {Code} from 'grommet-icons'
 import { Query } from 'react-apollo'
@@ -8,9 +8,17 @@ import {COMMANDS_Q} from './queries'
 import Flyout, {FlyoutHeader} from '../utils/Flyout'
 
 function Commands(props) {
+  const [hover, setHover] = useState(false)
+  const color = hover ? 'accent-1' : null
   return (
-    <Box width='50px' style={{cursor: 'pointer'}} align='center' justify='center'>
-      <Flyout target={<Code size='25px' />}>
+    <Box
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      width='50px'
+      style={{cursor: 'pointer'}}
+      align='center'
+      justify='center'>
+      <Flyout target={<Code color={color} size='25px' />}>
       {setOpen => (
         <Box>
           <FlyoutHeader text='Commands' />

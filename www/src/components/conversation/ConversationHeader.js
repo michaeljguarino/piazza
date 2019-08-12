@@ -9,6 +9,7 @@ import ConversationEditForm from './ConversationEditForm'
 import NotificationIcon from '../notifications/NotificationIcon'
 import {CurrentUserContext} from '../login/EnsureLogin'
 import Participants from './Participants'
+import PinnedMessages from './PinnedMessages'
 import Commands from '../commands/Commands'
 import NotificationsPreferences, {DEFAULT_PREFS} from '../users/NotificationPreferences'
 import pick from 'lodash/pick'
@@ -79,14 +80,23 @@ function ConversationUpdate(props) {
 function NotificationsSettingsUpdate(props) {
   const currentParticipant = props.conversation.currentParticipant || {}
   const [preferences, setPreferences] = useState(currentParticipant.notificationPreferences || DEFAULT_PREFS)
+  const [hover, setHover] = useState(false)
   const variables = {
     conversationId: props.conversation.id,
     userId: props.me.id,
     prefs: pick(preferences, ['mention', 'message', 'participant'])
   }
+  const color = hover ? 'accent-1' : null
+
   return (
-    <Box style={{cursor: 'pointer'}} width='50px' align='center' justify='center'>
-      <CloseableDropdown target={<SettingsOption size='25px' />}>
+    <Box
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      style={{cursor: 'pointer'}}
+      width='50px'
+      align='center'
+      justify='center'>
+      <CloseableDropdown target={<SettingsOption color={color} size='25px' />}>
         {setOpen => (
           <Box gap='small' pad='small'>
           <Mutation mutation={UPDATE_PARTICIPANT} variables={variables}>
@@ -123,6 +133,7 @@ function ConversationHeader(props) {
         <Text weight='bold' margin={{bottom: '5px'}}># {props.conversation.name}</Text>
         <Box height='25px' direction='row' align='end' justify='start' pad={{top: '5px', bottom: '5px'}}>
           <Participants {...props} />
+          <PinnedMessages />
           <Box {...BOX_ATTRS} align='center' justify='center' border={null}>
             <ConversationUpdate {...props} />
           </Box>
