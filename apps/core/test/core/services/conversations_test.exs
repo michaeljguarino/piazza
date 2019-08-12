@@ -179,6 +179,7 @@ defmodule Core.Services.ConversationsTest do
 
       assert pinned.id == msg.id
       assert pinned.pinned_at
+      assert refetch(conv).pinned_messages == 1
 
       assert_receive {:event, %PubSub.MessageUpdated{item: ^pinned}}
     end

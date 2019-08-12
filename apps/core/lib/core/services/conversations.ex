@@ -157,10 +157,28 @@ defmodule Core.Services.Conversations do
   end
 
   def toggle_pin(message_id, pinned \\ true, user) do
-    get_message!(message_id)
-    |> Ecto.Changeset.change(%{pinned_at: (if !!pinned, do: DateTime.utc_now(), else: nil)})
-    |> allow(user, :edit)
-    |> when_ok(:update)
+    msg = get_message!(message_id)
+    pin_changed = !!msg.pinned_at != pinned
+
+    start_transaction()
+    |> add_operation(:message, fn _ ->
+      get_message!(message_id)
+      |> Ecto.Changeset.change(%{pinned_at: (if !!pinned, do: DateTime.utc_now(), else: nil)})
+      |> allow(user, :edit)
+      |> when_ok(:update)
+    end)
+    |> add_operation(:conversation, fn %{message: %{conversation_id: id, pinned_at: pinned}} ->
+      inc = if pin_changed, do: (if !!pinned, do: 1, else: -1), else: 0
+
+      {_, [conv]} =
+        Conversation.for_id(id)
+        |> Conversation.increment_pinned_messages(inc)
+        |> Conversation.selected()
+        |> Core.Repo.update_all([])
+
+      {:ok, conv}
+    end)
+    |> execute(extract: :message)
     |> notify(:update, user)
   end
 

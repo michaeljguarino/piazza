@@ -3,14 +3,15 @@ defmodule Core.Models.Conversation do
   alias Core.Models.{Participant, Message, User}
 
   schema "conversations" do
-    field :name,   :string
-    field :public, :boolean, default: true
-    field :global, :boolean, default: false
-    field :topic,  :string
+    field :name,            :string
+    field :public,          :boolean, default: true
+    field :global,          :boolean, default: false
+    field :topic,           :string
+    field :pinned_messages, :integer
 
-    has_one :current_participant, Participant
-    has_many :participants, Participant
-    has_many :messages, Message
+    has_one  :current_participant, Participant
+    has_many :participants,        Participant
+    has_many :messages,            Message
 
     belongs_to :creator, User
 
@@ -56,6 +57,12 @@ defmodule Core.Models.Conversation do
       join: p in assoc(c, :participants),
       group_by: c.id,
       select: {c.id, count(p.id)}
+    )
+  end
+
+  def increment_pinned_messages(query \\ __MODULE__, inc) do
+    from(c in query,
+      update: [inc: [pinned_messages: ^inc]]
     )
   end
 

@@ -45,6 +45,7 @@ defmodule Core.Schemas.Types do
     field :global, non_null(:boolean)
     field :topic, :string
     field :creator, :user, resolve: dataloader(User)
+    field :pinned_messages, :integer
     field :current_participant, :participant, resolve: dataloader(Conversation)
 
     field :unread_messages, :integer do

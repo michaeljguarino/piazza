@@ -35,7 +35,7 @@ defmodule Core.Models.Message do
 
   def any(), do: from(m in __MODULE__, order_by: [desc: :inserted_at])
 
-  def pinned(query \\ __MODULE__), do: from(m in __MODULE__, where: not is_nil(m.pinned_at))
+  def pinned(query \\ __MODULE__), do: from(m in query, where: not is_nil(m.pinned_at))
 
   def unarchived(query \\ __MODULE__), do: query # haven't implemented archival yet
 
