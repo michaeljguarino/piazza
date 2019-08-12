@@ -6,8 +6,10 @@ import Popover from 'react-tiny-popover'
 import 'emoji-mart/css/emoji-mart.css'
 import data from 'emoji-mart/data/messenger.json'
 import { NimblePicker } from 'emoji-mart'
-import {DELETE_MESSAGE, CREATE_REACTION, MESSAGES_Q, PIN_MESSAGE} from './queries'
+import {DELETE_MESSAGE, CREATE_REACTION, MESSAGES_Q, PIN_MESSAGE, PINNED_MESSAGES} from './queries'
 import {removeMessage, updateMessage} from './utils'
+import {mergeAppend} from '../../utils/array'
+
 
 const CONTROL_ATTRS = {
   style: {cursor: 'pointer'},
@@ -95,12 +97,32 @@ function PinMessage(props) {
     <Mutation
       mutation={PIN_MESSAGE}
       variables={{messageId: props.message.id, pinned: !pinned}}
-      update={(cache, {data: {PinMessage}}) => {
+      update={(cache, {data: {pinMessage}}) => {
         const data = cache.readQuery({query: MESSAGES_Q, variables: {conversationId: props.conversation.id}})
         cache.writeQuery({
           query: MESSAGES_Q,
           variables: {conversationId: props.conversation.id},
-          data: updateMessage(data, PinMessage)
+          data: updateMessage(data, pinMessage)
+        })
+
+        const pinnedData = cache.readQuery({query: PINNED_MESSAGES, variables: {conversationId: props.conversation.id}})
+        const prevEdges = pinnedData.conversation.pinnedMessages.edges
+        const edges = (pinMessage.pinnedAt) ? mergeAppend([{node: pinMessage, __typename: "MessageEdge"}], prevEdges, (e) => e.node.id) :
+                          (prevEdges.filter((e) => e.node.id !== pinMessage.id))
+        cache.writeQuery({
+          query: PINNED_MESSAGES,
+          variables: {conversationId: props.conversation.id},
+          data: {
+            ...pinnedData,
+            conversation: {
+              ...pinnedData.conversation,
+              pinnedMessageCount: pinnedData.conversation.pinnedMessageCount + ((pinMessage.pinnedAt) ? 1 : -1),
+              pinnedMessages: {
+                ...pinnedData.conversation.pinnedMessages,
+                edges: edges
+              }
+            }
+          }
         })
       }}
     >
