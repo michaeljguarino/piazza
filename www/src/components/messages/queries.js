@@ -53,7 +53,9 @@ export const DELETE_MESSAGE = gql`
 export const CREATE_REACTION = gql`
   mutation CreateReaction($messageId: ID!, $name: String!) {
     createReaction(messageId: $messageId, name: $name) {
-      ...MessageFragment
+      message {
+        ...MessageFragment
+      }
     }
   }
   ${MessageFragment}
@@ -62,7 +64,9 @@ export const CREATE_REACTION = gql`
 export const DELETE_REACTION = gql`
   mutation DeleteReaction($messageId: ID!, $name: String!) {
     deleteReaction(messageId: $messageId, name: $name) {
-      ...MessageFragment
+      message {
+        ...MessageFragment
+      }
     }
   }
   ${MessageFragment}
@@ -84,7 +88,9 @@ export const SEARCH_USERS = gql`
 export const PIN_MESSAGE = gql`
   mutation PinMessage($messageId: ID!, $pinned: Boolean!) {
     pinMessage(messageId: $messageId, pinned: $pinned) {
-      ...MessageFragment
+      message {
+        ...MessageFragment
+      }
     }
   }
   ${MessageFragment}
@@ -102,8 +108,24 @@ export const PINNED_MESSAGES = gql`
         }
         edges {
           node {
-            ...MessageFragment
+            message {
+              ...MessageFragment
+            }
           }
+        }
+      }
+    }
+  }
+  ${MessageFragment}
+`;
+
+export const PINNED_MESSAGE_SUB = gql`
+  subscription PinnedMessageDeltas($conversationId: ID!) {
+    pinnedMessageDelta(conversationId: $conversationId) {
+      delta
+      payload {
+        message {
+          ...MessageFragment
         }
       }
     }

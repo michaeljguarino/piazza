@@ -33,3 +33,7 @@ defmodule Core.PubSub.CommandCreated, do: use Core.PubSub.Event
 defmodule Core.PubSub.CommandUpdated, do: use Core.PubSub.Event
 
 defmodule Core.PubSub.NotificationCreated, do: use Core.PubSub.Event
+
+defmodule Core.PubSub.PinnedMessageCreated, do: use Core.PubSub.Event
+
+defmodule Core.PubSub.PinnedMessageDeleted, do: use Core.PubSub.Event

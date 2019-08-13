@@ -177,22 +177,26 @@ defmodule Core.Services.ConversationsTest do
 
       {:ok, pinned} = Conversations.toggle_pin(msg.id, true, user)
 
-      assert pinned.id == msg.id
-      assert pinned.pinned_at
+      assert pinned.message_id == msg.id
+      assert refetch(msg).pinned_at
       assert refetch(conv).pinned_messages == 1
 
-      assert_receive {:event, %PubSub.MessageUpdated{item: ^pinned}}
+      assert_receive {:event, %PubSub.PinnedMessageCreated{item: ^pinned}}
     end
 
     test "Participants can unpin messages" do
       user = insert(:user)
       %{conversation: conv} = insert(:participant, user: user)
       msg = insert(:message, conversation: conv, pinned_at: DateTime.utc_now())
+      pin = insert(:pinned_message, message: msg, conversation: msg.conversation)
 
       {:ok, pinned} = Conversations.toggle_pin(msg.id, false, user)
 
-      assert pinned.id == msg.id
-      refute pinned.pinned_at
+      assert pinned.message_id == msg.id
+      refute refetch(msg).pinned_at
+      refute refetch(pin)
+
+      assert_receive {:event, %PubSub.PinnedMessageDeleted{item: ^pinned}}
     end
 
     test "Nonparticipants cannot pin" do

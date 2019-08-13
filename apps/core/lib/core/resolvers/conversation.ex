@@ -1,7 +1,13 @@
 defmodule Core.Resolvers.Conversation do
   use Core.Resolvers.Base, model: Core.Models.Conversation
   alias Core.Services.Conversations
-  alias Core.Models.{Message, Participant, MessageEntity, MessageReaction}
+  alias Core.Models.{
+    Message,
+    Participant,
+    MessageEntity,
+    MessageReaction,
+    PinnedMessage
+  }
 
   def data(args),
     do: Dataloader.Ecto.new(Core.Repo, query: &query/2, default_params: args, run_batch: &run_batch/5)
@@ -80,9 +86,8 @@ defmodule Core.Resolvers.Conversation do
   end
 
   def list_pinned_messages(args, %{source: conversation}) do
-    Message.pinned()
-    |> Message.for_conversation(conversation.id)
-    |> Message.ordered([desc: :pinned_at])
+    PinnedMessage.for_conversation(conversation.id)
+    |> PinnedMessage.ordered()
     |> paginate(args)
   end
 

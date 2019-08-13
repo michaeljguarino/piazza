@@ -73,4 +73,12 @@ defmodule Core.Factory do
       actor: build(:user)
     }
   end
+
+  def pinned_message_factory do
+    %Models.PinnedMessage{
+      message: build(:message),
+      conversation: build(:conversation),
+      user: build(:user)
+    }
+  end
 end

@@ -154,4 +154,86 @@ defmodule RtcWeb.Channels.MessageSubscriptionTest do
       assert doc["payload"]["text"]
     end
   end
+
+  describe "pinned message delta" do
+    test "participants can see created pinned messages" do
+      user = insert(:user)
+      conv = insert(:conversation, public: false)
+      insert(:participant, user: user, conversation: conv)
+      {:ok, socket} = establish_socket(user)
+
+      ref = push_doc(socket, """
+        subscription PinnedMessages($id: ID!) {
+          pinnedMessageDelta(conversationId: $id) {
+            delta
+            payload {
+              id
+              message {
+                text
+              }
+            }
+          }
+        }
+      """, variables: %{"id" => conv.id})
+
+      assert_reply(ref, :ok, %{subscriptionId: _})
+
+      publish_event(%PubSub.PinnedMessageCreated{item: insert(:pinned_message, conversation: conv)})
+      assert_push("subscription:data", %{result: %{data: %{"pinnedMessageDelta" => doc}}})
+      assert doc["delta"] == "CREATE"
+      assert doc["payload"]["id"]
+      assert doc["payload"]["message"]["text"]
+    end
+
+    test "participants can see deleted pinned messages" do
+      user = insert(:user)
+      conv = insert(:conversation, public: false)
+      insert(:participant, user: user, conversation: conv)
+      {:ok, socket} = establish_socket(user)
+
+      ref = push_doc(socket, """
+        subscription PinnedMessages($id: ID!) {
+          pinnedMessageDelta(conversationId: $id) {
+            delta
+            payload {
+              id
+              message {
+                text
+              }
+            }
+          }
+        }
+      """, variables: %{"id" => conv.id})
+
+      assert_reply(ref, :ok, %{subscriptionId: _})
+
+      publish_event(%PubSub.PinnedMessageDeleted{item: insert(:pinned_message, conversation: conv)})
+      assert_push("subscription:data", %{result: %{data: %{"pinnedMessageDelta" => doc}}})
+      assert doc["delta"] == "DELETE"
+      assert doc["payload"]["id"]
+      assert doc["payload"]["message"]["text"]
+    end
+
+    test "non participants cannot subscribe" do
+      user = insert(:user)
+      conv = insert(:conversation, public: false)
+      {:ok, socket} = establish_socket(user)
+
+      ref = push_doc(socket, """
+        subscription PinnedMessages($id: ID!) {
+          pinnedMessageDelta(conversationId: $id) {
+            delta
+            payload {
+              id
+              message {
+                text
+              }
+            }
+          }
+        }
+      """, variables: %{"id" => conv.id})
+
+      refute_reply(ref, :ok, %{subscriptionId: _})
+    end
+  end
 end

@@ -32,3 +32,30 @@ export function updateMessage(prev, message) {
 export function removeMessage(prev, message) {
   return replaceEdges(prev, prev.conversation.messages.edges.filter((e) => e.node.id !== message.id))
 }
+
+function replacePinnedMessagesAndIncrement(prev, edges, inc) {
+  return {
+    ...prev,
+    conversation: {
+      ...prev.conversation,
+      pinnedMessageCount: prev.conversation.pinnedMessageCount + inc,
+      pinnedMessages: {
+        ...prev.conversation.pinnedMessages,
+        edges: edges
+      }
+    }
+  }
+}
+
+export function addPinnedMessage(prev, pin) {
+  const edges = prev.conversation.pinnedMessages.edges
+  if (edges.find((e) => e.node.message.id === pin.message.id)) return prev
+
+  return replacePinnedMessagesAndIncrement(prev, [{node: pin, __typename: "PinnedMessageEdge"}, ...edges], 1)
+}
+
+export function removePinnedMessage(prev, pin) {
+  if (!prev.conversation.pinnedMessages.edges.find((e) => e.node.message.id === pin.message.id)) return prev
+  const edges = prev.conversation.pinnedMessages.edges.filter((e) => e.node.message.id !== pin.message.id)
+  return replacePinnedMessagesAndIncrement(prev, edges, -1)
+}

@@ -179,7 +179,7 @@ defmodule Core.Schema.QueriesTest do
     test "a participant can list pinned messages for a conversation" do
       user = insert(:user)
       conv = insert(:conversation, pinned_messages: 3)
-      messages = insert_list(3, :message, conversation: conv, pinned_at: DateTime.utc_now())
+      messages = insert_list(3, :pinned_message, conversation: conv) |> Enum.map(& &1.message)
       insert_list(3, :message, conversation: conv)
       insert(:participant, conversation: conv, user: user)
 
@@ -191,10 +191,12 @@ defmodule Core.Schema.QueriesTest do
               pinnedMessages(first: 5) {
                 edges {
                   node {
-                    id
-                    text
-                    creator {
-                      backgroundColor
+                    message {
+                      id
+                      text
+                      creator {
+                        backgroundColor
+                      }
                     }
                   }
                 }
@@ -206,7 +208,7 @@ defmodule Core.Schema.QueriesTest do
       assert found["pinnedMessageCount"] == 3
       pinned = from_connection(found["pinnedMessages"])
 
-      assert ids_equal(pinned, messages)
+      assert ids_equal(Enum.map(pinned, & &1["message"]), messages)
     end
   end
 

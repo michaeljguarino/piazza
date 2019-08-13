@@ -83,7 +83,7 @@ defmodule Core.Schemas.Types do
       resolve &Conversation.list_participants/2
     end
 
-    connection field :pinned_messages, node_type: :message do
+    connection field :pinned_messages, node_type: :pinned_message do
       resolve &Conversation.list_pinned_messages/2
     end
 
@@ -103,6 +103,18 @@ defmodule Core.Schemas.Types do
     timestamps()
   end
 
+  object :pinned_message do
+    field :id, :id
+    field :conversation_id, non_null(:id)
+    field :message_id, non_null(:id)
+    field :conversation, :conversation, resolve: dataloader(Conversation)
+    field :message, :message, resolve: dataloader(Conversation)
+    field :user, :user, resolve: dataloader(User)
+
+    timestamps()
+  end
+
+  delta :pinned_message
   delta :participant
 
   object :message do
@@ -200,6 +212,7 @@ defmodule Core.Schemas.Types do
   connection node_type: :message
   connection node_type: :participant
   connection node_type: :notification
+  connection node_type: :pinned_message
 
   ## Platform-related types
 

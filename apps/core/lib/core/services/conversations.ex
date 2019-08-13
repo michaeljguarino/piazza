@@ -8,7 +8,8 @@ defmodule Core.Services.Conversations do
     Participant,
     MessageEntity,
     User,
-    MessageReaction
+    MessageReaction,
+    PinnedMessage
   }
   import Core.Policies.Conversation
 
@@ -157,9 +158,6 @@ defmodule Core.Services.Conversations do
   end
 
   def toggle_pin(message_id, pinned \\ true, user) do
-    msg = get_message!(message_id)
-    pin_changed = !!msg.pinned_at != pinned
-
     start_transaction()
     |> add_operation(:message, fn _ ->
       get_message!(message_id)
@@ -167,8 +165,11 @@ defmodule Core.Services.Conversations do
       |> allow(user, :edit)
       |> when_ok(:update)
     end)
+    |> add_operation(:pinned_message, fn %{message: message} ->
+      do_toggle_pin(message, pinned, user)
+    end)
     |> add_operation(:conversation, fn %{message: %{conversation_id: id, pinned_at: pinned}} ->
-      inc = if pin_changed, do: (if !!pinned, do: 1, else: -1), else: 0
+      inc = if !!pinned, do: 1, else: -1
 
       {_, [conv]} =
         Conversation.for_id(id)
@@ -178,8 +179,27 @@ defmodule Core.Services.Conversations do
 
       {:ok, conv}
     end)
-    |> execute(extract: :message)
-    |> notify(:update, user)
+    |> execute()
+    |> case do
+      {:ok, %{pinned_message: pin, message: message}} ->
+        notify({:ok, message}, :update, user)
+        notify({:ok, pin}, (if !!pinned, do: :create, else: :delete), user)
+      error -> error
+    end
+  end
+
+  def do_toggle_pin(message, true, user) do
+    %PinnedMessage{user_id: user.id}
+    |> PinnedMessage.changeset(%{
+      message_id: message.id,
+      conversation_id: message.conversation_id
+    })
+    |> Core.Repo.insert()
+  end
+  def do_toggle_pin(message, _, _user) do
+    Core.Repo.get_by!(PinnedMessage,
+      message_id: message.id, conversation_id: message.conversation_id)
+    |> Core.Repo.delete()
   end
 
   def create_reaction(message_id, name, user) do
@@ -278,6 +298,8 @@ defmodule Core.Services.Conversations do
     do: handle_notify(PubSub.MessageCreated, msg, actor: actor)
   def notify({:ok, %Participant{} = part}, :create, actor),
     do: handle_notify(PubSub.ParticipantCreated, part, actor: actor)
+  def notify({:ok, %PinnedMessage{} = pin}, :create, actor),
+    do: handle_notify(PubSub.PinnedMessageCreated, pin, actor: actor)
 
   def notify({:ok, %Conversation{} = conv}, :update, actor),
     do: handle_notify(PubSub.ConversationUpdated, conv, actor: actor)
@@ -290,5 +312,7 @@ defmodule Core.Services.Conversations do
     do: handle_notify(PubSub.ParticipantDeleted, part, actor: actor)
   def notify({:ok, %Message{} = msg}, :delete, actor),
     do: handle_notify(PubSub.MessageDeleted, msg, actor: actor)
+  def notify({:ok, %PinnedMessage{} = pin}, :delete, actor),
+    do: handle_notify(PubSub.PinnedMessageDeleted, pin, actor: actor)
   def notify(error, _, _), do: error
 end

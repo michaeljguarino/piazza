@@ -182,14 +182,16 @@ defmodule Core.Schema.ConversationMutationsTest do
       {:ok, %{data: %{"pinMessage" => result}}} = run_query("""
         mutation  PinMessage($messageId: ID!, $pinned: Boolean!) {
           pinMessage(messageId: $messageId, pinned: $pinned) {
-            id
-            pinnedAt
+            message {
+              id
+              pinnedAt
+            }
           }
         }
       """, %{"messageId" => msg.id, "pinned" => true}, %{current_user: user})
 
-      assert result["id"] == msg.id
-      assert result["pinnedAt"]
+      assert result["message"]["id"] == msg.id
+      assert result["message"]["pinnedAt"]
     end
   end
 

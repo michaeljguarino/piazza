@@ -184,7 +184,7 @@ defmodule Core.Schema do
       resolve safe_resolver(&Conversation.delete_message/2)
     end
 
-    field :pin_message, :message do
+    field :pin_message, :pinned_message do
       middleware Core.Schemas.Authenticated
       arg :message_id, non_null(:id)
       arg :pinned, non_null(:boolean)
@@ -288,6 +288,14 @@ defmodule Core.Schema do
           Conversation.authorize_subscription(id, user, "participants:#{id}")
         _, %{context: %{current_user: %{id: id}}} ->
           {:ok, topic: "participants:mine:#{id}"}
+      end
+    end
+
+    field :pinned_message_delta, :pinned_message_delta do
+      arg :conversation_id, :id
+      config fn
+        %{conversation_id: id}, %{context: %{current_user: user}} ->
+          Conversation.authorize_subscription(id, user, "pinned_messages:#{id}")
       end
     end
 
