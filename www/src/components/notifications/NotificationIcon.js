@@ -1,10 +1,10 @@
 import React, {useState} from 'react'
 import {Box, Stack, Text} from 'grommet'
-import {Query} from 'react-apollo'
+import {Query, Mutation} from 'react-apollo'
 import {Notification} from 'grommet-icons'
 import Dropdown from '../utils/Dropdown'
 import NotificationList from './NotificationList'
-import {NOTIFICATIONS_Q, NEW_NOTIFICATIONS_SUB} from './queries'
+import {NOTIFICATIONS_Q, NEW_NOTIFICATIONS_SUB, VIEW_NOTIFICATIONS} from './queries'
 
 async function _subscribeToNewNotifications(subscribeToMore, unseen, setUnseen) {
   subscribeToMore({
@@ -47,34 +47,44 @@ function NotificationIcon(props) {
           let pageInfo = data.notifications.pageInfo
           _subscribeToNewNotifications(subscribeToMore, unseen, setUnseen)
           return (
-            <Dropdown>
-              <Stack anchor="top-right" style={{cursor: 'pointer'}}>
-                <Notification size='25px' color={color} />
-                {(unseen && unseen > 0) ?
-                  <Box
-                    background="brand"
-                    align='center'
-                    justify='center'
-                    height='15px'
-                    width='15px'
-                    round
-                  >
-                    <Text size='10px'>{unseen}</Text>
-                  </Box> : <span></span>
-                }
-              </Stack>
-              <Box pad='small' align='center' justify='center' width='300px'>
-                <NotificationList
-                  setUnseen={setUnseen}
-                  edges={edges}
-                  fetchMore={fetchMore}
-                  pageInfo={pageInfo}
-                  {...props}
-                  />
-              </Box>
-            </Dropdown>
-          )
-        }}
+            <Mutation mutation={VIEW_NOTIFICATIONS} update={(cache, {data: {viewNotifications}}) => {
+              const {notifications} = cache.readQuery({ query: NOTIFICATIONS_Q });
+              cache.writeQuery({
+                query: NOTIFICATIONS_Q,
+                data: {notifications: {...notifications, edges: []}}
+              });
+              setUnseen(0)
+            }}>
+            {mutation => (
+              <Dropdown onClose={mutation}>
+                <Stack anchor="top-right" style={{cursor: 'pointer'}}>
+                  <Notification size='25px' color={color} />
+                  {(unseen && unseen > 0) ?
+                    <Box
+                      background="brand"
+                      align='center'
+                      justify='center'
+                      height='15px'
+                      width='15px'
+                      round
+                    >
+                      <Text size='10px'>{unseen}</Text>
+                    </Box> : <span></span>
+                  }
+                </Stack>
+                <Box pad='small' align='center' justify='center' width='300px'>
+                  <NotificationList
+                    setUnseen={setUnseen}
+                    edges={edges}
+                    fetchMore={fetchMore}
+                    pageInfo={pageInfo}
+                    {...props}
+                    />
+                </Box>
+              </Dropdown>
+          )}
+          </Mutation>
+        )}}
       </Query>
     </Box>
   )

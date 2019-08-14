@@ -149,15 +149,16 @@ function MessageControls(props) {
         <More color={hovered ? 'accent-1' : null} size='15px'  />
       </Box>
       {moreOpen && (
-          <Drop
-            target={dropRef.current}
-            align={{top: 'bottom'}}
-            onClickOutside={() => toggleOpen(false)}
-            onEsc={() => toggleOpen(false)}>
-            <Box pad='small'>
-              <DeleteMessage {...props} />
-            </Box>
-          </Drop>
+        <Drop
+          target={dropRef.current}
+          align={{top: 'bottom'}}
+          margin={{top: '4px'}}
+          onClickOutside={() => toggleOpen(false)}
+          onEsc={() => toggleOpen(false)}>
+          <Box pad='small'>
+            <DeleteMessage {...props} />
+          </Box>
+        </Drop>
         )}
     </Box>
   )

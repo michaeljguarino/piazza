@@ -18,8 +18,12 @@ function Dropdown(props) {
       {open && (
         <Drop
           align={props.align || { top: "bottom"}}
+          margin={{top: '5px'}}
           target={targetRef.current}
-          onClickOutside={() => setOpen(false)}
+          onClickOutside={() => {
+            props.onClose && props.onClose()
+            setOpen(false)
+          }}
           onEsc={() => setOpen(false)}
         >
           {rest}

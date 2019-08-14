@@ -1,8 +1,5 @@
 import React from 'react'
-import {Mutation} from 'react-apollo'
-import {Box, Button} from 'grommet'
 import Scroller from '../utils/Scroller'
-import {NOTIFICATIONS_Q, VIEW_NOTIFICATIONS} from './queries'
 import Notification from './Notification'
 import {mergeAppend} from '../../utils/array'
 
@@ -40,27 +37,6 @@ function NotificationList(props) {
             }
           })}}
       />
-      {props.edges.length > 0 &&
-        <Mutation mutation={VIEW_NOTIFICATIONS} update={(cache, {data: {viewNotifications}}) => {
-          const {notifications} = cache.readQuery({ query: NOTIFICATIONS_Q });
-          cache.writeQuery({
-            query: NOTIFICATIONS_Q,
-            data: {
-              notifications: {
-                ...notifications,
-                edges: [],
-              }
-            }
-          });
-          props.setUnseen(0)
-        }}>
-          {mutation => (
-            <Box margin={{top: '10px'}} pad={{left: 'medium', right: 'medium'}}>
-              <Button fill={false} style={{lineHeight: '12px'}} onClick={mutation} primary label='Mark read' />
-            </Box>
-          )}
-        </Mutation>
-      }
     </span>
   )
 }

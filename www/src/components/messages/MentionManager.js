@@ -11,7 +11,7 @@ import data from 'emoji-mart/data/messenger.json'
 import { emojiIndex, NimblePicker } from 'emoji-mart'
 
 
-function fetchUsers(client, query, callback) {
+export function fetchUsers(client, query, callback) {
   if (!query) return
 
   client.query({

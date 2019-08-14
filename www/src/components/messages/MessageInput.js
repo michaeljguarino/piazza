@@ -46,7 +46,6 @@ function HelpDoc(props) {
 class MessageInput extends Component {
   state = {
     text: '',
-    hover: false,
     typists: []
   }
 
@@ -82,7 +81,7 @@ class MessageInput extends Component {
 
   render() {
     this.setupChannel()
-    const { text, attachment, hover } = this.state
+    const { text, attachment } = this.state
     return (
       <Box fill='horizontal' pad={{top: '10px', right: '10px', left: '10px'}}>
         <Mutation
@@ -130,19 +129,6 @@ class MessageInput extends Component {
                   this.notifyTyping()
                   this.setState({ text: text })
                 }} />
-              <Box
-                background={hover ? '#001a0c' : SEND_COLOR}
-                direction="row"
-                align="center"
-                justify="center"
-                style={{cursor: "pointer"}}
-                width="100px"
-                height="40px"
-                onMouseOver={() => this.setState({hover: true})}
-                onMouseOut={() => this.setState({hover: false})}
-                onClick={postMutation}>
-                <Text size="medium">Send</Text>
-              </Box>
             </Box>
           </Form>
           )

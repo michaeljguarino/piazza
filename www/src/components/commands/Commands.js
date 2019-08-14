@@ -18,7 +18,9 @@ function Commands(props) {
       style={{cursor: 'pointer'}}
       align='center'
       justify='center'>
-      <Flyout target={<Code color={color} size='25px' />}>
+      <Flyout
+        target={<Code color={color} size='25px' />}
+        onOpen={() => setHover(false)}>
       {setOpen => (
         <Box>
           <FlyoutHeader text='Commands' />

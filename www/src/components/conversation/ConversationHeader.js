@@ -1,7 +1,7 @@
 import React, {useState} from 'react'
 import {Mutation} from 'react-apollo'
 import {Box, Text, Markdown, Anchor} from 'grommet'
-import {SettingsOption} from 'grommet-icons'
+import {Down} from 'grommet-icons'
 import CloseableDropdown from '../utils/CloseableDropdown'
 import Modal from '../utils/Modal'
 import {UPDATE_CONVERSATION, CONVERSATIONS_Q, UPDATE_PARTICIPANT, DELETE_PARTICIPANT} from './queries'
@@ -77,52 +77,62 @@ function ConversationUpdate(props) {
   )
 }
 
-function NotificationsSettingsUpdate(props) {
+function ConversationName(props) {
+  const [hover, setHover] = useState(false)
+  const color = hover ? 'accent-1' : null
+  return (
+    <Text
+      ref={props}
+      onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}
+      style={{cursor: "pointer"}}
+      weight='bold'
+      margin={{bottom: '5px'}}
+      color={color}>
+      # {props.conversation.name} <Down color={color} size='12px'/>
+    </Text>
+  )
+}
+
+function ConversationDropdown(props) {
   const currentParticipant = props.conversation.currentParticipant || {}
   const [preferences, setPreferences] = useState(currentParticipant.notificationPreferences || DEFAULT_PREFS)
-  const [hover, setHover] = useState(false)
   const variables = {
     conversationId: props.conversation.id,
     userId: props.me.id,
     prefs: pick(preferences, ['mention', 'message', 'participant'])
   }
-  const color = hover ? 'accent-1' : null
 
   return (
-    <Box
-      onMouseEnter={() => setHover(true)}
-      onMouseLeave={() => setHover(false)}
-      style={{cursor: 'pointer'}}
-      width='50px'
-      align='center'
-      justify='center'>
-      <CloseableDropdown target={<SettingsOption color={color} size='25px' />}>
-        {setOpen => (
-          <Box gap='small' pad='small'>
-          <Mutation mutation={UPDATE_PARTICIPANT} variables={variables}>
-          {mutation => (
-            <NotificationsPreferences
-              vars={variables}
-              preferences={preferences}
-              setPreferences={setPreferences}
-              mutation={mutation} />
-          )}
-          </Mutation>
-          <Box pad='small' border='top'>
-            <Mutation
-              mutation={DELETE_PARTICIPANT}
-              variables={{conversationId: props.conversation.id, userId: props.me.id}}
-              update={(cache, {data: {deleteParticipant}}) => {
-                setOpen(false)
-                removeConversation(cache, deleteParticipant.conversationId, props.setCurrentConversation)
-              }}>
-            {mutation => (<Anchor onClick={mutation}>Leave conversation</Anchor>)}
-            </Mutation>
-          </Box>
-        </Box>
+    <CloseableDropdown
+      dropProps={{stretch: false}}
+      style={{marginBottom: '5px'}}
+      align={{left: 'left', top: "bottom"}}
+      target={<ConversationName conversation={props.conversation} />}>
+      {setOpen => (
+      <Box gap='small' pad='small' width='230px' round='small'>
+        <Mutation mutation={UPDATE_PARTICIPANT} variables={variables}>
+        {mutation => (
+          <NotificationsPreferences
+            vars={variables}
+            preferences={preferences}
+            setPreferences={setPreferences}
+            mutation={mutation} />
         )}
-      </CloseableDropdown>
-    </Box>
+        </Mutation>
+        <Box pad='small' border='top'>
+          <Mutation
+            mutation={DELETE_PARTICIPANT}
+            variables={{conversationId: props.conversation.id, userId: props.me.id}}
+            update={(cache, {data: {deleteParticipant}}) => {
+              setOpen(false)
+              removeConversation(cache, deleteParticipant.conversationId, props.setCurrentConversation)
+            }}>
+          {mutation => (<Anchor onClick={mutation}>Leave conversation</Anchor>)}
+          </Mutation>
+        </Box>
+      </Box>
+      )}
+    </CloseableDropdown>
   )
 }
 
@@ -130,7 +140,9 @@ function ConversationHeader(props) {
   return (
     <Box direction='row' border='bottom' pad={{left: '20px', top: '7px', bottom: '7px'}}>
       <Box fill='horizontal' direction='column'>
-        <Text weight='bold' margin={{bottom: '5px'}}># {props.conversation.name}</Text>
+        <CurrentUserContext.Consumer>
+        {me => (<ConversationDropdown me={me} {...props} />)}
+        </CurrentUserContext.Consumer>
         <Box height='25px' direction='row' align='end' justify='start' pad={{top: '5px', bottom: '5px'}}>
           <Participants {...props} />
           <PinnedMessages {...props}  />
@@ -139,9 +151,6 @@ function ConversationHeader(props) {
           </Box>
         </Box>
       </Box>
-      <CurrentUserContext.Consumer>
-      {me => (<NotificationsSettingsUpdate me={me} {...props} />)}
-      </CurrentUserContext.Consumer>
       <Commands />
       <CurrentUserContext.Consumer>
       {me => (<NotificationIcon me={me} {...props} />)}

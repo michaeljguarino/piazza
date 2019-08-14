@@ -1,61 +1,13 @@
 import React, {createRef} from 'react'
-import {Query, Mutation} from 'react-apollo'
-import {TextInput, Drop, Box, Button, Text} from 'grommet'
-import {Search, Trash} from 'grommet-icons'
+import {Mutation, ApolloConsumer} from 'react-apollo'
+import {Box, Anchor, Text} from 'grommet'
 import debounce from 'lodash/debounce';
 import {CREATE_PARTICIPANTS, PARTICIPANTS_Q} from './queries'
-import {SEARCH_USERS} from '../messages/queries'
-import UserListEntry from '../users/UserListEntry'
+import TagInput from '../utils/TagInput'
 import {mergeAppend} from '../../utils/array'
-
-
-function ParticipantSuggestions(props) {
-  if (props.q.length === 0 || !props.open)
-      return (<span></span>)
-
-  return (
-    <Query query={SEARCH_USERS} variables={{name: props.q}}>
-      {({data, loading}) => {
-        if (loading) return (<span></span>)
-
-        return (
-          <Drop
-            align={{ top: "bottom"}}
-            target={props.targetRef.current}
-            onClickOutside={() => props.setOpen(false)}
-            onEsc={() => props.setOpen(false)}
-          >
-            <Box pad='small' gap='xsmall'>
-              {data.searchUsers.edges.map((e) => (
-                <Box onClick={() => {
-                  props.clearValue()
-                  props.setOpen(false)
-                  props.addParticipant(e.node)
-                }}>
-                  <UserListEntry
-                    key={e.node.id}
-                    user={e.node} />
-                </Box>
-              ))}
-            </Box>
-          </Drop>
-        )
-      }}
-    </Query>
-  )
-}
-
-function ParticipantInviteRow(props) {
-  return (
-    <Box direction='row' justify='end' align='center' pad={{left: '10px', right: '10px'}}>
-      <Box width='100%'><UserListEntry user={props.user} /></Box>
-      <Trash style={{cursor: 'pointer'}} onClick={() => props.removeParticipant(props.user)} size='15px' />
-    </Box>
-  )
-}
+import {fetchUsers} from '../messages/MentionManager'
 
 function ParticipantInviteButton(props) {
-  const handles = props.participants.map((u) => u.handle)
   return (
     <Mutation
       mutation={CREATE_PARTICIPANTS}
@@ -81,12 +33,14 @@ function ParticipantInviteButton(props) {
       }}>
       {mutation => (
         <Text size='small'>
-          <Button label="Invite all" onClick={() => mutation({
+          <Anchor onClick={() => mutation({
             variables: {
-              handles: handles,
+              handles: props.participants,
               conversationId: props.conversation.id
             }
-          })} />
+          })}>
+            Invite all
+          </Anchor>
         </Text>
       )}
     </Mutation>
@@ -95,10 +49,29 @@ function ParticipantInviteButton(props) {
 
 
 class ParticipantInvite extends React.Component {
-  state = { value: "", q: "", open: false, participants: [] }
+  state = { value: "", q: "", open: false, participants: [], suggestions: [] }
   boxRef = createRef()
 
   renderSuggestions = debounce(() => {this.setState({...this.state, q: this.state.value})}, 200)
+
+  onRemoveTag = tag => {
+    const { participants } = this.state;
+    this.setState({
+      participants: participants.filter((t) => t !== tag)
+    });
+  };
+
+  onAddTag = tag => {
+    const { participants } = this.state;
+    this.setState({
+      participants: [...participants, tag.value], suggestions: []
+    });
+  };
+
+  setSuggestions = (suggestions) => {
+    this.setState({suggestions: suggestions})
+  }
+
   addParticipant = (user) => {
     if (this.state.participants.find((u) => u.id === user.id)) return
 
@@ -115,56 +88,30 @@ class ParticipantInvite extends React.Component {
 
   render() {
     return (
-      <Box>
-        <Box
-          height='30px'
-          fill='horizontal'
-          pad={{right: '10px', left: '10px'}}
-          margin={{bottom: 'small'}}
-        >
-          <Box
-            ref={this.boxRef}
-            direction='row'
-            align='center'
-            round="xsmall"
-            placeholder='search for conversa'
-            pad={{left: '10px', right: '10px'}}
-            border={{side: "all", color: "border"}}>
-            <Search size='15px' />
-            <TextInput
-              type="search"
-              plain
-              value={this.state.value}
-              onChange={(event) => {
-                this.setState({value: event.target.value, open: true })
-                this.renderSuggestions()
-              }}
-            />
-            <ParticipantSuggestions
-              q={this.state.q}
-              setOpen={(open) => this.setState({...this.state, open: open})}
-              clearValue={() => this.setState({...this.state, value: ''})}
-              targetRef={this.boxRef}
-              open={this.state.open}
-              addParticipant={this.addParticipant}
-              {...this.props}
-            />
+      <ApolloConsumer>
+      {client => (
+        <Box pad={{left: 'small', right: 'small'}}>
+          <TagInput
+            placeholder="Search for users by handle..."
+            suggestions={this.state.suggestions}
+            value={this.state.participants}
+            onRemove={this.onRemoveTag}
+            onAdd={this.onAddTag}
+            onChange={({ target: { value } }) => fetchUsers(client, value, this.setSuggestions)}
+          />
+          <Box>
+            {this.state.participants.length > 0 && (
+              <Box pad='small'>
+                <ParticipantInviteButton
+                  participants={this.state.participants}
+                  conversation={this.props.conversation}
+                  close={() => this.setState({ value: "", q: "", open: false, participants: [] })} />
+              </Box>
+            )}
           </Box>
         </Box>
-        <Box gap='xsmall'>
-          {this.state.participants.map((user) => (
-            <ParticipantInviteRow key={user.id} user={user} removeParticipant={this.removeParticipant} />
-          ))}
-          {this.state.participants.length > 0 && (
-            <Box pad='small' width='50%'>
-              <ParticipantInviteButton
-                participants={this.state.participants}
-                conversation={this.props.conversation}
-                close={() => this.setState({ value: "", q: "", open: false, participants: [] })} />
-            </Box>
-          )}
-        </Box>
-      </Box>
+      )}
+      </ApolloConsumer>
     )
   }
 }

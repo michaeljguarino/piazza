@@ -1,6 +1,6 @@
 import React, {useState} from 'react'
 import {Box, Text, Markdown, Stack} from 'grommet'
-import {Robot, Pin} from 'grommet-icons'
+import {Pin} from 'grommet-icons'
 import Avatar from '../users/Avatar'
 import moment from 'moment'
 import MessageEmbed from './MessageEmbed'
@@ -8,6 +8,7 @@ import UserHandle from '../users/UserHandle'
 import MessageControls from './MessageControls'
 import MessageReactions from './MessageReactions'
 import PresenceIndicator from '../users/PresenceIndicator'
+import BotIcon from '../utils/BotIcon'
 import WithPresence from '../utils/presence'
 import FileIcon, { defaultStyles } from 'react-file-icon'
 
@@ -90,7 +91,7 @@ function MessageBody(props) {
               {props.message.creator.name}
             </Text>
             {props.message.creator.bot && (
-              <Text margin={{right: '5px'}}><Robot size='15px'/></Text>
+              <BotIcon />
             )}
             {props.message.pinnedAt && (
               <Text margin={{right: '5px'}}><Pin size='15px'/></Text>
