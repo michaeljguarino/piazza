@@ -64,6 +64,17 @@ defmodule Core.Schemas.Types do
       end
     end
 
+    field :unread_notifications, :integer do
+      resolve fn conversation, _, %{context: %{loader: loader, current_user: user}} ->
+        queryable = {:one, Core.Models.Conversation}
+        loader
+        |> Dataloader.load(Conversation, queryable, unread_notifications: {user, conversation})
+        |> on_load(fn loader ->
+          {:ok, Dataloader.get(loader, Conversation, queryable, unread_notifications: {user, conversation})}
+        end)
+      end
+    end
+
     field :participant_count, :integer do
       resolve fn conversation, _, %{context: %{loader: loader}} ->
         queryable = {:one, Core.Models.Conversation}

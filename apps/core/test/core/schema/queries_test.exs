@@ -280,6 +280,37 @@ defmodule Core.Schema.QueriesTest do
       assert conversations[second.id]["unreadMessages"] == 3
     end
 
+    test "It will sideload unread notifications" do
+      user = insert(:user)
+      %{conversation: first} = insert(:participant, user: user)
+      %{conversation: second} = insert(:participant, user: user)
+      insert_list(2, :notification, user: user, message: insert(:message, conversation: first))
+      insert_list(3, :notification, user: user, message: insert(:message, conversation: second))
+      insert_list(2, :notification, message: insert(:message, conversation: first), seen_at: DateTime.utc_now())
+
+      {:ok, %{data: %{"conversations" => found}}} = run_query("""
+        query Conversations($conversationCount: Int!) {
+          conversations(first: $conversationCount) {
+            pageInfo {
+              hasPreviousPage
+              hasNextPage
+            }
+            edges {
+              node {
+                id
+                name
+                unreadNotifications
+              }
+            }
+          }
+        }
+      """, %{"conversationCount" => 2}, %{current_user: user})
+
+      conversations = from_connection(found) |> by_ids()
+      assert conversations[first.id]["unreadNotifications"] == 2
+      assert conversations[second.id]["unreadNotifications"] == 3
+    end
+
     test "It will sideload participant counts" do
       user = insert(:user)
       %{conversation: first} = insert(:participant, user: user)

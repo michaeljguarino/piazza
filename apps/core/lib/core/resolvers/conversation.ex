@@ -18,6 +18,7 @@ defmodule Core.Resolvers.Conversation do
   def query(MessageEntity, _args), do: MessageEntity
   def query(MessageReaction, _args), do: MessageReaction
   def query(:unread_messages, _), do: Conversation.any()
+  def query(:unread_notifications, _), do: Conversation.any()
 
   def query(_, %{public: true, current_user: user}) do
     Conversation.public()
@@ -29,6 +30,17 @@ defmodule Core.Resolvers.Conversation do
   end
   def query(_, %{current_user: user}), do: Conversation.for_user(user.id)
 
+  def run_batch(_, _, :unread_notifications, args, repo_opts) do
+    [{%{id: user_id}, _} | _] = args
+    conversation_ids = Enum.map(args, fn {_, %{id: id}} -> id end)
+    result =
+      Conversation.for_ids(conversation_ids)
+      |> Conversation.unread_notification_count(user_id)
+      |> Core.Repo.all(repo_opts)
+      |> Map.new()
+
+    Enum.map(conversation_ids, & [Map.get(result, &1, 0)])
+  end
   def run_batch(_, _, :unread_messages, args, repo_opts) do
     [{%{id: user_id}, _} | _] = args
     conversation_ids = Enum.map(args, fn {_, %{id: id}} -> id end)

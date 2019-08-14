@@ -1,6 +1,6 @@
 defmodule Core.Models.Conversation do
   use Core.DB.Schema
-  alias Core.Models.{Participant, Message, User}
+  alias Core.Models.{Participant, Message, User, Notification}
 
   schema "conversations" do
     field :name,            :string
@@ -50,6 +50,16 @@ defmodule Core.Models.Conversation do
       group_by: c.id,
       select: {c.id, count(m.id)}
     )
+  end
+
+  def unread_notification_count(query \\ __MODULE__, user_id) do
+    from(c in query,
+      left_join: m in assoc(c, :messages),
+      left_join: n in ^Notification.for_user(user_id),
+        on: n.message_id == m.id,
+      where: is_nil(n.seen_at),
+      group_by: c.id,
+      select: {c.id, count(n.id)})
   end
 
   def participant_count(query \\ __MODULE__) do
