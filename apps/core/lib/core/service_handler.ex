@@ -1,5 +1,5 @@
 defmodule Core.ServiceHandler do
-  @behaviour Thrift.Generated.Service.Handler
+  @behaviour Thrift.Generated.GqlService.Handler
   alias Thrift.Generated.PingParticipant
   alias Core.Services
   alias Core.Models.{Conversation, User}

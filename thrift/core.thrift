@@ -9,7 +9,7 @@ struct PubSubEvent {
   1: string event;
 }
 
-service Service {
+service GqlService {
   bool pingParticipant(PingParticipant request)
 }
 

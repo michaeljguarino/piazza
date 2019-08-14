@@ -2,7 +2,7 @@ defmodule Gql.Application do
   # See https://hexdocs.pm/elixir/Application.html
   # for more information on OTP Applications
   @moduledoc false
-  alias Thrift.Generated.Service.Binary.Framed.Server
+  alias Thrift.Generated.GqlService.Binary.Framed.Server
   use Application
 
   def start(_type, _args) do

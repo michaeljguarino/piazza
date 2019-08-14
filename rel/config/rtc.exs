@@ -6,7 +6,7 @@ config :rtc, RtcWeb.Endpoint,
 
 config :libcluster,
   topologies: [
-    k8s_example: [
+    rtc: [
       strategy: Cluster.Strategy.Kubernetes,
       config: [
         mode: :ip,

@@ -1,7 +1,7 @@
 defmodule Core.Services.Conversations do
   use Core.Services.Base
   alias Core.PubSub
-  alias Core.Services.{Messages, Users}
+  alias Core.Services.{Messages, Users, Notifications}
   alias Core.Models.{
     Conversation,
     Message,
@@ -38,8 +38,16 @@ defmodule Core.Services.Conversations do
     end
   end
 
-  def bump_last_seen(conversation_id, user),
-    do: upsert_participant(conversation_id, %{last_seen_at: DateTime.utc_now()}, user)
+  def bump_last_seen(conversation_id, user) do
+    start_transaction()
+    |> add_operation(:participant, fn _ ->
+      upsert_participant(conversation_id, %{last_seen_at: DateTime.utc_now()}, user)
+    end)
+    |> add_operation(:notifs, fn _ ->
+      Notifications.view_notifications(conversation_id, user)
+    end)
+    |> execute(extract: :participant)
+  end
 
   defp upsert_participant(conversation_id, attrs, %User{id: uid} = user) do
     participant = get_participant(uid, conversation_id)

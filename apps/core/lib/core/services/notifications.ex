@@ -3,12 +3,24 @@ defmodule Core.Services.Notifications do
   alias Core.Models.Notification
 
   def view_notifications(user) do
-    Notification.for_user(user.id)
+    update_for_user(user.id)
+    |> elem(1)
+    |> ok()
+  end
+
+  def view_notifications(conversation_id, user) do
+    Notification.for_conversation(conversation_id)
+    |> update_for_user(user.id)
+    |> elem(1)
+    |> ok()
+  end
+
+  def update_for_user(query \\ Notification, user_id) do
+    query
+    |> Notification.for_user(user_id)
     |> Notification.unseen()
     |> Notification.selected()
     |> Core.Repo.update_all([set: [seen_at: DateTime.utc_now()]])
-    |> elem(1)
-    |> ok()
   end
 
   def unseen_count(user) do

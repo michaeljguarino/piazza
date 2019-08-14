@@ -261,6 +261,19 @@ defmodule Core.Services.ConversationsTest do
 
       assert updated.last_seen_at
     end
+
+    test "it will mark notifications as viewed" do
+      user         = insert(:user)
+      conversation = insert(:conversation)
+      notifs       = insert_list(2, :notification, user: user, message: insert(:message, conversation: conversation))
+
+      {:ok, updated} = Conversations.bump_last_seen(conversation.id, user)
+
+      assert updated.last_seen_at
+
+      for notif <- notifs,
+        do: assert refetch(notif).seen_at
+    end
   end
 
   describe "#create_participant/2" do

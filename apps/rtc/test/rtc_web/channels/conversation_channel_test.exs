@@ -1,12 +1,13 @@
 defmodule RtcWeb.ConversationChannelTest do
   use RtcWeb.ChannelCase, async: false
   alias Core.Services.Conversations
-  alias Thrift.Generated.Service.Binary.Framed.Client
+  alias Thrift.Generated.GqlService.Binary.Framed.Client
   import Mock
 
   describe "presence" do
     test "participants can join a conversation channel" do
       with_mock Client, [
+        start_link: fn _, _ -> {:ok, :dummy} end,
         ping_participant: fn _, _ -> :ok end
       ] do
         user = insert(:user)
@@ -19,6 +20,7 @@ defmodule RtcWeb.ConversationChannelTest do
 
     test "nonparticipants cannot join" do
       with_mock Client, [
+        start_link: fn _, _ -> {:ok, :dummy} end,
         ping_participant: fn _, _ -> :ok end
       ] do
         user = insert(:user)
@@ -32,6 +34,7 @@ defmodule RtcWeb.ConversationChannelTest do
   describe "typing" do
     test "it will broadcast the handle to all clients" do
       with_mock Client, [
+        start_link: fn _, _ -> {:ok, :dummy} end,
         ping_participant: fn _, _ -> :ok end
       ] do
         user = insert(:user)

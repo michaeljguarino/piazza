@@ -8,6 +8,7 @@ export const ConversationFragment = gql`
     public
     topic
     unreadMessages
+    unreadNotifications
     currentParticipant {
       notificationPreferences {
         mention

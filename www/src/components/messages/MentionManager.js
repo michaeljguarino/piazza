@@ -136,7 +136,6 @@ function EmojiTarget(props) {
 function MentionManager(props) {
   const dropRef = useRef()
   const emojiRef = useRef()
-  const [text, setText] = useState(props.text || '')
   const [suggestionState, setSuggestionState] = useState(DEFAULT_SUGGESTIONS_STATE)
   const [emojiPicker, setEmojiPicker] = useState(false)
 
@@ -148,17 +147,17 @@ function MentionManager(props) {
           ref={dropRef}
           plain
           dropTarget={dropRef.current}
-          value={text}
+          value={props.text}
           suggestions={suggestionState.suggestions}
           onSelect={(event) => {
             let selection = event.suggestion.value
-            let result = replaceText(selection, text, suggestionState.regex, suggestionState.transformer)
-            setText(result)
+            let result = replaceText(selection, props.text, suggestionState.regex, suggestionState.transformer)
+            props.setText(result)
             props.onChange(result)
           }}
           onChange={e => {
             const text = e.target.value
-            setText(text)
+            props.setText(text)
             validateRegexes(client, text, setSuggestionState)
             props.onChange(text)
           }}
@@ -175,7 +174,7 @@ function MentionManager(props) {
             <NimblePicker
               data={data}
               onSelect={(emoji) => {
-                setText(text + ' ' + emoji.native)
+                props.setText(props.text + ' ' + emoji.native)
               }} />
           </Drop>
         )}

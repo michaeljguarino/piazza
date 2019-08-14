@@ -5,6 +5,7 @@ import {Notification} from 'grommet-icons'
 import Dropdown from '../utils/Dropdown'
 import NotificationList from './NotificationList'
 import {NOTIFICATIONS_Q, NEW_NOTIFICATIONS_SUB, VIEW_NOTIFICATIONS} from './queries'
+import {updateConversations} from '../conversation/utils'
 
 async function _subscribeToNewNotifications(subscribeToMore, unseen, setUnseen) {
   subscribeToMore({
@@ -53,6 +54,7 @@ function NotificationIcon(props) {
                 query: NOTIFICATIONS_Q,
                 data: {notifications: {...notifications, edges: []}}
               });
+              updateConversations(cache, () => true, (e) => ({...e, node: {...e.node, unreadNotifications: 0}}))
               setUnseen(0)
             }}>
             {mutation => (

@@ -2,8 +2,8 @@ import React from 'react'
 import {Box, Text, Image, Anchor} from 'grommet'
 
 function dimensions(props) {
-  let width = props.width || '200px'
-  let height = props.height || '200px'
+  let width = props.width || '100px'
+  let height = props.height || '100px'
   return {width, height}
 }
 

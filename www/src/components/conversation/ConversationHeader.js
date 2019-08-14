@@ -82,7 +82,6 @@ function ConversationName(props) {
   const color = hover ? 'accent-1' : null
   return (
     <Text
-      ref={props}
       onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}
       style={{cursor: "pointer"}}
       weight='bold'

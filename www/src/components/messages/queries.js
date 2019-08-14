@@ -53,9 +53,7 @@ export const DELETE_MESSAGE = gql`
 export const CREATE_REACTION = gql`
   mutation CreateReaction($messageId: ID!, $name: String!) {
     createReaction(messageId: $messageId, name: $name) {
-      message {
-        ...MessageFragment
-      }
+      ...MessageFragment
     }
   }
   ${MessageFragment}
@@ -64,9 +62,7 @@ export const CREATE_REACTION = gql`
 export const DELETE_REACTION = gql`
   mutation DeleteReaction($messageId: ID!, $name: String!) {
     deleteReaction(messageId: $messageId, name: $name) {
-      message {
-        ...MessageFragment
-      }
+      ...MessageFragment
     }
   }
   ${MessageFragment}

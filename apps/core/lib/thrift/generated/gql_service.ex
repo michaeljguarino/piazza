@@ -1,4 +1,4 @@
-defmodule(Thrift.Generated.Service) do
+defmodule(Thrift.Generated.GqlService) do
   @moduledoc(false)
   defmodule(PingParticipantArgs) do
     @moduledoc(false)
@@ -133,13 +133,13 @@ defmodule(Thrift.Generated.Service) do
       ServerImpl.start_link(__MODULE__, port, handler_module, opts)
     end
     def(handle_thrift("pingParticipant", binary_data, handler_module)) do
-      case(Elixir.Thrift.Generated.Service.PingParticipantArgs.BinaryProtocol.deserialize(binary_data)) do
-        {%Thrift.Generated.Service.PingParticipantArgs{request: request}, ""} ->
+      case(Elixir.Thrift.Generated.GqlService.PingParticipantArgs.BinaryProtocol.deserialize(binary_data)) do
+        {%Thrift.Generated.GqlService.PingParticipantArgs{request: request}, ""} ->
           try do
             rsp = handler_module.ping_participant(request)
             (
-              response = %Thrift.Generated.Service.PingParticipantResponse{success: rsp}
-              {:reply, Elixir.Thrift.Generated.Service.PingParticipantResponse.BinaryProtocol.serialize(response)}
+              response = %Thrift.Generated.GqlService.PingParticipantResponse{success: rsp}
+              {:reply, Elixir.Thrift.Generated.GqlService.PingParticipantResponse.BinaryProtocol.serialize(response)}
             )
           rescue
             []

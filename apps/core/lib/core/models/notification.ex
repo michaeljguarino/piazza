@@ -20,6 +20,13 @@ defmodule Core.Models.Notification do
   def for_user(query \\ __MODULE__, user_id),
     do: from(n in query, where: n.user_id == ^user_id)
 
+  def for_conversation(query \\ __MODULE__, conversation_id) do
+    from(n in query,
+      join: m in assoc(n, :message),
+      where: m.conversation_id == ^conversation_id
+    )
+  end
+
   def unseen(query \\ __MODULE__),
     do: from(n in query, where: is_nil(n.seen_at))
 

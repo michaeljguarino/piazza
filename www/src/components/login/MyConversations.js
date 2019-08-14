@@ -2,7 +2,7 @@ import React, {useState} from 'react'
 import {Box} from 'grommet'
 import Loading from '../utils/Loading'
 import {Query, ApolloConsumer} from 'react-apollo'
-import {updateUnreadMessages, subscribeToNewConversations} from '../conversation/utils'
+import {subscribeToNewConversations, updateConversations} from '../conversation/utils'
 import {CONVERSATIONS_Q} from '../conversation/queries'
 
 const POLL_INTERVAL=30000
@@ -25,7 +25,9 @@ function MyConversations(props) {
         let current = currentConversation || data.conversations.edges[0].node
         const wrappedSetCurrentConversation = (conv) => {
           if (conv) {
-            updateUnreadMessages(client, conv.id, () => 0)
+            updateConversations(client, (e) => e.node.id === conv.id, (e) => (
+              {...e, node: {...e.node, unreadMessages: 0, unreadNotifications: 0}}
+            ))
           }
           setCurrentConversation(conv)
         }

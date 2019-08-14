@@ -57,7 +57,6 @@ class MessageInput extends Component {
     this.channel.join()
     this.cache = new TimedCache(2000, (handles) => this.setState({typists: handles}))
     this.channel.on("typing", (msg) => this.cache.add(msg.handle))
-    this.interval = setInterval(() => this.channel.push("ping", {who: "cares"}), 10000)
   }
 
   componentWillUnmount() {
@@ -99,7 +98,7 @@ class MessageInput extends Component {
         {postMutation => (
           <Form onSubmit={() => {
             postMutation()
-            this.setState({attachment: null})
+            this.setState({attachment: null, text: ''})
           }}>
             <Box
               fill='horizontal'
@@ -125,9 +124,10 @@ class MessageInput extends Component {
               </FilePicker>
               <MentionManager
                 parentRef={this.boxRef}
+                text={this.state.text}
+                setText={(text) => this.setState({ text: text })}
                 onChange={text => {
                   this.notifyTyping()
-                  this.setState({ text: text })
                 }} />
             </Box>
           </Form>

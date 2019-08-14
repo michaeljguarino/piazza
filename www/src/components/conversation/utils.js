@@ -5,16 +5,32 @@ export function updateUnreadMessages(client, conversationId, update) {
   const {conversations} = client.readQuery({ query: CONVERSATIONS_Q });
   let edge = conversations.edges.find((e) => e.node.id === conversationId)
   edge && (edge.node.unreadMessages = update(edge))
-  const newData = {
-    conversations: {
-      ...conversations,
-      edges: conversations.edges,
-  }}
 
   client.writeQuery({
     query: CONVERSATIONS_Q,
-    data: newData
+    data: {
+      conversations: {
+        ...conversations,
+        edges: conversations.edges,
+    }}
   });
+}
+
+export function updateConversations(client, conversationSelector, update) {
+  const {conversations} = client.readQuery({ query: CONVERSATIONS_Q })
+  const edges = conversations.edges.map((e) => {
+    if (conversationSelector(e)) return update(e)
+    return e
+  })
+
+  client.writeQuery({
+    query: CONVERSATIONS_Q,
+    data: {
+      conversations: {
+        ...conversations,
+        edges: edges,
+    }}
+  })
 }
 
 export function subscribeToNewConversations(subscribeToMore) {

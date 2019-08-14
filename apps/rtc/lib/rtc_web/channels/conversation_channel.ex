@@ -1,9 +1,9 @@
 defmodule RtcWeb.ConversationChannel do
   use RtcWeb, :channel
   alias Core.Services.Conversations
-  alias Thrift.Generated.Service.Binary.Framed.Client
   alias Thrift.Generated.PingParticipant
-  alias Rtc.GqlClient
+
+  @ping_interval 30_000
 
   def join("conversation:" <> id, _params, socket) do
     socket = assign(socket, :conversation_id, id)
@@ -15,6 +15,12 @@ defmodule RtcWeb.ConversationChannel do
 
   def handle_info(:after_join, socket) do
     ping(socket)
+    :timer.send_interval(@ping_interval, :ping)
+    {:noreply, socket}
+  end
+
+  def handle_info(:ping, socket) do
+    ping(socket)
     {:noreply, socket}
   end
   def handle_info(_, socket), do: {:noreply, socket}
@@ -25,12 +31,11 @@ defmodule RtcWeb.ConversationChannel do
   end
 
   def handle_in("ping", _, socket) do
-    ping(socket)
     {:reply, :ok, socket}
   end
 
   defp ping(socket) do
-    Client.ping_participant(GqlClient, %PingParticipant{
+    Rtc.GqlClient.rpc(:ping_participant, %PingParticipant{
       conversation_id: socket.assigns.conversation_id,
       user_id: socket.assigns.user.id
     })
