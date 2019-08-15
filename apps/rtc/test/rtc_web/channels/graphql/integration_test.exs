@@ -19,7 +19,7 @@ defmodule RtcWeb.Channels.IntegrationTest do
             }
           }
         }
-      """)
+      """, variables: %{})
 
       assert_reply(ref, :ok, _)
 

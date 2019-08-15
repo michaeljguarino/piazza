@@ -22,7 +22,8 @@ defmodule Piazza.MixProject do
     [
       {:ecto, "~> 3.1.7", override: true},
       {:distillery, "~> 2.1"},
-      {:plug_cowboy, "~> 2.0", override: true}
+      {:plug_cowboy, "~> 2.0", override: true},
+      {:absinthe, "~> 1.5.0-beta.1", git: "https://github.com/absinthe-graphql/absinthe.git", override: true},
     ]
   end
 

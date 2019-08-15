@@ -251,7 +251,7 @@ defmodule Core.Schemas.Types do
   end
 
   object :incoming_webhook do
-    field :secure_id
+    field :secure_id, :id
     field :name, :string
 
     field :bot, :user, resolve: dataloader(User)

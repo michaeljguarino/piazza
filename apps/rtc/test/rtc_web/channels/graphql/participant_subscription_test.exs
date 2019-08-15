@@ -121,7 +121,7 @@ defmodule RtcWeb.Channels.ParticipantsubscriptionTest do
             }
           }
         }
-      """)
+      """, variables: %{})
 
       assert_reply(ref, :ok, %{subscriptionId: _})
 

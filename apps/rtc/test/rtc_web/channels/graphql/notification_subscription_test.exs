@@ -19,7 +19,7 @@ defmodule RtcWeb.Channels.NotificationSubscriptionTest do
             }
           }
         }
-      """)
+      """, variables: %{})
 
       assert_reply(ref, :ok, %{subscriptionId: _})
 
