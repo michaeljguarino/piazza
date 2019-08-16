@@ -10,6 +10,8 @@ import {CurrentUserContext} from '../login/EnsureLogin'
 import {MESSAGE_MUTATION, MESSAGES_Q} from './queries'
 import {applyNewMessage} from './utils'
 import MentionManager from './MentionManager'
+import { CircularProgressbar } from 'react-circular-progressbar';
+import 'react-circular-progressbar/dist/styles.css';
 
 
 const TEXT_SIZE='xsmall'
@@ -46,7 +48,9 @@ function HelpDoc(props) {
 class MessageInput extends Component {
   state = {
     text: '',
-    typists: []
+    typists: [],
+    uploadProgress: null,
+    useUpload: false
   }
 
   boxRef = createRef()
@@ -85,7 +89,16 @@ class MessageInput extends Component {
       <Box fill='horizontal' pad={{top: '10px', right: '10px', left: '10px'}}>
         <Mutation
             mutation={MESSAGE_MUTATION}
-            variables={{ conversationId: this.props.conversation.id, attributes: {text, attachment}}}
+            variables={{conversationId: this.props.conversation.id, attributes: {text, attachment}}}
+            context= {{
+              fetchOptions: {
+                useUpload: this.state.useUpload,
+                onProgress: (ev) => {
+                  this.setState({uploadProgress: Math.round((ev.loaded / ev.total) * 100)});
+                },
+                onAbortPossible: () => null
+              }
+            }}
             update={(cache, {data: {createMessage}}) => {
               const data = cache.readQuery({query: MESSAGES_Q, variables: {conversationId: this.props.conversation.id}})
               cache.writeQuery({
@@ -93,13 +106,14 @@ class MessageInput extends Component {
                 variables: {conversationId: this.props.conversation.id},
                 data: applyNewMessage(data, createMessage)
               })
+              this.setState({uploadProgress: null})
             }}
         >
         {postMutation => (
           <Form onSubmit={() => {
-            postMutation()
-            this.setState({attachment: null, text: ''})
-          }}>
+              postMutation()
+              this.setState({attachment: null, text: ''})
+            }}>
             <Box
               fill='horizontal'
               direction="row"
@@ -108,7 +122,7 @@ class MessageInput extends Component {
               round='xsmall'
             >
               <FilePicker
-                onChange={ (file) => this.setState({attachment: file})}
+                onChange={ (file) => this.setState({useUpload: true, attachment: file})}
                 maxSize={2000}
                 onError={(msg) => console.log(msg)}
               >
@@ -119,7 +133,10 @@ class MessageInput extends Component {
                   border="right"
                   height='40px'
                   width="40px">
-                  <Attachment color={this.state.attachment ? SEND_COLOR : null} size='15px' />
+                  {this.state.uploadProgress ?
+                    <CircularProgressbar value={this.state.uploadProgress} text={`${this.state.uploadProgress}%`} /> :
+                    <Attachment color={this.state.attachment ? SEND_COLOR : null} size='15px' />
+                  }
                 </Box>
               </FilePicker>
               <MentionManager
@@ -131,8 +148,7 @@ class MessageInput extends Component {
                 }} />
             </Box>
           </Form>
-          )
-        }
+        )}
         </Mutation>
         <Box align='center' direction='row' fill='horizontal'>
           <div style={{width: 'calc(100% - 600px)'}}>

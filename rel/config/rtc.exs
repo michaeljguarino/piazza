@@ -9,7 +9,7 @@ config :libcluster,
     rtc: [
       strategy: Cluster.Strategy.Kubernetes,
       config: [
-        mode: :ip,
+        mode: :dns,
         kubernetes_node_basename: "rtc",
         kubernetes_selector: "app=rtc",
         kubernetes_namespace: get_env("NAMESPACE"),

@@ -65,7 +65,8 @@ release :rtc do
     :runtime_tools,
     aquaduct: :permanent,
     core: :permanent,
-    rtc: :permanent
+    rtc: :permanent,
+    runtime_tools: :temporary
   ]
 end
 

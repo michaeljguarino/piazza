@@ -8,12 +8,14 @@ import {hasSubscription} from "@jumpn/utils-graphql";
 import {createAbsintheSocketLink} from "@absinthe/socket-apollo-link";
 import * as AbsintheSocket from "@absinthe/socket";
 import {Socket as PhoenixSocket} from "phoenix";
+import customFetch from './uploadLink'
 
 const GQL_URL='http://chat.piazzaapp.com/gql'
 const WS_URI='ws://chat.piazzaapp.com/socket'
 
 const httpLink = createLink({
-  uri: GQL_URL
+  uri: GQL_URL,
+  fetch: customFetch
 })
 
 const authLink = setContext((_, { headers }) => {
