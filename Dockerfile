@@ -79,4 +79,4 @@ WORKDIR /opt/app
 
 COPY --from=builder /opt/built .
 
-CMD trap 'exit' INT; POD_A_RECORD=$(echo $POD_IP | sed 's/\./-/g') /opt/app/bin/${APP_NAME} foreground
+CMD trap 'exit' INT; /opt/app/bin/${APP_NAME} foreground

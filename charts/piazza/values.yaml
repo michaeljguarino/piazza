@@ -46,7 +46,7 @@ gql:
   gcsBucket: mguarino-piazza
   resources:
     requests:
-      cpu: .4
+      cpu: .3
       memory: 256Mi
   replicas: 2
 
@@ -56,10 +56,8 @@ rtc:
   replicas: 2
   resources:
     requests:
-      cpu: .5
-      memory: 2Gi
-    limits:
-      memory: 2Gi
+      cpu: .3
+      memory: .5Gi
 
 www:
   dns: chat.piazzaapp.com

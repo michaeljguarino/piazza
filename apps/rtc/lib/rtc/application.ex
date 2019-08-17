@@ -9,7 +9,7 @@ defmodule Rtc.Application do
     children = [
       RtcWeb.Endpoint,
       Rtc.Presence,
-      {Absinthe.Subscription, RtcWeb.Endpoint},
+      {Absinthe.Subscription, [RtcWeb.Endpoint]},
       {Cluster.Supervisor, [topologies, [name: Rtc.ClusterSupervisor]]}
     ] ++ broker()
 

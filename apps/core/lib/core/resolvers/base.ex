@@ -16,9 +16,13 @@ defmodule Core.Resolvers.Base do
     quote do
       import Core.Resolvers.Base
       alias unquote(model)
-      def data(args \\ %{}), do: Dataloader.Ecto.new(Core.Repo, query: &query/2, default_params: args)
+      def data(args \\ %{}), do: Dataloader.Ecto.new(Core.Repo, query: &query/2, default_params: filter_context(args))
 
       def query(_queryable, _args), do: unquote(model).any()
+
+      def filter_context(ctx) do
+        Map.take(ctx, [:current_user])
+      end
 
       defoverridable [query: 2, data: 1]
     end

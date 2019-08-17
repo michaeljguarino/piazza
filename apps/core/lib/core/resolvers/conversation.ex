@@ -10,7 +10,7 @@ defmodule Core.Resolvers.Conversation do
   }
 
   def data(args),
-    do: Dataloader.Ecto.new(Core.Repo, query: &query/2, default_params: args, run_batch: &run_batch/5)
+    do: Dataloader.Ecto.new(Core.Repo, query: &query/2, default_params: filter_context(args), run_batch: &run_batch/5)
 
   def query(Message, _args), do: Message
   def query(Participant, %{current_user: user}), do: Participant.for_user(user.id)
