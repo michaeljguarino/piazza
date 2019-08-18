@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import {lookahead} from '../../utils/array'
 
 class Scroller extends Component {
-  componentDidMount() {
+  UNSAFE_componentDidMount() {
     window.addEventListener("scroll", this.handleOnScroll, false);
   }
 

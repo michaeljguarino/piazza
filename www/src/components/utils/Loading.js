@@ -6,7 +6,7 @@ class Loading extends Component {
     value: 10
   }
 
-  componentDidMount() {
+  UNSAFE_componentDidMount() {
     this.timer = setInterval(() => {
       const { value } = this.state;
       this.setState({ value: value < 100 ? value + 10 : 100 });

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useState} from 'react'
 import MessageList from './messages/MessageList'
 import MessageInput from './messages/MessageInput'
 import ConversationPanel from './conversation/ConversationPanel'
@@ -8,6 +8,15 @@ import MyConversations from './login/MyConversations'
 import {Box, Grid} from 'grommet'
 
 const Piazza = () => {
+  const [textHeight, setTextHeight] = useState(70)
+
+  const incrementHeight = () => {
+    if (textHeight >= 210) {
+      return
+    }
+    setTextHeight(textHeight + 20)
+  }
+  const resetHeight = () => setTextHeight(70)
   return (
     <CurrentUser>
     {me => (
@@ -33,10 +42,12 @@ const Piazza = () => {
             <Box height='70px'>
               <ConversationHeader conversation={currentConversation} setCurrentConversation={setCurrentConversation} />
             </Box>
-            <MessageList conversation={currentConversation} />
-            <Box height='70px'>
-              <MessageInput conversation={currentConversation} />
-            </Box>
+            <MessageList textHeight={textHeight} conversation={currentConversation} />
+            <MessageInput
+              height={textHeight}
+              incrementHeight={incrementHeight}
+              resetHeight={resetHeight}
+              conversation={currentConversation} />
           </Box>
         </Grid>
       )}

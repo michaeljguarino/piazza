@@ -1,68 +1,73 @@
-import React, {useState, useRef} from 'react'
+import React, {Component, useState, useRef} from 'react'
 import {ApolloConsumer} from 'react-apollo'
 import Avatar from '../users/Avatar'
 import UserHandle from '../users/UserHandle'
-import {TextInput, Box, Text, Drop} from 'grommet'
+import {Box, Text, Drop} from 'grommet'
 import {Emoji} from 'grommet-icons'
 import {SEARCH_USERS} from './queries'
 import {SEARCH_COMMANDS} from '../commands/queries'
 import 'emoji-mart/css/emoji-mart.css'
 import data from 'emoji-mart/data/messenger.json'
 import { emojiIndex, NimblePicker } from 'emoji-mart'
+import { Editor } from 'slate-react'
+import Plain from 'slate-plain-serializer'
+import SuggestionsPlugin from 'slate-smart-suggestions'
+import './MentionManager.css'
 
-
-export function fetchUsers(client, query, callback) {
+export function fetchUsers(client, query) {
   if (!query) return
 
-  client.query({
+  return client.query({
     query: SEARCH_USERS,
     variables: {name: query}})
   .then(({data}) => {
     return data.searchUsers.edges.map(edge => ({
+      key: edge.node.handle,
       value: edge.node.handle,
-      label: userSuggestion(edge.node)
+      suggestion: userSuggestion(edge.node)
     }))
   })
-  .then((res) => callback(res))
 }
 
-function fetchCommands(client, query, callback) {
+function fetchCommands(client, query) {
   if (!query) return
 
-  client.query({
+  return client.query({
     query: SEARCH_COMMANDS,
     variables: {name: query}
   }).then(({data}) => {
     return data.searchCommands.edges.map(edge => ({
       value: edge.node.name,
-      label: commandSuggestion(edge.node)
+      key: edge.node.name,
+      suggestion: commandSuggestion(edge.node)
     }))
-  }).then((res) => callback(res))
+  })
 }
 
-function fetchEmojis(client, query, callback) {
+function fetchEmojis(query) {
   if (!query) return
   const found =
     emojiIndex.search(query)
-      .slice(0, 10)
+      .slice(0, 5)
       .map((emoji) => {
         return {
-          value: emoji,
-          label: emojiSuggestion(emoji)
+          key: emoji.colons,
+          value: emoji.native,
+          suggestion: emojiSuggestion(emoji)
         }
       })
 
-  callback(found)
+  return Promise.resolve(found)
 }
 
-function userSuggestion(user) {
+export function userSuggestion(user) {
   return (
-    <Box direction='row' align='center' pad='small'>
+    <Box direction='row' align='center' pad='xsmall' gap='xsmall'>
       <Avatar user={user} />
       <Box justify='center' width='100%'>
         <UserHandle user={user} />
       </Box>
-      <Box width='150px' direction='row' justify='end'>
+      <Box direction='row' justify='end'>
         <Text size='small'>{user.name}</Text>
       </Box>
     </Box>
@@ -71,48 +76,18 @@ function userSuggestion(user) {
 
 function commandSuggestion(command) {
   return (
-    <Box direction='row' align='center' pad='small'>
-      <Text size='small' weight='bold'>/{command.name}</Text>
+    <Box direction='row' align='center' pad='xsmall'>
+      <Text size='xsmall' weight='bold'>/{command.name}</Text>
     </Box>
   )
 }
 
 function emojiSuggestion(emoji) {
   return (
-    <Box direction='row' align='center' pad='small'>
-      <Text size='small'>{emoji.native} {emoji.colons}</Text>
+    <Box direction='row' align='center' pad='xsmall'>
+      <Text size='xsmall'>{emoji.native} {emoji.colons}</Text>
     </Box>
   )
-}
-
-const REGEXES=[
-  [/@[^\s@]+$/, fetchUsers, (text) => `@${text}`],
-  [/^\/[^\s]+$/, fetchCommands, (text) => `/${text} `],
-  [/:[^\s]+$/, fetchEmojis, (emoji) => `${emoji.native} `],
-]
-
-const DEFAULT_SUGGESTIONS_STATE={
-  suggestions: [],
-  regex: null,
-  transformer: (t) => t
-}
-
-function validateRegexes(client, text, setSuggestions) {
-  for (const [regex, fetcher, transformer] of REGEXES) {
-    if (regex.test(text)) {
-      const matches = text.match(regex)
-      fetcher(client, matches[0].substring(1), (sugs) => (
-        setSuggestions({suggestions: sugs, regex: regex, transformer: transformer})
-      ))
-      return
-    }
-  }
-  setSuggestions(DEFAULT_SUGGESTIONS_STATE)
-  return
-}
-
-function replaceText(selection, text, regex, transformer) {
-  return text.replace(regex, transformer(selection))
 }
 
 function EmojiTarget(props) {
@@ -133,53 +108,153 @@ function EmojiTarget(props) {
   )
 }
 
-function MentionManager(props) {
-  const dropRef = useRef()
-  const emojiRef = useRef()
-  const [suggestionState, setSuggestionState] = useState(DEFAULT_SUGGESTIONS_STATE)
-  const [emojiPicker, setEmojiPicker] = useState(false)
+function getCurrentWord(text, index, initialIndex) {
+  if (index === initialIndex) {
+    return { start: getCurrentWord(text, index - 1, initialIndex), end: getCurrentWord(text, index + 1, initialIndex) }
+  }
+  if (text[index] === " " || text[index] === "@" || text[index] === undefined) {
+    return index
+  }
+  if (index < initialIndex) {
+    return getCurrentWord(text, index - 1, initialIndex)
+  }
+  if (index > initialIndex) {
+    return getCurrentWord(text, index + 1, initialIndex)
+  }
+}
 
+function replaceSuggestion(suggestion, change, prefix='') {
+  const { anchorText, selection } = change.value
+  const { offset } = selection.anchor
+
+  const text = anchorText.text
+
+  let index = { start: offset - 1, end: offset }
+
+  if (text[offset - 1] !== "@") {
+    index = getCurrentWord(text, offset - 1, offset - 1)
+  }
+
+  const newText = `${text.substring(0, index.start)}${prefix}${suggestion.value} `
+
+  change
+    .deleteBackward(offset)
+    .insertText(newText)
+    .focus()
+    .moveToEndOfText()
+
+  return false;
+}
+
+class PluggableMentionManager extends Component {
+  constructor(props) {
+    super(props)
+    this.mentionPlugin = new SuggestionsPlugin({
+      trigger: '@',
+      capture: /@[\w]+/,
+      suggestions: (text) => fetchUsers(props.client, text),
+      onEnter: (suggestion, change) => {
+        replaceSuggestion(suggestion, change, '@')
+      }
+    })
+    this.commandPlugin = new SuggestionsPlugin({
+      trigger: '@',
+      capture: /^\/[^\s]+/,
+      suggestions: (text) => fetchCommands(props.client, text),
+      onEnter: (suggestion, change) => {
+        replaceSuggestion(suggestion, change, '/')
+      }
+    })
+    this.emojiPlugin = new SuggestionsPlugin({
+      trigger: ':',
+      capture: /:[^\s]+/,
+      suggestions: (text) => fetchEmojis(text),
+      onEnter: (suggestion, change) => {
+        replaceSuggestion(suggestion, change, ' ')
+      }
+    })
+  }
+
+  render() {
+    return this.props.children([this.mentionPlugin, this.commandPlugin, this.emojiPlugin])
+  }
+}
+
+function MentionManager(props) {
+  const emojiRef = useRef()
+  const editorRef = useRef()
+  const [emojiPicker, setEmojiPicker] = useState(false)
+  const [editorState, setEditorState] = useState(Plain.deserialize(props.text))
   return (
     <ApolloConsumer>
     {client => (
-      <>
-        <TextInput
-          ref={dropRef}
-          plain
-          dropTarget={dropRef.current}
-          value={props.text}
-          suggestions={suggestionState.suggestions}
-          onSelect={(event) => {
-            let selection = event.suggestion.value
-            let result = replaceText(selection, props.text, suggestionState.regex, suggestionState.transformer)
-            props.setText(result)
-            props.onChange(result)
-          }}
-          onChange={e => {
-            const text = e.target.value
-            props.setText(text)
-            validateRegexes(client, text, setSuggestionState)
-            props.onChange(text)
-          }}
-          placeholder="Whatever is on your mind"
-        />
-        <EmojiTarget emojiRef={emojiRef} setEmojiPicker={setEmojiPicker} />
-        {emojiPicker && (
-          <Drop
-            align={{ bottom: "top"}}
-            target={emojiRef.current}
-            onClickOutside={() => setEmojiPicker(false)}
-            onEsc={() => setEmojiPicker(false)}
-          >
-            <NimblePicker
-              data={data}
-              onSelect={(emoji) => {
-                props.setText(props.text + ' ' + emoji.native)
-              }} />
-          </Drop>
+      <PluggableMentionManager client={client} disableSubmit={props.disableSubmit}>
+        {(plugins) => (
+          <>
+          <Editor
+            ref={editorRef}
+            defaultValue={Plain.deserialize(props.text)}
+            value={editorState}
+            plugins={plugins}
+            style={{
+              fontFamily: 'Roboto',
+              fontSize: '14px',
+              width: '100%',
+              maxHeight: '190px',
+              paddingLeft: '10px',
+              paddingTop: '3px',
+              paddingBottom: '3px'
+            }}
+            onKeyDown={(e, editor, next) => {
+              if (e.key === 'Enter' && !e.shiftKey && !props.submitDisabled) {
+                setEditorState(Plain.deserialize(''))
+                // e.preventDefault()
+                return
+              }
+              return next()
+            }}
+            onChange={state => {
+              let text = Plain.serialize(state.value)
+              setEditorState(state.value)
+              props.setText(text)
+              props.onChange(state)
+            }}
+            placeholder="Whatever is on your mind"
+          />
+          {plugins.map((plugin, index) => {
+            const SuggestionPortal = plugin.SuggestionPortal
+            return (
+              <SuggestionPortal
+                alignTop
+                key={index}
+                value={editorState}
+                onOpen={() => props.disableSubmit(true)}
+                onClose={() => props.disableSubmit(false)}
+              />
+            )
+          })}
+          <EmojiTarget emojiRef={emojiRef} setEmojiPicker={setEmojiPicker} />
+          {emojiPicker && (
+            <Drop
+              align={{ bottom: "top"}}
+              target={emojiRef.current}
+              onClickOutside={() => setEmojiPicker(false)}
+              onEsc={() => setEmojiPicker(false)}
+            >
+              <NimblePicker
+                data={data}
+                onSelect={(emoji) => {
+                  let text = Plain.serialize(editorState)
+                  text += ' ' + emoji.native
+                  props.setText(text)
+                  setEditorState(Plain.deserialize(text))
+                }} />
+            </Drop>
+          )}
+        </>
         )}
-      </>
-    )}
+      </PluggableMentionManager>
+      )}
     </ApolloConsumer>
   )
 }

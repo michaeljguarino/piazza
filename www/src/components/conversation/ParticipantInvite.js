@@ -5,7 +5,22 @@ import debounce from 'lodash/debounce';
 import {CREATE_PARTICIPANTS, PARTICIPANTS_Q} from './queries'
 import TagInput from '../utils/TagInput'
 import {mergeAppend} from '../../utils/array'
-import {fetchUsers} from '../messages/MentionManager'
+import {SEARCH_USERS} from '../messages/queries'
+import {userSuggestion} from '../messages/MentionManager'
+
+function fetchUsers(client, query, callback) {
+  if (!query) return
+
+  client.query({
+    query: SEARCH_USERS,
+    variables: {name: query}})
+  .then(({data}) => {
+    return data.searchUsers.edges.map(edge => ({
+      value: edge.node.handle,
+      label: userSuggestion(edge.node)
+    }))
+  }).then(callback)
+}
 
 function ParticipantInviteButton(props) {
   return (

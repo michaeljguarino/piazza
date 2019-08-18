@@ -50,7 +50,8 @@ class MessageInput extends Component {
     text: '',
     typists: [],
     uploadProgress: null,
-    useUpload: false
+    useUpload: false,
+    disableSubmit: false
   }
 
   boxRef = createRef()
@@ -78,6 +79,10 @@ class MessageInput extends Component {
     }
   }
 
+  handleKeyPress = (e) => {
+    if (e.key === 'Enter' && e.shiftKey) return
+  }
+
   notifyTyping = debounce(() => {
     this.channel.push("typing", {who: "cares"})
   }, 500, {leading: true})
@@ -86,7 +91,7 @@ class MessageInput extends Component {
     this.setupChannel()
     const { text, attachment } = this.state
     return (
-      <Box fill='horizontal' pad={{top: '10px', right: '10px', left: '10px'}}>
+      <Box height={`${this.props.height}px`} fill='horizontal' pad={{top: '10px', right: '10px', left: '10px'}}>
         <Mutation
             mutation={MESSAGE_MUTATION}
             variables={{conversationId: this.props.conversation.id, attributes: {text, attachment}}}
@@ -113,44 +118,55 @@ class MessageInput extends Component {
           <Form onSubmit={() => {
               postMutation()
               this.setState({attachment: null, text: ''})
+              this.props.resetHeight()
+            }} onKeyDown={(e) => {
+              if (e.key === 'Enter' && !e.shiftKey && !this.state.disableSubmit) {
+                postMutation()
+                this.setState({attachment: null, text: ''})
+                this.props.resetHeight()
+              } else if (e.key === 'Enter' && e.shiftKey) {
+                this.props.incrementHeight()
+              }
             }}>
             <Box
               fill='horizontal'
+              height='calc(100%-18px)'
               direction="row"
               align="center"
               border
               round='xsmall'
             >
-              <FilePicker
-                onChange={ (file) => this.setState({useUpload: true, attachment: file})}
-                maxSize={2000}
-                onError={(msg) => console.log(msg)}
-              >
-                <Box
-                  style={{cursor: "pointer"}}
-                  align='center'
-                  justify='center'
-                  border="right"
-                  height='40px'
-                  width="40px">
-                  {this.state.uploadProgress ?
-                    <CircularProgressbar value={this.state.uploadProgress} text={`${this.state.uploadProgress}%`} /> :
-                    <Attachment color={this.state.attachment ? SEND_COLOR : null} size='15px' />
-                  }
-                </Box>
-              </FilePicker>
               <MentionManager
                 parentRef={this.boxRef}
                 text={this.state.text}
                 setText={(text) => this.setState({ text: text })}
+                disableSubmit={(disable) => this.setState({disableSubmit: disable})}
+                submitDisabled={this.state.disableSubmit}
                 onChange={text => {
                   this.notifyTyping()
                 }} />
+                <FilePicker
+                  onChange={ (file) => this.setState({useUpload: true, attachment: file})}
+                  maxSize={2000}
+                  onError={(msg) => console.log(msg)}
+                >
+                  <Box
+                    style={{cursor: "pointer"}}
+                    align='center'
+                    justify='center'
+                    height='40px'
+                    width="30px">
+                    {this.state.uploadProgress ?
+                      <CircularProgressbar value={this.state.uploadProgress} text={`${this.state.uploadProgress}%`} /> :
+                      <Attachment color={this.state.attachment ? SEND_COLOR : null} size='15px' />
+                    }
+                  </Box>
+                </FilePicker>
             </Box>
           </Form>
         )}
         </Mutation>
-        <Box align='center' direction='row' fill='horizontal'>
+        <Box style={{minHeight: '18px'}} align='center' direction='row' fill='horizontal'>
           <div style={{width: 'calc(100% - 600px)'}}>
             <CurrentUserContext.Consumer>
               {me => (<Typing typists={this.state.typists} ignore={me.handle} />)}

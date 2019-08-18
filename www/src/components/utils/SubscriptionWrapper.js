@@ -1,11 +1,11 @@
 import React from 'react'
 
 class SubscriptionWrapper extends React.Component {
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     this.reregister()
   }
 
-  componentWillReceiveProps(props) {
+  UNSAFE_componentWillReceiveProps(props) {
     if (props.id !== this.props.id) {
       console.log(`subscribing to ${props.id}`)
       this._unsubscribe()

@@ -7,6 +7,7 @@ function Avatar(props) {
   return (
     <Box
       border={{style: 'hidden'}}
+      style={{minWidth: '40px'}}
       round='xsmall'
       background={props.user.backgroundColor || background}
       align='center'

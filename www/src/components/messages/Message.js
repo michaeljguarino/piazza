@@ -43,9 +43,18 @@ function AttachmentMessage(props) {
   )
 }
 
+function MsgMarkdown(props) {
+  return (
+    <Markdown
+      components={{p: {props: {size: 'small', margin: {top: 'xsmall', bottom: 'xsmall'}}}}}>
+    {props.children}
+    </Markdown>
+  )
+}
+
 function WithEntities(props) {
   if (!props.entities || props.entities.length === 0) return (
-    <Markdown>{props.text}</Markdown>
+    <MsgMarkdown>{props.text}</MsgMarkdown>
   )
   return <span>{Array.from(splitText(props.text, props.entities))}</span>
 }
@@ -56,7 +65,7 @@ function* splitText(text, entities) {
   for (let entity of entities) {
     const upTo = text.substring(lastIndex, entity.startIndex)
     if (upTo !== '') {
-      yield <Markdown key={count}>{upTo}</Markdown>
+      yield <MsgMarkdown key={count}>{upTo}</MsgMarkdown>
       count++
     }
     yield <MessageEntity key={count} entity={entity} />
@@ -64,7 +73,7 @@ function* splitText(text, entities) {
     lastIndex = entity.startIndex + entity.length
   }
   if (lastIndex < text.length) {
-    yield (<Markdown key={count}>{text.substring(lastIndex)}</Markdown>)
+    yield (<MsgMarkdown key={count}>{text.substring(lastIndex)}</MsgMarkdown>)
   }
 }
 

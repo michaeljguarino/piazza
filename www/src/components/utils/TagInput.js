@@ -33,7 +33,7 @@ class TagInput extends Component {
 
   boxRef = createRef();
 
-  componentDidMount() {
+  UNSAFE_componentDidMount() {
     this.forceUpdate();
   }
 

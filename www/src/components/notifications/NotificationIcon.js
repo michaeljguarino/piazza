@@ -12,8 +12,6 @@ async function _subscribeToNewNotifications(subscribeToMore, unseen, setUnseen) 
     document: NEW_NOTIFICATIONS_SUB,
     updateQuery: (prev, { subscriptionData }) => {
       if (!subscriptionData.data) return prev
-      console.log(prev)
-      console.log(subscriptionData)
       const newNotification = subscriptionData.data.newNotifications
       const edges = prev.notifications.edges
       setUnseen(unseen + 1)
