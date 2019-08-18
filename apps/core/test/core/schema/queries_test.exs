@@ -339,6 +339,40 @@ defmodule Core.Schema.QueriesTest do
       assert conversations[first.id]["participantCount"] == 3
       assert conversations[second.id]["participantCount"] == 1
     end
+
+    test "It will filter on chat and sideload chat participants" do
+      user = insert(:user)
+      %{conversation: first} = insert(:participant, user: user)
+      insert_list(2, :participant, conversation: first)
+
+      chat   = insert(:conversation, chat: true, public: false)
+      part   = insert(:participant, conversation: chat, user: user)
+      others = insert_list(2, :participant, conversation: chat)
+
+      {:ok, %{data: %{"chats" => found}}} = run_query("""
+        query Chats($conversationCount: Int!) {
+          chats(first: $conversationCount) {
+            pageInfo {
+              hasPreviousPage
+              hasNextPage
+            }
+            edges {
+              node {
+                id
+                name
+                chatParticipants {
+                  id
+                }
+              }
+            }
+          }
+        }
+      """, %{"conversationCount" => 3}, %{current_user: user})
+
+      conversations = from_connection(found) |> by_ids()
+      refute conversations[first.id]
+      assert ids_equal(conversations[chat.id]["chatParticipants"], [part | others])
+    end
   end
 
   describe "searchConversations" do

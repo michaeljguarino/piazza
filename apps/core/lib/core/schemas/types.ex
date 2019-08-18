@@ -45,6 +45,7 @@ defmodule Core.Schemas.Types do
     field :name,                non_null(:string)
     field :public,              non_null(:boolean)
     field :global,              non_null(:boolean)
+    field :chat,                non_null(:boolean)
     field :topic,               :string
     field :creator,             :user, resolve: dataloader(User)
     field :current_participant, :participant, resolve: dataloader(Conversation)
@@ -82,6 +83,17 @@ defmodule Core.Schemas.Types do
         |> Dataloader.load(Conversation, queryable, participant_count: conversation)
         |> on_load(fn loader ->
           {:ok, Dataloader.get(loader, Conversation, queryable, participant_count: conversation)}
+        end)
+      end
+    end
+
+    field :chat_participants, list_of(:participant) do
+      resolve fn conversation, _, %{context: %{loader: loader}} ->
+        queryable = {:many, Core.Models.Conversation}
+        loader
+        |> Dataloader.load(Conversation, queryable, chat_participants: conversation)
+        |> on_load(fn loader ->
+          {:ok, Dataloader.get(loader, Conversation, queryable, chat_participants: conversation)}
         end)
       end
     end

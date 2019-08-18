@@ -21,6 +21,9 @@ defmodule Core.Models.Participant do
   def for_conversation(query \\ __MODULE__, conv_id),
     do: from(p in query, where: p.conversation_id == ^conv_id)
 
+  def for_conversations(query \\ __MODULE__, conv_ids),
+    do: from(p in query, where: p.conversation_id in ^conv_ids)
+
   def ignore_users(query \\ __MODULE__, user_ids),
     do: from(p in query, where: p.user_id not in ^user_ids)
 

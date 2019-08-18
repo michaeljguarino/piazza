@@ -8,6 +8,8 @@ defmodule Core.Models.Conversation do
     field :global,          :boolean, default: false
     field :topic,           :string
     field :pinned_messages, :integer
+    field :chat,            :boolean, default: false
+    field :chat_dedupe_key, :string
 
     has_one  :current_participant, Participant
     has_many :participants,        Participant
@@ -18,7 +20,11 @@ defmodule Core.Models.Conversation do
     timestamps()
   end
 
-  @valid ~w(name public global topic)a
+  @valid ~w(name public global topic chat chat_dedupe_key)a
+
+  def nonchat(query \\ __MODULE__), do: from(c in query, where: not c.chat)
+
+  def chat(query \\ __MODULE__), do: from(c in query, where: c.chat)
 
   def for_user(query \\ any(), user_id) do
     from(c in query,
@@ -93,5 +99,6 @@ defmodule Core.Models.Conversation do
     |> validate_required([:name, :public])
     |> validate_length(:name, max: 255)
     |> unique_constraint(:name)
+    |> unique_constraint(:chat_dedupe_key)
   end
 end

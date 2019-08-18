@@ -20,15 +20,24 @@ defmodule Core.Resolvers.Conversation do
   def query(:unread_messages, _), do: Conversation.any()
   def query(:unread_notifications, _), do: Conversation.any()
 
+  def query(_, %{chat: true, current_user: user}) do
+    Conversation.chat()
+    |> Conversation.for_user(user.id)
+  end
   def query(_, %{public: true, current_user: user}) do
     Conversation.public()
+    |> Conversation.nonchat()
     |> Conversation.for_user(user.id)
   end
   def query(_, %{public: false, current_user: user}) do
     Conversation.for_user(user.id)
+    |> Conversation.nonchat()
     |> Conversation.private()
   end
-  def query(_, %{current_user: user}), do: Conversation.for_user(user.id)
+  def query(_, %{current_user: user}) do
+    Conversation.nonchat()
+    |> Conversation.for_user(user.id)
+  end
 
   def run_batch(_, _, :unread_notifications, args, repo_opts) do
     [{%{id: user_id}, _} | _] = args
@@ -61,6 +70,22 @@ defmodule Core.Resolvers.Conversation do
       |> Map.new()
 
     Enum.map(conversation_ids, & [Map.get(result, &1, 0)])
+  end
+  def run_batch(_, _, :chat_participants, args, repo_opts) do
+    # we can't use a standard ecto association here because it
+    # only supports filtering on the associated record, not source
+    conversation_ids = Enum.filter(args, & &1.chat) |> Enum.map(& &1.id)
+
+    if !Enum.empty?(conversation_ids) do
+      grouped_result =
+        Participant.for_conversations(conversation_ids)
+        |> Core.Repo.all(repo_opts)
+        |> Enum.group_by(& &1.conversation_id)
+
+      Enum.map(args, &Map.get(grouped_result, &1.id, []))
+    else
+      Enum.map(args, fn _ -> [] end)
+    end
   end
   def run_batch(queryable, query, col, inputs, repo_opts) do
     Dataloader.Ecto.run_batch(Core.Repo, queryable, query, col, inputs, repo_opts)
@@ -113,6 +138,8 @@ defmodule Core.Resolvers.Conversation do
 
   def create_chat(%{user_id: user_id}, %{context: %{current_user: user}}),
     do: Conversations.create_chat(user_id, user)
+  def create_chat(%{user_ids: user_ids}, %{context: %{current_user: user}}),
+    do: Conversations.create_chat(user_ids, user)
 
   def update_conversation(%{id: id, attributes: attrs}, %{context: %{current_user: user}}),
     do: Conversations.update_conversation(id, attrs, user)

@@ -52,7 +52,14 @@ defmodule Core.Schema do
     @desc "Fetches a list of public or private conversations, don't attempt to preload participants or messages plz"
     connection field :conversations, node_type: :conversation do
       middleware Core.Schemas.Authenticated
+
       resolve &Conversation.list_conversations/2
+    end
+
+    connection field :chats, node_type: :conversation do
+      middleware Core.Schemas.Authenticated
+
+      resolve fn args, context -> Conversation.list_conversations(Map.put(args, :chat, true), context) end
     end
 
     connection field :search_conversations, node_type: :conversation do
@@ -146,7 +153,8 @@ defmodule Core.Schema do
     @desc "Creates a private conversation between the current user and the user specified by user_id"
     field :create_chat, :conversation do
       middleware Core.Schemas.Authenticated
-      arg :user_id, non_null(:id)
+      arg :user_id, :id
+      arg :user_ids, list_of(:id)
 
       resolve safe_resolver(&Conversation.create_chat/2)
     end

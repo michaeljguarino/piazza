@@ -19,6 +19,11 @@ defmodule Core.Services.Users do
 
   def get_user_by_email!(email), do: Core.Repo.get_by!(User, email: email)
 
+  def get_users_by_id(user_ids) do
+    User.for_ids(user_ids)
+    |> Core.Repo.all()
+  end
+
   def login_user(email, password) do
     with %User{deleted_at: nil} = user <- get_user_by_email!(email),
          {:ok, user} <- Argon2.check_pass(user, password) do

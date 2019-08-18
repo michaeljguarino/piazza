@@ -30,17 +30,31 @@ defmodule Core.Services.ConversationsTest do
       assert_receive {:event, %PubSub.ConversationCreated{item: ^conv}}
     end
 
+    test "It will invite a list of other users" do
+      user = insert(:user)
+      other_users = insert_list(3, :user)
+
+      {:ok, conv} = Conversations.create_chat(Enum.map(other_users, & &1.id), user)
+
+      for user <- other_users,
+        do: assert Conversations.get_participant(user.id, conv.id)
+    end
+
     test "It will upsert against existing chats" do
       user       = insert(:user)
       other_user = insert(:user)
-      existing   = insert(:conversation, name: Conversations.chat_name([user, other_user]))
+
+      {:ok, existing} = Conversations.create_chat(other_user.id, user)
 
       {:ok, conv} = Conversations.create_chat(other_user.id, user)
 
       assert conv.id == existing.id
+      assert conv.chat
+      assert conv.chat_dedupe_key
       refute conv.public
       assert Conversations.get_participant(user.id, conv.id)
       assert Conversations.get_participant(other_user.id, conv.id)
+
       assert_receive {:event, %PubSub.ConversationUpdated{item: ^conv}}
     end
   end

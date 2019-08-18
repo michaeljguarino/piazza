@@ -25,6 +25,9 @@ defmodule Core.Services.Conversations do
   def get_conversation_by_name(name),
     do: Core.Repo.get_by(Conversation, name: name)
 
+  def get_conversation_by_dedupe_key(dedupe_key),
+    do: Core.Repo.get_by(Conversation, chat_dedupe_key: dedupe_key)
+
   def get_participant(user_id, conv_id),
     do: Core.Repo.get_by(Participant, user_id: user_id, conversation_id: conv_id)
 
@@ -61,19 +64,47 @@ defmodule Core.Services.Conversations do
     |> notify(:upsert, user, participant)
   end
 
+  def create_chat(user_ids, %User{} = user) when is_list(user_ids) do
+    other_users = Users.get_users_by_id(user_ids)
+    chat_name  = chat_name([user | other_users])
+    dedupe_key = chat_dedupe_key([user.id | user_ids])
+
+    part_attrs = %{notification_preferences: %{message: true, mention: true}}
+    start_transaction()
+    |> add_operation(:conv, fn _ ->
+      upsert_conversation(
+        get_conversation_by_dedupe_key(dedupe_key),
+        %{public: false, chat: true, name: chat_name, chat_dedupe_key: dedupe_key, participant: part_attrs},
+        user
+      )
+    end)
+    |> add_other_participants(other_users, part_attrs)
+    |> execute(extract: :conv)
+  end
+  def create_chat(user_id, %User{} = user), do: create_chat([user_id], user)
+
   def chat_name(users) do
-    handles      = Enum.map(users, & &1.handle) |> Enum.sort()
-    Enum.join(handles, " <> ")
+    Enum.map(users, & &1.handle)
+    |> Enum.sort()
+    |> Enum.join(", ")
   end
 
-  def create_chat(user_id, %User{} = user) do
-    other_user = Users.get_user!(user_id)
-    chat_name  = chat_name([user, other_user])
-    part_attrs = %{notification_preferences: %{message: true, mention: true}}
+  defp chat_dedupe_key(user_ids) do
+    # the choice of a chat dedupe key is to provide a stable
+    # means of deduping even if a handle is updated (although that
+    # is currently unsupported).
 
-    with {:ok, conv} <- upsert_conversation(chat_name, %{public: false, participant: part_attrs}, user),
-         {:ok, _}    <- upsert_participant(conv.id, part_attrs, other_user),
-      do: {:ok, conv}
+    user_ids
+    |> Enum.sort()
+    |> Enum.join("::")
+  end
+
+  defp add_other_participants(transaction, users, part_attrs) do
+    Enum.reduce(users, transaction, fn user, transaction ->
+      add_operation(transaction, {:participant, user.id}, fn %{conv: conv} ->
+        upsert_participant(conv.id, part_attrs, user)
+      end)
+    end)
   end
 
   def create_conversation(attrs, user) do
@@ -93,15 +124,16 @@ defmodule Core.Services.Conversations do
     |> notify(:create, user)
   end
 
-  def upsert_conversation(name, attrs, user) do
-    conversation = get_conversation_by_name(name)
+  def upsert_conversation(name, attrs, user) when is_binary(name),
+    do: get_conversation_by_name(name) |> upsert_conversation(attrs, user)
+  def upsert_conversation(conversation, attrs, user) do
     attrs = Map.put_new(attrs, :participant, %{})
 
     start_transaction()
     |> add_operation(:conversation, fn _ ->
       case conversation do
         %Conversation{} = conv -> conv
-        nil -> %Conversation{name: name}
+        nil -> %Conversation{}
       end
       |> Conversation.changeset(attrs)
       |> Core.Repo.insert_or_update()
