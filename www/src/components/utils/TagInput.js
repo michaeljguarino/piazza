@@ -1,22 +1,28 @@
-import React, {Component, createRef} from 'react'
+import React, {Component, createRef, useState} from 'react'
 import {Box, Text, Keyboard, TextInput, Button} from 'grommet'
 import {FormClose} from 'grommet-icons'
 
 const Tag = ({ children, onRemove, ...rest }) => {
+  const [hover, setHover] = useState(false)
+  const padding = {horizontal: 'xxsmall', vertical: 'xxsmall'}
   const tag = (
     <Box
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
       direction="row"
       align="center"
-      background="brand"
-      pad={{ horizontal: "xsmall", vertical: "xxsmall" }}
+      background={hover ? 'brand-heavy' : 'brand'}
       margin={{ vertical: "xxsmall" }}
-      round="medium"
       {...rest}
     >
-      <Text size="xsmall" margin={{ right: "xxsmall" }}>
-        {children}
-      </Text>
-      {onRemove && <FormClose size="small" color="white" />}
+      <Box pad={padding} justify='center' align='center'>
+        <Text size="xsmall" margin={{ right: "xxsmall" }}>
+          {children}
+        </Text>
+      </Box>
+      {onRemove && <Box width='15px' pad={padding} justify='center' align='center'>
+         <FormClose size="small" color="white" />
+      </Box>}
     </Box>
   );
 
@@ -77,6 +83,7 @@ class TagInput extends Component {
     return (
       <Keyboard onEnter={this.onEnter}>
         <Box
+          fill='horizontal'
           direction="row"
           align="center"
           pad={{ horizontal: "xsmall" }}

@@ -12,7 +12,7 @@ function CreateChat(props) {
     {({setCurrentConversation}) => (
       <Mutation
       mutation={CREATE_CHAT}
-      variables={{userId: props.user.id}}
+      variables={{userIds: [props.user.id]}}
       update={(cache, {data: {createChat}}) => {
         const data = cache.readQuery({ query: CONVERSATIONS_Q });
         cache.writeQuery({
@@ -20,6 +20,7 @@ function CreateChat(props) {
           data: addConversation(data, createChat)
         });
         setCurrentConversation(createChat)
+        props.onChat && props.onChat()
       }} >
       {mutation => (
         <Box style={{cursor: 'pointer'}} align='center' justify='center' onClick={mutation}>

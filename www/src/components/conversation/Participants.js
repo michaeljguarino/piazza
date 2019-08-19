@@ -12,7 +12,7 @@ import {BOX_ATTRS} from './ConversationHeader'
 import SubscriptionWrapper from '../utils/SubscriptionWrapper'
 import WithPresence from '../utils/presence'
 import PresenceIndicator from '../users/PresenceIndicator'
-import ParticipantInvite from './ParticipantInvite'
+import ParticipantInvite, {ParticipantInviteButton} from './ParticipantInvite'
 
 function addParticipant(participant, prev) {
   const participants = prev.conversation.participants.edges
@@ -137,7 +137,20 @@ function Participants(props) {
                   }} />
               </Box>
               <Text margin={{left: '10px', bottom: 'small'}}>Add more:</Text>
-              <ParticipantInvite conversation={props.conversation} />
+              <ParticipantInvite conversation={props.conversation}>
+              {(participants, clearInput) => (
+                <Box>
+                {participants.length > 0 && (
+                  <Box pad='small'>
+                    <ParticipantInviteButton
+                      participants={participants}
+                      conversation={props.conversation}
+                      close={clearInput} />
+                  </Box>
+                )}
+                </Box>)
+              }
+              </ParticipantInvite>
             </Box>
           )}
           </Flyout>

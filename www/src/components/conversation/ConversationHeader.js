@@ -14,6 +14,7 @@ import Commands from '../commands/Commands'
 import NotificationsPreferences, {DEFAULT_PREFS} from '../users/NotificationPreferences'
 import pick from 'lodash/pick'
 import {updateConversation} from './utils'
+import {conversationNameString, Icon} from './Conversation'
 
 export const BOX_ATTRS = {
   direction: "row",
@@ -80,6 +81,7 @@ function ConversationUpdate(props) {
 function ConversationName(props) {
   const [hover, setHover] = useState(false)
   const color = hover ? 'accent-1' : null
+  const emptyColor = '#DADADA'
   return (
     <Text
       onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}
@@ -87,7 +89,7 @@ function ConversationName(props) {
       weight='bold'
       margin={{bottom: '5px'}}
       color={color}>
-      # {props.conversation.name} <Down color={color} size='12px'/>
+      <Icon textProps={{color: color}} emptyColor={emptyColor} me={props.me} conversation={props.conversation} /> {conversationNameString(props.conversation, props.me)} <Down color={color} size='12px'/>
     </Text>
   )
 }
@@ -106,7 +108,7 @@ function ConversationDropdown(props) {
       dropProps={{stretch: false}}
       style={{marginBottom: '5px'}}
       align={{left: 'left', top: "bottom"}}
-      target={<ConversationName conversation={props.conversation} />}>
+      target={<ConversationName me={props.me} conversation={props.conversation} />}>
       {setOpen => (
       <Box gap='small' pad='small' width='230px' round='small'>
         <Mutation mutation={UPDATE_PARTICIPANT} variables={variables}>

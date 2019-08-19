@@ -1,5 +1,5 @@
 import React from 'react'
-import {Box, Text} from 'grommet'
+import {Box} from 'grommet'
 import gql from 'graphql-tag'
 import { Query } from 'react-apollo'
 import Scroller from '../utils/Scroller'
@@ -32,8 +32,7 @@ query Users($cursor: String) {
 
 function Users(props) {
   return (
-    <Box pad={props.pad}>
-      <Text size='small' margin={{bottom: '5px'}} weight='bold' color={props.color}>Users</Text>
+    <Box>
       <Query query={USERS_Q}>
         {({loading, data, fetchMore}) => {
           if (loading) return '...'
@@ -47,7 +46,14 @@ function Users(props) {
                 overflow: 'auto',
                 height: '40vh'
               }}
-              mapper={(edge) => <UserListEntry key={edge.node.id} user={edge.node} color={props.color} />}
+              mapper={(edge) => (
+                <UserListEntry
+                  pad={props.pad}
+                  onChat={props.onChat}
+                  key={edge.node.id}
+                  user={edge.node}
+                  color={props.color} />
+              )}
               onLoadMore={() => {
                 if (!pageInfo.hasNextPage) {
                   return

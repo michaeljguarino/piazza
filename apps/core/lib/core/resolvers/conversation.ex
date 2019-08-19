@@ -107,6 +107,7 @@ defmodule Core.Resolvers.Conversation do
 
   def list_conversations(args, %{context: context}) do
     query(:conversation, Map.merge(args, context))
+    |> Conversation.ordered()
     |> paginate(args)
   end
 

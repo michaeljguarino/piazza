@@ -5,6 +5,7 @@ export const ConversationFragment = gql`
   fragment ConversationFragment on Conversation {
     id
     name
+    chat
     public
     topic
     unreadMessages
@@ -14,6 +15,13 @@ export const ConversationFragment = gql`
         mention
         participant
         message
+      }
+    }
+    chatParticipants {
+      user {
+        id
+        name
+        handle
       }
     }
   }

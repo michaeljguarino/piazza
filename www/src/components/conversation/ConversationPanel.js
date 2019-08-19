@@ -1,9 +1,9 @@
 import React from 'react'
 import Conversation from './Conversation'
 import Me from '../users/Me'
-import Users from '../users/Users'
 import {Box} from 'grommet'
 import ConversationCreator from './ConversationCreator'
+import Chats from './Chats'
 import ConversationSearch from '../search/ConversationSearch'
 import Scroller from '../utils/Scroller'
 import {mergeAppend} from '../../utils/array'
@@ -37,6 +37,7 @@ function ConversationPanel(props) {
                 const pageInfo = fetchMoreResult.conversations.pageInfo
 
                 return edges.length ? {
+                  ...prev,
                   conversations: {
                     ...prev.conversations,
                     pageInfo,
@@ -54,7 +55,13 @@ function ConversationPanel(props) {
             conversation={edge.node} />
           } />
       </Box>
-      <Users pad={padding} color={textColor} />
+      <Chats
+        pad={padding}
+        color={textColor}
+        currentConversation={props.currentConversation}
+        setCurrentConversation={props.setCurrentConversation}
+        chats={props.chats}
+      />
     </Box>
   )
 }

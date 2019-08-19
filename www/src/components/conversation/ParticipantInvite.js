@@ -1,7 +1,7 @@
 import React, {createRef} from 'react'
 import {Mutation, ApolloConsumer} from 'react-apollo'
 import {Box, Anchor, Text} from 'grommet'
-import debounce from 'lodash/debounce';
+import debounce from 'lodash/debounce'
 import {CREATE_PARTICIPANTS, PARTICIPANTS_Q} from './queries'
 import TagInput from '../utils/TagInput'
 import {mergeAppend} from '../../utils/array'
@@ -16,13 +16,13 @@ function fetchUsers(client, query, callback) {
     variables: {name: query}})
   .then(({data}) => {
     return data.searchUsers.edges.map(edge => ({
-      value: edge.node.handle,
+      value: edge.node,
       label: userSuggestion(edge.node)
     }))
   }).then(callback)
 }
 
-function ParticipantInviteButton(props) {
+export function ParticipantInviteButton(props) {
   return (
     <Mutation
       mutation={CREATE_PARTICIPANTS}
@@ -70,18 +70,18 @@ class ParticipantInvite extends React.Component {
   renderSuggestions = debounce(() => {this.setState({...this.state, q: this.state.value})}, 200)
 
   onRemoveTag = tag => {
-    const { participants } = this.state;
+    const { participants } = this.state
     this.setState({
-      participants: participants.filter((t) => t !== tag)
-    });
-  };
+      participants: participants.filter((t) => t.handle !== tag)
+    })
+  }
 
   onAddTag = tag => {
-    const { participants } = this.state;
+    const { participants } = this.state
     this.setState({
       participants: [...participants, tag.value], suggestions: []
-    });
-  };
+    })
+  }
 
   setSuggestions = (suggestions) => {
     this.setState({suggestions: suggestions})
@@ -101,29 +101,25 @@ class ParticipantInvite extends React.Component {
     })
   }
 
+  clearInput = () => {
+    this.setState({ value: "", q: "", open: false, participants: [], suggestions: [] })
+  }
+
   render() {
+    const mapper = this.props.mapper || ((p) => p.handle)
     return (
       <ApolloConsumer>
       {client => (
-        <Box pad={{left: 'small', right: 'small'}}>
+        <Box direction={this.props.direction || 'column'} pad={this.props.pad || {left: 'small', right: 'small'}}>
           <TagInput
             placeholder="Search for users by handle..."
             suggestions={this.state.suggestions}
-            value={this.state.participants}
+            value={this.state.participants.map((u) => u.handle)}
             onRemove={this.onRemoveTag}
             onAdd={this.onAddTag}
             onChange={({ target: { value } }) => fetchUsers(client, value, this.setSuggestions)}
           />
-          <Box>
-            {this.state.participants.length > 0 && (
-              <Box pad='small'>
-                <ParticipantInviteButton
-                  participants={this.state.participants}
-                  conversation={this.props.conversation}
-                  close={() => this.setState({ value: "", q: "", open: false, participants: [] })} />
-              </Box>
-            )}
-          </Box>
+          {this.props.children(this.state.participants.map(mapper), this.clearInput)}
         </Box>
       )}
       </ApolloConsumer>

@@ -15,12 +15,21 @@ const theme = {
     },
     fontWeight: 400,
   },
+  button: {
+    padding: {
+      horizontal: '6px',
+      vertical: '2px'
+    }
+  },
   global: {
     colors: {
       brand: '#2F415B',
       'accent-1': '#CF6D57',
       'accent-2': '#cdd7e5',
-      focus: '#CF6D57'
+      focus: '#CF6D57',
+      'brand-heavy': '#263449',
+      notif: '#EB4D5C',
+      'light-hover': '#EDEDED'
     },
     drop: {
       border: {

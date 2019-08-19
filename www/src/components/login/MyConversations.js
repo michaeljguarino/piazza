@@ -36,10 +36,11 @@ function MyConversations(props) {
           <Conversations.Provider value={{
             currentConversation: current,
             conversations: data.conversations,
+            chats: data.chats,
             setCurrentConversation: wrappedSetCurrentConversation,
             loadMore: loadMore
           }}>
-            {props.children(current, data.conversations, wrappedSetCurrentConversation, loadMore)}
+            {props.children(current, data.conversations, data.chats, wrappedSetCurrentConversation, loadMore)}
           </Conversations.Provider>
         )
       }}

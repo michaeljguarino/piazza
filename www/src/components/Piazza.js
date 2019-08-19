@@ -21,7 +21,7 @@ const Piazza = () => {
     <CurrentUser>
     {me => (
       <MyConversations>
-      {(currentConversation, conversations, setCurrentConversation, loadMore) => (
+      {(currentConversation, conversations, chats, setCurrentConversation, loadMore) => (
         <Grid
           rows={['100vh']}
           columns={['200px', 'auto']}
@@ -33,6 +33,7 @@ const Piazza = () => {
             <ConversationPanel
               currentConversation={currentConversation}
               conversations={conversations.edges}
+              chats={chats}
               setCurrentConversation={setCurrentConversation}
               loadMore={loadMore}
               pageInfo={conversations.pageInfo}

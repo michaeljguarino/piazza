@@ -2,23 +2,20 @@ import {CONVERSATIONS_Q, CONVERSATIONS_SUB} from './queries'
 import sortBy from 'lodash/sortBy'
 
 export function updateUnreadMessages(client, conversationId, update) {
-  const {conversations} = client.readQuery({ query: CONVERSATIONS_Q });
-  let edge = conversations.edges.find((e) => e.node.id === conversationId)
-  edge && (edge.node.unreadMessages = update(edge))
-
-  client.writeQuery({
-    query: CONVERSATIONS_Q,
-    data: {
-      conversations: {
-        ...conversations,
-        edges: conversations.edges,
-    }}
-  });
+  updateConversations(
+    client,
+    (e) => e.node.id === conversationId,
+    (e) => ({...e, unreadMessages: update(e)})
+  )
 }
 
 export function updateConversations(client, conversationSelector, update) {
-  const {conversations} = client.readQuery({ query: CONVERSATIONS_Q })
+  const {conversations, chats} = client.readQuery({ query: CONVERSATIONS_Q })
   const edges = conversations.edges.map((e) => {
+    if (conversationSelector(e)) return update(e)
+    return e
+  })
+  const chatEdges = chats.edges.map((e) => {
     if (conversationSelector(e)) return update(e)
     return e
   })
@@ -29,7 +26,12 @@ export function updateConversations(client, conversationSelector, update) {
       conversations: {
         ...conversations,
         edges: edges,
-    }}
+      },
+      chats: {
+        ...chats,
+        edges: chatEdges,
+      }
+    }
   })
 }
 
@@ -53,43 +55,43 @@ export function subscribeToNewConversations(subscribeToMore) {
 }
 
 export function addConversation(prev, conv) {
-  let edges = prev.conversations.edges
-  if (edges.find((e) => e.node.id === conv.id))
-    return prev
+  let scope = conv.chat ? prev.chats : prev.conversations
+  if (scope.edges.find((e) => e.node.id === conv.id)) return prev
 
-  let newEdges = [{__typename: "ConversationEdge", node: conv}, ...prev.conversations.edges]
-  return {
-    ...prev,
-    conversations: {
-      ...prev.conversations,
-      edges: sortBy(newEdges, (e) => e.node.name),
-    }
+  scope = {
+    ...scope,
+    edges: sortBy([{__typename: "ConversationEdge", node: conv}, ...scope.edges], (e) => e.node.name)
   }
+  if (conv.chat) return {...prev, chats: scope}
+  return {...prev, conversations: scope}
 }
 
 export function updateConversation(prev, conv) {
-  return {
-    conversations: {
-      ...prev,
-      edges: prev.edges.map((edge) => {
-        if (edge.node.id !== conv.id) return edge
+  let scope = conv.chat ? prev.chats : prev.conversations
+  scope = {...scope, edges: scope.edges.map((edge) => {
+    if (edge.node.id !== conv.id) return edge
 
-        return {
-          ...edge,
-          node: conv
-        }
-      })
+    return {
+      ...edge,
+      node: conv
     }
-  }
+  })}
+  if (conv.chat) return {...prev, chats: scope}
+  return {...prev, conversations: scope}
 }
 
 export function removeConversation(prev, conv) {
   let edges = prev.conversations.edges.filter((e) => e.node.id !== conv.id)
+  let chatEdges = prev.chats.edges.filter((e) => e.node.id !== conv.id)
   return {
     ...prev,
     conversations: {
       ...prev.conversations,
       edges: edges,
+    },
+    chats: {
+      ...prev.chats,
+      edges: chatEdges
     }
   }
 }

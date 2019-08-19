@@ -1,5 +1,13 @@
 import React, {useState} from 'react'
-import {Layer} from 'grommet'
+import {Layer, Box, Text} from 'grommet'
+
+export function ModalHeader(props) {
+  return (
+    <Box background='brand' elevation='xsmall' pad='small' margin={{bottom: 'xsmall'}}>
+      <Text size='small' weight='bold'>{props.text}</Text>
+    </Box>
+  )
+}
 
 function Modal(props) {
   const [open, setOpen] = useState(!!props.open)

@@ -21,8 +21,19 @@ export const UPDATE_CONVERSATION = gql`
 `;
 
 export const CONVERSATIONS_Q = gql`
-  query Conversations($cursor: String) {
+  query Conversations($cursor: String, $chatCursor: String) {
     conversations(first: 20, after: $cursor) {
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+      edges {
+        node {
+          ...ConversationFragment
+        }
+      }
+    }
+    chats(first: 20, after: $chatCursor) {
       pageInfo {
         hasNextPage
         endCursor
@@ -126,8 +137,8 @@ export const CONVERSATIONS_SUB = gql`
 `;
 
 export const CREATE_CHAT = gql`
-  mutation CreateChat($userId: ID!) {
-    createChat(userId: $userId) {
+  mutation CreateChat($userIds: [ID]) {
+    createChat(userIds: $userIds) {
       ...ConversationFragment
     }
   }

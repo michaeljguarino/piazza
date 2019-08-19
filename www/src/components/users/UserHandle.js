@@ -16,7 +16,7 @@ function UserHandle(props) {
           </WithPresence>
         )}
       </Anchor>
-      <UserDetail user={props.user} />
+      <UserDetail user={props.user} onChat={props.onChat} />
     </Dropdown>
   )
 }

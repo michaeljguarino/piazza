@@ -38,6 +38,7 @@ function subscribe(id, callback) {
 function notifySubscribers(presences) {
   for (const id of presences) {
     const present = PRESENCE_CACHE[id]
+    if (!SUBSCRIPTIONS[id]) continue
     for (const callback of Object.values(SUBSCRIPTIONS[id])) {
       callback(present)
     }
@@ -66,6 +67,39 @@ class WithPresence extends React.Component {
 
   render() {
     return this.props.children(this.state.present)
+  }
+}
+
+export class WithAnyPresent extends React.Component {
+  state = {
+    present: {},
+    subscriptions: []
+  }
+
+  setPresent(id, status) {
+    let present = this.state.present
+    present[id] = status
+    this.setState({present: present})
+  }
+
+  componentWillMount() {
+    this.setState({subscriptions: this.props.ids.map((id) => subscribe(id, (status) => this.setPresent(id, status)))})
+    let present = {}
+    for (const id of this.props.ids) {
+      present[id] = PRESENCE_CACHE[id]
+    }
+
+    this.setState({present: present})
+  }
+
+  componentWillUnmount() {
+    for (const sub of this.state.subscriptions) {
+      unsubscribe(sub)
+    }
+  }
+
+  render() {
+    return this.props.children(Object.values(this.state.present).some((present) => !!present))
   }
 }
 

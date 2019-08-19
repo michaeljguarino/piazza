@@ -16,7 +16,7 @@ function UserDetail(props) {
             <Text size='small' weight='bold'>{"@" + props.user.handle}</Text>
             <Text size='small' color='dark-6'>{props.user.name}</Text>
           </Box>
-          {props.user.id !== me.id && <CreateChat user={props.user} />}
+          {props.user.id !== me.id && <CreateChat user={props.user} onChat={props.onChat} />}
         </Box>
         {props.user.bio && (
           <Box direction="column">

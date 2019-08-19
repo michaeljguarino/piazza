@@ -1,11 +1,24 @@
 import React, { useState } from 'react'
 import {Box, Text} from 'grommet'
 import {Lock} from 'grommet-icons'
+import {WithAnyPresent} from '../utils/presence'
+import PresenceIndicator, {EmptyPresenceIndicator} from '../users/PresenceIndicator'
+import {CurrentUserContext} from '../login/EnsureLogin'
 
-const HOVER_COLOR='#263449'
-const NOTIF_COLOR='#EB4D5C'
+const HOVER_COLOR='brand-heavy'
+const NOTIF_COLOR='notif'
 
-function Icon(props) {
+export function Icon(props) {
+  if (props.conversation.chat) {
+    const ids = props.conversation.chatParticipants
+                  .filter(({user}) => user.id !== props.me.id)
+                  .map(({user}) => user.id)
+    return (
+      <WithAnyPresent ids={ids}>
+      {present => (present ? <PresenceIndicator present /> : <EmptyPresenceIndicator emptyColor={props.emptyColor} />)}
+      </WithAnyPresent>
+    )
+  }
   if (props.conversation.public)
     return (<Text margin={{right: '5px'}} {...props.textProps}>#</Text>)
 
@@ -21,6 +34,20 @@ function NotificationBadge(props) {
     )
   }
   return null
+}
+
+export function conversationNameString(conversation, me) {
+  return (conversation.chat ?
+    conversation.chatParticipants
+      .filter(({user}) => user.id !== me.id)
+      .map(({user}) => user.handle).join(", ") : conversation.name)
+}
+
+function ConversationName(props) {
+  return (
+    <Text size={props.textSize || 'small'} {...props.textProps} >
+      {conversationNameString(props.conversation, props.me)}
+    </Text>)
 }
 
 function Conversation(props) {
@@ -44,12 +71,14 @@ function Conversation(props) {
       {...boxProps}
       >
       <Box direction='row' width='100%' align='center'>
-        <Icon textProps={textProps} {...props} />
-        <Text
-          size='small'
-          {...textProps} >
-          {props.conversation.name}
-        </Text>
+        <CurrentUserContext.Consumer>
+        {me => (
+          <>
+            <Icon me={me} textProps={textProps} {...props} />
+            <ConversationName me={me} textProps={textProps} conversation={props.conversation} />
+          </>
+        )}
+        </CurrentUserContext.Consumer>
       </Box>
       <NotificationBadge {...props} />
     </Box>
