@@ -6,17 +6,41 @@ import Modal from '../utils/Modal'
 import {CREATE_CONVERSATION, CONVERSATIONS_Q} from './queries'
 import ConversationEditForm from './ConversationEditForm'
 import {addConversation} from './utils'
+import ConversationSearch from '../search/ConversationSearch'
 
 function ConversationCreator(props) {
   const [state, setState] = useState({})
+  const [searching, setSearching] = useState(false)
+  const [hover, setHover] = useState(false)
+  const [iconHover, setIconHover] = useState(false)
   return (
-    <Box fill='horizontal' pad={{right: '10px'}}>
+    <Box fill='horizontal' pad={{right: '10px'}} margin={{top: 'medium'}}>
       <Box pad={props.padding} fill='horizontal' direction="row" align="center" margin={{bottom: '5px'}}>
-        <Box width='100%'>
-          <Text size='small' width='100%' weight='bold' color={props.textColor}>Conversations</Text>
-        </Box>
+        {searching ?
+          <ConversationSearch
+            setCurrentConversation={props.setCurrentConversation}
+            onSearchClose={() => {
+              setSearching(false)
+              setHover(false)
+            }} /> :
+          <Box width='100%'>
+            <Text
+              style={{cursor: 'pointer'}}
+              onClick={() => setSearching(true)}
+              onMouseEnter={() => setHover(true)}
+              onMouseLeave={() => setHover(false)}
+              size='small'
+              width='100%'
+              weight='bold'
+              color={hover ? null : props.textColor}>
+                Conversations
+            </Text>
+          </Box>
+        }
         <Modal target={
           <Box
+            onMouseEnter={() => setIconHover(true)}
+            onMouseLeave={() => setIconHover(false)}
             style={{cursor: 'pointer'}}
             border
             round='full'
@@ -24,7 +48,7 @@ function ConversationCreator(props) {
             height='20px'
             justify='center'
             align='center'>
-            <Add size="small" />
+            <Add color={iconHover ? null : props.textColor} size="small" />
           </Box>}>
           {setOpen => (
             <Mutation

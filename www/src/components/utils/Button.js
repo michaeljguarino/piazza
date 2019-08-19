@@ -5,6 +5,7 @@ function Button(props) {
   const [hover, setHover] = useState(false)
   return (
     <Box
+      onClick={props.onClick}
       style={{cursor: 'pointer'}}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}

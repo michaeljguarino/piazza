@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useState} from 'react'
 import {Box, Text} from 'grommet'
 import {Add} from 'grommet-icons'
 import { Mutation } from 'react-apollo'
@@ -10,14 +10,37 @@ import Users from '../users/Users'
 import Button from '../utils/Button'
 
 function ChatCreator(props) {
+  const [iconHover, setIconHover] = useState(false)
+  const [textHover, setTextHover] = useState(false)
+  const [participants, setParticipants] = useState([])
+
+  const addParticipant = (user) => {
+    setParticipants([user, ...participants])
+  }
+
+  const removeParticipant = (handle) => {
+    setParticipants(participants.filter((u) => u.handle !== handle))
+  }
+
   return (
     <Box fill='horizontal' pad={{right: '10px'}}>
-      <Box pad={props.padding} fill='horizontal' direction="row" align="center" margin={{bottom: '5px'}}>
-        <Box width='100%'>
-          <Text size='small' width='100%' weight='bold' color={props.textColor}>Chats</Text>
-        </Box>
-        <Modal target={
+      <Modal target={
+        <Box pad={props.padding} fill='horizontal' direction="row" align="center" margin={{bottom: '5px'}}>
+          <Box width='100%'>
+            <Text
+              onMouseEnter={() => setTextHover(true)}
+              onMouseLeave={() => setTextHover(false)}
+              style={{cursor: 'pointer'}}
+              size='small'
+              width='100%'
+              weight='bold'
+              color={textHover ? null : props.textColor}>
+                Chats
+            </Text>
+          </Box>
           <Box
+            onMouseEnter={() => setIconHover(true)}
+            onMouseLeave={() => setIconHover(false)}
             style={{cursor: 'pointer'}}
             border
             round='full'
@@ -25,46 +48,54 @@ function ChatCreator(props) {
             height='20px'
             justify='center'
             align='center'>
-            <Add size="small" />
-          </Box>}>
-          {setOpen => (
-            <Box width="400px">
-              <ModalHeader text='Start a chat' />
-              <ParticipantInvite
-                direction='row'
-                pad={{left: 'small', right: 'small', bottom: 'small', top: 'small'}}
-                mapper={(u) => u.id}>
-              {participants => (
-                <Mutation
-                  mutation={CREATE_CHAT}
-                  variables={{userIds: participants}}
-                  update={(cache, { data: { createChat } }) => {
-                    props.setCurrentConversation(createChat)
-                    const prev = cache.readQuery({ query: CONVERSATIONS_Q });
-                    cache.writeQuery({
-                      query: CONVERSATIONS_Q,
-                      data: addConversation(prev, createChat)
-                    });
-                    setOpen(false)
-                  }}
-                  >
-                  {mutation => (
-                    <Button
-                      size='small'
-                      onClick={mutation}
-                      margin={{left: 'xsmall'}}
-                      label='Go'
-                      width='50px' />
-                  )}
-                </Mutation>
-              )}
-              </ParticipantInvite>
-              <Users pad={{horizontal: 'small', vertical: 'xxsmall'}} onChat={() => setOpen(false)} />
-            </Box>
-          )}
-        </Modal>
-      </Box>
+            <Add color={iconHover ? null : props.textColor} size="small" />
+          </Box>
+        </Box>}>
+        {setOpen => (
+          <Box width="400px" pad={{bottom: 'small'}}>
+            <ModalHeader text='Start a chat' setOpen={setOpen} />
+            <ParticipantInvite
+              direction='row'
+              onAddParticipant={addParticipant}
+              onRemoveParticipant={removeParticipant}
+              additional={participants}
+              pad={{left: 'small', right: 'small', bottom: 'small', top: 'small'}}
+              mapper={(u) => u.id}>
+            {(participants) => (
+              <Mutation
+                mutation={CREATE_CHAT}
+                variables={{userIds: participants}}
+                update={(cache, { data: { createChat } }) => {
+                  props.setCurrentConversation(createChat)
+                  const prev = cache.readQuery({ query: CONVERSATIONS_Q });
+                  cache.writeQuery({
+                    query: CONVERSATIONS_Q,
+                    data: addConversation(prev, createChat)
+                  });
+                  setOpen(false)
+                }}
+                >
+                {mutation => (
+                  <Button
+                    size='small'
+                    onClick={mutation}
+                    margin={{left: 'xsmall'}}
+                    label='Go'
+                    width='50px' />
+                )}
+              </Mutation>
+            )}
+            </ParticipantInvite>
+            <Users
+              onClick={addParticipant}
+              ignore={new Set(participants.map((u) => u.id))}
+              pad={{horizontal: 'small', vertical: 'xxsmall'}}
+              onChat={() => setOpen(false)} />
+          </Box>
+        )}
+      </Modal>
     </Box>
+
   )
 }
 

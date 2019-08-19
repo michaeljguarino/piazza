@@ -1,8 +1,7 @@
-import React, {createRef} from 'react'
-import {Query, ApolloConsumer} from 'react-apollo'
-import {TextInput, Drop, Box, Anchor} from 'grommet'
+import React, {useState, useRef, useEffect} from 'react'
+import {ApolloConsumer} from 'react-apollo'
+import {TextInput, Box, Text} from 'grommet'
 import {Search} from 'grommet-icons'
-import debounce from 'lodash/debounce';
 import {SEARCH_Q} from './queries'
 import {CONVERSATIONS_Q} from '../conversation/queries'
 import {addConversation} from '../conversation/utils'
@@ -15,42 +14,17 @@ function _addConversation(client, conversation) {
   });
 }
 
+function searchConversations(client, query, callback) {
+  if (query.length === 0) return
 
-function ConversationSuggestions(props) {
-  if (props.q.length === 0 || !props.open)
-      return (<span></span>)
-
-  function _wrappedSetCurrentConversation(conversation) {
-    _addConversation(props.client, conversation)
-    props.setCurrentConversation(conversation)
-  }
-
-  return (
-    <Query query={SEARCH_Q} variables={{q: props.q}}>
-      {({data, loading}) => {
-        if (loading) return (<span></span>)
-
-        return (
-          <Drop
-            align={{ top: "bottom"}}
-            target={props.targetRef.current}
-            onClickOutside={() => props.setOpen(false)}
-            onEsc={() => props.setOpen(false)}
-          >
-            {data.searchConversations.edges.map((e, index, list) => (
-              <ConversationResult
-                key={e.node.id}
-                node={e.node}
-                name={e.node.name}
-                index={index}
-                list={list}
-                setCurrentConversation={_wrappedSetCurrentConversation} />
-            ))}
-          </Drop>
-        )
-      }}
-    </Query>
-  )
+  client.query({
+    query: SEARCH_Q,
+    variables: {q: query}
+  }).then(({data}) => {
+    return data.searchConversations.edges.map((e) => {
+      return {value: e.node, label: <ConversationResult name={e.node.name} />}
+    })
+  }).then(callback)
 }
 
 function ConversationResult(props) {
@@ -59,57 +33,68 @@ function ConversationResult(props) {
       direction="row"
       align="center"
       gap="small"
-      border={props.index < props.list.length - 1 ? "bottom" : undefined}
       pad="small">
-      <Anchor size='small' onClick={() => props.setCurrentConversation(props.node)}># {props.name}</Anchor>
+      <Text size='small'># {props.name}</Text>
     </Box>
   )
 }
 
 
-class ConversationSearch extends React.Component {
-  state = { value: "", q: "", open: true}
-  boxRef = createRef()
+function ConversationSearch(props) {
+  const searchRef = useRef()
+  const [value, setValue] = useState('')
+  const [suggestions, setSuggestions] = useState([])
 
-  renderSuggestions = debounce(() => {this.setState({q: this.state.value})}, 200)
-
-  render() {
-    return (
-      <Box
-        height='30px'
-        fill='horizontal'
-        pad={{right: '10px', left: '10px'}}
-        margin={{bottom: 'small'}}
-      >
-        <Box
-          ref={this.boxRef}
-          direction='row'
-          align='center'
-          round="xsmall"
-          placeholder='search for conversa'
-          pad={{left: '10px', right: '10px'}}
-          border={{side: "all", color: "border"}}>
-          <Search size='15px' />
-          <TextInput
-            type="search"
-            plain
-            value={this.state.value}
-            onChange={(event) => {
-              this.setState({value: event.target.value, open: true })
-              this.renderSuggestions()
-            }}
-          />
-          <ConversationSuggestions
-            q={this.state.q}
-            setOpen={(open) => this.setState({open: open})}
-            targetRef={this.boxRef}
-            open={this.state.open}
-            {...this.props}
-          />
-        </Box>
-      </Box>
-    )
+  function handleClickOutside(event) {
+    if (searchRef.current && !searchRef.current.contains(event.target)) {
+      props.onSearchClose()
+    }
   }
+
+  useEffect(() => {
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  });
+
+  const wrappedSetCurrentConv = (e) => {
+    const conv = e.suggestion.value
+    _addConversation(props.client, conv)
+    props.setCurrentConversation(conv)
+  }
+
+  return (
+    <Box
+      ref={searchRef}
+      fill='horizontal'
+    >
+      <Box
+        direction='row'
+        align='center'
+        placeholder='search for a conversation'
+        border='bottom'>
+        <Search size='15px' />
+        <TextInput
+          type="search"
+          plain
+          suggestions={suggestions}
+          onSelect={(conv) => {
+            wrappedSetCurrentConv(conv)
+            setValue('')
+            setSuggestions([])
+            props.onSearchClose()
+          }}
+          value={value}
+          onChange={(event) => {
+            const q = event.target.value
+            setValue(q)
+            searchConversations(props.client, q, setSuggestions)
+          }}
+        />
+      </Box>
+    </Box>
+  )
 }
 
 function WrappedConvSearch(props) {

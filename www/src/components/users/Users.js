@@ -41,7 +41,7 @@ function Users(props) {
           return (
             <Scroller
               id='message-viewport'
-              edges={userEdges}
+              edges={userEdges.filter(({node}) => !props.ignore.has(node.id))}
               style={{
                 overflow: 'auto',
                 height: '40vh'
@@ -52,7 +52,8 @@ function Users(props) {
                   onChat={props.onChat}
                   key={edge.node.id}
                   user={edge.node}
-                  color={props.color} />
+                  color={props.color}
+                  onClick={props.onClick} />
               )}
               onLoadMore={() => {
                 if (!pageInfo.hasNextPage) {

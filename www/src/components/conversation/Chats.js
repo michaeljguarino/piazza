@@ -12,7 +12,7 @@ function Chats(props) {
       id='chats-list'
       style={{
         overflow: 'auto',
-        height: '40vh'
+        maxHeight: '40vh'
       }}
       edges={props.chats.edges}
       onLoadMore={() => {

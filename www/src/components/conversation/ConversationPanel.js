@@ -4,7 +4,6 @@ import Me from '../users/Me'
 import {Box} from 'grommet'
 import ConversationCreator from './ConversationCreator'
 import Chats from './Chats'
-import ConversationSearch from '../search/ConversationSearch'
 import Scroller from '../utils/Scroller'
 import {mergeAppend} from '../../utils/array'
 
@@ -14,7 +13,6 @@ function ConversationPanel(props) {
   return (
     <Box>
       <Me me={props.me} pad={padding} />
-      <ConversationSearch setCurrentConversation={props.setCurrentConversation} />
       <Box margin={{bottom: 'medium'}}>
         <ConversationCreator
           padding={padding}
@@ -24,7 +22,7 @@ function ConversationPanel(props) {
           id='conversations-list'
           style={{
             overflow: 'auto',
-            height: '40vh'
+            maxHeight: '40vh'
           }}
           edges={props.conversations}
           onLoadMore={() => {

@@ -12,9 +12,9 @@ import Participants from './Participants'
 import PinnedMessages from './PinnedMessages'
 import Commands from '../commands/Commands'
 import NotificationsPreferences, {DEFAULT_PREFS} from '../users/NotificationPreferences'
-import pick from 'lodash/pick'
 import {updateConversation} from './utils'
 import {conversationNameString, Icon} from './Conversation'
+import pick from 'lodash/pick'
 
 export const BOX_ATTRS = {
   direction: "row",
@@ -96,12 +96,11 @@ function ConversationName(props) {
 
 function ConversationDropdown(props) {
   const currentParticipant = props.conversation.currentParticipant || {}
-  const [preferences, setPreferences] = useState(currentParticipant.notificationPreferences || DEFAULT_PREFS)
   const variables = {
     conversationId: props.conversation.id,
-    userId: props.me.id,
-    prefs: pick(preferences, ['mention', 'message', 'participant'])
+    userId: props.me.id
   }
+  const preferences = currentParticipant.notificationPreferences || DEFAULT_PREFS
 
   return (
     <CloseableDropdown
@@ -111,12 +110,11 @@ function ConversationDropdown(props) {
       target={<ConversationName me={props.me} conversation={props.conversation} />}>
       {setOpen => (
       <Box gap='small' pad='small' width='230px' round='small'>
-        <Mutation mutation={UPDATE_PARTICIPANT} variables={variables}>
+        <Mutation mutation={UPDATE_PARTICIPANT}>
         {mutation => (
           <NotificationsPreferences
             vars={variables}
-            preferences={preferences}
-            setPreferences={setPreferences}
+            preferences={pick(preferences, ['mention', 'message', 'participant'])}
             mutation={mutation} />
         )}
         </Mutation>

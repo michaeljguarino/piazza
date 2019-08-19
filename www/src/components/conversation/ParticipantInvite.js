@@ -2,6 +2,7 @@ import React, {createRef} from 'react'
 import {Mutation, ApolloConsumer} from 'react-apollo'
 import {Box, Anchor, Text} from 'grommet'
 import debounce from 'lodash/debounce'
+import uniqBy from 'lodash/uniqBy'
 import {CREATE_PARTICIPANTS, PARTICIPANTS_Q} from './queries'
 import TagInput from '../utils/TagInput'
 import {mergeAppend} from '../../utils/array'
@@ -107,6 +108,8 @@ class ParticipantInvite extends React.Component {
 
   render() {
     const mapper = this.props.mapper || ((p) => p.handle)
+    const additional = this.props.additional || []
+    const allParticipants = uniqBy([...additional, ...this.state.participants], (u) => u.id)
     return (
       <ApolloConsumer>
       {client => (
@@ -114,12 +117,18 @@ class ParticipantInvite extends React.Component {
           <TagInput
             placeholder="Search for users by handle..."
             suggestions={this.state.suggestions}
-            value={this.state.participants.map((u) => u.handle)}
-            onRemove={this.onRemoveTag}
-            onAdd={this.onAddTag}
+            value={allParticipants.map((u) => u.handle)}
+            onRemove={(handle) => {
+              this.props.onRemoveParticipant && this.props.onRemoveParticipant(handle)
+              this.onRemoveTag(handle)
+            }}
+            onAdd={(u) => {
+              this.props.onAddParticipant && this.props.onAddParticipant(u.value)
+              this.onAddTag(u)
+            }}
             onChange={({ target: { value } }) => fetchUsers(client, value, this.setSuggestions)}
           />
-          {this.props.children(this.state.participants.map(mapper), this.clearInput)}
+          {this.props.children(allParticipants.map(mapper), this.clearInput)}
         </Box>
       )}
       </ApolloConsumer>
