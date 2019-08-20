@@ -7,7 +7,7 @@ defmodule Core.Services.Platform.Webhooks do
             }
           } <- Mojito.post(url, webhook_headers(payload, secret), payload),
          {:ok, msg} <- handle_response(response) do
-      Core.Services.Conversations.create_message(conv_id, %{text: msg}, bot)
+      Core.Services.Conversations.create_message(conv_id, msg, bot)
     else
       {:ok, %Mojito.Response{body: body}} -> {:error, :request_failed, body}
       error -> error
@@ -26,9 +26,5 @@ defmodule Core.Services.Platform.Webhooks do
   end
 
   defp handle_response("OK"), do: :ok
-  defp handle_response(response) do
-    with {:ok, %{"message" => message}} <- Jason.decode(response) do
-      {:ok, message}
-    end
-  end
+  defp handle_response(response), do: Jason.decode(response)
 end

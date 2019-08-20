@@ -43,8 +43,8 @@ function Reaction(props) {
         <Box
           {...BOX_ATTRS}
           onClick={() => mutation({variables: {messageId: props.messageId, name: props.name}})}
-          background='accent-2'
-          border={{color: 'brand'}}>
+          background='highlight'
+          border={{color: 'highlight-dark'}}>
           <Text size='10px'>
             <Emoji forceSize emoji={props.name} size={15} style={{lineHeight: 0}} />
           </Text>

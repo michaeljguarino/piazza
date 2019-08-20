@@ -18,7 +18,15 @@ defmodule GqlWeb.WebhookControllerTest do
           |> post(path, %{"text" => "/giphy doggos"})
           |> json_response(200)
 
-        assert result["message"] == "Here's a [doggos](#{gif_url})"
+        %{"_type" => "root", "children" => [
+          %{"_type" => "box", "children" => [
+            %{"_type" => "link", "children" => [
+              %{"attributes" => %{"url" => url}}
+            ]}
+          ]}
+        ]} = result["structured_message"]
+
+        assert url == gif_url
       end
     end
 
@@ -37,7 +45,15 @@ defmodule GqlWeb.WebhookControllerTest do
           |> post(path, %{message: "doggos"})
           |> json_response(200)
 
-        assert result["message"] == "Here's a [random gif](#{gif_url})"
+          %{"_type" => "root", "children" => [
+            %{"_type" => "box", "children" => [
+              %{"_type" => "link", "children" => [
+                %{"attributes" => %{"url" => url}}
+              ]}
+            ]}
+          ]} = result["structured_message"]
+
+          assert url == gif_url
       end
     end
   end

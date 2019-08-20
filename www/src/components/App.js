@@ -25,9 +25,12 @@ const theme = {
     colors: {
       brand: '#2F415B',
       'accent-1': '#CF6D57',
-      'accent-2': '#cdd7e5',
       focus: '#CF6D57',
       'brand-heavy': '#263449',
+      'brand-light': '#6d7a8c',
+      'brand-medium': '#59677c',
+      'highlight': '#cdd7e5',
+      'highlight-dark': '#a4acb7',
       notif: '#EB4D5C',
       'light-hover': '#EDEDED'
     },

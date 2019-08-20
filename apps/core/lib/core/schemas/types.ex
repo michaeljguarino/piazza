@@ -145,6 +145,7 @@ defmodule Core.Schemas.Types do
     field :text, non_null(:string)
     field :creator_id, non_null(:id)
     field :conversation_id, non_null(:id)
+    field :structured_message, :map
     field :pinned_at, :datetime
     field :attachment, :string, resolve: fn
       message, _, _ -> {:ok, Core.Storage.url({message.attachment, message}, :original)}

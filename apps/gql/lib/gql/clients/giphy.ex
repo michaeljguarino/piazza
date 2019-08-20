@@ -7,6 +7,12 @@ defmodule Gql.Clients.Giphy do
       q: search_query,
       limit: @sample_size
     })
+    with {:ok, url}    <- fetch(params) do
+      {:ok, build_message("This is what I found for #{search_query}", url)}
+    end
+  end
+
+  def fetch(params) do
     case get("gifs/search?#{params}") do
       {:ok, %{"data" => [_ | _] = results}} ->  Enum.random(results) |> select_url()
       _ -> {:error, :not_found}
@@ -19,6 +25,24 @@ defmodule Gql.Clients.Giphy do
       {:ok, %Mojito.Response{body: body, status_code: 200}} -> Jason.decode(body)
       _ -> {:error, :not_found}
     end
+  end
+
+  def build_message(text, url) do
+    %{
+      text: text,
+      structured_message: %{
+        _type: "root",
+        children: [
+          %{
+            _type: "box", attributes: %{pad: "small"}, children: [
+              %{_type: "link", attributes: %{href: url, target: "_blank"}, children: [
+                %{_type: "video", attributes: %{url: url, autoPlay: true, loop: true}}
+              ]}
+            ]
+          }
+        ]
+      }
+    }
   end
 
   def select_url(%{"images" => %{"original" => %{"mp4" => url}}}), do: {:ok, url}

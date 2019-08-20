@@ -3,8 +3,8 @@ defmodule GqlWeb.WebhookController do
   alias Core.Commands.Piazza
 
   def giphy(conn, %{"text" => "/giphy " <> search}) do
-    with {:ok, uri} <- Gql.Clients.Giphy.random(search) do
-      json(conn, %{message: "Here's a [#{search}](#{uri})"})
+    with {:ok, message} <- Gql.Clients.Giphy.random(search) do
+      json(conn, message)
     end
   end
   def giphy(conn, params), do: giphy(conn, Map.put(params, "text", "/giphy random gif"))

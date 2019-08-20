@@ -10,6 +10,7 @@ import MessageReactions from './MessageReactions'
 import PresenceIndicator from '../users/PresenceIndicator'
 import BotIcon from '../utils/BotIcon'
 import WithPresence from '../utils/presence'
+import StructuredMessage from './StructuredMessage'
 import FileIcon, { defaultStyles } from 'react-file-icon'
 
 function TextMessage(props) {
@@ -86,6 +87,20 @@ function MessageEntity(props) {
   }
 }
 
+function MessageSwitch(props) {
+  if (props.embed) {
+    return <MessageEmbed {...props.embed} />
+  }
+  if (props.attachment) {
+    return <AttachmentMessage {...props} />
+  }
+  if (props.structuredMessage && props.structuredMessage._type === 'root') {
+    return <StructuredMessage {...props.structuredMessage} />
+  }
+
+  return <TextMessage {...props} />
+}
+
 function MessageBody(props) {
   const date = moment(props.message.insertedAt)
   const consecutive = props.message.creator.id === (props.next && props.next.creator.id)
@@ -112,12 +127,8 @@ function MessageBody(props) {
               {date.fromNow()}
             </Text>
           </Box>}
-        <Box>
-          {props.message.embed ?
-            <MessageEmbed {...props.message.embed} /> :
-            (props.message.attachment ?
-              <AttachmentMessage {...props.message} /> :
-              <TextMessage {...props.message} />)}
+        <Box width='100%'>
+          <MessageSwitch {...props.message} />
           {props.message.reactions && props.message.reactions.length > 0 && (
             <MessageReactions {...props} />
           )}

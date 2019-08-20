@@ -11,7 +11,8 @@ const Tag = ({ children, onRemove, ...rest }) => {
       onMouseLeave={() => setHover(false)}
       direction="row"
       align="center"
-      background={hover ? 'brand-heavy' : 'brand'}
+      pad={{horizontal: 'xxsmall'}}
+      background={hover ? 'brand-medium' : 'brand-light'}
       margin={{ vertical: "xxsmall" }}
       {...rest}
     >

@@ -57,6 +57,7 @@ export const MessageFragment = gql`
     insertedAt
     pinnedAt
     attachment
+    structuredMessage
     entities {
       type
       startIndex

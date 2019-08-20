@@ -10,10 +10,11 @@ defmodule Core.Models.Message do
   }
 
   schema "messages" do
-    field :text,          :string
-    field :attachment,    Core.Storage.Type
-    field :attachment_id, :binary_id
-    field :pinned_at,     :utc_datetime_usec
+    field :text,               :string
+    field :attachment,         Core.Storage.Type
+    field :attachment_id,      :binary_id
+    field :pinned_at,          :utc_datetime_usec
+    field :structured_message, :map
 
     belongs_to :creator,      User
     belongs_to :conversation, Conversation
@@ -25,7 +26,7 @@ defmodule Core.Models.Message do
     timestamps()
   end
 
-  @valid ~w(text)a
+  @valid ~w(text structured_message)a
 
   def for_conversation(query \\ __MODULE__, conv_id),
     do: from(m in query, where: m.conversation_id == ^conv_id)
@@ -59,6 +60,12 @@ defmodule Core.Models.Message do
     |> foreign_key_constraint(:creator_id)
     |> foreign_key_constraint(:conversation_id)
     |> validate_length(:text, max: 255)
+    |> validate_change(:structured_message, fn _, message ->
+      case Core.Models.StructuredMessage.validate(message) do
+        :pass -> []
+        {:fail, message} -> [structured_message: message]
+      end
+    end)
     |> generate_uuid(:attachment_id)
     |> cast_attachments(attrs, [:attachment], allow_urls: true)
   end

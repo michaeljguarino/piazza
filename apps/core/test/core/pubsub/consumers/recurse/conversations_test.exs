@@ -33,7 +33,7 @@ defmodule Core.PubSub.Consumers.Recurse.ConversationsTest do
       message = insert(:message, text: "/giffy doggos")
       with_mock Mojito, [
         post: fn "https://my.giffy.com/webhook", _, _ ->
-          {:ok, %Mojito.Response{body: Jason.encode!(%{message: "here's a gif"}), status_code: 200}}
+          {:ok, %Mojito.Response{body: Jason.encode!(%{text: "here's a gif"}), status_code: 200}}
         end
       ] do
 

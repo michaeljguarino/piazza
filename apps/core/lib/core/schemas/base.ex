@@ -6,6 +6,7 @@ defmodule Core.Schemas.Base do
       import Absinthe.Resolution.Helpers
       import Core.Schemas.Base
       import_types Absinthe.Type.Custom
+      import_types Core.Schema.CustomTypes
 
       enum :delta do
         value :create
