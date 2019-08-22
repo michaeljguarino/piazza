@@ -19,7 +19,8 @@ class Scroller extends Component {
       }
     } else {
       let elem = document.getElementById(this.props.id);
-      if (elem.scrollTop <= 0) {
+      if (elem.scrollTop <= elem.offsetHeight) {
+        console.log('scrolling')
         this.props.onLoadMore()
       }
     }

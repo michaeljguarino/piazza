@@ -22,6 +22,8 @@ function TextMessage(props) {
 }
 
 const extension = (file) => file.split('.').pop()
+const PINNED_BACKGROUND='rgba(var(--sk_secondary_highlight,242,199,68),.1)'
+const PIN_COLOR='rgb(242,199,68)'
 
 function AttachmentMessage(props) {
   const filename = props.attachment.split("?")[0]
@@ -101,37 +103,54 @@ function MessageSwitch(props) {
   return <TextMessage {...props} />
 }
 
+function PinHeader(props) {
+  if (props.pin) {
+    return (
+      <Box justify='center'>
+        <Text
+          size='xsmall'
+          margin={{top: '2px', left: '30px'}}>
+          <Pin color={PIN_COLOR} size='small'/> pinned by @{props.pin.user.handle}
+        </Text>
+      </Box>
+    )
+  }
+  return null
+}
+
 function MessageBody(props) {
   const date = moment(props.message.insertedAt)
   const consecutive = props.message.creator.id === (props.next && props.next.creator.id)
+  const background = props.message.pin ? PINNED_BACKGROUND : null
   return (
-    <Box direction='row' pad={{top: '5px', bottom: '5px', left: 'small'}}>
-      {!consecutive && <Avatar user={props.message.creator} /> }
-      {consecutive && <Box width='45px'></Box>}
-      <Box>
-        {!consecutive &&
-          <Box direction='row' align='center'>
-            <Text weight='bold' size='15px' margin={{right: '5px'}}>
-              {props.message.creator.name}
-            </Text>
-            {props.message.creator.bot && (
-              <BotIcon />
+    <Box fill='horizontal' background={background}>
+      <PinHeader {...props.message} />
+      <Box direction='row' pad={{top: '5px', bottom: '5px', left: 'small'}}>
+        {!consecutive && <Avatar user={props.message.creator} /> }
+        {consecutive && <Box width='45px'></Box>}
+        <Box>
+
+          {!consecutive &&
+            <Box direction='row' align='center'>
+              <Text weight='bold' size='15px' margin={{right: '5px'}}>
+                {props.message.creator.name}
+              </Text>
+              {props.message.creator.bot && (
+                <BotIcon />
+              )}
+              <WithPresence id={props.message.creator.id} >
+                {present => <PresenceIndicator present={present} />}
+              </WithPresence>
+              <Text size='10px'>
+                {date.fromNow()}
+              </Text>
+            </Box>}
+          <Box width='100%'>
+            <MessageSwitch {...props.message} />
+            {props.message.reactions && props.message.reactions.length > 0 && (
+              <MessageReactions {...props} />
             )}
-            {props.message.pinnedAt && (
-              <Text margin={{right: '5px'}}><Pin size='15px'/></Text>
-            )}
-            <WithPresence id={props.message.creator.id} >
-              {present => <PresenceIndicator present={present} />}
-            </WithPresence>
-            <Text size='10px'>
-              {date.fromNow()}
-            </Text>
-          </Box>}
-        <Box width='100%'>
-          <MessageSwitch {...props.message} />
-          {props.message.reactions && props.message.reactions.length > 0 && (
-            <MessageReactions {...props} />
-          )}
+          </Box>
         </Box>
       </Box>
     </Box>
@@ -146,7 +165,7 @@ function Message(props) {
     <Box
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
-      background={isHovered ? 'light-2' : null}
+      background={(isHovered && !props.message.pin) ? 'light-2' : null}
       flex={false}>
       <Stack fill anchor='top-right'>
         <MessageBody hover={isHovered} setPinnedHover={setPinnedHover} {...props} />

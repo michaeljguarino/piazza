@@ -75,13 +75,14 @@ class MessageList extends Component {
                       const edges = fetchMoreResult.conversation.messages.edges
                       const pageInfo = fetchMoreResult.conversation.messages.pageInfo
                       return edges.length ? {
+                        ...prev,
                         conversation: {
+                          ...prev.conversation,
                           messages: {
                             __typename: prev.conversation.messages.__typename,
                             edges: mergeAppend(edges, prev.conversation.messages.edges, (e) => e.node.id),
                             pageInfo
-                          },
-                          ...this.props.conversation
+                          }
                         }
                       } : prev;
                     }

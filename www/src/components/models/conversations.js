@@ -75,6 +75,11 @@ export const MessageFragment = gql`
     reactions {
       ...ReactionFragment
     }
+    pin {
+      user {
+        handle
+      }
+    }
   }
   ${EmbedFragment}
   ${UserFragment}
