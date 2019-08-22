@@ -154,6 +154,7 @@ defmodule Core.Schemas.Types do
     field :conversation, :conversation, resolve: dataloader(Conversation)
     field :entities, list_of(:message_entity), resolve: dataloader(Conversation)
     field :reactions, list_of(:message_reaction), resolve: dataloader(Conversation)
+    field :pin, :pinned_message, resolve: dataloader(Conversation)
     field :embed, :embed
 
     timestamps()

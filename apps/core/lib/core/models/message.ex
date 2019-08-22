@@ -6,7 +6,8 @@ defmodule Core.Models.Message do
     Conversation,
     MessageEntity,
     MessageReaction,
-    Embed
+    Embed,
+    PinnedMessage
   }
 
   schema "messages" do
@@ -20,6 +21,7 @@ defmodule Core.Models.Message do
     belongs_to :conversation, Conversation
     has_many   :entities,     MessageEntity
     has_many   :reactions,    MessageReaction
+    has_one    :pin,          PinnedMessage
 
     embeds_one :embed, Embed, on_replace: :update
 

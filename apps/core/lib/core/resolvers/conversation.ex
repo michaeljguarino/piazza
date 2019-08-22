@@ -17,6 +17,7 @@ defmodule Core.Resolvers.Conversation do
   def query(Conversation, _args), do: Conversation
   def query(MessageEntity, _args), do: MessageEntity
   def query(MessageReaction, _args), do: MessageReaction
+  def query(PinnedMessage, _args), do: PinnedMessage
   def query(:unread_messages, _), do: Conversation.any()
   def query(:unread_notifications, _), do: Conversation.any()
 
