@@ -197,10 +197,11 @@ function MentionManager(props) {
             value={editorState}
             plugins={plugins}
             style={{
+              overflow: 'auto',
               fontFamily: 'Roboto',
               fontSize: '14px',
               width: '100%',
-              maxHeight: '190px',
+              maxHeight: '160px',
               paddingLeft: '10px',
               paddingTop: '3px',
               paddingBottom: '3px'

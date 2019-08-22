@@ -3,7 +3,7 @@ import {Mutation} from 'react-apollo'
 import {Box, Text, Markdown, Anchor} from 'grommet'
 import {Down} from 'grommet-icons'
 import CloseableDropdown from '../utils/CloseableDropdown'
-import Modal from '../utils/Modal'
+import Modal, {ModalHeader} from '../utils/Modal'
 import {UPDATE_CONVERSATION, CONVERSATIONS_Q, UPDATE_PARTICIPANT, DELETE_PARTICIPANT} from './queries'
 import ConversationEditForm from './ConversationEditForm'
 import NotificationIcon from '../notifications/NotificationIcon'
@@ -63,13 +63,15 @@ function ConversationUpdate(props) {
           setOpen(false)
         }} >
       {(mutation) => (
-        <Box align='center' justify='center' pad='small'>
-          <Text>Update # {props.conversation.name}</Text>
-          <ConversationEditForm
-            state={attributes}
-            mutation={mutation}
-            onStateChange={(update) => setAttributes({...attributes, ...update})}
-            action='update' />
+        <Box>
+          <ModalHeader setOpen={setOpen} text={`Update #${props.conversation.name}`}/>
+          <Box align='center' justify='center' pad='small'>
+            <ConversationEditForm
+              state={attributes}
+              mutation={mutation}
+              onStateChange={(update) => setAttributes({...attributes, ...update})}
+              action='update' />
+          </Box>
         </Box>
       )}
       </Mutation>

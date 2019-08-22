@@ -43,12 +43,14 @@ const Piazza = () => {
             <Box height='70px'>
               <ConversationHeader conversation={currentConversation} setCurrentConversation={setCurrentConversation} />
             </Box>
-            <MessageList textHeight={textHeight} conversation={currentConversation} />
-            <MessageInput
-              height={textHeight}
-              incrementHeight={incrementHeight}
-              resetHeight={resetHeight}
-              conversation={currentConversation} />
+            <Box style={{height: 'calc(100vh - 70px)', maxHeight: 'calc(100vh - 70px)'}}>
+              <MessageList textHeight={textHeight} conversation={currentConversation} />
+              <MessageInput
+                height={textHeight}
+                incrementHeight={incrementHeight}
+                resetHeight={resetHeight}
+                conversation={currentConversation} />
+            </Box>
           </Box>
         </Grid>
       )}

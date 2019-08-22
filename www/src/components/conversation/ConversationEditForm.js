@@ -4,7 +4,7 @@ import {Form, FormField, Button, Box, CheckBox} from 'grommet'
 function ConversationEditForm(props) {
   return (
     <Form onSubmit={props.mutation}>
-      <Box pad="small" width="300px">
+      <Box width="300px">
         <FormField
           label="conversation name"
           name='name'

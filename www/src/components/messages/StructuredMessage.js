@@ -3,7 +3,6 @@ import {Box, Text, Markdown, Anchor} from 'grommet'
 
 function video(props, i) {
   const {url, ...rest} = props.attributes
-  console.log(props)
   return <video {...rest} src={url} />
 }
 

@@ -91,7 +91,7 @@ class MessageInput extends Component {
     this.setupChannel()
     const { text, attachment } = this.state
     return (
-      <Box height={`${this.props.height}px`} fill='horizontal' pad={{top: '10px', right: '10px', left: '10px'}}>
+      <Box style={{maxHeight: '210px', minHeight: 'auto'}} fill='horizontal' pad={{top: '10px', right: '10px', left: '10px'}}>
         <Mutation
             mutation={MESSAGE_MUTATION}
             variables={{conversationId: this.props.conversation.id, attributes: {text, attachment}}}
@@ -130,7 +130,7 @@ class MessageInput extends Component {
             }}>
             <Box
               fill='horizontal'
-              height='calc(100%-18px)'
+              height='calc(100%-20px)'
               direction="row"
               align="center"
               border
@@ -166,7 +166,7 @@ class MessageInput extends Component {
           </Form>
         )}
         </Mutation>
-        <Box style={{minHeight: '18px'}} align='center' direction='row' fill='horizontal'>
+        <Box style={{height: '20px'}} pad={{top: '2px', bottom: '2px'}} align='center' direction='row' fill='horizontal'>
           <div style={{width: 'calc(100% - 600px)'}}>
             <CurrentUserContext.Consumer>
               {me => (<Typing typists={this.state.typists} ignore={me.handle} />)}

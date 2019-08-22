@@ -2,7 +2,7 @@ import React, {useState} from 'react'
 import {Box, Text} from 'grommet'
 import {Add} from 'grommet-icons'
 import { Mutation } from 'react-apollo'
-import Modal from '../utils/Modal'
+import Modal, {ModalHeader} from '../utils/Modal'
 import {CREATE_CONVERSATION, CONVERSATIONS_Q} from './queries'
 import ConversationEditForm from './ConversationEditForm'
 import {addConversation} from './utils'
@@ -65,15 +65,15 @@ function ConversationCreator(props) {
               }}
             >
             {mutation => (
-              <Box pad='small'>
-                <Box align='center' justify='center'>
-                  <Text>Start a New Conversation</Text>
+              <Box>
+                <ModalHeader setOpen={setOpen} text='Start a new conversation' />
+                <Box align='center' justify='center' pad='small'>
+                  <ConversationEditForm
+                    state={state}
+                    mutation={mutation}
+                    onStateChange={(update) => setState({...state, ...update})}
+                    />
                 </Box>
-                <ConversationEditForm
-                  state={state}
-                  mutation={mutation}
-                  onStateChange={(update) => setState({...state, ...update})}
-                  />
               </Box>
             )}
             </Mutation>

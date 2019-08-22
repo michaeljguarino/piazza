@@ -12,16 +12,16 @@ import UpdatePassword from './UpdatePassword'
 import UpdateProfile from './UpdateProfile'
 
 function DropdownItem(props) {
-  const [background, setBackground] = useState(null)
+  const [hover, setHover] = useState(false)
 
   return (
     <Box
       style={{cursor: 'pointer'}}
       pad={{bottom: 'xsmall', left: 'small', right: 'small'}}
-      background={background}
+      background={hover ? 'brand' : null}
       onClick={() => props.onClick && props.onClick()}
-      onMouseEnter={() => setBackground('brand')}
-      onMouseLeave={() => setBackground(null)}>
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}>
       <Text size='small'>{props.text}</Text>
     </Box>
   )
@@ -72,7 +72,7 @@ function Me(props) {
           <Dropdown>
             <Box>
               <Text size='small' weight='bold'>{"@" + me.handle}</Text>
-              <Text size='small' color='dark-6'>{me.name}</Text>
+              <Text size='small' color={hover ? 'white' : 'dark-6'}>{me.name}</Text>
             </Box>
             <Box width="200px">
               <Box pad='small' direction="row" align="center">

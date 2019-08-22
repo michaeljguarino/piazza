@@ -53,7 +53,7 @@ class MessageList extends Component {
                 direction='up'
                 style={{
                   overflow: 'auto',
-                  height: `calc(100vh - ${70 + (this.props.textHeight || 0)}px)`,
+                  height: '100%',
                   display: 'flex',
                   justifyContent: 'flex-start',
                   flexDirection: 'column-reverse',
