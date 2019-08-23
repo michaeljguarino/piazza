@@ -11,6 +11,7 @@ import {CurrentUserContext} from '../login/EnsureLogin'
 import Participants from './Participants'
 import PinnedMessages from './PinnedMessages'
 import Commands from '../commands/Commands'
+import MessageSearch from './MessageSearch'
 import NotificationsPreferences, {DEFAULT_PREFS} from '../users/NotificationPreferences'
 import {updateConversation} from './utils'
 import {conversationNameString, Icon} from './Conversation'
@@ -139,7 +140,7 @@ function ConversationDropdown(props) {
 
 function ConversationHeader(props) {
   return (
-    <Box direction='row' border='bottom' pad={{left: '20px', top: '7px', bottom: '7px'}}>
+    <Box direction='row' border='bottom' align='center' pad={{left: '20px', top: '7px', bottom: '7px'}}>
       <Box fill='horizontal' direction='column'>
         <CurrentUserContext.Consumer>
         {me => (<ConversationDropdown me={me} {...props} />)}
@@ -152,6 +153,7 @@ function ConversationHeader(props) {
           </Box>
         </Box>
       </Box>
+      <MessageSearch conversation={props.conversation} />
       <Commands />
       <CurrentUserContext.Consumer>
       {me => (<NotificationIcon me={me} {...props} />)}

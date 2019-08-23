@@ -77,8 +77,10 @@ cron:
       memory: 256Mi
 
 retentionPolicy: &retentionPolicy
-  value: 2
+  name: RETENTION_POLICY
+  value: 5
 notificationRetentionPolicy: &notificationRetentionPolicy
+  name: RETENTION_POLICY
   value: 5
 
 crons:
@@ -87,13 +89,12 @@ crons:
   crontab: "0 0 * * *"
   envVars:
   - <<: *retentionPolicy
-    name: RETENTION_POLICY
 - cronName: piazza-prune-notifications
   cronModule: Prune.Notifications
   crontab: "30 0 * * *"
   envVars:
   - <<: *notificationRetentionPolicy
-    name: RETENTION_POLICY
+
 
 
 dbPasswordSecret: piazza-postgresql

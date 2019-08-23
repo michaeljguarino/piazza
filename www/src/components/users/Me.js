@@ -42,22 +42,15 @@ function Me(props) {
         onMouseLeave={() => setHover(false)}
         background={hover ? 'brand-heavy' : null}
         style={{cursor: 'pointer'}}
-        pad={{...props.pad, top: 'xsmall', bottom: 'xsmall'}}
+        pad={{...props.pad, top: 'small', bottom: '7px'}}
+        align='center'
         direction='row'>
-        <Box direction='row' margin={{bottom: '5px'}}>
+        <Box direction='row' align='center' margin={{bottom: '5px'}}>
           <Mutation
             mutation={UPDATE_USER}
             update={(cache, { data: { updateUser } }) => {
               const {me} = cache.readQuery({ query: ME_Q });
-              const newData = {
-                me: {
-                  ...me,
-                  ...updateUser
-              }}
-              cache.writeQuery({
-                query: ME_Q,
-                data: newData
-              });
+              cache.writeQuery({query: ME_Q, data: {me: {...me, ...updateUser}}});
             }} >
             {mutate => (
               <FilePicker

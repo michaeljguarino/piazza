@@ -21,6 +21,23 @@ export const MESSAGES_Q = gql`
   }
   ${MessageFragment}
 `
+
+export const SEARCH_MESSAGES = gql`
+  query SearchMessages($conversationId: ID!, $query: String) {
+    conversation(id: $conversationId) {
+      id
+      searchMessages(first: 10, query: $query) {
+        edges {
+          node {
+            ...MessageFragment
+          }
+        }
+      }
+    }
+  }
+  ${MessageFragment}
+`
+
 export const NEW_MESSAGES_SUB = gql`
   subscription MessageDeltas($conversationId: ID!) {
     messageDelta(conversationId: $conversationId) {

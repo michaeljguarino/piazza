@@ -33,8 +33,6 @@ spec:
                 secretKeyRef:
                   name: piazza-serviceaccount
                   key: credentials.json
-            - name: RETENTION_POLICY
-              value: "{{ .Values.retentionPolicy }}"
             - name: HOST
               value: {{ .Values.ingress.dns }}
             - name: DEPLOYED_AT

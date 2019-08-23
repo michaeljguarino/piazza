@@ -109,6 +109,7 @@ function PinHeader(props) {
       <Box justify='center'>
         <Text
           size='xsmall'
+          color='dark-3'
           margin={{top: '2px', left: '30px'}}>
           <Pin color={PIN_COLOR} size='small'/> pinned by @{props.pin.user.handle}
         </Text>

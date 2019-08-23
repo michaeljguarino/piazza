@@ -14,8 +14,8 @@ function Commands(props) {
     <Box
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
-      width='50px'
       style={{cursor: 'pointer'}}
+      margin={{horizontal: '10px'}}
       align='center'
       justify='center'>
       <Flyout

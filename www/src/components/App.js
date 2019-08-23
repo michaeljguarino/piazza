@@ -21,6 +21,11 @@ const theme = {
       vertical: '2px'
     }
   },
+  textInput: {
+    extend: {
+      fontWeight: 400
+    }
+  },
   global: {
     colors: {
       brand: '#2F415B',

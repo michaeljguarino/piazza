@@ -36,7 +36,7 @@ function NotificationIcon(props) {
     <Box
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
-      width='50px'
+      margin={{left: '10px', right: '20px'}}
       align='center'
       justify='center'>
       <Query query={NOTIFICATIONS_Q}>

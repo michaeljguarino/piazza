@@ -220,7 +220,7 @@ function MentionManager(props) {
               props.setText(text)
               props.onChange(state)
             }}
-            placeholder="Whatever is on your mind"
+            placeholder="this is for talking"
           />
           {plugins.map((plugin, index) => {
             const SuggestionPortal = plugin.SuggestionPortal
