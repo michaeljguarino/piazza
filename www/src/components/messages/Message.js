@@ -24,6 +24,7 @@ function TextMessage(props) {
 const extension = (file) => file.split('.').pop()
 const PINNED_BACKGROUND='rgba(var(--sk_secondary_highlight,242,199,68),.1)'
 const PIN_COLOR='rgb(242,199,68)'
+const SELECTED_BACKGROUND='rgba(255, 229, 119, 0.5)'
 
 function AttachmentMessage(props) {
   const filename = props.attachment.split("?")[0]
@@ -161,11 +162,13 @@ function Message(props) {
   const [hover, setHover] = useState(false)
   const [pinnedHover, setPinnedHover] = useState(false)
   const isHovered = pinnedHover || hover
+  const background = props.selected ? SELECTED_BACKGROUND : (isHovered && !props.message.pin) ? 'light-2' : null
   return (
     <Box
+      onClick={props.onClick}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
-      background={(isHovered && !props.message.pin) ? 'light-2' : null}
+      background={background}
       flex={false}>
       <Stack fill anchor='top-right'>
         <MessageBody hover={isHovered} setPinnedHover={setPinnedHover} {...props} />

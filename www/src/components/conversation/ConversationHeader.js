@@ -153,7 +153,7 @@ function ConversationHeader(props) {
           </Box>
         </Box>
       </Box>
-      <MessageSearch conversation={props.conversation} />
+      <MessageSearch conversation={props.conversation} setAnchor={props.setAnchor} />
       <Commands />
       <CurrentUserContext.Consumer>
       {me => (<NotificationIcon me={me} {...props} />)}

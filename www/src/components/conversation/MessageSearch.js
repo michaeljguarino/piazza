@@ -11,14 +11,14 @@ const animation = {
   transition: 'width 0.75s cubic-bezier(0.000, 0.795, 0.000, 1.000)'
 };
 
-function performSearch(client, query, conversationId, callback) {
+function performSearch(client, query, conversationId, callback, setAnchor) {
   client.query({
     query: SEARCH_MESSAGES,
     variables: {conversationId, query}
   }).then(({data}) => (
     data.conversation.searchMessages.edges.map(({node}) => ({
       value: node,
-      label: <Message message={node} />
+      label: <Message onClick={() => setAnchor({timestamp: node.insertedAt, id: node.id})} message={node} />
     }))
   )).then(callback)
 }
@@ -54,7 +54,7 @@ function MessageSearch(props) {
           onChange={(e) => {
             const text = e.target.value
             setValue(text)
-            performSearch(client, text, props.conversation.id, setSuggestions)
+            performSearch(client, text, props.conversation.id, setSuggestions, props.setAnchor)
           }}
           placeholder='this is for searching' />
     </Box>

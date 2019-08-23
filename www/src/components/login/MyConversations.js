@@ -15,7 +15,6 @@ export const Conversations = React.createContext({
 function MyConversations(props) {
   const [currentConversation, setCurrentConversation] = useState(null)
 
-
   return (
     <ApolloConsumer>
     {client => (
@@ -29,6 +28,13 @@ function MyConversations(props) {
               {...e, node: {...e.node, unreadMessages: 0, unreadNotifications: 0}}
             ))
           }
+
+          if (props.sideEffects) {
+            for (const sideEffect of props.sideEffects) {
+              sideEffect()
+            }
+          }
+
           setCurrentConversation(conv)
         }
         subscribeToNewConversations(subscribeToMore)

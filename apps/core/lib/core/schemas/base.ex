@@ -13,6 +13,11 @@ defmodule Core.Schemas.Base do
         value :update
         value :delete
       end
+
+      enum :direction do
+        value :before
+        value :after
+      end
     end
   end
 

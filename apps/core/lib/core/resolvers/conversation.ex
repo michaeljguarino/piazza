@@ -119,10 +119,18 @@ defmodule Core.Resolvers.Conversation do
   end
 
   def list_messages(args, %{source: conversation}) do
-    Message.any()
-    |> Message.for_conversation(conversation.id)
+    Message.for_conversation(conversation.id)
+    |> with_anchor(args)
+    |> order(args)
     |> paginate(args)
   end
+
+  defp with_anchor(query, %{anchor: anchor, direction: direction}),
+    do: Message.with_anchor(query, anchor, direction)
+  defp with_anchor(query, _), do: query
+
+  defp order(query, %{anchor: _, direction: _}), do: query
+  defp order(query, _), do: Message.ordered(query)
 
   def list_pinned_messages(args, %{source: conversation}) do
     PinnedMessage.for_conversation(conversation.id)

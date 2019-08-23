@@ -39,6 +39,12 @@ defmodule Core.Models.Message do
       order_by: [desc: fragment("ts_rank_cd(to_tsvector('english', ?), to_tsquery(?))", m.text, ^search_query)])
   end
 
+  def with_anchor(query \\ __MODULE__, dt, direction)
+  def with_anchor(query, dt, :before),
+    do: from(m in query, where: m.inserted_at < ^dt, order_by: [desc: :inserted_at])
+  def with_anchor(query, dt, :after),
+    do: from(m in query, where: m.inserted_at >= ^dt, order_by: [asc: :inserted_at])
+
   def for_creator(query \\ __MODULE__, creator_id),
     do: from(m in query, where: m.creator_id == ^creator_id)
 

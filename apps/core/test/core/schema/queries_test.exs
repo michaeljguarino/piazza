@@ -201,6 +201,43 @@ defmodule Core.Schema.QueriesTest do
 
       assert ids_equal(found_messages, messages)
     end
+
+    test "It will fetch messages by anchor" do
+      anchor = DateTime.utc_now()
+      conversation = insert(:conversation)
+      before = for i <- 1..3,
+        do: insert(:message, conversation: conversation, inserted_at: Timex.shift(anchor, days: -i))
+      aftr = for i <- 1..3,
+        do: insert(:message, conversation: conversation, inserted_at: Timex.shift(anchor, days: i))
+      %{user: user} = insert(:participant, conversation: conversation)
+
+      {:ok, %{data: %{"conversation" => found}}} = run_query("""
+        query AnchoredMessages($id: ID!, $anchor: DateTime) {
+          conversation(id: $id) {
+            before: messages(first: 10, anchor: $anchor, direction: BEFORE) {
+              edges {
+                node {
+                  id
+                }
+              }
+            }
+            after: messages(first: 10, anchor: $anchor, direction: AFTER) {
+              edges {
+                node {
+                  id
+                }
+              }
+            }
+          }
+        }
+      """, %{"id" => conversation.id, "anchor" => DateTime.to_iso8601(anchor)}, %{current_user: user})
+
+      found_before = from_connection(found["before"])
+      assert ids_equal(found_before, before)
+
+      found_after = from_connection(found["after"])
+      assert ids_equal(found_after, aftr)
+    end
   end
 
   describe "pinnedMessages" do

@@ -78,7 +78,7 @@ cron:
 
 retentionPolicy: &retentionPolicy
   name: RETENTION_POLICY
-  value: 5
+  value: 25
 notificationRetentionPolicy: &notificationRetentionPolicy
   name: RETENTION_POLICY
   value: 5

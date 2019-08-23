@@ -99,6 +99,8 @@ defmodule Core.Schemas.Types do
     end
 
     connection field :messages, node_type: :message do
+      arg :anchor,    :datetime
+      arg :direction, :direction
       resolve &Conversation.list_messages/2
     end
 

@@ -22,6 +22,37 @@ export const MESSAGES_Q = gql`
   ${MessageFragment}
 `
 
+export const ANCHORED_MESSAGES = gql`
+  query AnchoredMessages($conversationId: ID!, $beforeCursor: String, $afterCursor: String, $anchor: DateTime) {
+    conversation(id: $conversationId) {
+      id
+      before: messages(first: 10, after: $beforeCursor, anchor: $anchor, direction: BEFORE) {
+        pageInfo {
+          endCursor
+          hasNextPage
+        }
+        edges {
+          node {
+            ...MessageFragment
+          }
+        }
+      }
+      after: messages(first: 3, after: $afterCursor, anchor: $anchor, direction: AFTER) {
+        pageInfo {
+          endCursor
+          hasNextPage
+        }
+        edges {
+          node {
+            ...MessageFragment
+          }
+        }
+      }
+    }
+  }
+  ${MessageFragment}
+`;
+
 export const SEARCH_MESSAGES = gql`
   query SearchMessages($conversationId: ID!, $query: String) {
     conversation(id: $conversationId) {
