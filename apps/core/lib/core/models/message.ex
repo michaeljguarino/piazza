@@ -33,6 +33,9 @@ defmodule Core.Models.Message do
   def for_conversation(query \\ __MODULE__, conv_id),
     do: from(m in query, where: m.conversation_id == ^conv_id)
 
+  def search(query \\ __MODULE__, search_query),
+    do: from(m in query, where: fragment("to_tsvector('english', ?) @@ to_tsquery(?)", m.text, ^search_query))
+
   def for_creator(query \\ __MODULE__, creator_id),
     do: from(m in query, where: m.creator_id == ^creator_id)
 

@@ -130,6 +130,13 @@ defmodule Core.Resolvers.Conversation do
     |> paginate(args)
   end
 
+  def search_messages(%{query: query} = args, %{source: conversation}) do
+    Message.any()
+    |> Message.for_conversation(conversation.id)
+    |> Message.search(query)
+    |> paginate(args)
+  end
+
   def list_participants(args, %{source: conversation}) do
     Participant.for_conversation(conversation.id)
     |> paginate(args)

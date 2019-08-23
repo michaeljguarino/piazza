@@ -129,7 +129,6 @@ function MessageBody(props) {
         {!consecutive && <Avatar user={props.message.creator} /> }
         {consecutive && <Box width='45px'></Box>}
         <Box>
-
           {!consecutive &&
             <Box direction='row' align='center'>
               <Text weight='bold' size='15px' margin={{right: '5px'}}>

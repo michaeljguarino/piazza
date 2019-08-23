@@ -102,6 +102,11 @@ defmodule Core.Schemas.Types do
       resolve &Conversation.list_messages/2
     end
 
+    connection field :search_messages, node_type: :message do
+      arg :query, :string
+      resolve &Conversation.search_messages/2
+    end
+
     connection field :participants, node_type: :participant do
       resolve &Conversation.list_participants/2
     end

@@ -173,6 +173,34 @@ defmodule Core.Schema.QueriesTest do
 
       assert Enum.all?(found_participants, & &1["user"]["name"] && &1["user"]["id"])
     end
+
+    test "It will search messages" do
+      conversation = insert(:conversation)
+      messages = for i <- 1..3,
+        do: insert(:message, text: "query #{i}", conversation: conversation)
+      insert_list(3, :message, conversation: conversation)
+      %{user: user} = insert(:participant, conversation: conversation)
+
+      {:ok, %{data: %{"conversation" => found}}} = run_query("""
+        query SearchMessages($id: ID!, $query: String) {
+          conversation(id: $id) {
+            id
+            searchMessages(query: $query, first: 10) {
+              edges {
+                node {
+                  id
+                }
+              }
+            }
+          }
+        }
+      """, %{"id" => conversation.id, "query" => "query"}, %{current_user: user})
+
+      assert found["id"] == conversation.id
+      found_messages = from_connection(found["searchMessages"])
+
+      assert ids_equal(found_messages, messages)
+    end
   end
 
   describe "pinnedMessages" do
