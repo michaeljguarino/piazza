@@ -67,7 +67,7 @@ function ConversationCreator(props) {
             {mutation => (
               <Box>
                 <ModalHeader setOpen={setOpen} text='Start a new conversation' />
-                <Box align='center' justify='center' pad='small'>
+                <Box align='center' justify='center' pad='medium'>
                   <ConversationEditForm
                     state={state}
                     mutation={mutation}

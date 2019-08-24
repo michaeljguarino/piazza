@@ -24,7 +24,7 @@ function ChatCreator(props) {
 
   return (
     <Box fill='horizontal' pad={{right: '10px'}}>
-      <Modal target={
+      <Modal round='small' target={
         <Box pad={props.padding} fill='horizontal' direction="row" align="center" margin={{bottom: '5px'}}>
           <Box width='100%'>
             <Text
@@ -52,7 +52,7 @@ function ChatCreator(props) {
           </Box>
         </Box>}>
         {setOpen => (
-          <Box width="400px" pad={{bottom: 'small'}}>
+          <Box width="400px" pad={{bottom: 'small'}} round='small'>
             <ModalHeader text='Start a chat' setOpen={setOpen} />
             <ParticipantInvite
               direction='row'
@@ -81,11 +81,20 @@ function ChatCreator(props) {
                     onClick={mutation}
                     margin={{left: 'xsmall'}}
                     label='Go'
+                    height='100%'
                     width='50px' />
                 )}
               </Mutation>
             )}
             </ParticipantInvite>
+            <Box
+              background='light-3'
+              border='horizontal'
+              elevation='xxsmall'
+              margin={{bottom: 'xsmall'}}
+              pad={{horizontal: 'small'}}>
+              <Text size='small'>Users</Text>
+            </Box>
             <Users
               onClick={addParticipant}
               ignore={new Set(participants.map((u) => u.id))}

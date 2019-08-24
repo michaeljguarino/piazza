@@ -1,5 +1,5 @@
 import React, {useState} from 'react'
-import {Box} from 'grommet'
+import {Box, Text} from 'grommet'
 import {Code} from 'grommet-icons'
 import { Query } from 'react-apollo'
 import CommandListEntry from './CommandListEntry'
@@ -24,6 +24,14 @@ function Commands(props) {
       {setOpen => (
         <Box>
           <FlyoutHeader text='Commands' />
+          <Box pad='small' style={{maxWidth: '30vw'}}>
+            <Text size='small'>
+              <i>
+                Commands can automate basic tasks.  They support a message webhook, and
+                an incoming webhook to send messages ad hoc.
+              </i>
+            </Text>
+          </Box>
           <Query query={COMMANDS_Q}>
           {({loading, data, fetchMore}) => {
             if (loading) return null

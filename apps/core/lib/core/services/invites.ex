@@ -3,7 +3,6 @@ defmodule Core.Services.Invites do
 
   alias Core.Models.{Invite, User}
   alias Core.Services.Conversations
-  alias Core.Invites.Token
   import Core.Policies.Invite
 
   def get_invite(external_id),
@@ -21,14 +20,10 @@ defmodule Core.Services.Invites do
     Conversations.create_participant(%{user_id: user_id, conversation_id: reference}, creator)
   end
 
-  def gen_token(%Invite{external_id: ext_id}) do
-    with {:ok, token, _} <- Token.generate_and_sign(%{"sub" => ext_id}),
-      do: {:ok, token}
-  end
+  def gen_token(%Invite{external_id: ext_id}), do: {:ok, ext_id}
 
   def realize_from_token(token, user) do
-    with {:ok, %{"sub" => ext_id}} <- Token.verify_and_validate(token),
-         %Invite{} = invite <- get_invite(ext_id),
+    with %Invite{} = invite <- get_invite(token),
       do: realize(invite, user)
   end
 end

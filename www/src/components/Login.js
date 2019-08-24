@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { AUTH_TOKEN } from '../constants'
 import { Mutation } from 'react-apollo'
 import gql from 'graphql-tag'
-import {Box, Form, FormField, Text, Anchor} from 'grommet'
+import {Box, Form, Keyboard, FormField, Text, Anchor} from 'grommet'
 import Error from './utils/Error'
 import Button from './utils/Button'
 
@@ -71,55 +71,57 @@ class Login extends Component {
             return (
             <Box width="400px" background="light-1" pad='medium' border={{style: "hidden"}} round="small" elevation="small">
               {error && <Error errors={error} />}
-              <Form onSubmit={mutation}>
-                <Box margin={{bottom: '10px'}}>
-                  <Box direction="column" justify="center" align="center">
-                    <Text size="medium" weight="bold">{login ? 'Login' : 'Sign Up'}</Text>
+              <Keyboard onEnter={mutation}>
+                <Form onSubmit={mutation}>
+                  <Box margin={{bottom: '10px'}}>
+                    <Box direction="column" justify="center" align="center">
+                      <Text size="medium" weight="bold">{login ? 'Login' : 'Sign Up'}</Text>
+                    </Box>
+                    {!login && (
+                      <FormField
+                        value={name}
+                        label="name"
+                        name="Name"
+                        onChange={e => this.setState({ name: e.target.value })}
+                        placeholder="your name"
+                      />)}
+                    {!login && (
+                      <FormField
+                        value={handle}
+                        name="handle"
+                        label="Handle"
+                        onChange={e => this.setState({handle: e.target.value})}
+                        placeholder="your handle"
+                      />)}
+                    <FormField
+                      value={email}
+                      name="email"
+                      label="Email"
+                      onChange={e => this.setState({ email: e.target.value })}
+                      placeholder="Your email address"
+                    />
+                    <FormField
+                      value={password}
+                      name="password"
+                      label="Password (at least 10 chars)"
+                      type="password"
+                      onChange={e => this.setState({ password: e.target.value })}
+                      placeholder="battery horse fire stapler"
+                    />
                   </Box>
-                  {!login && (
-                    <FormField
-                      value={name}
-                      label="name"
-                      name="Name"
-                      onChange={e => this.setState({ name: e.target.value })}
-                      placeholder="your name"
-                    />)}
-                  {!login && (
-                    <FormField
-                      value={handle}
-                      name="handle"
-                      label="Handle"
-                      onChange={e => this.setState({handle: e.target.value})}
-                      placeholder="your handle"
-                    />)}
-                  <FormField
-                    value={email}
-                    name="email"
-                    label="Email"
-                    onChange={e => this.setState({ email: e.target.value })}
-                    placeholder="Your email address"
-                  />
-                  <FormField
-                    value={password}
-                    name="password"
-                    label="Password (at least 10 chars)"
-                    type="password"
-                    onChange={e => this.setState({ password: e.target.value })}
-                    placeholder="battery horse fire stapler"
-                  />
-                </Box>
-                <Box direction="row" align="center">
-                  <Button
-                    onClick={mutation}
-                    size='small'
-                    round='xsmall'
-                    pad={{vertical: 'xsmall', horizontal: 'medium'}}
-                    label={login ? 'login' : 'sign up'} />
-                  <Anchor margin={{left: '10px'}} size="small" fontWeight="400" onClick={() => this.setState({login: !login})}>
-                    {login ? 'need to create an account?' : 'already have an account?'}
-                  </Anchor>
-                </Box>
-              </Form>
+                  <Box direction="row" align="center">
+                    <Button
+                      onClick={mutation}
+                      size='small'
+                      round='xsmall'
+                      pad={{vertical: 'xsmall', horizontal: 'medium'}}
+                      label={login ? 'login' : 'sign up'} />
+                    <Anchor margin={{left: '10px'}} size="small" fontWeight="400" onClick={() => this.setState({login: !login})}>
+                      {login ? 'need to create an account?' : 'already have an account?'}
+                    </Anchor>
+                  </Box>
+                </Form>
+              </Keyboard>
             </Box>)
           }}
         </Mutation>

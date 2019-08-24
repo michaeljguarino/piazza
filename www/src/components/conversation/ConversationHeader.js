@@ -66,12 +66,12 @@ function ConversationUpdate(props) {
       {(mutation) => (
         <Box>
           <ModalHeader setOpen={setOpen} text={`Update #${props.conversation.name}`}/>
-          <Box align='center' justify='center' pad='small'>
+          <Box align='center' justify='center' pad='medium'>
             <ConversationEditForm
               state={attributes}
               mutation={mutation}
               onStateChange={(update) => setAttributes({...attributes, ...update})}
-              action='update' />
+              action='Update' />
           </Box>
         </Box>
       )}

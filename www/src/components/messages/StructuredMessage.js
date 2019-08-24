@@ -1,15 +1,15 @@
 import React from 'react'
 import {Box, Text, Markdown, Anchor} from 'grommet'
 
-function video(props, i) {
+function video(props) {
   const {url, ...rest} = props.attributes
-  return <video {...rest} src={url} />
+  return <video key={props.key} {...rest} src={url} />
 }
 
-function box(props, i) {
+function box(props) {
   const {children, attributes} = props
   return (
-    <Box {...attributes}>
+    <Box key={props.key} {...attributes}>
       {children.map(parse)}
     </Box>
   )
@@ -19,7 +19,7 @@ function attachment(props, i) {
   const {children, attributes} = props
   const {accent, ...rest} = attributes || {}
   return (
-    <Box border fill='horizontal' background='white'>
+    <Box key={props.key} border fill='horizontal' background='white'>
       <Box {...rest} style={{
         borderLeftStyle: 'solid',
         borderLeftWidth: '2px',
@@ -34,40 +34,41 @@ function text(props) {
   const attrs = props.attributes || {}
   const value = attrs.value || props.value
   const {size, ...rest} = attrs
-  return (<Text size={size || 'small'} {...rest}>{value}</Text>)
+  return (<Text key={props.key} size={size || 'small'} {...rest}>{value}</Text>)
 }
 
 function markdown(props) {
   const {value, ...rest} = props.attributes
-  return <Markdown {...rest}>{value}</Markdown>
+  return <Markdown key={props.key} {...rest}>{value}</Markdown>
 }
 
 function image(props) {
   const {url, ...rest} = props.attributes
-  return <img alt={url} {...rest} src={url} />
+  return <img key={props.key} alt={url} {...rest} src={url} />
 }
 
 function link(props) {
   const {attributes, children} = props
-  return <Anchor {...attributes}>{children.map(parse)}</Anchor>
+  return <Anchor key={props.key} {...attributes}>{children.map(parse)}</Anchor>
 }
 
-function parse(struct) {
+function parse(struct, index) {
+  const props = {...struct, key: index}
   switch (struct._type) {
     case "box":
-      return box(struct)
+      return box(props)
     case "video":
-      return video(struct)
+      return video(props)
     case "attachment":
-      return attachment(struct)
+      return attachment(props)
     case "text":
-      return text(struct)
+      return text(props)
     case "markdown":
-      return markdown(struct)
+      return markdown(props)
     case "image":
-      return image(struct)
+      return image(props)
     case "link":
-      return link(struct)
+      return link(props)
     default:
       return null
   }

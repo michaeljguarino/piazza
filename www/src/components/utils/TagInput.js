@@ -88,12 +88,13 @@ class TagInput extends Component {
           fill='horizontal'
           direction="row"
           align="center"
-          pad={{ horizontal: "xsmall" }}
           border="all"
           ref={this.boxRef}
-          wrap
+          round={this.props.round}
         >
-          {value.length > 0 && this.renderValue()}
+          <Box direction='row' wrap align='center'>
+            {value.length > 0 && this.renderValue()}
+          </Box>
           <Box flex style={{ minWidth: "120px" }}>
             <TextInput
               type="search"
@@ -108,6 +109,7 @@ class TagInput extends Component {
               }}
             />
           </Box>
+          {this.props.button}
         </Box>
       </Keyboard>
     );

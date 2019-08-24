@@ -62,12 +62,21 @@ function PinnedMessages(props) {
           {setOpen => (
             <Box width='30vw'>
               <FlyoutHeader text='Pinned Messages' />
+              <Box pad='small'>
+                <Text size='small'>
+                  <i>
+                    Pinning messages is a good way to highlight or preserve important context
+                    in a conversation.
+                  </i>
+                </Text>
+              </Box>
               <Scroller
                 id='pinned-messages'
                 edges={messageEdges}
                 mapper={(edge, next) => (
                   <Message
                     key={edge.node.message.id}
+                    nopin
                     conversation={props.conversation}
                     message={edge.node.message}
                     next={null} />

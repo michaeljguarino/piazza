@@ -1,33 +1,55 @@
 import React from 'react'
-import {Form, FormField, Button, Box, CheckBox} from 'grommet'
+import {Keyboard, Text, Box, CheckBox, TextInput} from 'grommet'
+import Button from '../utils/Button'
+
+function InputField(props) {
+  return (
+    <Box direction='row' align='center'>
+      <Box width='50px'>
+        <Text size='small' margin={{right: 'small'}} weight='bold'>{props.label}</Text>
+      </Box>
+      <TextInput
+        name='name'
+        value={props.value}
+        onChange={props.onChange}
+        placeholder={props.placeholder}
+        />
+    </Box>
+  )
+}
 
 function ConversationEditForm(props) {
   return (
-    <Form onSubmit={props.mutation}>
-      <Box width="300px">
-        <FormField
-          label="conversation name"
-          name='name'
-          value={props.state.name || 'conversation name'}
-          onChange={(e) => props.onStateChange({name: e.target.value})}
+    <Keyboard onEnter={props.mutation}>
+      <Box width="300px" gap='small'>
+        <InputField
+          label='Name'
+          value={props.state.name}
+          placeholder='conversation name'
+          onChange={(e) => props.onStateChange({name: e.target.value})} />
+        <InputField
+          label='Topic'
+          value={props.state.topic}
+          placeholder='conversation topic'
+          onChange={(e) => props.onStateChange({topic: e.target.value})} />
+        <Box direction='row' align='center'>
+          <CheckBox
+            margin={{top: 'small'}}
+            label='Public'
+            checked={props.state.public}
+            onChange={(e) => props.onStateChange({public: e.target.checked})}
           />
-        <FormField
-          label="topic"
-          name='topic'
-          value={props.state.topic || 'conversation topic'}
-          onChange={(e) => props.onStateChange({topic: e.target.value})}
-          />
-        <CheckBox
-          margin={{top: 'small'}}
-          label='public'
-          checked={props.state.public}
-          onChange={(e) => props.onStateChange({public: e.target.checked})}
-          />
-        <Box margin={{top: 'small'}}>
-          <Button type='submit' primary label={props.action || 'create'} />
+        </Box>
+        <Box direction='row' justify='center'>
+          <Button
+            onClick={props.mutation}
+            width='100%'
+            pad={{vertical: 'xsmall', horizontal: 'medium'}}
+            round='xsmall'
+            label={props.action || 'Create'} />
         </Box>
       </Box>
-    </Form>
+    </Keyboard>
   )
 }
 

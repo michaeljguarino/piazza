@@ -15,6 +15,7 @@ function Button(props) {
       background={hover ? 'brand-heavy' : 'brand'}
       margin={props.margin}
       width={props.width}
+      height={props.height}
       round={props.round}>
       <Text size={props.textSize || 'small'}>{props.label}</Text>
     </Box>

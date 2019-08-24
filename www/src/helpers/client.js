@@ -9,11 +9,11 @@ import {createAbsintheSocketLink} from "@absinthe/socket-apollo-link";
 import * as AbsintheSocket from "@absinthe/socket";
 import {Socket as PhoenixSocket} from "phoenix";
 import customFetch from './uploadLink'
-import {apiHost} from './hostname'
+import {apiHost, secure} from './hostname'
 
 const API_HOST = apiHost()
-const GQL_URL=`http://${API_HOST}/gql`
-const WS_URI=`ws://${API_HOST}/socket`
+const GQL_URL=`${secure() ? 'https' : 'http'}://${API_HOST}/gql`
+const WS_URI=`${secure() ? 'wss' : 'ws'}://${API_HOST}/socket`
 
 const httpLink = createLink({
   uri: GQL_URL,

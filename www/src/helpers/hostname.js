@@ -16,3 +16,7 @@ export function apiHost() {
       return window.location.hostname
   }
 }
+
+export function secure() {
+  return window.location.protocol.indexOf('https') >= 0
+}

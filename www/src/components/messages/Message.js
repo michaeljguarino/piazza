@@ -105,7 +105,7 @@ function MessageSwitch(props) {
 }
 
 function PinHeader(props) {
-  if (props.pin) {
+  if (props.pin && !props.nopin) {
     return (
       <Box justify='center'>
         <Text
@@ -123,7 +123,7 @@ function PinHeader(props) {
 function MessageBody(props) {
   const date = moment(props.message.insertedAt)
   const consecutive = props.message.creator.id === (props.next && props.next.creator.id)
-  const background = props.message.pin ? PINNED_BACKGROUND : null
+  const background = (props.message.pin && !props.nopin) ? PINNED_BACKGROUND : null
   return (
     <Box fill='horizontal' background={background}>
       <PinHeader {...props.message} />

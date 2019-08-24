@@ -5,7 +5,13 @@ import {FormClose} from 'grommet-icons'
 export function ModalHeader(props) {
   const [hover, setHover] = useState(false)
   return (
-    <Box direction='row' background='brand' elevation='xsmall' pad='small' margin={{bottom: 'xsmall'}}>
+    <Box
+      direction='row'
+      background='brand'
+      elevation='xsmall'
+      round={props.round || {size: '4px', corner: 'top'}}
+      pad='small'
+      margin={{bottom: 'xsmall'}}>
       <Box direction='row' fill='horizontal' align='center'>
         <Text size='small' weight='bold'>{props.text}</Text>
       </Box>
@@ -26,7 +32,7 @@ function Modal(props) {
   const [open, setOpen] = useState(!!props.open)
 
   return (
-    <span>
+    <>
       <span onClick={() => {
         props.onOpen && props.onOpen()
         setOpen(true)
@@ -42,7 +48,7 @@ function Modal(props) {
           {props.children(setOpen)}
         </Layer>
       )}
-    </span>
+    </>
 
   )
 }

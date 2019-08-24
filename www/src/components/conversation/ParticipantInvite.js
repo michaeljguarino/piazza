@@ -59,6 +59,7 @@ export function ParticipantInviteButton(props) {
           })}
           margin={{left: 'xsmall'}}
           label='Go'
+          height='100%'
           width='50px' />
       )}
     </Mutation>
@@ -118,6 +119,7 @@ class ParticipantInvite extends React.Component {
         <Box direction={this.props.direction || 'column'} pad={this.props.pad || {left: 'small', right: 'small'}}>
           <TagInput
             placeholder="Search for users by handle..."
+            round='xsmall'
             suggestions={this.state.suggestions}
             value={allParticipants.map((u) => u.handle)}
             onRemove={(handle) => {
@@ -129,8 +131,8 @@ class ParticipantInvite extends React.Component {
               this.onAddTag(u)
             }}
             onChange={({ target: { value } }) => fetchUsers(client, value, this.setSuggestions)}
+            button={this.props.children(allParticipants.map(mapper), this.clearInput)}
           />
-          {this.props.children(allParticipants.map(mapper), this.clearInput)}
         </Box>
       )}
       </ApolloConsumer>
