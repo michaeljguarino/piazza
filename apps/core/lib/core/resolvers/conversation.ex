@@ -62,6 +62,16 @@ defmodule Core.Resolvers.Conversation do
 
     Enum.map(conversation_ids, & [Map.get(result, &1, 0)])
   end
+  def run_batch(_, _, :pinned_message_count, args, repo_opts) do
+    conversation_ids = Enum.map(args, fn %{id: id} -> id end)
+    result =
+      Conversation.for_ids(conversation_ids)
+      |> Conversation.pinned_message_count()
+      |> Core.Repo.all(repo_opts)
+      |> Map.new()
+
+    Enum.map(conversation_ids, & [Map.get(result, &1, 0)])
+  end
   def run_batch(_, _, :participant_count, args, repo_opts) do
     conversation_ids = Enum.map(args, fn %{id: id} -> id end)
     result =

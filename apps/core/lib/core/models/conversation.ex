@@ -1,6 +1,12 @@
 defmodule Core.Models.Conversation do
   use Core.DB.Schema
-  alias Core.Models.{Participant, Message, User, Notification}
+  alias Core.Models.{
+    Participant,
+    Message,
+    User,
+    Notification,
+    PinnedMessage
+  }
 
   schema "conversations" do
     field :name,            :string
@@ -55,6 +61,15 @@ defmodule Core.Models.Conversation do
       where: is_nil(p.last_seen_at) or m.inserted_at > p.last_seen_at,
       group_by: c.id,
       select: {c.id, count(m.id)}
+    )
+  end
+
+  def pinned_message_count(query \\ __MODULE__) do
+    from(c in query,
+      left_join: pin in PinnedMessage,
+        on: c.id == pin.conversation_id,
+      group_by: c.id,
+      select: {c.id, count(pin.id)}
     )
   end
 

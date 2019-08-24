@@ -50,8 +50,15 @@ defmodule Core.Schemas.Types do
     field :creator,             :user, resolve: dataloader(User)
     field :current_participant, :participant, resolve: dataloader(Conversation)
 
-    field :pinned_message_count, :integer, resolve: fn
-      %{pinned_messages: pinned}, _, _ -> {:ok, pinned}
+    field :pinned_message_count, :integer do
+      resolve fn conversation, _, %{context: %{loader: loader}} ->
+        queryable = {:one, Core.Models.Conversation}
+        loader
+        |> Dataloader.load(Conversation, queryable, pinned_message_count: conversation)
+        |> on_load(fn loader ->
+          {:ok, Dataloader.get(loader, Conversation, queryable, pinned_message_count: conversation)}
+        end)
+      end
     end
 
     field :unread_messages, :integer do
