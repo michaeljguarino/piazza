@@ -82,6 +82,9 @@ retentionPolicy: &retentionPolicy
 notificationRetentionPolicy: &notificationRetentionPolicy
   name: RETENTION_POLICY
   value: 5
+inviteRetentionPolicy: &inviteRetentionPolicy
+  name: RETENTION_POLICY
+  value: 5
 
 crons:
 - cronName: piazza-prune-messages
@@ -94,6 +97,11 @@ crons:
   crontab: "30 0 * * *"
   envVars:
   - <<: *notificationRetentionPolicy
+- cronName: piazza-prune-invites
+  cronModule: Prune.Invites
+  crontab: "0 1 * * *"
+  envVars:
+  - <<: *inviteRetentionPolicy
 
 
 

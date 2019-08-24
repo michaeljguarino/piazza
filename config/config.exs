@@ -104,6 +104,8 @@ config :gql,  :start_thrift_server, false
 config :rtc,  :start_thrift_server, true
 config :core, :start_rtc_client, false
 
+config :joken, invite_secret: "super_secret"
+
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.

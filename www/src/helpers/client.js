@@ -9,9 +9,11 @@ import {createAbsintheSocketLink} from "@absinthe/socket-apollo-link";
 import * as AbsintheSocket from "@absinthe/socket";
 import {Socket as PhoenixSocket} from "phoenix";
 import customFetch from './uploadLink'
+import {apiHost} from './hostname'
 
-const GQL_URL='http://chat.piazzaapp.com/gql'
-const WS_URI='ws://chat.piazzaapp.com/socket'
+const API_HOST = apiHost()
+const GQL_URL=`http://${API_HOST}/gql`
+const WS_URI=`ws://${API_HOST}/socket`
 
 const httpLink = createLink({
   uri: GQL_URL,

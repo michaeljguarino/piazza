@@ -39,6 +39,13 @@ defmodule Core.DB.Schema do
     validate_format(changeset, field, @url_regex)
   end
 
+  def put_new_change(changeset, field, fun) when is_function(fun) do
+    case get_field(changeset, field) do
+      nil -> put_change(changeset, field, fun.())
+      _ -> changeset
+    end
+  end
+
   def external_type(module) do
     Macro.underscore(module)
     |> String.split("/")

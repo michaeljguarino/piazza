@@ -2,20 +2,30 @@ import React, { Component } from 'react'
 import { AUTH_TOKEN } from '../constants'
 import { Mutation } from 'react-apollo'
 import gql from 'graphql-tag'
-import {Box, Form, FormField, Button, Text, Anchor} from 'grommet'
+import {Box, Form, FormField, Text, Anchor} from 'grommet'
 import Error from './utils/Error'
+import Button from './utils/Button'
 
 const SIGNUP_MUTATION = gql`
-  mutation Signup($email: String!, $password: String!, $handle: String!, $name: String!) {
-    signup(attributes: {email: $email, password: $password, handle: $handle, name: $name}) {
+  mutation Signup(
+    $email: String!,
+    $password: String!,
+    $handle: String!,
+    $name: String!,
+    $inviteToken: String
+  ) {
+    signup(
+      attributes: {email: $email, password: $password, handle: $handle, name: $name},
+      inviteToken: $inviteToken
+    ) {
       jwt
     }
   }
 `;
 
 const LOGIN_MUTATION = gql`
-  mutation Login($email: String!, $password: String!) {
-    login(email: $email, password: $password) {
+  mutation Login($email: String!, $password: String!, $inviteToken: String) {
+    login(email: $email, password: $password, inviteToken: $inviteToken) {
       jwt
     }
   }
@@ -30,16 +40,33 @@ class Login extends Component {
     handle: ''
   }
 
+  _confirm = async (data) => {
+    const { jwt } = this.state.login ? data.login : data.signup
+    this._saveUserData(jwt)
+    this.props.history.push(`/`)
+  }
+
+  _saveUserData = token => {
+    localStorage.setItem(AUTH_TOKEN, token)
+  }
+
+  _checkLoggedIn = () => {
+    if (localStorage.getItem(AUTH_TOKEN)) {
+      this.props.history.push('/')
+    }
+  }
+
   render() {
     const { login, email, password, name, handle } = this.state
+    const inviteToken = this.props.match.params.inviteToken
     this._checkLoggedIn()
     return (
       <Box background='brand' direction="column" align="center" justify="center" height="100vh">
         <Mutation
-                mutation={login ? LOGIN_MUTATION : SIGNUP_MUTATION}
-                variables={{ email, password, name, handle }}
-                onCompleted={data => this._confirm(data)}
-              >
+          mutation={login ? LOGIN_MUTATION : SIGNUP_MUTATION}
+          variables={{ email, password, name, handle, inviteToken }}
+          onCompleted={data => this._confirm(data)}
+        >
           { (mutation, {error}) => {
             return (
             <Box width="400px" background="light-1" pad='medium' border={{style: "hidden"}} round="small" elevation="small">
@@ -83,9 +110,11 @@ class Login extends Component {
                 </Box>
                 <Box direction="row" align="center">
                   <Button
-                    type='submit'
-                    primary
-                    label={login ? 'login' : 'signup'} />
+                    onClick={mutation}
+                    size='small'
+                    round='xsmall'
+                    pad={{vertical: 'xsmall', horizontal: 'medium'}}
+                    label={login ? 'login' : 'sign up'} />
                   <Anchor margin={{left: '10px'}} size="small" fontWeight="400" onClick={() => this.setState({login: !login})}>
                     {login ? 'need to create an account?' : 'already have an account?'}
                   </Anchor>
@@ -96,22 +125,6 @@ class Login extends Component {
         </Mutation>
       </Box>
     )
-  }
-
-  _confirm = async (data) => {
-    const { jwt } = this.state.login ? data.login : data.signup
-    this._saveUserData(jwt)
-    this.props.history.push(`/`)
-  }
-
-  _saveUserData = token => {
-    localStorage.setItem(AUTH_TOKEN, token)
-  }
-
-  _checkLoggedIn = () => {
-    if (localStorage.getItem(AUTH_TOKEN)) {
-      this.props.history.push('/')
-    }
   }
 }
 

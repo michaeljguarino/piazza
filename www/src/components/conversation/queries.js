@@ -174,3 +174,11 @@ export const DELETE_PARTICIPANT = gql`
     }
   }
 `;
+
+export const CREATE_INVITE = gql`
+  mutation CreateInvite($reference: String!) {
+    createInvite(attributes: {type: CONVERSATION, reference: $reference}) {
+      token
+    }
+  }
+`;

@@ -1,6 +1,6 @@
 import React, {createRef} from 'react'
 import {Mutation, ApolloConsumer} from 'react-apollo'
-import {Box, Anchor, Text} from 'grommet'
+import {Box} from 'grommet'
 import debounce from 'lodash/debounce'
 import uniqBy from 'lodash/uniqBy'
 import {CREATE_PARTICIPANTS, PARTICIPANTS_Q} from './queries'
@@ -8,6 +8,7 @@ import TagInput from '../utils/TagInput'
 import {mergeAppend} from '../../utils/array'
 import {SEARCH_USERS} from '../messages/queries'
 import {userSuggestion} from '../messages/MentionManager'
+import Button from '../utils/Button'
 
 function fetchUsers(client, query, callback) {
   if (!query) return
@@ -48,16 +49,17 @@ export function ParticipantInviteButton(props) {
         props.close()
       }}>
       {mutation => (
-        <Text size='small'>
-          <Anchor onClick={() => mutation({
+        <Button
+          size='small'
+          onClick={() => mutation({
             variables: {
               handles: props.participants,
               conversationId: props.conversation.id
             }
-          })}>
-            Invite all
-          </Anchor>
-        </Text>
+          })}
+          margin={{left: 'xsmall'}}
+          label='Go'
+          width='50px' />
       )}
     </Mutation>
   )

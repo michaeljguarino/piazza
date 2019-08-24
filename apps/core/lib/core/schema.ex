@@ -7,7 +7,8 @@ defmodule Core.Schema do
     Conversation,
     User,
     Platform,
-    Notification
+    Notification,
+    Invite
   }
   import_types Core.Schemas.Types
   import_types Core.Schemas.Inputs
@@ -106,6 +107,7 @@ defmodule Core.Schema do
   mutation do
     field :signup, :user do
       arg :attributes, non_null(:user_attributes)
+      arg :invite_token, :string
 
       resolve safe_resolver(&User.signup/2)
     end
@@ -113,8 +115,15 @@ defmodule Core.Schema do
     field :login, :user do
       arg :email, non_null(:string)
       arg :password, non_null(:string)
+      arg :invite_token, :string
 
       resolve safe_resolver(&User.login_user/2)
+    end
+
+    field :create_invite, :invite do
+      arg :attributes, non_null(:invite_attributes)
+
+      resolve safe_resolver(&Invite.create_invite/2)
     end
 
     @desc "Creates a new user for this piazza instance"

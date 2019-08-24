@@ -127,5 +127,29 @@ defmodule Core.Schema.UserMutationsTest do
       assert signup["email"] == "user@example.com"
       assert is_binary(signup["jwt"])
     end
+
+    test "It will handle invite tokens" do
+      %{conversation: conv, user: user} = insert(:participant)
+      invite = insert(:invite, creator: user, reference: conv.id)
+      {:ok, token} = Core.Services.Invites.gen_token(invite)
+
+      {:ok, %{data: %{"signup" => signup}}} = run_query("""
+        mutation SignUp($token: String) {
+          signup(attributes: {
+            email: "user@example.com",
+            password: "really strong password",
+            handle: "user",
+            name: "Some User"
+          }, inviteToken: $token) {
+            id
+            email
+            jwt
+          }
+        }
+      """, %{"token" => token})
+
+      assert signup["id"]
+      assert Core.Services.Conversations.get_participant(signup["id"], conv.id)
+    end
   end
 end

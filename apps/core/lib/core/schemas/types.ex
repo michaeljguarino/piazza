@@ -143,10 +143,22 @@ defmodule Core.Schemas.Types do
   object :pinned_message do
     field :id, :id
     field :conversation_id, non_null(:id)
-    field :message_id, non_null(:id)
+    field :message_id,      non_null(:id)
+
     field :conversation, :conversation, resolve: dataloader(Conversation)
-    field :message, :message, resolve: dataloader(Conversation)
-    field :user, :user, resolve: dataloader(User)
+    field :message,      :message, resolve: dataloader(Conversation)
+    field :user,         :user, resolve: dataloader(User)
+
+    timestamps()
+  end
+
+  object :invite do
+    field :id,      :id
+    field :token,   :string, resolve: fn
+      invite, _, _ -> Core.Services.Invites.gen_token(invite)
+    end
+
+    field :creator, :user, resolve: dataloader(User)
 
     timestamps()
   end

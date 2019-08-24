@@ -9,6 +9,7 @@ const Tag = ({ children, onRemove, ...rest }) => {
     <Box
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
+      round='xsmall'
       direction="row"
       align="center"
       pad={{horizontal: 'xxsmall'}}

@@ -81,4 +81,12 @@ defmodule Core.Factory do
       user: build(:user)
     }
   end
+
+  def invite_factory do
+    %Models.Invite{
+      type: :conversation,
+      creator: build(:user),
+      external_id: sequence(:invite, & "external-id-#{&1}")
+    }
+  end
 end

@@ -58,6 +58,7 @@ function App() {
       <Switch>
         <Route exact path="/" component={Piazza} />
         <Route exact path="/login" component={Login} />
+        <Route path="/invite/:inviteToken" component={Login} />
       </Switch>
     </Grommet>
   );

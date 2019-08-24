@@ -14,7 +14,8 @@ function Button(props) {
       justify='center'
       background={hover ? 'brand-heavy' : 'brand'}
       margin={props.margin}
-      width={props.width}>
+      width={props.width}
+      round={props.round}>
       <Text size={props.textSize || 'small'}>{props.label}</Text>
     </Box>
   )

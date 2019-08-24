@@ -65,4 +65,13 @@ defmodule Core.Schemas.Inputs do
     field :message,     :boolean
     field :participant, :boolean
   end
+
+  enum :invite_type do
+    value :conversation
+  end
+
+  input_object :invite_attributes do
+    field :type,      :invite_type
+    field :reference, non_null(:string)
+  end
 end

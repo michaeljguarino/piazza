@@ -48,6 +48,9 @@ The app is separated into three main deployable components:
 * gql - the graphql api
 * rtc - the websocket handler for graphql subscriptions
 * cron - jobs for things like deleting old messages, notifications, etc.
+
+In addition, there's:
+
 * aquaduct - queue topology
 * www - the react frontend
 

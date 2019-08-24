@@ -23,9 +23,10 @@ defmodule Core.Resolvers.User do
     |> paginate(args)
   end
 
-  def signup(%{attributes: attrs}, _) do
+  def signup(%{attributes: attrs} = args, _) do
     Users.create_user(attrs)
     |> with_jwt()
+    |> maybe_resolve_invite(args)
   end
 
   def update_user(%{id: id, attributes: attrs}, %{context: %{current_user: user}}),
@@ -34,10 +35,17 @@ defmodule Core.Resolvers.User do
   def delete_user(%{id: id}, %{context: %{current_user: user}}),
     do: Users.delete_user(id, user)
 
-  def login_user(%{email: email, password: pwd}, _) do
+  def login_user(%{email: email, password: pwd} = args, _) do
     Users.login_user(email, pwd)
     |> with_jwt()
+    |> maybe_resolve_invite(args)
   end
+
+  defp maybe_resolve_invite({:ok, user}, %{invite_token: token}) do
+    with {:ok, _} <- Core.Services.Invites.realize_from_token(token, user),
+      do: {:ok, user}
+  end
+  defp maybe_resolve_invite(result, _), do: result
 
   def with_jwt({:ok, user}) do
       with {:ok, token, _} <- Core.Guardian.encode_and_sign(user),

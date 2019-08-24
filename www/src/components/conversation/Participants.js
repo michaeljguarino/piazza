@@ -13,6 +13,7 @@ import SubscriptionWrapper from '../utils/SubscriptionWrapper'
 import WithPresence from '../utils/presence'
 import PresenceIndicator from '../users/PresenceIndicator'
 import ParticipantInvite, {ParticipantInviteButton} from './ParticipantInvite'
+import MagicLinkInvite from './MagicLinkInvite'
 
 function addParticipant(participant, prev) {
   const participants = prev.conversation.participants.edges
@@ -137,20 +138,17 @@ function Participants(props) {
                   }} />
               </Box>
               <Text margin={{left: '10px', bottom: 'small'}}>Add more:</Text>
-              <ParticipantInvite conversation={props.conversation}>
+              <ParticipantInvite
+                direction='row'
+                conversation={props.conversation}>
               {(participants, clearInput) => (
-                <Box>
-                {participants.length > 0 && (
-                  <Box pad='small'>
-                    <ParticipantInviteButton
-                      participants={participants}
-                      conversation={props.conversation}
-                      close={clearInput} />
-                  </Box>
-                )}
-                </Box>)
-              }
+                <ParticipantInviteButton
+                  participants={participants}
+                  conversation={props.conversation}
+                  close={clearInput} />
+              )}
               </ParticipantInvite>
+              <MagicLinkInvite conversation={props.conversation} />
             </Box>
           )}
           </Flyout>

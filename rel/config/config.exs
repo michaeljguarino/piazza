@@ -29,6 +29,7 @@ config :core, Core.Repo,
 
 config :gql, :giphy_secret, get_env("GIPHY_SECRET")
 config :core, :rtc_host, "piazza-rtc"
+config :joken, invite_secret: get_env("INVITE_SECRET")
 
 config :arc,
   storage: Arc.Storage.GCS,
