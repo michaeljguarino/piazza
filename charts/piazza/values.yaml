@@ -35,7 +35,7 @@ external-dns:
     serviceAccountSecret: externaldns-serviceaccount
 
 image:
-  tag: "0.2.1"
+  tag: "0.5.0"
   pullPolicy: Always
 
 imagePullSecrets: []
@@ -78,7 +78,7 @@ cron:
 
 retentionPolicy: &retentionPolicy
   name: RETENTION_POLICY
-  value: 25
+  value: 5
 notificationRetentionPolicy: &notificationRetentionPolicy
   name: RETENTION_POLICY
   value: 5
@@ -105,9 +105,6 @@ ingress:
   dns: chat.piazzaapp.com
   annotations:
     networking.gke.io/managed-certificates: piazza-cert
-  hosts:
-    - host: chart-example.local
-      paths: []
 
   tls: []
 
