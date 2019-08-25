@@ -112,7 +112,10 @@ function CommandCreator(props) {
             }} />
           </Box>
         </Box>
-        <CommandForm formState={formState} setFormState={setFormState} />
+        <CommandForm
+          setOpen={props.setOpen}
+          formState={formState}
+          setFormState={setFormState} />
       </Box>
     </Box>
   )

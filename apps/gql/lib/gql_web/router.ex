@@ -38,6 +38,7 @@ defmodule GqlWeb.Router do
     pipe_through [:api]
 
     post  "/incoming_webhooks/:secure_id", IncomingWebhookController, :dispatch
+    post "/webhooks/github", WebhookController, :github
   end
 
   scope "/", GqlWeb do

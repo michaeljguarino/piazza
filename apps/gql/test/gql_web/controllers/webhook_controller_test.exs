@@ -76,5 +76,21 @@ defmodule GqlWeb.WebhookControllerTest do
     end
   end
 
+  describe "#github/2" do
+    test "It will 200", %{conn: conn} do
+      path   = Routes.webhook_path(conn, :github)
+      secret = Gql.Plug.WebhookValidators.secret(:github)
+      raw_body = "{}"
+
+      signature = "sha1=" <> (:crypto.hmac(:sha, secret, raw_body) |> Base.encode16(case: :lower))
+
+      conn
+      |> put_req_header("x-hub-signature", signature)
+      |> put_req_header("content-type", "application/json")
+      |> post(path, raw_body)
+      |> json_response(200)
+    end
+  end
+
   defp mapify(msg), do: Jason.encode!(msg) |> Jason.decode!()
 end

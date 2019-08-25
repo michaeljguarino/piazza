@@ -1,6 +1,9 @@
 defmodule GqlWeb.WebhookController do
   use GqlWeb, :controller
+  import Gql.Plug.WebhookValidators
   alias Core.Commands.Piazza
+
+  plug :validate_github when action == :github
 
   def giphy(conn, %{"text" => "/giphy " <> search}) do
     with {:ok, message} <- Gql.Clients.Giphy.random(search) do
@@ -20,4 +23,6 @@ defmodule GqlWeb.WebhookController do
         json(conn, %{message: "I don't understand what #{args} means, perhaps look at the help doc"})
     end
   end
+
+  def github(conn, _params), do: json(conn, %{ok: true})
 end
