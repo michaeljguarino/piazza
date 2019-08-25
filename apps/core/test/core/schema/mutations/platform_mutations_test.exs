@@ -33,6 +33,34 @@ defmodule Core.Schema.PlatformMutationsTest do
       assert command["creator"]["name"]
       assert command["bot"]["email"]
     end
+
+    test "A user can create a command with incoming webhooks" do
+      %{user: user, conversation: conv} = insert(:participant)
+
+      {:ok, %{data: %{"createCommand" => command}}} = run_query("""
+        mutation CreateCommand($incomingWebhook: IncomingWebhookAttributes) {
+          createCommand(attributes: {
+            name: "giphy",
+            documentation: "Sends you gifs",
+            webhook: {url: "https://api.giphy.com"},
+            incomingWebhook: $incomingWebhook
+          }) {
+            name
+            documentation
+            incomingWebhook {
+              url
+              conversation {
+                name
+              }
+            }
+          }
+        }
+      """, %{"incomingWebhook" => %{"name" => conv.name}}, %{current_user: user})
+
+      "https://localhost/external/incoming_webhooks/" <> secure_id = command["incomingWebhook"]["url"]
+      assert Core.Services.Platform.get_incoming_webhook(secure_id)
+      assert command["incomingWebhook"]["conversation"]["name"] == conv.name
+    end
   end
 
   describe "updateCommand" do

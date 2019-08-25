@@ -1,6 +1,6 @@
 defmodule Core.Models.Command do
   use Core.DB.Schema
-  alias Core.Models.{User, Webhook}
+  alias Core.Models.{User, Webhook, IncomingWebhook}
 
   schema "commands" do
     field :name, :string
@@ -10,6 +10,8 @@ defmodule Core.Models.Command do
     belongs_to :bot, User
     belongs_to :creator, User
     belongs_to :webhook, Webhook
+
+    has_one :incoming_webhook, IncomingWebhook
 
     timestamps()
   end

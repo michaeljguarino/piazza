@@ -1,12 +1,15 @@
 import React from 'react'
+import {Mutation} from 'react-apollo'
 import {Box, Text, Anchor, Markdown, Table, TableBody, TableRow, TableCell} from 'grommet'
 import Dropdown from '../utils/Dropdown'
-import UserListEntry from '../users/UserListEntry'
 import Avatar from '../users/Avatar'
+import { FilePicker } from 'react-file-picker'
+import {UPDATE_USER, USERS_Q} from '../users/queries'
+import {updateUser} from '../users/utils'
 
 function CommandDisplay(props) {
   return (
-    <Box direction='row' align='center' pad={{bottom: 'small'}}>
+    <Box direction='row' align='center'>
       <Box width='45px' align='center' justify='center'>
         <Avatar user={props.command.bot} />
       </Box>
@@ -23,9 +26,50 @@ function CommandDisplay(props) {
   )
 }
 
+function EditableAvatar(props) {
+  return (
+    <Mutation
+      mutation={UPDATE_USER}
+      update={(cache, { data }) => {
+        const prev = cache.readQuery({ query: USERS_Q })
+        cache.writeQuery({query: USERS_Q, data: updateUser(prev, data.updateUser)})
+      }} >
+      {mutation => (
+        <FilePicker
+          extensions={['jpg', 'jpeg', 'png']}
+          dims={{minWidth: 100, maxWidth: 500, minHeight: 100, maxHeight: 500}}
+          onChange={ (file) => mutation({variables: {id: props.user.id, attributes: {avatar: file}}})}
+        >
+          <span><Avatar {...props} /></span>
+        </FilePicker>
+      )}
+    </Mutation>
+  )
+}
+
+function BotDisplay(props) {
+  return (
+    <Box
+      style={{cursor: 'pointer'}}
+      direction='row'
+      align='center'
+      pad={props.pad || 'xxsmall'}
+      onClick={() => props.onClick && props.onClick(props.user)}
+      fill='horizontal'>
+      {props.disableEdit ? <Avatar {...props} /> : <EditableAvatar {...props} />}
+      <Box>
+        <Box>
+          <Text size='small' weight='bold'>{"@" + props.user.handle}</Text>
+          <Text size='small' color='dark-6'>{props.user.name}</Text>
+        </Box>
+      </Box>
+    </Box>
+  )
+}
+
 function CommandDetail(props) {
   return (
-    <Box pad='small' width='400px'>
+    <Box pad='small' style={{minWidth: '400px'}}>
       <Box direction='row' align='center' margin={{bottom: 'small'}}>
         <Text weight="bold" size='small' margin='5px'>/{props.command.name}</Text>
         <Text size='small'>help</Text>
@@ -40,12 +84,18 @@ function CommandDetail(props) {
         <TableBody>
           <TableRow>
             <TableCell><strong>Bot User</strong></TableCell>
-            <TableCell><UserListEntry user={props.command.bot} /></TableCell>
+            <TableCell><BotDisplay disableEdit={props.disableEdit} user={props.command.bot} /></TableCell>
           </TableRow>
           <TableRow>
             <TableCell><strong>Webhook Url</strong></TableCell>
             <TableCell>{props.command.webhook.url}</TableCell>
           </TableRow>
+          {props.command.incomingWebhook && (
+            <TableRow>
+              <TableCell><strong>Incoming Webhook</strong></TableCell>
+              <TableCell>{props.command.incomingWebhook.url} ({props.command.incomingWebhook.conversation.name})</TableCell>
+            </TableRow>
+          )}
         </TableBody>
       </Table>
     </Box>
@@ -54,7 +104,7 @@ function CommandDetail(props) {
 
 function CommandListEntry(props) {
   return (
-    <Box direction='row' align='center' fill='horizontal' overflow='none'>
+    <Box direction='row' align='center' fill='horizontal' overflow='none' pad={props.pad}>
       <CommandDisplay {...props} />
     </Box>
   )

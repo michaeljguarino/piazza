@@ -2,6 +2,7 @@ import React from 'react';
 import { Switch, Route } from 'react-router-dom';
 import Piazza from './Piazza'
 import { Grommet } from 'grommet';
+import {SearchInput} from './utils/SelectSearchInput'
 
 // import logo from './logo.svg';
 import '../styles/App.css';
@@ -20,6 +21,9 @@ const theme = {
       horizontal: '6px',
       vertical: '2px'
     }
+  },
+  select: {
+    searchInput: SearchInput
   },
   textInput: {
     extend: {

@@ -24,3 +24,20 @@ export const ME_Q=gql`
   }
   ${UserFragment}
 `
+
+export const USERS_Q = gql`
+  query Users($cursor: String) {
+    users(first: 15, after: $cursor) {
+      pageInfo {
+        endCursor
+        hasNextPage
+      }
+      edges {
+        node {
+          ...UserFragment
+        }
+      }
+    }
+  }
+  ${UserFragment}
+`;

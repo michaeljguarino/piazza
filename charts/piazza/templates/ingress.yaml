@@ -46,6 +46,10 @@ spec:
         backend:
           serviceName: piazza-gql
           servicePort: http
+      - path: /external/*
+        backend:
+          serviceName: piazza-gql
+          servicePort: http
       - path: /graphiql
         backend:
           serviceName: piazza-gql

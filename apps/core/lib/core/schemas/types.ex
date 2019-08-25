@@ -276,6 +276,7 @@ defmodule Core.Schemas.Types do
     field :bot, :user, resolve: dataloader(User)
     field :creator, :user, resolve: dataloader(User)
     field :webhook, :webhook, resolve: dataloader(Platform)
+    field :incoming_webhook, :incoming_webhook, resolve: dataloader(Platform)
 
     timestamps()
   end
@@ -293,9 +294,13 @@ defmodule Core.Schemas.Types do
   object :incoming_webhook do
     field :secure_id, :id
     field :name, :string
+    field :url, :string, resolve: fn %{secure_id: secure_id}, _, _ ->
+      {:ok, Core.Urls.gql_url("/external/incoming_webhooks/#{secure_id}")}
+    end
 
     field :bot, :user, resolve: dataloader(User)
     field :creator, :user, resolve: dataloader(User)
+    field :conversation, :conversation, resolve: dataloader(Conversation)
   end
 
   connection node_type: :command

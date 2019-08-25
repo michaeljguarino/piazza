@@ -47,6 +47,17 @@ defmodule Core.Factory do
     }
   end
 
+  def incoming_webhook_factory do
+    %Models.IncomingWebhook{
+      name: sequence(:incoming_webhook, &"incoming-webhook-#{&1}"),
+      secure_id: sequence(:incoming_webhook, &"secure-id-#{&1}"),
+      conversation: build(:conversation),
+      bot: build(:user, bot: true),
+      command: build(:command),
+      creator: build(:user)
+    }
+  end
+
   def message_entity_factory do
     %Models.MessageEntity{
       type: :mention,

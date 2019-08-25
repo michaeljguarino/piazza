@@ -25,6 +25,9 @@ defmodule Core.Services.Conversations do
   def get_conversation_by_name(name),
     do: Core.Repo.get_by(Conversation, name: name)
 
+  def get_conversation_by_name!(name),
+    do: Core.Repo.get_by!(Conversation, name: name)
+
   def get_conversation_by_dedupe_key(dedupe_key),
     do: Core.Repo.get_by(Conversation, chat_dedupe_key: dedupe_key)
 

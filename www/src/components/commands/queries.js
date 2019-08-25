@@ -30,3 +30,23 @@ export const SEARCH_COMMANDS = gql`
   }
   ${CommandFragment}
 `;
+
+export const CREATE_COMMAND = gql`
+  mutation CreateCommand(
+      $name: String!,
+      $documentation: String,
+      $description: String,
+      $incomingWebhook: IncomingWebhookAttributes,
+      $url: String!) {
+    createCommand(attributes: {
+      name: $name,
+      documentation: $documentation,
+      description: $description,
+      webhook: {url: $url},
+      incomingWebhook: $incomingWebhook
+    }) {
+      ...CommandFragment
+    }
+  }
+  ${CommandFragment}
+`;

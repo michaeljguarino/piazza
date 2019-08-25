@@ -1,11 +1,13 @@
 import React, {useState} from 'react'
-import {Box, Text} from 'grommet'
+import {Box, Text, Anchor} from 'grommet'
 import {Code} from 'grommet-icons'
 import { Query } from 'react-apollo'
 import CommandListEntry from './CommandListEntry'
+import CommandCreator from './CommandCreator'
 import Scroller from '../utils/Scroller'
 import {COMMANDS_Q} from './queries'
 import Flyout, {FlyoutHeader} from '../utils/Flyout'
+import Modal from '../utils/Modal'
 
 function Commands(props) {
   const [hover, setHover] = useState(false)
@@ -46,7 +48,13 @@ function Commands(props) {
                     overflow: 'auto',
                     maxHeight: '150px'
                   }}
-                  mapper={(edge) => <CommandListEntry key={edge.node.id} command={edge.node} color={props.color} />}
+                  mapper={(edge) => (
+                    <CommandListEntry
+                      key={edge.node.id}
+                      pad={{bottom: 'small'}}
+                      command={edge.node}
+                      color={props.color} />
+                  )}
                   onLoadMore={() => {
                     if (!pageInfo.hasNextPage) {
                       return
@@ -73,6 +81,13 @@ function Commands(props) {
               </Box>
             )}}
           </Query>
+          <Box pad='small' border='top'>
+            <Modal target={<Anchor size='small'>Create more</Anchor>}>
+            {setOpen => (
+              <CommandCreator setOpen={setOpen} />
+            )}
+            </Modal>
+          </Box>
         </Box>
       )}
       </Flyout>

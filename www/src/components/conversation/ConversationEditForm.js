@@ -1,22 +1,7 @@
 import React from 'react'
-import {Keyboard, Text, Box, CheckBox, TextInput} from 'grommet'
+import {Keyboard, Box, CheckBox} from 'grommet'
 import Button from '../utils/Button'
-
-function InputField(props) {
-  return (
-    <Box direction='row' align='center'>
-      <Box width='50px'>
-        <Text size='small' margin={{right: 'small'}} weight='bold'>{props.label}</Text>
-      </Box>
-      <TextInput
-        name='name'
-        value={props.value}
-        onChange={props.onChange}
-        placeholder={props.placeholder}
-        />
-    </Box>
-  )
-}
+import InputField from '../utils/InputField'
 
 function ConversationEditForm(props) {
   return (

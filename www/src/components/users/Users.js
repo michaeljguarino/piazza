@@ -1,34 +1,10 @@
 import React from 'react'
 import {Box} from 'grommet'
-import gql from 'graphql-tag'
 import { Query } from 'react-apollo'
 import Scroller from '../utils/Scroller'
 import UserListEntry from './UserListEntry'
 import {mergeAppend} from '../../utils/array'
-
-
-const USERS_Q=gql`
-query Users($cursor: String) {
-  users(first: 15, after: $cursor) {
-    pageInfo {
-      endCursor
-      hasNextPage
-    }
-    edges {
-      node {
-        id
-        bio
-        name
-        handle
-        bot
-        bio
-        avatar
-        backgroundColor
-      }
-    }
-  }
-}
-`;
+import {USERS_Q} from './queries'
 
 function Users(props) {
   return (
@@ -64,12 +40,11 @@ function Users(props) {
                   updateQuery: (prev, {fetchMoreResult}) => {
                     const edges = fetchMoreResult.users.edges
                     const pageInfo = fetchMoreResult.users.pageInfo
-                    if (userEdges.find((edge) => edge.node.id === edges[0].node.id)) {
-                      return prev;
-                    }
+
                     return edges.length ? {
+                      ...prev,
                       users: {
-                        ...prev,
+                        ...prev.users,
                         edges: mergeAppend(prev.users.edges, ...edges, (e) => e.node.id),
                         pageInfo
                       }

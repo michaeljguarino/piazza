@@ -34,6 +34,12 @@ defmodule GqlWeb.Router do
     post "/piazza", WebhookController, :piazza
   end
 
+  scope "/external", GqlWeb do
+    pipe_through [:api]
+
+    post  "/incoming_webhooks/:secure_id", IncomingWebhookController, :dispatch
+  end
+
   scope "/", GqlWeb do
     pipe_through :api
 

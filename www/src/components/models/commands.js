@@ -13,6 +13,12 @@ export const CommandFragment=gql`
     webhook {
       url
     }
+    incomingWebhook {
+      conversation {
+        name
+      }
+      url
+    }
   }
   ${UserFragment}
 `;

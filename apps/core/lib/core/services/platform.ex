@@ -1,6 +1,7 @@
 defmodule Core.Services.Platform do
   use Core.Services.Base
   alias Core.PubSub
+  alias Core.Services.Conversations
   alias Core.Models.{
     User,
     Webhook,
@@ -13,6 +14,12 @@ defmodule Core.Services.Platform do
   def get_command(name), do: Core.Repo.get_by(Command, name: name)
 
   def get_command!(name), do: Core.Repo.get_by!(Command, name: name)
+
+  def get_incoming_webhook!(secure_id),
+    do: Core.Repo.get_by!(IncomingWebhook, secure_id: secure_id)
+
+  def get_incoming_webhook(secure_id),
+    do: Core.Repo.get_by(IncomingWebhook, secure_id: secure_id)
 
   def create_command(%{webhook: webhook_args, name: name} = args, user) do
     start_transaction()
@@ -33,9 +40,38 @@ defmodule Core.Services.Platform do
       |> allow(user, :create)
       |> when_ok(:insert)
     end)
+    |> maybe_add_incoming_webhook(args, user)
     |> execute(extract: :command)
     |> notify(:create, user)
   end
+
+  defp maybe_add_incoming_webhook(transaction, %{incoming_webhook: incoming_webhook_args}, user) do
+    add_operation(transaction, :incoming_webhook, fn %{command: command} ->
+      create_incoming_webhook(incoming_webhook_args, command, user)
+    end)
+  end
+  defp maybe_add_incoming_webhook(transaction, _, _), do: transaction
+
+  def create_incoming_webhook(%{name: name}, %Command{id: command_id, bot_id: bot_id} = command, user) do
+    conversation = Conversations.get_conversation_by_name!(name)
+
+    with {:ok, _} <- Core.Policies.Conversation.allow(conversation, user, :update) do
+      %IncomingWebhook{command_id: command_id, creator_id: user.id}
+      |> IncomingWebhook.changeset(%{
+        bot_id: bot_id,
+        name: "#{command.name}-#{name}",
+        conversation_id: conversation.id
+      })
+      |> Core.Repo.insert()
+    end
+  end
+
+  def dispatch_incoming_webhook(msg, %IncomingWebhook{} = incoming_webhook) do
+    %{bot: bot, conversation_id: conv_id} = Core.Repo.preload(incoming_webhook, [:bot])
+    Core.Services.Conversations.create_message(conv_id, msg, bot)
+  end
+  def dispatch_incoming_webhook(msg, secure_id),
+    do: dispatch_incoming_webhook(msg, get_incoming_webhook!(secure_id))
 
   def update_command(name, attrs, user) do
     get_command!(name)

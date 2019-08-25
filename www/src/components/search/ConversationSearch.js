@@ -14,7 +14,7 @@ function _addConversation(client, conversation) {
   });
 }
 
-function searchConversations(client, query, callback) {
+export function searchConversations(client, query, callback) {
   if (query.length === 0) return
 
   client.query({
