@@ -28,13 +28,18 @@ defmodule Gql.Clients.Giphy do
   end
 
   def build_message(text, url) do
+    pruned_url =
+      URI.parse(url)
+      |> Map.put(:query, nil)
+      |> URI.to_string()
+
     %{
       text: text,
       structured_message: """
         <root>
           <box pad="small">
-            <link href="#{url}" target="_blank">
-              <video url="#{url}" autoPlay="true" loop="true" />
+            <link href="#{pruned_url}" target="_blank">
+              <video url="#{pruned_url}" autoPlay="true" loop="true" />
             </link>
           </box>
         </root>

@@ -6,8 +6,7 @@ defmodule Core.Aquaduct.WebhookSubscriber do
   def process(%{body: {webhook, actor, msg}} = message, _opts) do
     Logger.info "Processing webhook for #{msg.text}"
     case Core.Services.Platform.Webhooks.send_hook(webhook, msg, actor) do
-      {:ok, _} = result ->
-        Logger.info "Webhook result: #{inspect(result)}"
+      {:ok, _} ->
         ack(message)
       error ->
         Logger.info "Webhook failed: #{inspect(error)}"

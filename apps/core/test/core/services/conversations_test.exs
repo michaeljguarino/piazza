@@ -119,20 +119,26 @@ defmodule Core.Services.ConversationsTest do
     test "Structured messages can be defined with xml" do
       %{user: user, conversation: conversation} = insert(:participant)
 
+      url = "https://media2.giphy.com/media/35LCfBhoYD0uuDmZWG/giphy.mp4"
+
       {:ok, message} = Conversations.create_message(conversation.id, %{
         text: "structured message",
         structured_message: """
           <root>
-            <attachment gap="small" pad="small">
-              <text size="small" weight="bold">My Structured Message</text>
-            </attachment>
+            <box pad="small">
+              <link href='#{url}' target="_blank">
+                <video url='#{url}' autoPlay="true" loop="true" />
+              </link>
+            </box>
           </root>
         """
       }, user)
 
       %{"_type" => "root", "children" => [
-        %{"_type" => "attachment", "children" => [
-          %{"_type" => "text", "attributes" => %{"value" => "My Structured Message"}}
+        %{"_type" => "box", "children" => [
+          %{"_type" => "link", "children" => [
+            %{"_type" => "video", "attributes" => %{"url" => ^url}}
+          ]}
         ]}
       ]} = message.structured_message
     end
