@@ -1,5 +1,6 @@
 defmodule GqlWeb.WebhookControllerTest do
   use GqlWeb.ConnCase
+  alias Core.Models.StructuredMessage
   import Mock
 
   describe "#giphy/2" do
@@ -18,13 +19,13 @@ defmodule GqlWeb.WebhookControllerTest do
           |> post(path, %{"text" => "/giphy doggos"})
           |> json_response(200)
 
-        %{"_type" => "root", "children" => [
+        {:ok, %{"_type" => "root", "children" => [
           %{"_type" => "box", "children" => [
             %{"_type" => "link", "children" => [
-              %{"attributes" => %{"url" => url}}
+              %{"_type" => "video", "attributes" => %{"url" => url}}
             ]}
           ]}
-        ]} = result["structured_message"]
+        ]}} = StructuredMessage.from_xml(result["structured_message"])
 
         assert url == gif_url
       end
@@ -45,13 +46,13 @@ defmodule GqlWeb.WebhookControllerTest do
           |> post(path, %{message: "doggos"})
           |> json_response(200)
 
-          %{"_type" => "root", "children" => [
+          {:ok, %{"_type" => "root", "children" => [
             %{"_type" => "box", "children" => [
               %{"_type" => "link", "children" => [
-                %{"attributes" => %{"url" => url}}
+                %{"_type" => "video", "attributes" => %{"url" => url}}
               ]}
             ]}
-          ]} = result["structured_message"]
+          ]}} = StructuredMessage.from_xml(result["structured_message"])
 
           assert url == gif_url
       end

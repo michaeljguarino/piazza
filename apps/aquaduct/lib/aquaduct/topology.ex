@@ -47,7 +47,6 @@ defmodule Aquaduct.Topology do
 
       pipeline :error_handling do
         plug Aquaduct.Plug.DeadLetter, broker: __MODULE__, publish_to: :error
-        plug Conduit.Plug.Retry, attempts: 3
       end
 
       pipeline :deserialize do

@@ -1,4 +1,6 @@
 defmodule Core.Services.Platform.Webhooks do
+  require Logger
+
   def send_hook(%{url: url, secret: secret}, %{conversation_id: conv_id} = message, bot) do
     with {:ok, payload} <- Jason.encode(message),
          {:ok, %Mojito.Response{
@@ -7,7 +9,14 @@ defmodule Core.Services.Platform.Webhooks do
             }
           } <- Mojito.post(url, webhook_headers(payload, secret), payload),
          {:ok, msg} <- handle_response(response) do
-      Core.Services.Conversations.create_message(conv_id, msg, bot)
+      try do
+        Core.Services.Conversations.create_message(conv_id, msg, bot)
+        |> IO.inspect()
+      rescue
+        e ->
+          Logger.error(inspect(e))
+          {:error, :fucked}
+      end
     else
       {:ok, %Mojito.Response{body: body}} -> {:error, :request_failed, body}
       error -> error

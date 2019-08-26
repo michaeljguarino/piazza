@@ -20,9 +20,9 @@ defmodule Core.Models.StructuredMessage do
       do: {:ok, mapify(parsed)}
   end
 
-  @leaf_nodes ['text', 'link', 'button', 'markdown']
+  @leaf_nodes ['text', 'link', 'button', 'markdown', 'video', 'image']
 
-  defp mapify({node, attributes, [value]}) when node in @leaf_nodes do
+  defp mapify({node, attributes, [value]}) when node in @leaf_nodes and is_list(value) do
     base_node(node, attributes)
     |> put_in(["attributes", "value"], to_string(value))
   end

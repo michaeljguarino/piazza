@@ -30,18 +30,15 @@ defmodule Gql.Clients.Giphy do
   def build_message(text, url) do
     %{
       text: text,
-      structured_message: %{
-        _type: "root",
-        children: [
-          %{
-            _type: "box", attributes: %{pad: "small"}, children: [
-              %{_type: "link", attributes: %{href: url, target: "_blank"}, children: [
-                %{_type: "video", attributes: %{url: url, autoPlay: true, loop: true}}
-              ]}
-            ]
-          }
-        ]
-      }
+      structured_message: """
+        <root>
+          <box pad="small">
+            <link href="#{url}" target="_blank">
+              <video url="#{url}" autoPlay="true" loop="true" />
+            </link>
+          </box>
+        </root>
+      """
     }
   end
 
