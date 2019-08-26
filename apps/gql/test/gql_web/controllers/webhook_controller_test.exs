@@ -80,15 +80,22 @@ defmodule GqlWeb.WebhookControllerTest do
     test "It will 200", %{conn: conn} do
       path   = Routes.webhook_path(conn, :github)
       secret = Gql.Plug.WebhookValidators.secret(:github)
-      raw_body = "{}"
+      raw_body = Jason.encode!(%{
+        head_commit: %{message: "a message", author: %{name: "m"}, url: "github.com"},
+        repository: %{full_name: "piazza", html_url: "https://github.com/piazza"}
+      })
 
-      signature = "sha1=" <> (:crypto.hmac(:sha, secret, raw_body) |> Base.encode16(case: :lower))
-
-      conn
-      |> put_req_header("x-hub-signature", signature)
-      |> put_req_header("content-type", "application/json")
-      |> post(path, raw_body)
-      |> json_response(200)
+      signature = "sha1=#{:crypto.hmac(:sha, secret, raw_body) |> Base.encode16(case: :lower)}"
+      with_mock Mojito, [
+        post: fn "https://dummy.webhook", _, _ -> {:ok, %Mojito.Response{}} end
+      ] do
+        %{"text" => _, "structured_message" => _} =
+          conn
+          |> put_req_header("x-hub-signature", signature)
+          |> put_req_header("content-type", "application/json")
+          |> post(path, raw_body)
+          |> json_response(200)
+      end
     end
   end
 

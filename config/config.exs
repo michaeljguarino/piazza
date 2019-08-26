@@ -105,7 +105,8 @@ config :rtc,  :start_thrift_server, true
 config :core, :start_rtc_client, false
 
 config :joken, invite_secret: "super_secret"
-config :gql, github_secret: "super super secret"
+config :gql,   github_secret: "super super secret"
+config :gql,   github_incoming_webhook: "https://dummy.webhook"
 
 
 # Import environment specific config. This must remain at the bottom

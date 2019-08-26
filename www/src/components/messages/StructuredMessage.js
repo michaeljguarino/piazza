@@ -39,7 +39,14 @@ function text(props) {
 
 function markdown(props) {
   const {value, ...rest} = props.attributes
-  return <Markdown key={props.key} {...rest}>{value}</Markdown>
+  return (
+    <Markdown
+      key={props.key}
+      components={{p: {props: {size: 'small', margin: {top: 'xsmall', bottom: 'xsmall'}}}}}
+      {...rest}>
+      {value}
+    </Markdown>
+  )
 }
 
 function image(props) {
