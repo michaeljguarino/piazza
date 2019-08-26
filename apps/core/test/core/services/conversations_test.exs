@@ -116,6 +116,27 @@ defmodule Core.Services.ConversationsTest do
       assert_receive {:event, %PubSub.MessageCreated{item: ^message}}
     end
 
+    test "Structured messages can be defined with xml" do
+      %{user: user, conversation: conversation} = insert(:participant)
+
+      {:ok, message} = Conversations.create_message(conversation.id, %{
+        text: "structured message",
+        structured_message: """
+          <root>
+            <attachment gap="small" pad="small">
+              <text size="small" weight="bold">My Structured Message</text>
+            </attachment>
+          </root>
+        """
+      }, user)
+
+      %{"_type" => "root", "children" => [
+        %{"_type" => "attachment", "children" => [
+          %{"_type" => "text", "attributes" => %{"value" => "My Structured Message"}}
+        ]}
+      ]} = message.structured_message
+    end
+
     test "Participants can create messages in private conversations" do
       user = insert(:user)
       conversation = insert(:conversation, public: false)

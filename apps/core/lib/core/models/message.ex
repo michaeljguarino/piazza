@@ -7,7 +7,8 @@ defmodule Core.Models.Message do
     MessageEntity,
     MessageReaction,
     Embed,
-    PinnedMessage
+    PinnedMessage,
+    StructuredMessage
   }
 
   schema "messages" do
@@ -15,7 +16,7 @@ defmodule Core.Models.Message do
     field :attachment,         Core.Storage.Type
     field :attachment_id,      :binary_id
     field :pinned_at,          :utc_datetime_usec
-    field :structured_message, :map
+    field :structured_message, StructuredMessage.Type
 
     belongs_to :creator,      User
     belongs_to :conversation, Conversation
@@ -75,7 +76,7 @@ defmodule Core.Models.Message do
     |> foreign_key_constraint(:conversation_id)
     |> validate_length(:text, max: 255)
     |> validate_change(:structured_message, fn _, message ->
-      case Core.Models.StructuredMessage.validate(message) do
+      case StructuredMessage.validate(message) do
         :pass -> []
         {:fail, message} -> [structured_message: message]
       end

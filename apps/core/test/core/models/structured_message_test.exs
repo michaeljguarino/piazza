@@ -33,4 +33,29 @@ defmodule Core.Models.StructuredMessageTest do
       })
     end
   end
+
+  describe "#from_xml" do
+    test "It can convert an xml representation to the canonical map form" do
+      document = """
+        <root>
+          <attachment gap="small" pad="small">
+            <text size="small">some text</text>
+            <link href="http://some.link">link value</link>
+          </attachment>
+        </root>
+      """
+
+      {:ok, result} = StructuredMessage.from_xml(document)
+
+      assert result["_type"] == "root"
+      [%{"_type" => "attachment", "children" => [first, second]}] = result["children"]
+
+      assert first["_type"] == "text"
+      assert first["attributes"]["value"] == "some text"
+
+      assert second["_type"] == "link"
+      assert second["attributes"]["href"] == "http://some.link"
+      assert second["attributes"]["value"] == "link value"
+    end
+  end
 end

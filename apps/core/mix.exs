@@ -63,6 +63,7 @@ defmodule Core.MixProject do
       {:mojito, "~> 0.3.0"},
       {:ecto_enum, "~> 1.3"},
       {:guardian, "~> 1.2.1"},
+      {:erlsom, "~>1.4"},
       {:botanist, "~> 0.1.0", git: "https://github.com/michaeljguarino/botanist.git", branch: "ecto3"},
 
       {:mock, "~> 0.3.3", only: :test},

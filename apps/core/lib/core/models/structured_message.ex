@@ -1,6 +1,44 @@
 defmodule Core.Models.StructuredMessage do
   use Core.Models.StructuredMessage.Base
 
+  defmodule Type do
+    @behaviour Ecto.Type
+    def type, do: :map
+
+    def cast(doc) when is_binary(doc),
+      do: Core.Models.StructuredMessage.from_xml(doc)
+    def cast(map) when is_map(map), do: {:ok, map}
+    def cast(_), do: :error
+
+    def load(map) when is_map(map), do: {:ok, map}
+
+    def dump(map) when is_map(map), do: {:ok, map}
+  end
+
+  def from_xml(doc) do
+    with {:ok, parsed, _} <- :erlsom.simple_form(doc),
+      do: {:ok, mapify(parsed)}
+  end
+
+  @leaf_nodes ['text', 'link', 'button', 'markdown']
+
+  defp mapify({node, attributes, [value]}) when node in @leaf_nodes do
+    base_node(node, attributes)
+    |> put_in(["attributes", "value"], to_string(value))
+  end
+  defp mapify({node, attributes, []}), do: base_node(node, attributes)
+  defp mapify({node, attributes, children}) do
+    base_node(node, attributes)
+    |> Map.put("children", Enum.map(children, &mapify/1))
+  end
+
+  defp base_node(node, attributes) do
+    %{
+      "_type" => to_string(node),
+      "attributes" => Enum.into(attributes, %{}, fn {k, v} -> {to_string(k), to_string(v)} end),
+    }
+  end
+
   schema do
     component "box" do
       attributes ~w(direction width height pad margin align justify gap)
