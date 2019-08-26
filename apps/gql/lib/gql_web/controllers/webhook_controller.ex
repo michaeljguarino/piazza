@@ -32,20 +32,19 @@ defmodule GqlWeb.WebhookController do
 
     structured_message = %{
       text: simple_msg,
-      structured_message: %{
-        _type: "root",
-        children: [
-          %{_type: "box", attributes: %{pad: "xsmall"}, children: [
-            %{_type: "markdown", attributes: %{weight: "bold", size: "small", value: "#{author} pushed to [#{repo_name}](#{repo_url})"}}
-          ]},
-          %{_type: "attachment", attributes: %{gap: "small", pad: %{horizontal: "small", bottom: "small"}, accent: "black"}, children: [
-            %{_type: "markdown", attributes: %{size: "small", value: message}},
-            %{_type: "link", attributes: %{href: url}, children: [
-              %{_type: "text", attributes: %{size: "small", color: "light-5"}, value: url}
-            ]}
-          ]}
-        ]
-      }
+      structured_message: """
+        <root>
+          <box pad="xsmall">
+            <markdown size="small">#{author} pushed to [#{repo_name}](#{repo_url})</markdown>
+          </box>
+          <attachment gap="small" pad="small" accent="black">
+            <markdown size="small">#{message}</markdown>
+            <link href="#{url}">
+              <text size="small" color="light-5">#{url}</text>
+            </link>
+          </attachment>
+        </root>
+      """
     }
 
     path = incoming_webhook(:github)
