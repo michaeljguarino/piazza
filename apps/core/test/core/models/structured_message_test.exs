@@ -45,7 +45,7 @@ defmodule Core.Models.StructuredMessageTest do
         </root>
       """
 
-      {:ok, result} = StructuredMessage.from_xml(document)
+      {:ok, result} = StructuredMessage.Xml.from_xml(document)
 
       assert result["_type"] == "root"
       [%{"_type" => "attachment", "children" => [first, second]}] = result["children"]

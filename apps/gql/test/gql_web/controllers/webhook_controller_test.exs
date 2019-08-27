@@ -25,7 +25,7 @@ defmodule GqlWeb.WebhookControllerTest do
               %{"_type" => "video", "attributes" => %{"url" => url}}
             ]}
           ]}
-        ]} = result} = StructuredMessage.from_xml(result["structured_message"])
+        ]} = result} = StructuredMessage.Xml.from_xml(result["structured_message"])
 
         assert url == gif_url
 
@@ -54,7 +54,7 @@ defmodule GqlWeb.WebhookControllerTest do
                 %{"_type" => "video", "attributes" => %{"url" => url}}
               ]}
             ]}
-          ]}} = StructuredMessage.from_xml(result["structured_message"])
+          ]}} = StructuredMessage.Xml.from_xml(result["structured_message"])
 
           assert url == gif_url
       end
