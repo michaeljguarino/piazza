@@ -26,22 +26,36 @@ defmodule GqlWeb.WebhookController do
 
   def github(conn, %{
     "head_commit" => %{"message" => message, "author" => %{"name" => author}, "url" => url},
-    "repository" => %{"full_name" => repo_name, "html_url" => repo_url}
+    "repository" => %{"full_name" => repo_name, "html_url" => repo_url},
+    "sender" => %{"avatar_url" => avatar, "login" => login},
+    "ref" => "refs/heads/" <> branch,
+    "after" => sha
   }) do
-    simple_msg = "#{author} pushed to #{repo_name}"
+    simple_msg = "#{author} pushed to #{repo_name} #{branch}"
 
     structured_message = %{
       text: simple_msg,
       structured_message: """
         <root>
           <box pad="xsmall">
-            <markdown size="small">#{author} pushed to [#{repo_name}](#{repo_url})</markdown>
+            <link href="#{url}" target="_blank">
+              <text size="small" weight="bold">
+                #{author} pushed to #{repo_name}:#{branch}
+              </text>
+            </link>
           </box>
           <attachment gap="small" pad="small" accent="black">
+            <box align="center" direction="row" gap="xsmall">
+              <image width="25px" height="25px" url="#{avatar}" />
+              <text size="small" weight="bold">#{login}</text>
+            </box>
             <markdown size="small">#{message}</markdown>
-            <link href="#{url}">
-              <text size="small" color="light-5">#{url}</text>
-            </link>
+            <box gap="xxsmall">
+              <text size="small" color="light-5">branch: #{branch}</text>
+              <link href="#{url}" target="_blank">
+                <text size="small" color="light-5">sha: #{sha}</text>
+              </link>
+            </box>
           </attachment>
         </root>
       """

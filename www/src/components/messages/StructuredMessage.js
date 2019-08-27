@@ -55,8 +55,8 @@ function image(props) {
 }
 
 function link(props) {
-  const {attributes, children} = props
-  return <Anchor key={props.key} {...attributes}>{children.map(parse)}</Anchor>
+  const {attributes, children, value} = props
+  return <Anchor key={props.key} {...attributes}>{value ? value :  children.map(parse)}</Anchor>
 }
 
 function parse(struct, index) {
