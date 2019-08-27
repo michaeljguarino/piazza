@@ -8,7 +8,7 @@ function Dropdown(props) {
   let first = props.children[0]
   let rest  = props.children.slice(1)
   return (
-    <span>
+    <span style={{lineHeight: '0px'}}>
       <span onClick={() => {
           props.onClick && props.onClick()
           setOpen(true)

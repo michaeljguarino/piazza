@@ -13,7 +13,7 @@ function Flyout(props) {
   const [open, setOpen] = useState(!!props.open)
 
   return (
-    <span>
+    <span style={{lineHeight: '0px'}}>
       <span onClick={() => {
         props.onOpen && props.onOpen()
         setOpen(true)
