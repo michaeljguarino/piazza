@@ -37,11 +37,12 @@ defmodule GqlWeb.WebhookController do
       text: simple_msg,
       structured_message: """
         <root>
-          <box pad="xsmall">
+          <box pad="xsmall" gap="xsmall">
+            <text size="small" weight="bold">
+              #{author} pushed to
+            </text>
             <link href="#{repo_url}" target="_blank">
-              <text size="small" weight="bold">
-                #{author} pushed to #{repo_name}:#{branch}
-              </text>
+              #{repo_name}:#{branch}
             </link>
           </box>
           <attachment gap="small" pad="small" accent="black">
