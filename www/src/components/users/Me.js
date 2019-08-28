@@ -2,7 +2,7 @@ import React, {useState} from 'react'
 import {Box, Text} from 'grommet'
 import Avatar from './Avatar'
 import { Mutation } from 'react-apollo'
-import Dropdown from '../utils/Dropdown'
+import CloseableDropdown from '../utils/CloseableDropdown'
 import Modal from '../utils/Modal'
 import {AUTH_TOKEN} from '../../constants'
 import { FilePicker } from 'react-file-picker'
@@ -10,6 +10,7 @@ import {ME_Q, UPDATE_USER} from './queries'
 import {CurrentUserContext} from '../login/EnsureLogin'
 import UpdatePassword from './UpdatePassword'
 import UpdateProfile from './UpdateProfile'
+import StructuredMessageTester from '../tools/StructuredMessageTester'
 
 function DropdownItem(props) {
   const [hover, setHover] = useState(false)
@@ -62,17 +63,19 @@ function Me(props) {
               </FilePicker>
             )}
           </Mutation>
-          <Dropdown>
+          <CloseableDropdown target={
             <Box>
               <Text size='small' weight='bold'>{"@" + me.handle}</Text>
               <Text size='small' color={hover ? 'white' : 'dark-6'}>{me.name}</Text>
             </Box>
+          }>
+          {setDropdownOpen => (
             <Box width="200px">
               <Box pad='small' direction="row" align="center">
                 <Avatar user={me} rightMargin='10px' />
                 <Text size="small" weight='bold'>{me.name}</Text>
               </Box>
-              <Box gap='xsmall' pad={{top: 'xsmall', bottom: 'small'}}>
+              <Box gap='xsmall' pad={{vertical: 'small'}}>
                 <Modal target={<DropdownItem text='update profile' />}>
                   {setOpen => (
                     <Box gap='small' pad="medium" width='300px'>
@@ -88,11 +91,21 @@ function Me(props) {
                   )}
                 </Modal>
               </Box>
-              <Box border='top' pad={{top: 'xsmall', bottom: 'xsmall'}}>
+              <Box border='top' pad={{vertical: 'xsmall'}}>
+                <Modal
+                  // onOpen={() => setDropdownOpen(false)}
+                  target={<DropdownItem text='structured message tester' />}>
+                {setOpen => (
+                  <StructuredMessageTester callback={() => setOpen(false)} />
+                )}
+                </Modal>
+              </Box>
+              <Box border='top' pad={{vertical: 'xsmall'}}>
                 <DropdownItem text='logout' onClick={_logout} />
               </Box>
             </Box>
-          </Dropdown>
+          )}
+          </CloseableDropdown>
         </Box>
       </Box>
     )}

@@ -39,6 +39,8 @@ function text(props) {
 
 function markdown(props) {
   const {value, ...rest} = props.attributes
+  if (!value) return null
+
   return (
     <Markdown
       key={props.key}
@@ -55,7 +57,8 @@ function image(props) {
 }
 
 function link(props) {
-  const {attributes, children, value} = props
+  const {attributes, children} = props
+  const value = props.value || attributes.value
   return <Anchor key={props.key} {...attributes}>{value ? value :  children.map(parse)}</Anchor>
 }
 

@@ -37,7 +37,7 @@ defmodule GqlWeb.WebhookController do
       text: simple_msg,
       structured_message: """
         <root>
-          <box pad="xsmall" gap="xsmall">
+          <box pad="xsmall" gap="xsmall" direction="row">
             <text size="small" weight="bold">
               #{author} pushed to
             </text>
@@ -51,10 +51,10 @@ defmodule GqlWeb.WebhookController do
               <text size="small" weight="bold">#{login}</text>
             </box>
             <markdown size="small">#{message}</markdown>
-            <box gap="xxsmall">
-              <text size="small" color="light-5">branch: #{branch}</text>
+            <box gap="xxxsmall">
+              <text size="small" color="dark-3">branch: #{branch}</text>
               <link href="#{url}" target="_blank">
-                <text size="small" color="light-5">sha: #{sha}</text>
+                <text size="small" color="dark-3">sha: #{sha}</text>
               </link>
             </box>
           </attachment>
