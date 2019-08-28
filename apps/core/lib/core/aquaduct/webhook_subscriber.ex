@@ -3,9 +3,9 @@ defmodule Core.Aquaduct.WebhookSubscriber do
   import Conduit.Message
   require Logger
 
-  def process(%{body: {webhook, actor, msg}} = message, _opts) do
+  def process(%{body: {command, msg}} = message, _opts) do
     Logger.info "Processing webhook for #{msg.text}"
-    case Core.Services.Platform.Webhooks.send_hook(webhook, msg, actor) do
+    case Core.Services.Platform.Webhooks.send_hook(command, msg) do
       {:ok, _} ->
         ack(message)
       error ->

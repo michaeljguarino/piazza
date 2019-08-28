@@ -38,8 +38,8 @@ defimpl Core.Recurse.Traversable, for: Core.PubSub.MessageCreated do
   def parse_command(%{item: %{text: "/" <> text} = msg}) do
     with [command | _]  <- String.split(text, " "),
          %Command{} = c <- Platform.get_command(command),
-         %{webhook: webhook, bot: bot} <- Core.Repo.preload(c, [:webhook, :bot]) do
-      payload = {webhook, bot, Core.Repo.preload(msg, [:creator, :conversation])}
+         command <- Core.Repo.preload(c, [:webhook, :bot]) do
+      payload = {command, Core.Repo.preload(msg, [:creator, :conversation])}
       Core.Aquaduct.Broker.publish(%Conduit.Message{body: payload}, :webhook)
     end
   end

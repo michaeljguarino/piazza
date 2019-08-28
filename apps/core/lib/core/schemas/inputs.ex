@@ -49,6 +49,10 @@ defmodule Core.Schemas.Inputs do
   input_object :command_update_attributes do
     field :name, :string
     field :documentation, :string
+    field :description, :string
+
+    field :webhook, :webhook_attributes
+    field :incoming_webhook, :incoming_webhook_attributes
   end
 
   input_object :webhook_attributes do
@@ -57,6 +61,7 @@ defmodule Core.Schemas.Inputs do
 
   input_object :incoming_webhook_attributes do
     field :name, non_null(:string)
+    field :routable, :boolean
   end
 
   input_object :bot_attributes do

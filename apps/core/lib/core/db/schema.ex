@@ -70,4 +70,11 @@ defmodule Core.DB.Schema do
       _ -> changeset
     end
   end
+
+  defmacro index_name(table, fields) do
+    index_name = :"#{table}_#{Enum.join(fields, "_")}"
+    quote do
+      unquote(index_name)
+    end
+  end
 end

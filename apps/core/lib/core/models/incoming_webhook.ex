@@ -6,6 +6,7 @@ defmodule Core.Models.IncomingWebhook do
   schema "incoming_webhooks" do
     field :secure_id, :string
     field :name, :string
+    field :routable, :boolean, default: false
 
     belongs_to :bot, User
     belongs_to :creator, User
@@ -15,7 +16,7 @@ defmodule Core.Models.IncomingWebhook do
     timestamps()
   end
 
-  @valid ~w(secure_id name bot_id conversation_id)a
+  @valid ~w(secure_id name bot_id conversation_id routable)a
 
   def changeset(schema, attrs \\ %{}) do
     schema
@@ -26,6 +27,7 @@ defmodule Core.Models.IncomingWebhook do
     |> foreign_key_constraint(:user_id)
     |> unique_constraint(:secure_id)
     |> unique_constraint(:name)
+    |> unique_constraint(:command_id)
   end
 
   defp gen_secure_id() do

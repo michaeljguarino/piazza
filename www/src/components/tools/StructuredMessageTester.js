@@ -29,7 +29,7 @@ function convertJson(node) {
 }
 
 function StructuredMessageTester(props) {
-  const [message, setMessage] = useState('')
+  const [message, setMessage] = useState('<root><box pad="small">Hello World!</box></root>')
 
   return (
     <Box pad='small' width='80vw' height='80vh' gap='medium'>

@@ -14,6 +14,7 @@ defmodule GqlWeb.ExternalWebhookController do
     simple_msg = "#{author} pushed to #{repo_name} #{branch}"
 
     structured_message = %{
+      route_key: repo_name,
       text: simple_msg,
       structured_message: """
         <root>

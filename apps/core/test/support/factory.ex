@@ -100,4 +100,12 @@ defmodule Core.Factory do
       external_id: sequence(:invite, & "external-id-#{&1}")
     }
   end
+
+  def webhook_route_factory do
+    %Models.WebhookRoute{
+      route_key: sequence(:route_key, & "route-key-#{&1}"),
+      conversation: build(:conversation),
+      incoming_webhook: build(:incoming_webhook)
+    }
+  end
 end

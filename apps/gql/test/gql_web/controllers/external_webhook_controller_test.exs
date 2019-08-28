@@ -19,13 +19,14 @@ defmodule GqlWeb.ExternalWebhookControllerTest do
       with_mock Mojito, [
         post: fn "https://dummy.webhook", _, _ -> {:ok, %Mojito.Response{}} end
       ] do
-        %{"text" => _, "structured_message" => structured_msg} =
+        %{"text" => _, "structured_message" => structured_msg, "route_key" => route_key} =
           conn
           |> put_req_header("x-hub-signature", signature)
           |> put_req_header("content-type", "application/json")
           |> post(path, raw_body)
           |> json_response(200)
 
+        assert route_key == "piazza"
         {:ok, _} = StructuredMessage.Xml.from_xml(structured_msg)
       end
     end

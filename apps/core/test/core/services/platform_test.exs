@@ -61,6 +61,31 @@ defmodule Core.Services.PlatformTest do
       assert msg.text == "A simple msg"
       assert msg.conversation_id == incoming_webhook.conversation_id
     end
+
+    test "It will work with route keys" do
+      incoming_webhook = insert(:incoming_webhook)
+      webhook_route = insert(:webhook_route, incoming_webhook: incoming_webhook)
+
+      {:ok, msg} = Platform.dispatch_incoming_webhook(
+        %{"route_key" => webhook_route.route_key, "text" => "A simple msg"},
+        incoming_webhook
+      )
+
+      assert msg.text == "A simple msg"
+      assert msg.conversation_id == webhook_route.conversation_id
+    end
+
+    test "If the route key doesn't resolve, it'll fall back to the webhook default" do
+      incoming_webhook = insert(:incoming_webhook)
+
+      {:ok, msg} = Platform.dispatch_incoming_webhook(
+        %{"route_key" => "not-found", "text" => "A simple msg"},
+        incoming_webhook
+      )
+
+      assert msg.text == "A simple msg"
+      assert msg.conversation_id == incoming_webhook.conversation_id
+    end
   end
 
   describe "#update_command/2" do
@@ -72,6 +97,25 @@ defmodule Core.Services.PlatformTest do
       assert updated.documentation == "docs"
 
       assert_receive {:event, %PubSub.CommandUpdated{item: ^updated}}
+    end
+
+    test "It can update the associated webhook of a command" do
+       command = insert(:command)
+
+       {:ok, _} = Platform.update_command(command.name, %{webhook: %{disabled: true}}, insert(:user))
+
+       assert refetch(command.webhook).disabled
+    end
+
+    test "It can update the associated incoming webhook of a command" do
+      command = insert(:command)
+      insert(:incoming_webhook, command: command)
+
+      {:ok, _} = Platform.update_command(command.name, %{incoming_webhook: %{routable: true}}, insert(:user))
+
+      %{incoming_webhook: incoming} = Core.Repo.preload(command, [:incoming_webhook])
+
+      assert incoming.routable
     end
   end
 end

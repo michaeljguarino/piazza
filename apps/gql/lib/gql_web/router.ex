@@ -32,6 +32,7 @@ defmodule GqlWeb.Router do
 
     post "/giphy", WebhookController, :giphy
     post "/piazza", WebhookController, :piazza
+    post "/github", WebhookController, :github
   end
 
   scope "/external", GqlWeb do

@@ -8,9 +8,10 @@ An example deployment is available at http://chat.piazzaapp.com.
 
 This is currently a near-complete slack app.  Some of the features include:
 
-* realtime message delivery and user presence
+* realtime message delivery, user presence, typing presence
 * public and private channels along with private 1-1 and group chats
 * slash commands
+* incoming webhooks with configurable message routing
 * structured messages (with support in slash-command webhook responses)
 * link unfurling using opengraph meta headers
 * message and conversation search, with permission scoping for each
@@ -19,14 +20,14 @@ This is currently a near-complete slack app.  Some of the features include:
 * multiline messages
 * @-mentions, full emoji support with search (both support typeahead completion)
 * markdown support
-* emoji reactions for messages
+* emoji reactions
 * configurable message retention
 
 The underlying api is implemented using graphql with elixir as the language choice.  Graphql was used mainly because I wanted to experiment with it, but also it has one of the more future-proof subscription mechanisms I've seen. The web client is written in react.
 
 The current default configuration will consume around 4cpus in a kubernetes cluster.  I haven't stress-tested it by any means, but I wouldn't be surprised if that supported normal usage for a few hundred users.  Cost comparison with slack even after just 10 or so users is very favorable (unless you're on free of course).
 
-The other huge win is privacy.  Not only do you maintain complete control over your information, you can also self-host your integrations without having to expose them to the public internet (just slap kube service discovery on them, configure your command to point to that and neglect ever creating an ingress).
+The other huge win is privacy.  Not only do you maintain complete control over your information, you can also self-host your integrations without having to expose them to the public internet (just slap kube service discovery on them, connect the pipes, and neglect ever creating an ingress).
 
 ## Installation
 

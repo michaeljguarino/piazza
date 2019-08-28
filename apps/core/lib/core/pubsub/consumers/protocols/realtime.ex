@@ -21,6 +21,8 @@ defimpl Core.PubSub.Realtime, for: [
   Core.PubSub.NotificationCreated,
   Core.PubSub.PinnedMessageCreated,
   Core.PubSub.PinnedMessageDeleted,
+  Core.PubSub.CommandCreated,
+  Core.PubSub.CommandUpdated
 ] do
   def publish?(_), do: true
 end

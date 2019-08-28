@@ -30,6 +30,7 @@ defmodule Core.Services.Base do
   def when_ok({:ok, resource}, :insert), do: Core.Repo.insert(resource)
   def when_ok({:ok, resource}, :update), do: Core.Repo.update(resource)
   def when_ok({:ok, resource}, :delete), do: Core.Repo.delete(resource)
+  def when_ok({:ok, resource}, fun) when is_function(fun), do: {:ok, fun.(resource)}
   def when_ok(error, _), do: error
 
   def handle_notify(event_type, resource, additional \\ %{}) do

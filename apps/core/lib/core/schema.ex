@@ -308,6 +308,10 @@ defmodule Core.Schema do
       end
     end
 
+    field :command_delta, :command_delta do
+      config fn _, _ -> {:ok, topic: "commands"} end
+    end
+
     field :pinned_message_delta, :pinned_message_delta do
       arg :conversation_id, :id
       config fn

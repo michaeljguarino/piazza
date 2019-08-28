@@ -70,12 +70,25 @@ defmodule GqlWeb.WebhookControllerTest do
 
       path = Routes.webhook_path(conn, :piazza)
 
-      %{"message" => message} =
+      %{"text" => message} =
         conn
         |> post(path, mapify(msg))
         |> json_response(200)
 
       assert message == "Added @#{user.handle} to the conversation"
+    end
+  end
+
+  describe "github/2" do
+    test "It will return a subscribe response", %{conn: conn} do
+      msg = insert(:message, text: "/github subscribe michaeljguarino/piazza")
+
+      path = Routes.webhook_path(conn, :github)
+
+      %{"subscribe" => "michaeljguarino/piazza"} =
+        conn
+        |> post(path, mapify(msg))
+        |> json_response(200)
     end
   end
 

@@ -51,6 +51,32 @@ defmodule Core.PubSub.Consumers.Recurse.ConversationsTest do
       end
     end
 
+    test "It will configure webhook route tables if requested" do
+      cmd = insert(:command, name: "giffy", webhook: build(:webhook, url: "https://my.giffy.com/webhook"))
+      incoming = insert(:incoming_webhook, command: cmd)
+      message = insert(:message, text: "/giffy doggos")
+      with_mock Mojito, [
+        post: fn "https://my.giffy.com/webhook", _, _ ->
+          {:ok, %Mojito.Response{body: Jason.encode!(%{subscribe: "doggos"}), status_code: 200}}
+        end
+      ] do
+
+        with_mailbox fn ->
+          event = %PubSub.MessageCreated{item: message}
+          Recurse.handle_event(event)
+
+          conversation_id = message.conversation_id
+          assert_receive {:event, %PubSub.MessageCreated{item: %{conversation_id: ^conversation_id} = response_message}}
+
+          assert response_message.conversation_id == message.conversation_id
+          assert response_message.creator_id == cmd.bot_id
+          assert response_message.text == "Subscribed this conversation to doggos"
+
+          assert Core.Repo.get_by(Core.Models.WebhookRoute, incoming_webhook_id: incoming.id, route_key: "doggos")
+        end
+      end
+    end
+
     test "It will ignore if no command exists" do
       message = insert(:message, text: "/nocommand help")
       event = %PubSub.MessageCreated{item: message}
