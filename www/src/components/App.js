@@ -30,9 +30,6 @@ const theme = {
       fontWeight: 400
     }
   },
-  layer: {
-    zIndex: 25
-  },
   global: {
     colors: {
       brand: '#2F415B',

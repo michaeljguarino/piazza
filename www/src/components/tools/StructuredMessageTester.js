@@ -8,7 +8,9 @@ function parseMessage(msg) {
 
   try {
     let json = parseXml(msg)
-    return <StructuredMessage {...convertJson(json.children[0])} />
+    let message = convertJson(json.children[0])
+    console.log(message)
+    return <StructuredMessage {...message} />
   } catch(e) {
     return e.message
   }
@@ -28,12 +30,19 @@ function convertJson(node) {
   return jsonNode
 }
 
+const DUMMY_MESSAGE = `<root>
+  <box pad="small">
+    <text>Hello World!</text>
+  </box>
+</root>
+`
+
 function StructuredMessageTester(props) {
-  const [message, setMessage] = useState('<root><box pad="small">Hello World!</box></root>')
+  const [message, setMessage] = useState(DUMMY_MESSAGE)
 
   return (
-    <Box pad='small' width='80vw' height='80vh' gap='medium'>
-      <Box fill='horizontal' direction='row' justify='center' height='50px'>
+    <Box pad='medium' width='50vw' height='80vh' gap='medium'>
+      <Box fill='horizontal' direction='row' justify='center'>
         <Text weight='bold' size='small'>Structured Message Developer</Text>
       </Box>
       <Box direction='row' gap='medium' height='100%' fill='horizontal'>
@@ -41,7 +50,7 @@ function StructuredMessageTester(props) {
           value={message}
           placeholder='Put your contents here'
           onChange={(e) => setMessage(e.target.value) } />
-        <Box pad='small' border round='small' width='40%'>
+        <Box pad='small' border round='small' style={{minWidth: '60%'}}>
           {parseMessage(message)}
         </Box>
       </Box>
