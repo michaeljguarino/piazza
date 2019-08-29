@@ -2,7 +2,7 @@ import React, { Component, createRef } from 'react'
 import {socket} from '../../helpers/client'
 import TimedCache from '../utils/TimedCache'
 import { Mutation } from 'react-apollo'
-import {Box, Form, Text, Markdown} from 'grommet'
+import {Box, Form, Text, Markdown, Layer} from 'grommet'
 import {Attachment} from 'grommet-icons'
 import {FilePicker} from 'react-file-picker'
 import debounce from 'lodash/debounce'
@@ -10,8 +10,9 @@ import {CurrentUserContext} from '../login/EnsureLogin'
 import {MESSAGE_MUTATION, MESSAGES_Q} from './queries'
 import {applyNewMessage} from './utils'
 import MentionManager from './MentionManager'
-import { CircularProgressbar } from 'react-circular-progressbar';
-import 'react-circular-progressbar/dist/styles.css';
+import { Progress } from 'react-sweet-progress';
+import "react-sweet-progress/lib/style.css";
+
 
 
 const TEXT_SIZE='xsmall'
@@ -92,6 +93,15 @@ class MessageInput extends Component {
     const { text, attachment } = this.state
     return (
       <Box style={{maxHeight: '210px', minHeight: 'auto'}} fill='horizontal' pad={{horizontal: '10px'}}>
+        {this.state.uploadProgress && (
+          <Layer plain modal={false} position='bottom'>
+            <Box width='400px'>
+              <Progress
+                percent={this.state.uploadProgress}
+                status={this.state.uploadProgress === 100 ? 'success' : 'active'} />
+            </Box>
+          </Layer>
+        )}
         <Mutation
             mutation={MESSAGE_MUTATION}
             variables={{conversationId: this.props.conversation.id, attributes: {text, attachment}}}
@@ -156,10 +166,7 @@ class MessageInput extends Component {
                     justify='center'
                     height='40px'
                     width="30px">
-                    {this.state.uploadProgress ?
-                      <CircularProgressbar value={this.state.uploadProgress} text={`${this.state.uploadProgress}%`} /> :
-                      <Attachment color={this.state.attachment ? SEND_COLOR : null} size='15px' />
-                    }
+                    <Attachment color={this.state.attachment ? SEND_COLOR : null} size='15px' />
                   </Box>
                 </FilePicker>
             </Box>

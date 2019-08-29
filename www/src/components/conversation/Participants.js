@@ -104,7 +104,7 @@ function Participants(props) {
             </Box>
           }>
           {setOpen => (
-            <Box>
+            <Box width='40vw'>
               <FlyoutHeader text='Participants' setOpen={setOpen} />
               <Box
                 pad={{left: "small", right: 'small', bottom: 'small'}}
