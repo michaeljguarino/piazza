@@ -44,6 +44,7 @@ function AnchoredMessageList(props) {
               style={{
                 overflow: 'auto',
                 height: '100%',
+                width: '100%',
                 display: 'flex',
                 justifyContent: 'flex-start',
                 flexDirection: 'column-reverse',

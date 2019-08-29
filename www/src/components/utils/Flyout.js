@@ -1,37 +1,68 @@
 import React, {useState} from 'react'
-import {Layer, Box, Text} from 'grommet'
+import {Box, Text} from 'grommet'
+import {Next} from 'grommet-icons'
+
+export const FlyoutContext = React.createContext({
+  flyoutContent: null,
+  setFlyoutContent: null,
+  open: false,
+  setOpen: null
+})
+
+function FlyoutContent(props) {
+  return (
+    <Box border='left' height='100%'>
+      {props.content}
+    </Box>
+  )
+}
+
+export function FlyoutProvider(props) {
+  const [flyoutContent, setFlyoutContent] = useState(null)
+  function setOpen(open) {
+    if (!open) setFlyoutContent(null)
+  }
+
+  return (
+    <FlyoutContext.Provider value={{
+      flyoutContent,
+      setOpen,
+      setFlyoutContent
+    }}>
+      {props.children(<FlyoutContent content={flyoutContent} />, setFlyoutContent)}
+    </FlyoutContext.Provider>
+  )
+}
 
 export function FlyoutHeader(props) {
   return (
-    <Box background='light-3' elevation='xsmall' pad='small' margin={{bottom: 'small'}}>
-      <Text size='small' weight='bold'>{props.text}</Text>
+    <Box height='40px' direction='row' border='bottom' pad='small' margin={{bottom: 'small'}}>
+      <Box width='100%' direction='row' justify='start' align='center'>
+        <Text size='small'>{props.text.toUpperCase()}</Text>
+      </Box>
+      <Box style={{cursor: 'pointer'}} align='center' justify='center' onClick={() => props.setOpen(false)}>
+        <Next size='15px' />
+      </Box>
     </Box>
   )
 }
 
 function Flyout(props) {
-  const [open, setOpen] = useState(!!props.open)
-
   return (
-    <span style={{lineHeight: '0px'}}>
-      <span onClick={() => {
-        props.onOpen && props.onOpen()
-        setOpen(true)
-      }}>
-      {props.target}
-      </span>
-      {open && (
-        <Layer
-          position="right"
-          full="vertical"
-          modal
-          onClickOutside={() => setOpen(false)}
-          onEsc={() => setOpen(false)}
-        >
-          {props.children(setOpen)}
-        </Layer>
-      )}
-    </span>
+    <FlyoutContext.Consumer>
+    {({setFlyoutContent, setOpen}) => {
+      return (
+        <span style={{lineHeight: '0px'}}>
+          <span onClick={() => {
+            props.onOpen && props.onOpen()
+            setFlyoutContent(props.children(setOpen))
+          }}>
+          {props.target}
+          </span>
+        </span>
+      )
+    }}
+    </FlyoutContext.Consumer>
   )
 }
 

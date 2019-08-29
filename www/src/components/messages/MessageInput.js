@@ -91,7 +91,7 @@ class MessageInput extends Component {
     this.setupChannel()
     const { text, attachment } = this.state
     return (
-      <Box style={{maxHeight: '210px', minHeight: 'auto'}} fill='horizontal' pad={{top: '10px', right: '10px', left: '10px'}}>
+      <Box style={{maxHeight: '210px', minHeight: 'auto'}} fill='horizontal' pad={{horizontal: '10px'}}>
         <Mutation
             mutation={MESSAGE_MUTATION}
             variables={{conversationId: this.props.conversation.id, attributes: {text, attachment}}}

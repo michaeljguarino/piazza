@@ -48,7 +48,7 @@ function PinnedMessages(props) {
         <SubscriptionWrapper id={props.conversation.id} startSubscription={() => {
           return _subscribeToNewPins(props.conversation.id, subscribeToMore)
         }}>
-          <Flyout target={
+          <Flyout  target={
             <Box
               onMouseEnter={() => setHover(true)}
               onMouseLeave={() => setHover(false)}
@@ -60,8 +60,8 @@ function PinnedMessages(props) {
             </Box>
           }>
           {setOpen => (
-            <Box width='30vw'>
-              <FlyoutHeader text='Pinned Messages' />
+            <Box width='50vw'>
+              <FlyoutHeader text='Pinned Messages' setOpen={setOpen} />
               <Box pad='small'>
                 <Text size='small'>
                   <i>
@@ -73,6 +73,13 @@ function PinnedMessages(props) {
               <Scroller
                 id='pinned-messages'
                 edges={messageEdges}
+                style={{
+                  overflow: 'auto',
+                  maxHeight: '100%',
+                  display: 'flex',
+                  justifyContent: 'flex-start',
+                  flexDirection: 'column',
+                }}
                 mapper={(edge, next) => (
                   <Message
                     key={edge.node.message.id}

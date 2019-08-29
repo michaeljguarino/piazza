@@ -25,7 +25,7 @@ function Commands(props) {
         onOpen={() => setHover(false)}>
       {setOpen => (
         <Box>
-          <FlyoutHeader text='Commands' />
+          <FlyoutHeader text='Commands' setOpen={setOpen} />
           <Box pad='small' style={{maxWidth: '30vw'}}>
             <Text size='small'>
               <i>
@@ -46,7 +46,7 @@ function Commands(props) {
                   edges={commandEdges}
                   style={{
                     overflow: 'auto',
-                    maxHeight: '150px'
+                    maxHeight: '80%'
                   }}
                   mapper={(edge) => (
                     <CommandListEntry

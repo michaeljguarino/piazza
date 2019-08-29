@@ -95,7 +95,7 @@ function Participants(props) {
         <SubscriptionWrapper id={props.conversation.id} startSubscription={() => {
           return _subscribeToParticipantDeltas(props, subscribeToMore)
         }}>
-          <Flyout target={
+          <Flyout width='30vw' target={
             <Box {...BOX_ATTRS} onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}>
               <Text height='15px' style={{lineHeight: '15px'}} margin={{right: '3px'}}>
                 <UserNew color={color} size='15px' />
@@ -105,13 +105,20 @@ function Participants(props) {
           }>
           {setOpen => (
             <Box>
-              <FlyoutHeader text='Participants' />
+              <FlyoutHeader text='Participants' setOpen={setOpen} />
               <Box
                 pad={{left: "small", right: 'small', bottom: 'small'}}
                 gap='small'
                 margin={{bottom: 'small'}}
                 border='bottom'>
                 <Scroller
+                  style={{
+                    overflow: 'auto',
+                    maxHeight: '70%',
+                    display: 'flex',
+                    justifyContent: 'flex-start',
+                    flexDirection: 'column',
+                  }}
                   edges={edges}
                   mapper={(p) => (<Participant key={p.node.id} user={p.node.user} />)}
                   onLoadMore={() => {
