@@ -16,6 +16,9 @@ import NotificationsPreferences, {DEFAULT_PREFS} from '../users/NotificationPref
 import {updateConversation} from './utils'
 import {conversationNameString, Icon} from './Conversation'
 import pick from 'lodash/pick'
+import moment from 'moment'
+import {DayPickerSingleDateController} from 'react-dates'
+import 'react-dates/lib/css/_datepicker.css'
 
 export const BOX_ATTRS = {
   direction: "row",
@@ -113,15 +116,32 @@ function ConversationDropdown(props) {
       target={<ConversationName me={props.me} conversation={props.conversation} />}>
       {setOpen => (
       <Box gap='small' pad='small' width='230px' round='small'>
+        <Box pad={{horizontal: 'small'}}>
+          <CloseableDropdown align={{left: 'right', top: 'top'}} target={<Anchor>Jump to date</Anchor>}>
+          {setDateOpen => (
+            <DayPickerSingleDateController
+              date={moment()}
+              focused
+              onFocusChange={() => null}
+              onDateChange={(date) => {
+                setDateOpen(false)
+                setOpen(false)
+                props.setAnchor({timestamp: date.toISOString()})
+              }} />
+          )}
+          </CloseableDropdown>
+        </Box>
         <Mutation mutation={UPDATE_PARTICIPANT}>
         {mutation => (
-          <NotificationsPreferences
-            vars={variables}
-            preferences={pick(preferences, ['mention', 'message', 'participant'])}
-            mutation={mutation} />
+          <Box pad={{horizontal: 'small'}}>
+            <NotificationsPreferences
+              vars={variables}
+              preferences={pick(preferences, ['mention', 'message', 'participant'])}
+              mutation={mutation} />
+          </Box>
         )}
         </Mutation>
-        <Box pad='small' border='top'>
+        <Box pad={{horizontal: 'small', top: 'small'}} border='top'>
           <Mutation
             mutation={DELETE_PARTICIPANT}
             variables={{conversationId: props.conversation.id, userId: props.me.id}}

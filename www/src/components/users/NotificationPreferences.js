@@ -13,9 +13,9 @@ function NotificationPreferences(props) {
   }
 
   return (
-    <Box pad='small' gap='small'>
+    <Box gap='small'>
       <Text>Notification Settings</Text>
-      <Form onSubmit={props.mutation({variables: {...props.vars, prefs: preferences}})}>
+      <Form onSubmit={() => props.mutation({variables: {...props.vars, prefs: preferences}})}>
         <Box gap='xsmall'>
           <CheckBox
             label="on each mention"

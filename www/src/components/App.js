@@ -3,6 +3,7 @@ import { Switch, Route } from 'react-router-dom';
 import Piazza from './Piazza'
 import { Grommet } from 'grommet';
 import {SearchInput} from './utils/SelectSearchInput'
+import 'react-dates/initialize'
 
 // import logo from './logo.svg';
 import '../styles/App.css';
