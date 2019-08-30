@@ -1,7 +1,7 @@
 import React, {useState} from 'react'
 import {Mutation} from 'react-apollo'
 import {Box, Text, Markdown, Anchor} from 'grommet'
-import {Down} from 'grommet-icons'
+import {Down, FormNext} from 'grommet-icons'
 import CloseableDropdown from '../utils/CloseableDropdown'
 import Modal, {ModalHeader} from '../utils/Modal'
 import {UPDATE_CONVERSATION, CONVERSATIONS_Q, UPDATE_PARTICIPANT, DELETE_PARTICIPANT} from './queries'
@@ -17,6 +17,7 @@ import {updateConversation} from './utils'
 import {conversationNameString, Icon} from './Conversation'
 import pick from 'lodash/pick'
 import moment from 'moment'
+import InterchangeableBox from '../utils/InterchangeableBox'
 import {DayPickerSingleDateController} from 'react-dates'
 import 'react-dates/lib/css/_datepicker.css'
 
@@ -100,7 +101,31 @@ function ConversationName(props) {
   )
 }
 
+function SubMenu(props) {
+  const [hover, setHover] = useState(false)
+  const {text, setAlternate, children, ...rest} = props
+  return (
+    <Box
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      background={hover ? 'brand' : null}
+      onClick={() => setAlternate(children)}
+      style={{cursor: 'pointer'}}
+      direction='row'
+      pad={{vertical: 'xsmall', left: 'small', right: 'xsmall'}}
+      {...rest}>
+      <Box width='100%'>
+        <Text size='small'>{text}</Text>
+      </Box>
+      <Box width='20px'>
+        <FormNext size='15px' />
+      </Box>
+    </Box>
+  )
+}
+
 function ConversationDropdown(props) {
+  const [hover, setHover] = useState(false)
   const currentParticipant = props.conversation.currentParticipant || {}
   const variables = {
     conversationId: props.conversation.id,
@@ -115,44 +140,53 @@ function ConversationDropdown(props) {
       align={{left: 'left', top: "bottom"}}
       target={<ConversationName me={props.me} conversation={props.conversation} />}>
       {setOpen => (
-      <Box gap='small' pad='small' width='230px' round='small'>
-        <Box pad={{horizontal: 'small'}}>
-          <CloseableDropdown align={{left: 'right', top: 'top'}} target={<Anchor>Jump to date</Anchor>}>
-          {setDateOpen => (
+        <InterchangeableBox width='230px' round='small'>
+        {setAlternate => (
+          <>
+          <SubMenu
+            text='Notification Preferences'
+            setAlternate={setAlternate}>
+            <Mutation mutation={UPDATE_PARTICIPANT}>
+            {mutation => (
+              <Box pad='small'>
+                <NotificationsPreferences
+                  vars={variables}
+                  preferences={pick(preferences, ['mention', 'message', 'participant'])}
+                  mutation={mutation} />
+              </Box>
+            )}
+            </Mutation>
+          </SubMenu>
+          <SubMenu
+            text='Jump to date'
+            setAlternate={setAlternate}>
             <DayPickerSingleDateController
               date={moment()}
               focused
               onFocusChange={() => null}
               onDateChange={(date) => {
-                setDateOpen(false)
                 setOpen(false)
                 props.setAnchor({timestamp: date.toISOString()})
               }} />
-          )}
-          </CloseableDropdown>
-        </Box>
-        <Mutation mutation={UPDATE_PARTICIPANT}>
-        {mutation => (
-          <Box pad={{horizontal: 'small'}}>
-            <NotificationsPreferences
-              vars={variables}
-              preferences={pick(preferences, ['mention', 'message', 'participant'])}
-              mutation={mutation} />
+          </SubMenu>
+          <Box
+            background={hover ? 'brand' : null}
+            onMouseEnter={() => setHover(true)}
+            onMouseLeave={() => setHover(false)}
+            pad={{top: 'xsmall', horizontal: 'small', bottom: 'small'}}>
+            <Mutation
+              mutation={DELETE_PARTICIPANT}
+              variables={{conversationId: props.conversation.id, userId: props.me.id}}
+              update={(cache, {data: {deleteParticipant}}) => {
+                setOpen(false)
+                removeConversation(cache, deleteParticipant.conversationId, props.setCurrentConversation)
+              }}>
+            {mutation => (<Text onClick={mutation} size='small'>Leave conversation</Text>)}
+            </Mutation>
           </Box>
+          </>
         )}
-        </Mutation>
-        <Box pad={{horizontal: 'small', top: 'small'}} border='top'>
-          <Mutation
-            mutation={DELETE_PARTICIPANT}
-            variables={{conversationId: props.conversation.id, userId: props.me.id}}
-            update={(cache, {data: {deleteParticipant}}) => {
-              setOpen(false)
-              removeConversation(cache, deleteParticipant.conversationId, props.setCurrentConversation)
-            }}>
-          {mutation => (<Anchor onClick={mutation}>Leave conversation</Anchor>)}
-          </Mutation>
-        </Box>
-      </Box>
+        </InterchangeableBox>
       )}
     </CloseableDropdown>
   )

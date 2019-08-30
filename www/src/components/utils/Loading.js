@@ -19,7 +19,7 @@ class Loading extends Component {
 
   render() {
     return (
-      <Box height={this.props.height || "100%"} direction='column' justify='center' align='center'>
+      <Box height={this.props.height || "100%"} width={this.props.width} direction='column' justify='center' align='center'>
         <Clock type="digital" />
       </Box>
     )

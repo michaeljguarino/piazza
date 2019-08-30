@@ -37,6 +37,7 @@
     "react-sane-contenteditable": "^1.5.1",
     "react-scripts": "3.0.1",
     "react-sweet-progress": "^1.1.2",
+    "react-tiny-crossfade": "^2.0.0",
     "react-tiny-popover": "^3.4.5",
     "slate": "^0.47.4",
     "slate-react": "^0.22.4",

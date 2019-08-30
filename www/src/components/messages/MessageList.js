@@ -37,7 +37,7 @@ class MessageList extends Component {
     return (
       <Query query={MESSAGES_Q} variables={{conversationId: this.props.conversation.id}} fetchPolicy='cache-and-network'>
         {({loading, error, data, fetchMore, subscribeToMore}) => {
-          if (loading && !data.conversation) return <Loading height='calc(100vh - 135px)' />
+          if (loading && !data.conversation) return <Loading height='calc(100vh - 135px)' width='100%' />
           if (error) return <div>wtf</div>
           let messageEdges = data.conversation.messages.edges
           let pageInfo = data.conversation.messages.pageInfo
