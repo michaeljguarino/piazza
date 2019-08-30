@@ -23,6 +23,7 @@ const theme = {
       vertical: '2px'
     }
   },
+  layer: {zIndex: 25},
   select: {
     searchInput: SearchInput
   },

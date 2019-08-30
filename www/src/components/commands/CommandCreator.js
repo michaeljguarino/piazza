@@ -39,14 +39,19 @@ function ConversationSelector(props) {
   )
 }
 
-function CommandForm(props) {
+export function CommandForm(props) {
+  const additionalVars = props.vars || {}
+  console.log(additionalVars)
+  const {incomingWebhook, ...form} = props.formState
+  const vars = incomingWebhook ? {...additionalVars, ...form, incomingWebhook} : {...additionalVars, ...form}
+
   return (
     <Mutation
-      mutation={CREATE_COMMAND}
-      variables={props.formState}
+      mutation={props.mutation || CREATE_COMMAND}
+      variables={vars}
       update={(cache, {data}) => {
         const prev = cache.readQuery({ query: COMMANDS_Q })
-        cache.writeQuery({query: COMMANDS_Q, data: addCommand(prev, data.createCommand)})
+        cache.writeQuery({query: COMMANDS_Q, data: addCommand(prev, data.createCommand || data.updateCommand)})
         props.setOpen(false)
       }}>
       {mutation => (
@@ -84,7 +89,7 @@ function CommandForm(props) {
               width='100%'
               pad={{vertical: 'xsmall', horizontal: 'medium'}}
               round='xsmall'
-              label='Create' />
+              label={props.action || 'Create'} />
           </Box>
         </Box>
       )}

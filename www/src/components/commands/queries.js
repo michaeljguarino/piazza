@@ -50,3 +50,24 @@ export const CREATE_COMMAND = gql`
   }
   ${CommandFragment}
 `;
+
+export const UPDATE_COMMAND = gql`
+  mutation UpdateCommand(
+    $commandName: String!,
+    $name: String!,
+    $documentation: String,
+    $description: String,
+    $incomingWebhook: IncomingWebhookAttributes,
+    $url: String!) {
+    updateCommand(name: $commandName, attributes: {
+      name: $name,
+      documentation: $documentation,
+      description: $description,
+      webhook: {url: $url},
+      incomingWebhook: $incomingWebhook
+    }) {
+      ...CommandFragment
+    }
+  }
+  ${CommandFragment}
+`;

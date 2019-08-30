@@ -1,11 +1,15 @@
 import React from 'react'
 import {Mutation} from 'react-apollo'
 import {Box, Text, Anchor, Markdown, Table, TableBody, TableRow, TableCell} from 'grommet'
+import {Edit} from 'grommet-icons'
 import Dropdown from '../utils/Dropdown'
 import Avatar from '../users/Avatar'
 import { FilePicker } from 'react-file-picker'
 import {UPDATE_USER, USERS_Q} from '../users/queries'
 import {updateUser} from '../users/utils'
+import Modal from '../utils/Modal'
+import CommandEditor from './CommandEditor'
+
 
 function CommandDisplay(props) {
   return (
@@ -70,9 +74,16 @@ function BotDisplay(props) {
 function CommandDetail(props) {
   return (
     <Box pad='small' style={{minWidth: '400px'}}>
-      <Box direction='row' align='center' margin={{bottom: 'small'}}>
-        <Text weight="bold" size='small' margin='5px'>/{props.command.name}</Text>
-        <Text size='small'>help</Text>
+      <Box direction='row' align='center'>
+        <Box width='100%' direction='row'>
+          <Text weight="bold" size='small' margin='5px'>/{props.command.name}</Text>
+          <Text size='small' margin={{vertical: '5px'}}>help</Text>
+        </Box>
+        <Box width='30px'>
+          <Modal target={<Edit style={{cursor: 'pointer'}} size='20px' />}>
+          {(setOpen) => (<CommandEditor setOpen={setOpen} command={props.command} />)}
+          </Modal>
+        </Box>
       </Box>
       <Box direction='row' align='center'>
         <Markdown>{props.command.documentation || 'Someone needs to write their docs'}</Markdown>

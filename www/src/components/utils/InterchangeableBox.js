@@ -13,6 +13,7 @@ function ContentWrapper(props) {
         onClick={() => props.setAlternate(null)}
         pad={{horizontal: 'xsmall', vertical: 'small'}}
         direction='row'
+        border='top'
         align='center'
         gap='xsmall'>
         <FormPrevious size='15px' />
