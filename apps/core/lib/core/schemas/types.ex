@@ -305,4 +305,18 @@ defmodule Core.Schemas.Types do
 
   connection node_type: :command
   connection node_type: :incoming_webhook
+
+  object :emoji do
+    field :id, :id
+    field :name, non_null(:string)
+    field :image_url, :string, resolve: fn emoji, _, _ ->
+      {:ok, Core.Storage.url({emoji.image, emoji}, :original)}
+    end
+    field :creator, :user, resolve: dataloader(User)
+
+    timestamps()
+  end
+
+  connection node_type: :emoji
+  delta :emoji
 end

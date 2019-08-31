@@ -2,6 +2,7 @@ defmodule Core.Schemas.Inputs do
   use Absinthe.Schema.Notation
 
   import_types Absinthe.Plug.Types
+  import_types Core.Schemas.Upload
 
   input_object :user_attributes do
     field :name,     :string
@@ -84,5 +85,10 @@ defmodule Core.Schemas.Inputs do
   input_object :invite_attributes do
     field :type,      :invite_type
     field :reference, non_null(:string)
+  end
+
+  input_object :emoji_attributes do
+    field :image, :upload_or_url
+    field :name, non_null(:string)
   end
 end

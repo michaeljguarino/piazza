@@ -8,7 +8,8 @@ defmodule Core.Schema do
     User,
     Platform,
     Notification,
-    Invite
+    Invite,
+    Emoji
   }
   import_types Core.Schemas.Types
   import_types Core.Schemas.Inputs
@@ -101,6 +102,11 @@ defmodule Core.Schema do
     connection field :notifications, node_type: :notification do
       middleware Core.Schemas.Authenticated
       resolve &Notification.list_notifications/2
+    end
+
+    connection field :emoji, node_type: :emoji do
+      middleware Core.Schemas.Authenticated
+      resolve &Emoji.list_emoji/2
     end
   end
 
@@ -276,6 +282,13 @@ defmodule Core.Schema do
     field :view_notifications, list_of(:notification) do
       middleware Core.Schemas.Authenticated
       resolve safe_resolver(&Notification.view_notifications/2)
+    end
+
+    field :create_emoji, :emoji do
+      middleware Core.Schemas.Authenticated
+      arg :attributes, non_null(:emoji_attributes)
+
+      resolve safe_resolver(&Emoji.create_emoji/2)
     end
   end
 

@@ -1,7 +1,7 @@
 defmodule Core.Storage do
   use Arc.Definition
   use Arc.Ecto.Definition
-  alias Core.Models.{User, Message}
+  alias Core.Models.{User, Message, Emoji}
 
   @acl :public_read
   @versions [:original]
@@ -19,6 +19,7 @@ defmodule Core.Storage do
 
   def storage_dir(_, {_file, %User{id: user_id}}), do: "uploads/avatars/#{user_id}"
   def storage_dir(_, {_file, %Message{attachment_id: msg_id}}), do: "uploads/attachments/#{msg_id}"
+  def storage_dir(_, {_file, %Emoji{image_id: emoji_id}}), do: "uploads/emoji/#{emoji_id}"
 
   def default_url(_), do: nil
 end

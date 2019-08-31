@@ -108,4 +108,11 @@ defmodule Core.Factory do
       incoming_webhook: build(:incoming_webhook)
     }
   end
+
+  def emoji_factory do
+    %Models.Emoji{
+      name: sequence(:emoji, & "emoji-#{&1}"),
+      creator: build(:user)
+    }
+  end
 end
