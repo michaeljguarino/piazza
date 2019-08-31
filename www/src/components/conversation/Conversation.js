@@ -1,11 +1,11 @@
-import React, { useState } from 'react'
+import React from 'react'
 import {Box, Text} from 'grommet'
 import {Lock} from 'grommet-icons'
 import {WithAnyPresent} from '../utils/presence'
+import HoveredBackground from '../utils/HoveredBackground'
 import PresenceIndicator, {EmptyPresenceIndicator} from '../users/PresenceIndicator'
 import {CurrentUserContext} from '../login/EnsureLogin'
 
-const HOVER_COLOR='brand-heavy'
 const NOTIF_COLOR='notif'
 
 export function Icon(props) {
@@ -51,37 +51,37 @@ function ConversationName(props) {
 }
 
 function Conversation(props) {
-  const [hover, setHover] = useState(false);
   let selected = props.conversation.id === props.currentConversation.id
-  let boxProps = (selected) ? {background: 'accent-1'} : (hover ? {background: HOVER_COLOR} : {})
   let unread = (props.conversation.unreadMessages > 0 && !selected)
   let textProps = (props.selected) ? {} : {color: (unread ? 'white' : props.color)}
+
   return (
-    <Box
-      fill='horizontal'
-      direction='row'
-      align='center'
-      justify='end'
-      height='25px'
-      style={{cursor: 'pointer'}}
-      onMouseOver={() => setHover(true)}
-      onMouseLeave={() => setHover(false)}
-      onClick={() => props.setCurrentConversation(props.conversation)}
-      pad={props.pad}
-      {...boxProps}
-      >
-      <Box direction='row' width='100%' align='center'>
-        <CurrentUserContext.Consumer>
-        {me => (
-          <>
-            <Icon me={me} textProps={textProps} {...props} />
-            <ConversationName me={me} textProps={textProps} conversation={props.conversation} />
-          </>
-        )}
-        </CurrentUserContext.Consumer>
+    <HoveredBackground>
+      <Box
+        brandHover={!selected}
+        fill='horizontal'
+        direction='row'
+        align='center'
+        justify='end'
+        height='25px'
+        style={{cursor: 'pointer'}}
+        onClick={() => props.setCurrentConversation(props.conversation)}
+        pad={props.pad}
+        background={selected ? 'accent-1' : null}
+        >
+        <Box direction='row' width='100%' align='center'>
+          <CurrentUserContext.Consumer>
+          {me => (
+            <>
+              <Icon me={me} textProps={textProps} {...props} />
+              <ConversationName me={me} textProps={textProps} conversation={props.conversation} />
+            </>
+          )}
+          </CurrentUserContext.Consumer>
+        </Box>
+        <NotificationBadge {...props} />
       </Box>
-      <NotificationBadge {...props} />
-    </Box>
+    </HoveredBackground>
   )
 }
 

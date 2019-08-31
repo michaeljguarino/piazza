@@ -3,6 +3,7 @@ import {Box, Text} from 'grommet'
 import {Add} from 'grommet-icons'
 import { Mutation } from 'react-apollo'
 import Modal, {ModalHeader} from '../utils/Modal'
+import HoveredBackground from '../utils/HoveredBackground'
 import {CONVERSATIONS_Q, CREATE_CHAT} from './queries'
 import {addConversation} from './utils'
 import ParticipantInvite from './ParticipantInvite'
@@ -10,8 +11,6 @@ import Users from '../users/Users'
 import Button from '../utils/Button'
 
 function ChatCreator(props) {
-  const [iconHover, setIconHover] = useState(false)
-  const [textHover, setTextHover] = useState(false)
   const [participants, setParticipants] = useState([])
 
   const addParticipant = (user) => {
@@ -26,30 +25,29 @@ function ChatCreator(props) {
     <Box fill='horizontal' pad={{right: '10px'}}>
       <Modal round='small' target={
         <Box pad={props.padding} fill='horizontal' direction="row" align="center" margin={{bottom: '5px'}}>
-          <Box width='100%'>
-            <Text
-              onMouseEnter={() => setTextHover(true)}
-              onMouseLeave={() => setTextHover(false)}
+          <HoveredBackground>
+            <Box highlight width='100%'>
+              <Text
+                style={{cursor: 'pointer'}}
+                size='small'
+                width='100%'
+                weight='bold'
+                color={props.textColor}>
+                  Chats
+              </Text>
+            </Box>
+            <Box
+              highlight
               style={{cursor: 'pointer'}}
-              size='small'
-              width='100%'
-              weight='bold'
-              color={textHover ? null : props.textColor}>
-                Chats
-            </Text>
-          </Box>
-          <Box
-            onMouseEnter={() => setIconHover(true)}
-            onMouseLeave={() => setIconHover(false)}
-            style={{cursor: 'pointer'}}
-            border
-            round='full'
-            width="20px"
-            height='20px'
-            justify='center'
-            align='center'>
-            <Add color={iconHover ? null : props.textColor} size="small" />
-          </Box>
+              border
+              round='full'
+              width="20px"
+              height='20px'
+              justify='center'
+              align='center'>
+              <Add color={props.textColor} size="small" />
+            </Box>
+          </HoveredBackground>
         </Box>}>
         {setOpen => (
           <Box width="400px" pad={{bottom: 'small'}} round='small'>

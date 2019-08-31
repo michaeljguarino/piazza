@@ -1,9 +1,10 @@
-import React, {useState} from 'react'
+import React from 'react'
 import {Query} from 'react-apollo'
 import {Box, Text} from 'grommet'
 import {Pin} from 'grommet-icons'
 import Scroller from '../utils/Scroller'
 import Flyout, {FlyoutHeader} from '../utils/Flyout'
+import HoveredBackground from '../utils/HoveredBackground'
 import SubscriptionWrapper from '../utils/SubscriptionWrapper'
 import {PINNED_MESSAGES, PINNED_MESSAGE_SUB} from '../messages/queries'
 import {addPinnedMessage, removePinnedMessage} from '../messages/utils'
@@ -33,8 +34,6 @@ const _subscribeToNewPins = async (conversationId, subscribeToMore) => {
 }
 
 function PinnedMessages(props) {
-  const [hover, setHover] = useState(false)
-  const color = hover ? 'accent-1' : null
   return (
     <Query
       query={PINNED_MESSAGES}
@@ -49,15 +48,16 @@ function PinnedMessages(props) {
           return _subscribeToNewPins(props.conversation.id, subscribeToMore)
         }}>
           <Flyout  target={
-            <Box
-              onMouseEnter={() => setHover(true)}
-              onMouseLeave={() => setHover(false)}
-              {...BOX_ATTRS}>
-              <Text height='15px' style={{lineHeight: '15px'}} margin={{right: '3px'}}>
-                <Pin size='15px' color={color} />
-              </Text>
-              <Text size='xsmall' color={color}>{conv.pinnedMessageCount}</Text>
-            </Box>
+            <HoveredBackground>
+              <Box
+                accentable
+                {...BOX_ATTRS}>
+                <Text height='15px' style={{lineHeight: '15px'}} margin={{right: '3px'}}>
+                  <Pin size='15px'/>
+                </Text>
+                <Text size='xsmall'>{conv.pinnedMessageCount}</Text>
+              </Box>
+            </HoveredBackground>
           }>
           {setOpen => (
             <Box width='50vw'>

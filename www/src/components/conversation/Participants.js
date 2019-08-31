@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React from 'react'
 import {Query} from 'react-apollo'
 import {Box, Text} from 'grommet'
 import {UserNew} from 'grommet-icons'
@@ -10,6 +10,7 @@ import {PARTICIPANTS_Q, PARTICIPANT_SUB} from './queries'
 import {mergeAppend} from '../../utils/array'
 import {BOX_ATTRS} from './ConversationHeader'
 import SubscriptionWrapper from '../utils/SubscriptionWrapper'
+import HoveredBackground from '../utils/HoveredBackground'
 import WithPresence from '../utils/presence'
 import PresenceIndicator from '../users/PresenceIndicator'
 import ParticipantInvite, {ParticipantInviteButton} from './ParticipantInvite'
@@ -82,9 +83,6 @@ const _subscribeToParticipantDeltas = async (props, subscribeToMore) => {
 }
 
 function Participants(props) {
-  const [hover, setHover] = useState(false)
-  const color = hover ? 'accent-1' : null
-
   return (
     <Query query={PARTICIPANTS_Q} variables={{conversationId: props.conversation.id}}>
     {({loading, data, fetchMore, subscribeToMore}) => {
@@ -96,12 +94,14 @@ function Participants(props) {
           return _subscribeToParticipantDeltas(props, subscribeToMore)
         }}>
           <Flyout width='30vw' target={
-            <Box {...BOX_ATTRS} onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}>
-              <Text height='15px' style={{lineHeight: '15px'}} margin={{right: '3px'}}>
-                <UserNew color={color} size='15px' />
-              </Text>
-              <Text color={color} size='xsmall'>{data.conversation.participants.edges.length}</Text>
-            </Box>
+            <HoveredBackground>
+              <Box {...BOX_ATTRS} accentable>
+                <Text height='15px' style={{lineHeight: '15px'}} margin={{right: '3px'}}>
+                  <UserNew size='15px' />
+                </Text>
+                <Text size='xsmall'>{data.conversation.participants.edges.length}</Text>
+              </Box>
+            </HoveredBackground>
           }>
           {setOpen => (
             <Box width='40vw'>

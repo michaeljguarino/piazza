@@ -1,6 +1,7 @@
 import React, { Component, createRef } from 'react'
 import {socket} from '../../helpers/client'
 import TimedCache from '../utils/TimedCache'
+import HoveredBackground from '../utils/HoveredBackground'
 import { Mutation } from 'react-apollo'
 import {Box, Form, Text, Markdown, Layer} from 'grommet'
 import {Attachment} from 'grommet-icons'
@@ -17,7 +18,7 @@ import "react-sweet-progress/lib/style.css";
 
 const TEXT_SIZE='xsmall'
 const TEXT_COLOR='dark-4'
-const SEND_COLOR='#004d23'
+const SEND_COLOR='status-ok'
 
 function Typing(props) {
   let typists = props.typists.filter((handle) => handle !== props.ignore)
@@ -160,14 +161,17 @@ class MessageInput extends Component {
                   maxSize={2000}
                   onError={(msg) => console.log(msg)}
                 >
-                  <Box
-                    style={{cursor: "pointer"}}
-                    align='center'
-                    justify='center'
-                    height='40px'
-                    width="30px">
-                    <Attachment color={this.state.attachment ? SEND_COLOR : null} size='15px' />
-                  </Box>
+                  <HoveredBackground>
+                    <Box
+                      accentable
+                      style={{cursor: "pointer"}}
+                      align='center'
+                      justify='center'
+                      height='40px'
+                      width="30px">
+                      <Attachment color={this.state.attachment ? SEND_COLOR : null} size='15px' />
+                    </Box>
+                  </HoveredBackground>
                 </FilePicker>
             </Box>
           </Form>

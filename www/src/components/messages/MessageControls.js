@@ -1,7 +1,9 @@
 import React, {useState, useRef} from 'react'
 import {Mutation} from 'react-apollo'
-import {Box, Drop, Anchor, Text} from 'grommet'
+import {Box, Drop, Text} from 'grommet'
 import {More, Emoji, Pin} from 'grommet-icons'
+import HoveredBackground from '../utils/HoveredBackground'
+import MenuItem from '../utils/MenuItem'
 import Popover from 'react-tiny-popover'
 import 'emoji-mart/css/emoji-mart.css'
 import data from 'emoji-mart/data/messenger.json'
@@ -31,7 +33,9 @@ function DeleteMessage(props) {
         })
       }}>
       {mutation => (
-        <Anchor size='small' onClick={mutation}>delete</Anchor>
+        <MenuItem>
+          <Text size='small' onClick={mutation}>delete</Text>
+        </MenuItem>
       )}
     </Mutation>
   )
@@ -39,8 +43,6 @@ function DeleteMessage(props) {
 
 export function MessageReaction(props) {
   const [open, setOpen] = useState(false)
-  const [hovered, setHovered] = useState(false)
-  const color = hovered ? 'accent-1' : null
 
   function toggleOpen(value) {
     props.setPinnedHover && props.setPinnedHover(value)
@@ -74,14 +76,15 @@ export function MessageReaction(props) {
               props.onSelect && props.onSelect()
             }} />
         }>
-        <Box
-          onClick={() => toggleOpen(!open)}
-          onMouseEnter={() => setHovered(true)}
-          onMouseLeave={() => setHovered(false)}
-          {...boxAttrs}>
-          <Emoji size='15px' color={color}  />
-          {props.label && (<Text color={color} size='xsmall' margin={{left: '2px'}}>{props.label}</Text>)}
-        </Box>
+        <HoveredBackground>
+          <Box
+            accentable
+            onClick={() => toggleOpen(!open)}
+            {...boxAttrs}>
+            <Emoji size='15px'  />
+            {props.label && (<Text size='xsmall' margin={{left: '2px'}}>{props.label}</Text>)}
+          </Box>
+        </HoveredBackground>
       </Popover>
     )}
     </Mutation>
@@ -89,7 +92,6 @@ export function MessageReaction(props) {
 }
 
 function PinMessage(props) {
-  const [hovered, setHovered] = useState(false)
   const pinned = !!props.message.pinnedAt
   return (
     <Mutation
@@ -115,13 +117,14 @@ function PinMessage(props) {
       }}
     >
     {mutation => (
-      <Box
-        onClick={mutation}
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
-        {...CONTROL_ATTRS}>
-        <Pin color={hovered ? 'accent-1' : null} size='15px' />
-      </Box>
+      <HoveredBackground>
+        <Box
+          accentable
+          onClick={mutation}
+          {...CONTROL_ATTRS}>
+          <Pin size='15px' />
+        </Box>
+      </HoveredBackground>
     )}
     </Mutation>
   )
@@ -130,7 +133,6 @@ function PinMessage(props) {
 function MessageControls(props) {
   const dropRef = useRef()
   const [moreOpen, setMoreOpen] = useState(false)
-  const [hovered, setHovered] = useState(false)
   function toggleOpen(value) {
     props.setPinnedHover(value)
     setMoreOpen(value)
@@ -140,14 +142,15 @@ function MessageControls(props) {
     <Box elevation='xsmall' background='white' direction='row' height='30px' border round='xsmall' margin={{right: '10px'}}>
       <MessageReaction {...props} />
       <PinMessage {...props} />
-      <Box
-        ref={dropRef}
-        onClick={() => toggleOpen(!moreOpen)}
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
-        {...CONTROL_ATTRS}>
-        <More color={hovered ? 'accent-1' : null} size='15px'  />
-      </Box>
+      <HoveredBackground>
+        <Box
+          accentable
+          ref={dropRef}
+          onClick={() => toggleOpen(!moreOpen)}
+          {...CONTROL_ATTRS}>
+          <More size='15px'  />
+        </Box>
+      </HoveredBackground>
       {moreOpen && (
         <Drop
           target={dropRef.current}
@@ -155,7 +158,7 @@ function MessageControls(props) {
           margin={{top: '4px'}}
           onClickOutside={() => toggleOpen(false)}
           onEsc={() => toggleOpen(false)}>
-          <Box pad='small'>
+          <Box style={{minWidth: '100px'}}>
             <DeleteMessage {...props} />
           </Box>
         </Drop>

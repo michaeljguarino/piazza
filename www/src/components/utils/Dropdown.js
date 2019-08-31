@@ -4,7 +4,7 @@ import {Drop} from 'grommet'
 function Dropdown(props) {
   const targetRef = useRef();
   const [open, setOpen] = useState(!!props.open);
-
+  console.log(props)
   let first = props.children[0]
   let rest  = props.children.slice(1)
   return (

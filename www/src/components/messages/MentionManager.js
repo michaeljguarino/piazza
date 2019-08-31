@@ -6,6 +6,7 @@ import {Box, Text, Drop} from 'grommet'
 import {Emoji} from 'grommet-icons'
 import {SEARCH_USERS} from './queries'
 import {SEARCH_COMMANDS} from '../commands/queries'
+import HoveredBackground from '../utils/HoveredBackground'
 import 'emoji-mart/css/emoji-mart.css'
 import data from 'emoji-mart/data/messenger.json'
 import { emojiIndex, NimblePicker } from 'emoji-mart'
@@ -91,20 +92,19 @@ function emojiSuggestion(emoji) {
 }
 
 function EmojiTarget(props) {
-  const [hover, setHover] = useState(false)
-
   return (
-    <Box
-      align='center'
-      justify='center'
-      ref={props.emojiRef}
-      width='40px'
-      onClick={() => props.setEmojiPicker(true)}
-      onMouseEnter={() => setHover(true)}
-      onMouseLeave={() => setHover(false)}
-      style={{cursor: 'pointer'}}>
-      <Emoji size='25px' color={hover ? 'accent-1' : 'dark-6'} />
-    </Box>
+    <HoveredBackground>
+      <Box
+        accentable
+        align='center'
+        justify='center'
+        ref={props.emojiRef}
+        width='40px'
+        onClick={() => props.setEmojiPicker(true)}
+        style={{cursor: 'pointer'}}>
+        <Emoji size='25px' color='dark-6' />
+      </Box>
+    </HoveredBackground>
   )
 }
 

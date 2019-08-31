@@ -18,6 +18,8 @@ import {conversationNameString, Icon} from './Conversation'
 import pick from 'lodash/pick'
 import moment from 'moment'
 import InterchangeableBox from '../utils/InterchangeableBox'
+import MenuItem from '../utils/MenuItem'
+import HoveredBackground from '../utils/HoveredBackground'
 import {DayPickerSingleDateController} from 'react-dates'
 import 'react-dates/lib/css/_datepicker.css'
 
@@ -90,42 +92,35 @@ function ConversationName(props) {
   const color = hover ? 'accent-1' : null
   const emptyColor = '#DADADA'
   return (
-    <Text
-      onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}
-      style={{cursor: "pointer"}}
-      weight='bold'
-      margin={{bottom: '5px'}}
-      color={color}>
-      <Icon textProps={{color: color}} emptyColor={emptyColor} me={props.me} conversation={props.conversation} /> {conversationNameString(props.conversation, props.me)} <Down color={color} size='12px'/>
-    </Text>
+    <HoveredBackground>
+      <Text
+        accentable
+        onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}
+        style={{cursor: "pointer"}}
+        weight='bold'
+        margin={{bottom: '5px'}}
+        color={color}>
+        <Icon textProps={{color: color}} emptyColor={emptyColor} me={props.me} conversation={props.conversation} /> {conversationNameString(props.conversation, props.me)} <Down color={color} size='12px'/>
+      </Text>
+    </HoveredBackground>
   )
 }
 
 function SubMenu(props) {
-  const [hover, setHover] = useState(false)
   const {text, setAlternate, children, ...rest} = props
   return (
-    <Box
-      onMouseEnter={() => setHover(true)}
-      onMouseLeave={() => setHover(false)}
-      background={hover ? 'brand' : null}
-      onClick={() => setAlternate(children)}
-      style={{cursor: 'pointer'}}
-      direction='row'
-      pad={{vertical: 'xsmall', left: 'small', right: 'xsmall'}}
-      {...rest}>
+    <MenuItem onClick={() => setAlternate(children)} direction='row' {...rest}>
       <Box width='100%'>
         <Text size='small'>{text}</Text>
       </Box>
       <Box width='20px'>
         <FormNext size='15px' />
       </Box>
-    </Box>
+    </MenuItem>
   )
 }
 
 function ConversationDropdown(props) {
-  const [hover, setHover] = useState(false)
   const currentParticipant = props.conversation.currentParticipant || {}
   const variables = {
     conversationId: props.conversation.id,
@@ -169,11 +164,7 @@ function ConversationDropdown(props) {
                 props.setAnchor({timestamp: date.toISOString()})
               }} />
           </SubMenu>
-          <Box
-            background={hover ? 'brand' : null}
-            onMouseEnter={() => setHover(true)}
-            onMouseLeave={() => setHover(false)}
-            pad={{top: 'xsmall', horizontal: 'small', bottom: 'small'}}>
+          <MenuItem>
             <Mutation
               mutation={DELETE_PARTICIPANT}
               variables={{conversationId: props.conversation.id, userId: props.me.id}}
@@ -183,7 +174,7 @@ function ConversationDropdown(props) {
               }}>
             {mutation => (<Text onClick={mutation} size='small'>Leave conversation</Text>)}
             </Mutation>
-          </Box>
+          </MenuItem>
           </>
         )}
         </InterchangeableBox>

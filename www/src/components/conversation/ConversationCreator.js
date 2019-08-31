@@ -3,6 +3,7 @@ import {Box, Text} from 'grommet'
 import {Add} from 'grommet-icons'
 import { Mutation } from 'react-apollo'
 import Modal, {ModalHeader} from '../utils/Modal'
+import HoveredBackground from '../utils/HoveredBackground'
 import {CREATE_CONVERSATION, CONVERSATIONS_Q} from './queries'
 import ConversationEditForm from './ConversationEditForm'
 import {addConversation} from './utils'
@@ -11,45 +12,42 @@ import ConversationSearch from '../search/ConversationSearch'
 function ConversationCreator(props) {
   const [state, setState] = useState({})
   const [searching, setSearching] = useState(false)
-  const [hover, setHover] = useState(false)
-  const [iconHover, setIconHover] = useState(false)
   return (
     <Box fill='horizontal' pad={{right: '10px'}} margin={{top: 'medium'}}>
       <Box pad={props.padding} fill='horizontal' direction="row" align="center" margin={{bottom: '5px'}}>
         {searching ?
           <ConversationSearch
             setCurrentConversation={props.setCurrentConversation}
-            onSearchClose={() => {
-              setSearching(false)
-              setHover(false)
-            }} /> :
+            onSearchClose={() => setSearching(false)} /> :
           <Box width='100%'>
-            <Text
-              style={{cursor: 'pointer'}}
-              onClick={() => setSearching(true)}
-              onMouseEnter={() => setHover(true)}
-              onMouseLeave={() => setHover(false)}
-              size='small'
-              width='100%'
-              weight='bold'
-              color={hover ? null : props.textColor}>
-                Conversations
-            </Text>
+            <HoveredBackground>
+              <Text
+                style={{cursor: 'pointer'}}
+                onClick={() => setSearching(true)}
+                highlight
+                size='small'
+                width='100%'
+                weight='bold'
+                color={props.textColor}>
+                  Conversations
+              </Text>
+            </HoveredBackground>
           </Box>
         }
         <Modal target={
-          <Box
-            onMouseEnter={() => setIconHover(true)}
-            onMouseLeave={() => setIconHover(false)}
-            style={{cursor: 'pointer'}}
-            border
-            round='full'
-            width="20px"
-            height='20px'
-            justify='center'
-            align='center'>
-            <Add color={iconHover ? null : props.textColor} size="small" />
-          </Box>}>
+          <HoveredBackground>
+            <Box
+              highlight
+              style={{cursor: 'pointer'}}
+              border
+              round='full'
+              width="20px"
+              height='20px'
+              justify='center'
+              align='center'>
+              <Add color={props.textColor} size="small" />
+            </Box>
+          </HoveredBackground>}>
           {setOpen => (
             <Mutation
               mutation={CREATE_CONVERSATION}
