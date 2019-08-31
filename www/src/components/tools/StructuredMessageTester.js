@@ -9,7 +9,6 @@ function parseMessage(msg) {
   try {
     let json = parseXml(msg)
     let message = convertJson(json.children[0])
-    console.log(message)
     return <StructuredMessage {...message} />
   } catch(e) {
     return e.message

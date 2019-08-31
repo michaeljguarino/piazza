@@ -41,7 +41,7 @@ function Users(props) {
           let pageInfo = data.users.pageInfo
           return (
             <Scroller
-              id='user-viewport'
+              id='message-viewport'
               edges={userEdges.filter(({node}) => !props.ignore.has(node.id))}
               style={{
                 overflow: 'auto',

@@ -41,7 +41,6 @@ function ConversationSelector(props) {
 
 export function CommandForm(props) {
   const additionalVars = props.vars || {}
-  console.log(additionalVars)
   const {incomingWebhook, ...form} = props.formState
   const vars = incomingWebhook ? {...additionalVars, ...form, incomingWebhook} : {...additionalVars, ...form}
 

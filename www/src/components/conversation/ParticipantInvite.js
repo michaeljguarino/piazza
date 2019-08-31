@@ -113,6 +113,7 @@ class ParticipantInvite extends React.Component {
     const mapper = this.props.mapper || ((p) => p.handle)
     const additional = this.props.additional || []
     const allParticipants = uniqBy([...additional, ...this.state.participants], (u) => u.id)
+    console.log(this.state.suggestions)
     return (
       <ApolloConsumer>
       {client => (

@@ -37,7 +37,7 @@ function Commands(props) {
               let commandEdges = data.commands.edges
               let pageInfo = data.commands.pageInfo
               return (
-                <Box pad='small'>
+                <Box>
                   <Scroller
                     id='message-viewport'
                     edges={commandEdges}
@@ -48,7 +48,7 @@ function Commands(props) {
                     mapper={(edge) => (
                       <CommandListEntry
                         key={edge.node.id}
-                        pad={{bottom: 'small'}}
+                        pad={{vertical: 'xsmall', horizontal: 'small'}}
                         command={edge.node}
                         color={props.color} />
                     )}
