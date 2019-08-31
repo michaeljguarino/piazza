@@ -7,6 +7,7 @@ import { FilePicker } from 'react-file-picker'
 import {UPDATE_USER, USERS_Q} from '../users/queries'
 import {updateUser} from '../users/utils'
 import Modal from '../utils/Modal'
+import Copyable from '../utils/Copyable'
 import CommandEditor from './CommandEditor'
 
 
@@ -126,7 +127,12 @@ function CommandDetail(props) {
           {props.command.incomingWebhook && (
             <TableRow>
               <TableCell><strong>Incoming Webhook</strong></TableCell>
-              <TableCell>{props.command.incomingWebhook.url} ({props.command.incomingWebhook.conversation.name})</TableCell>
+              <TableCell>
+                <Box direction='row' align='center'>
+                  <Copyable text={props.command.incomingWebhook.url} pillText='incoming webhook copied!' />
+                  <Text margin={{left: '5px'}} size='small'>({props.command.incomingWebhook.conversation.name})</Text>
+                </Box>
+              </TableCell>
             </TableRow>
           )}
         </TableBody>

@@ -32,7 +32,7 @@ defmodule Core.Models.IncomingWebhook do
 
   defp gen_secure_id() do
     :crypto.strong_rand_bytes(32)
-    |> Base.encode64()
+    |> Base.url_encode64()
     |> String.replace("/", "")
   end
 end

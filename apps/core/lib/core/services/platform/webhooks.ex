@@ -33,7 +33,7 @@ defmodule Core.Services.Platform.Webhooks do
 
   defp webhook_headers(payload, secret) do
     epoch = :os.system_time(:millisecond)
-    signature = :crypto.hash(:sha, "#{payload}:#{epoch}:#{secret}") |> Base.encode64()
+    signature = :crypto.hash(:sha, "#{payload}:#{epoch}:#{secret}") |> Base.url_encode64()
     [
       {"content-type", "application/json"},
       {"accept", "application/json"},

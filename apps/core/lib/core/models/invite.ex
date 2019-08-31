@@ -33,7 +33,7 @@ defmodule Core.Models.Invite do
 
   defp gen_external_id() do
     :crypto.strong_rand_bytes(32)
-    |> Base.encode64()
+    |> Base.url_encode64()
     |> String.replace("/", "")
   end
 end

@@ -144,6 +144,7 @@ function ConversationDropdown(props) {
             setAlternate={setAlternate}>
             <DayPickerSingleDateController
               date={moment()}
+              hideKeyboardShortcutsPanel
               focused
               onFocusChange={() => null}
               onDateChange={(date) => {

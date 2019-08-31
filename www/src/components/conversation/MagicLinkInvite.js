@@ -1,39 +1,9 @@
 import React, {useState} from 'react'
 import {Mutation} from 'react-apollo'
-import {Box, Anchor, Text} from 'grommet'
+import {Box, Anchor} from 'grommet'
 import {CREATE_INVITE} from './queries'
 import {localized} from '../../helpers/hostname'
-import {CopyToClipboard} from 'react-copy-to-clipboard'
-import Pill from '../utils/Pill'
-
-const MAX_LINK_LENGTH = 40
-
-function trimmedLink(link) {
-  if (link.length > MAX_LINK_LENGTH) {
-    return link.substring(0, MAX_LINK_LENGTH)
-  }
-  return link
-}
-
-function LinkDisplay(props) {
-  const [display, setDisplay] = useState(false)
-  const fullLink = localized(`/invite/${props.link}`)
-  return (
-    <>
-    <CopyToClipboard text={fullLink} onCopy={() => {
-      console.log('copied')
-      setDisplay(true)
-    }}>
-      <Anchor size='small'>{trimmedLink(fullLink)}</Anchor>
-    </CopyToClipboard>
-    {display && (
-      <Pill background='status-ok' onClose={() => setDisplay(false)}>
-        <Text>magic link copied!</Text>
-      </Pill>
-    )}
-    </>
-  )
-}
+import Copyable from '../utils/Copyable'
 
 function LinkCreate(props) {
   return (
@@ -55,7 +25,7 @@ function MagicLinkInvite(props) {
   return (
     <Box pad='small'>
       {link ?
-        <LinkDisplay link={link} /> :
+        <Copyable text={localized(`/invite/${link}`)} pillText='magic link copied!' /> :
         <LinkCreate onCreate={setLink} {...props} />
       }
     </Box>

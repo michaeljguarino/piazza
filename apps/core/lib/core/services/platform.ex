@@ -141,7 +141,7 @@ defmodule Core.Services.Platform do
     args
     |> Map.put_new(:name, name)
     |> Map.put_new(:handle, name)
-    |> Map.put_new(:password, :crypto.strong_rand_bytes(64) |> Base.encode64())
+    |> Map.put_new(:password, :crypto.strong_rand_bytes(64) |> Base.url_encode64())
     |> Map.put_new(:email, "#{name}+bot@piazzapp.com")
   end
 
