@@ -1,8 +1,11 @@
 import React, {useState} from 'react'
-import {Form, FormField, Button} from 'grommet'
+import {Box} from 'grommet'
 import {Mutation} from 'react-apollo'
 import {UPDATE_USER} from './queries'
 import Errors, {Error} from '../utils/Error'
+import InputField from '../utils/InputField'
+import Button from '../utils/Button'
+
 
 function UpdatePassword(props) {
   const [password, setPassword] = useState('')
@@ -22,27 +25,25 @@ function UpdatePassword(props) {
         mutation()
       }
       return (
-        <Form onSubmit={wrapped}>
+        <Box gap='xsmall'>
           {unconfirmed && <Error error="Passwords do not match" />}
           {error && <Errors errors={error} />}
-          <FormField
+          <InputField
+            label='Password'
+            labelWidth='80px'
+            type='password'
             value={password}
+            placeholder='battery horse fire stapler'
+            onChange={(e) => setPassword(e.target.value)} />
+          <InputField
+            label='Confirm'
+            labelWidth='80px'
             type='password'
-            label="Password"
-            name="password"
-            onChange={e => setPassword(e.target.value)}
-            placeholder="battery horse fire stapler"
-          />
-          <FormField
-            value={confirm}
-            type='password'
-            label="Confirm Password"
-            name="confirm_password"
-            onChange={e => setConfirm(e.target.value)}
-            placeholder="battery horse fire stapler"
-          />
-          <Button type='submit' primary label='Change' />
-        </Form>
+            value={password}
+            placeholder='battery horse fire stapler'
+            onChange={(e) => setConfirm(e.target.value)} />
+          <Button margin={{top: 'xsmall'}} width='100%' label='Change' round='small' onClick={wrapped} />
+        </Box>
       )
     }}
     </Mutation>

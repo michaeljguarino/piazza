@@ -41,3 +41,12 @@ export const USERS_Q = gql`
   }
   ${UserFragment}
 `;
+
+export const USER_SUB = gql`
+  subscription {
+    userDelta {
+      ...UserFragment
+    }
+  }
+  ${UserFragment}
+`;

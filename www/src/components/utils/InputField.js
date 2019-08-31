@@ -9,6 +9,7 @@ function InputField(props) {
       </Box>
       <TextInput
         name='name'
+        type={props.type}
         value={props.value}
         onChange={props.onChange}
         placeholder={props.placeholder}

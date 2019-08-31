@@ -71,3 +71,12 @@ export const UPDATE_COMMAND = gql`
   }
   ${CommandFragment}
 `;
+
+export const COMMAND_SUB = gql`
+  subscription {
+    commandDelta {
+      ...CommandFragment
+    }
+  }
+  ${CommandFragment}
+`;

@@ -19,10 +19,7 @@ export function updateCommand(prev, command) {
     ...prev,
     commands: {
       ...prev.commands,
-      edges: prev.commands.edges.map((e) => {
-        if (e.node.id === command.id) return {...e, node: command}
-        return e
-      })
+      edges: prev.commands.edges.map((e) => (e.node.id === command.id) ? {...e, node: command} : e)
     }
   }
 }

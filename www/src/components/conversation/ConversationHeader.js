@@ -1,7 +1,7 @@
 import React, {useState} from 'react'
 import {Mutation} from 'react-apollo'
 import {Box, Text, Markdown, Anchor} from 'grommet'
-import {Down, FormNext} from 'grommet-icons'
+import {Down} from 'grommet-icons'
 import CloseableDropdown from '../utils/CloseableDropdown'
 import Modal, {ModalHeader} from '../utils/Modal'
 import {UPDATE_CONVERSATION, CONVERSATIONS_Q, UPDATE_PARTICIPANT, DELETE_PARTICIPANT} from './queries'
@@ -11,6 +11,7 @@ import {CurrentUserContext} from '../login/EnsureLogin'
 import Participants from './Participants'
 import PinnedMessages from './PinnedMessages'
 import Commands from '../commands/Commands'
+import {UserIcon} from '../users/Users'
 import MessageSearch from './MessageSearch'
 import NotificationsPreferences, {DEFAULT_PREFS} from '../users/NotificationPreferences'
 import {updateConversation} from './utils'
@@ -18,7 +19,7 @@ import {conversationNameString, Icon} from './Conversation'
 import pick from 'lodash/pick'
 import moment from 'moment'
 import InterchangeableBox from '../utils/InterchangeableBox'
-import MenuItem from '../utils/MenuItem'
+import MenuItem, {SubMenu} from '../utils/MenuItem'
 import HoveredBackground from '../utils/HoveredBackground'
 import {DayPickerSingleDateController} from 'react-dates'
 import 'react-dates/lib/css/_datepicker.css'
@@ -106,20 +107,6 @@ function ConversationName(props) {
   )
 }
 
-function SubMenu(props) {
-  const {text, setAlternate, children, ...rest} = props
-  return (
-    <MenuItem onClick={() => setAlternate(children)} direction='row' {...rest}>
-      <Box width='100%'>
-        <Text size='small'>{text}</Text>
-      </Box>
-      <Box width='20px'>
-        <FormNext size='15px' />
-      </Box>
-    </MenuItem>
-  )
-}
-
 function ConversationDropdown(props) {
   const currentParticipant = props.conversation.currentParticipant || {}
   const variables = {
@@ -199,6 +186,7 @@ function ConversationHeader(props) {
         </Box>
       </Box>
       <MessageSearch conversation={props.conversation} setAnchor={props.setAnchor} />
+      <UserIcon />
       <Commands />
       <CurrentUserContext.Consumer>
       {me => (<NotificationIcon me={me} {...props} />)}

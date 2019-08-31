@@ -3,9 +3,10 @@ import {Box, Text, ThemeContext} from 'grommet'
 import Avatar from './Avatar'
 import { Mutation } from 'react-apollo'
 import CloseableDropdown from '../utils/CloseableDropdown'
-import Modal from '../utils/Modal'
+import Modal, {ModalHeader} from '../utils/Modal'
 import {AUTH_TOKEN} from '../../constants'
-import MenuItem from '../utils/MenuItem'
+import MenuItem, {SubMenu} from '../utils/MenuItem'
+import InterchangeableBox from '../utils/InterchangeableBox'
 import HoveredBackground from '../utils/HoveredBackground'
 import { FilePicker } from 'react-file-picker'
 import {ME_Q, UPDATE_USER} from './queries'
@@ -71,32 +72,45 @@ function Me(props) {
                     <Avatar user={me} rightMargin='10px' />
                     <Text size="small" weight='bold'>{me.name}</Text>
                   </Box>
-                  <Box pad={{vertical: 'small'}}>
+                  <InterchangeableBox>
+                  {setAlternate => (
+                    <>
                     <Modal target={<DropdownItem text='update profile' />}>
-                      {setOpen => (
+                    {setOpen => (
+                      <Box>
+                        <ModalHeader text='Update Profile' setOpen={setOpen} />
                         <Box gap='small' pad="medium" width='300px'>
                           <UpdateProfile callback={() => setOpen(false)} me={me} />
                         </Box>
-                      )}
+                      </Box>
+                    )}
                     </Modal>
                     <Modal target={<DropdownItem text='change password' />}>
                       {setOpen => (
-                        <Box gap='small' pad="medium" width='300px'>
-                          <UpdatePassword callback={() => setOpen(false)} me={me} />
+                        <Box width='400px'>
+                          <ModalHeader text='Update Password' setOpen={setOpen} />
+                          <Box gap='small' pad="medium">
+                            <UpdatePassword callback={() => setOpen(false)} me={me} />
+                          </Box>
                         </Box>
                       )}
                     </Modal>
-                  </Box>
-                  <Box border='top' pad={{vertical: 'xsmall'}}>
-                    <Modal target={<DropdownItem text='structured message creator' />}>
-                    {setOpen => (
-                      <StructuredMessageTester callback={() => setOpen(false)} />
-                    )}
-                    </Modal>
-                  </Box>
-                  <Box border='top' pad={{vertical: 'xsmall'}}>
-                    <DropdownItem text='logout' onClick={_logout} />
-                  </Box>
+                    <SubMenu text='developer tools' setAlternate={setAlternate}>
+                       <Modal target={<DropdownItem text='structured message creator' />}>
+                        {setOpen => (
+                          <Box>
+                            <ModalHeader text='Structured Message Developer' setOpen={setOpen} />
+                            <StructuredMessageTester callback={() => setOpen(false)} />
+                          </Box>
+                        )}
+                      </Modal>
+                    </SubMenu>
+                    <Box border='top'>
+                      <DropdownItem pad={{horizontal: 'small', vertical: 'small'}} text='logout' onClick={_logout} />
+                    </Box>
+                    </>
+                  )}
+                  </InterchangeableBox>
                 </Box>
               )}
               </CloseableDropdown>

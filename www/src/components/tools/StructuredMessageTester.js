@@ -1,5 +1,5 @@
 import React, {useState} from 'react'
-import {Box, Text, TextArea} from 'grommet'
+import {Box, TextArea} from 'grommet'
 import StructuredMessage from '../messages/StructuredMessage'
 const parseXml = require('@rgrove/parse-xml')
 
@@ -42,9 +42,6 @@ function StructuredMessageTester(props) {
 
   return (
     <Box pad='medium' width='50vw' height='80vh' gap='medium'>
-      <Box fill='horizontal' direction='row' justify='center'>
-        <Text weight='bold' size='small'>Structured Message Developer</Text>
-      </Box>
       <Box direction='row' gap='medium' height='100%' fill='horizontal'>
         <TextArea
           value={message}

@@ -50,7 +50,7 @@ function ChatCreator(props) {
           </HoveredBackground>
         </Box>}>
         {setOpen => (
-          <Box width="400px" pad={{bottom: 'small'}} round='small'>
+          <Box width="400px" style={{maxHeight: '60vh'}} pad={{bottom: 'small'}} round='small'>
             <ModalHeader text='Start a chat' setOpen={setOpen} />
             <ParticipantInvite
               direction='row'
