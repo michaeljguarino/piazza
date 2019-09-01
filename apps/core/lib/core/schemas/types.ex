@@ -309,6 +309,7 @@ defmodule Core.Schemas.Types do
   object :emoji do
     field :id, :id
     field :name, non_null(:string)
+    field :fullname, :string
     field :image_url, :string, resolve: fn emoji, _, _ ->
       {:ok, Core.Storage.url({emoji.image, emoji}, :original)}
     end

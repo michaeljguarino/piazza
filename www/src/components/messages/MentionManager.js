@@ -7,9 +7,8 @@ import {Emoji} from 'grommet-icons'
 import {SEARCH_USERS} from './queries'
 import {SEARCH_COMMANDS} from '../commands/queries'
 import HoveredBackground from '../utils/HoveredBackground'
-import 'emoji-mart/css/emoji-mart.css'
-import data from 'emoji-mart/data/messenger.json'
-import { emojiIndex, NimblePicker } from 'emoji-mart'
+import EmojiPicker from '../emoji/EmojiPicker'
+import { emojiIndex } from 'emoji-mart'
 import { Editor } from 'slate-react'
 import Plain from 'slate-plain-serializer'
 import SuggestionsPlugin from 'slate-smart-suggestions'
@@ -242,11 +241,9 @@ function MentionManager(props) {
               onClickOutside={() => setEmojiPicker(false)}
               onEsc={() => setEmojiPicker(false)}
             >
-              <NimblePicker
-                data={data}
-                onSelect={(emoji) => {
+              <EmojiPicker onSelect={(emoji) => {
                   let text = Plain.serialize(editorState)
-                  text += ' ' + emoji.native
+                  text += ' ' + (emoji.native ? emoji.native : `:${emoji.short_names[0]}:`)
                   props.setText(text)
                   setEditorState(Plain.deserialize(text))
                 }} />

@@ -2,10 +2,11 @@ defmodule Core.Models.MessageEntity do
   use Core.DB.Schema
   alias Core.Models.{Message, User}
 
-  defenum Type, mention: 0
+  defenum Type, mention: 0, emoji: 1
   schema "message_entities" do
     field :type, Type
     field :start_index, :integer
+    field :text, :string
     field :length, :integer
 
     belongs_to :message, Message
@@ -14,7 +15,7 @@ defmodule Core.Models.MessageEntity do
     timestamps()
   end
 
-  @valid ~w(type start_index length message_id user_id)
+  @valid ~w(type text start_index length message_id user_id)
 
   def changeset(model, attrs \\ %{}) do
     model

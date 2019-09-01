@@ -5,11 +5,9 @@ import {More, Emoji, Pin} from 'grommet-icons'
 import HoveredBackground from '../utils/HoveredBackground'
 import MenuItem from '../utils/MenuItem'
 import Popover from 'react-tiny-popover'
-import 'emoji-mart/css/emoji-mart.css'
-import data from 'emoji-mart/data/messenger.json'
-import { NimblePicker } from 'emoji-mart'
 import {DELETE_MESSAGE, CREATE_REACTION, MESSAGES_Q, PIN_MESSAGE, PINNED_MESSAGES} from './queries'
 import {removeMessage, updateMessage, addPinnedMessage, removePinnedMessage} from './utils'
+import EmojiPicker from '../emoji/EmojiPicker';
 
 const CONTROL_ATTRS = {
   style: {cursor: 'pointer'},
@@ -69,9 +67,7 @@ export function MessageReaction(props) {
         position={position}
         onClickOutside={() => toggleOpen(false)}
         content={
-          <NimblePicker
-            data={data}
-            onSelect={(emoji) => {
+          <EmojiPicker onSelect={(emoji) => {
               mutation({variables: {messageId: props.message.id, name: emoji.id}})
               props.onSelect && props.onSelect()
             }} />

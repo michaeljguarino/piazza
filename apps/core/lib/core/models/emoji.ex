@@ -4,6 +4,7 @@ defmodule Core.Models.Emoji do
 
   schema "emoji" do
     field :name, :string
+    field :fullname, :string
     field :image, Core.Storage.Type
     field :image_id, :binary_id
 
@@ -12,7 +13,7 @@ defmodule Core.Models.Emoji do
     timestamps()
   end
 
-  @valid ~w(name creator_id)a
+  @valid ~w(name fullname creator_id)a
 
   def ordered(query \\ __MODULE__, order \\ [asc: :name]),
     do: from(q in query, order_by: ^order)

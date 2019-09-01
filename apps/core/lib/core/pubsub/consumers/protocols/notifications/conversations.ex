@@ -35,6 +35,7 @@ defimpl Core.Notifications.Notifiable, for: Core.PubSub.MessageCreated do
 
   defp filter_mentions(entities, participants_by_user) do
     entities
+    |> Enum.filter(& &1.type == :mention)
     |> Enum.map(& {&1, participants_by_user[&1.user_id]})
     |> Enum.filter(fn
       {%{user: %{notification_preferences: %{mention: false}}}, _} -> false

@@ -90,5 +90,6 @@ defmodule Core.Schemas.Inputs do
   input_object :emoji_attributes do
     field :image, :upload_or_url
     field :name, non_null(:string)
+    field :fullname, :string
   end
 end

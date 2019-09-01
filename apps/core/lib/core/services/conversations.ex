@@ -180,16 +180,8 @@ defmodule Core.Services.Conversations do
       |> when_ok(:insert)
     end)
     |> add_operation(:inflated, fn %{message: %{text: text} = msg} ->
-      with extracted when map_size(extracted) > 0 <- Messages.PostProcessor.extract_entities(text, user) do
-        entities = for {_, {{pos, len}, user}} <- extracted do
-          timestamped(%{
-            user_id: user.id,
-            type: :mention,
-            start_index: pos,
-            length: len,
-            message_id: msg.id
-          })
-        end
+      with [_ | _] = entities <- Messages.PostProcessor.extract_entities(text, user) do
+        entities = Enum.map(entities, &Map.put(&1, :message_id, msg.id))
         {_, entities} = Core.Repo.insert_all(MessageEntity, entities, returning: true)
         {:ok, %{msg | entities: entities}}
       else

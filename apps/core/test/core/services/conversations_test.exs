@@ -176,6 +176,19 @@ defmodule Core.Services.ConversationsTest do
       assert [0, 10] == Enum.map(entities, & &1.start_index)
       assert [4, 7] == Enum.map(entities, & &1.length)
     end
+
+
+    test "It can extract emoji" do
+      user = insert(:user)
+      conv = insert(:conversation)
+
+      {:ok, %{entities: [entity]}} = Conversations.create_message(conv.id, %{text: "whoa :michael:"}, user)
+
+      assert entity.type == :emoji
+      assert entity.start_index == 5
+      assert entity.length == 9
+      assert entity.text == "michael"
+    end
   end
 
   describe "#delete_message/2" do
