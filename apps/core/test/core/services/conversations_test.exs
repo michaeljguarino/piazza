@@ -181,6 +181,7 @@ defmodule Core.Services.ConversationsTest do
     test "It can extract emoji" do
       user = insert(:user)
       conv = insert(:conversation)
+      emoji = insert(:emoji, name: "michael")
 
       {:ok, %{entities: [entity]}} = Conversations.create_message(conv.id, %{text: "whoa :michael:"}, user)
 
@@ -188,6 +189,7 @@ defmodule Core.Services.ConversationsTest do
       assert entity.start_index == 5
       assert entity.length == 9
       assert entity.text == "michael"
+      assert entity.emoji_id == emoji.id
     end
   end
 

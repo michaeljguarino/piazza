@@ -1,6 +1,6 @@
 defmodule Core.Models.MessageEntity do
   use Core.DB.Schema
-  alias Core.Models.{Message, User}
+  alias Core.Models.{Message, User, Emoji}
 
   defenum Type, mention: 0, emoji: 1
   schema "message_entities" do
@@ -11,6 +11,7 @@ defmodule Core.Models.MessageEntity do
 
     belongs_to :message, Message
     belongs_to :user, User
+    belongs_to :emoji, Emoji
 
     timestamps()
   end

@@ -20,6 +20,7 @@ defmodule Core.Schema do
       |> Dataloader.add_source(Conversation, Conversation.data(ctx))
       |> Dataloader.add_source(User, User.data(ctx))
       |> Dataloader.add_source(Platform, Platform.data(ctx))
+      |> Dataloader.add_source(Emoji, Emoji.data(ctx))
 
     Map.put(ctx, :loader, loader)
   end

@@ -1,6 +1,6 @@
 defmodule Core.Schemas.Types do
   use Core.Schemas.Base
-  alias Core.Resolvers.{Conversation, User, Platform}
+  alias Core.Resolvers.{Conversation, User, Platform, Emoji}
 
   object :user do
     field :id,         :id
@@ -187,10 +187,11 @@ defmodule Core.Schemas.Types do
   end
 
   object :message_reaction do
-    field :id, non_null(:id)
-    field :user_id, non_null(:id)
+    field :id,         non_null(:id)
+    field :user_id,    non_null(:id)
     field :message_id, non_null(:id)
-    field :name, non_null(:string)
+    field :name,       non_null(:string)
+
     field :user, :user, resolve: dataloader(User)
 
     timestamps()
@@ -200,14 +201,19 @@ defmodule Core.Schemas.Types do
 
   enum :entity_type do
     value :mention
+    value :emoji
   end
 
   object :message_entity do
-    field :id, :id
+    field :id,   :id
     field :type, :entity_type
-    field :user, :user, resolve: dataloader(User)
+    field :text, :string
+
     field :start_index, :integer
-    field :length, :integer
+    field :length,      :integer
+
+    field :user,  :user,  resolve: dataloader(User)
+    field :emoji, :emoji, resolve: dataloader(Emoji)
   end
 
   enum :notification_type do

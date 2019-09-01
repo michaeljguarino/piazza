@@ -85,6 +85,8 @@ function MessageEntity(props) {
   switch(props.entity.type) {
     case "MENTION":
       return <UserHandle size='xsmall' weight='bold' margin={{right: '0px'}} user={props.entity.user} />
+    case "EMOJI":
+      return <span />
     default:
       return <span />
   }

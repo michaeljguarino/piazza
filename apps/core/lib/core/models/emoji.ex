@@ -15,6 +15,9 @@ defmodule Core.Models.Emoji do
 
   @valid ~w(name fullname creator_id)a
 
+  def with_names(query \\ __MODULE__, names),
+    do: from(e in query, where: e.name in ^names)
+
   def ordered(query \\ __MODULE__, order \\ [asc: :name]),
     do: from(q in query, order_by: ^order)
 
