@@ -1,8 +1,10 @@
 import React, {useState} from 'react'
 import {Box, Text} from 'grommet'
 
+const BUTTON_PAD = {horizontal: 'small', vertical: 'xsmall'}
+
 export function SecondaryButton(props) {
-  const {onClick, label, ...rest} = props
+  const {onClick, label, pad, ...rest} = props
   return (
     <Box
       style={{cursor: 'pointer'}}
@@ -10,6 +12,7 @@ export function SecondaryButton(props) {
       border
       align='center'
       justify='center'
+      pad={pad || BUTTON_PAD}
       {...rest}>
       <Text size='small'>{label}</Text>
     </Box>
@@ -24,7 +27,7 @@ function Button(props) {
       style={{cursor: 'pointer'}}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
-      pad={props.pad || 'xsmall'}
+      pad={props.pad || BUTTON_PAD}
       align='center'
       justify='center'
       background={props.disabled ? 'light-6' : (hover ? 'brand-heavy' : 'brand')}

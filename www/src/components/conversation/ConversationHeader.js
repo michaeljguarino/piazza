@@ -75,6 +75,7 @@ function ConversationUpdate(props) {
           <ModalHeader setOpen={setOpen} text={`Update #${props.conversation.name}`}/>
           <Box align='center' justify='center' pad='medium'>
             <ConversationEditForm
+              cancel={() => setOpen(false)}
               state={attributes}
               mutation={mutation}
               onStateChange={(update) => setAttributes({...attributes, ...update})}

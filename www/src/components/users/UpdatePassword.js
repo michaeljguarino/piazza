@@ -4,8 +4,7 @@ import {Mutation} from 'react-apollo'
 import {UPDATE_USER} from './queries'
 import Errors, {Error} from '../utils/Error'
 import InputField from '../utils/InputField'
-import Button from '../utils/Button'
-
+import Button, {SecondaryButton} from '../utils/Button'
 
 function UpdatePassword(props) {
   const [password, setPassword] = useState('')
@@ -42,7 +41,10 @@ function UpdatePassword(props) {
             value={password}
             placeholder='battery horse fire stapler'
             onChange={(e) => setConfirm(e.target.value)} />
-          <Button margin={{top: 'xsmall'}} width='100%' label='Change' round='small' onClick={wrapped} />
+          <Box margin={{top: 'xsmall'}} direction='row' align='center' justify='end' gap='xsmall'>
+            <SecondaryButton label='Cancel' onClick={props.callback} round='xsmall' />
+            <Button label='Change' round='xsmall' onClick={wrapped} />
+          </Box>
         </Box>
       )
     }}

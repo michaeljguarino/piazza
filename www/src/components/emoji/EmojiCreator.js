@@ -35,13 +35,10 @@ function EmojiForm(props) {
     {mutation => (
       <Box gap='small'>
         <Box gap='xsmall'>
-          <Text size='small' weight='bold'>
-            First upload an image
-          </Text>
           <Box direction='row' gap='xsmall' align='center'>
-            <Box border round='xsmall' width='50px' height='50px' pad='xsmall' align='center' justify='center'>
-              {image ? <img alt='' width='40px' height='40px' src={image.previewUrl} /> :
-                <CloudUpload size='30px' />
+            <Box border round='xsmall' width='35px' height='35px' pad='xsmall' align='center' justify='center'>
+              {image ? <img alt='' width='30px' height='30px' src={image.previewUrl} /> :
+                <CloudUpload size='25px' />
               }
             </Box>
             <FilePicker
@@ -56,9 +53,6 @@ function EmojiForm(props) {
           </Box>
         </Box>
         <Box gap='xsmall'>
-          <Text size='small' weight='bold'>
-            Then give it a name
-          </Text>
           <InputField
             label='name'
             value={name}
@@ -91,7 +85,7 @@ function EmojiCreator(props) {
         </Box>
       }>
       {setOpen => (
-        <Box width="600px" round='small'>
+        <Box width="300px" round='small'>
           <ModalHeader text='Create a new emoji' setOpen={setOpen} />
           <Box pad='small'>
             <EmojiForm setOpen={setOpen} />

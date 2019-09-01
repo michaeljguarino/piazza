@@ -67,6 +67,7 @@ function ConversationCreator(props) {
                 <ModalHeader setOpen={setOpen} text='Start a new conversation' />
                 <Box align='center' justify='center' pad='medium'>
                   <ConversationEditForm
+                    cancel={() => setOpen(false)}
                     state={state}
                     mutation={mutation}
                     onStateChange={(update) => setState({...state, ...update})}

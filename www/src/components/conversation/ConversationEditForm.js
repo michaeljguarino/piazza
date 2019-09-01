@@ -1,6 +1,6 @@
 import React from 'react'
 import {Keyboard, Box, CheckBox} from 'grommet'
-import Button from '../utils/Button'
+import Button, {SecondaryButton} from '../utils/Button'
 import InputField from '../utils/InputField'
 
 function ConversationEditForm(props) {
@@ -25,13 +25,9 @@ function ConversationEditForm(props) {
             onChange={(e) => props.onStateChange({public: e.target.checked})}
           />
         </Box>
-        <Box direction='row' justify='center'>
-          <Button
-            onClick={props.mutation}
-            width='100%'
-            pad={{vertical: 'xsmall', horizontal: 'medium'}}
-            round='xsmall'
-            label={props.action || 'Create'} />
+        <Box direction='row' justify='end' gap='xsmall'>
+          <SecondaryButton round='xsmall' label='Cancel' onClick={props.cancel} />
+          <Button onClick={props.mutation} round='xsmall' label={props.action || 'Create'} />
         </Box>
       </Box>
     </Keyboard>

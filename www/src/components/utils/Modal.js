@@ -7,8 +7,9 @@ export function ModalHeader(props) {
   return (
     <Box
       direction='row'
-      background='brand'
-      elevation='xsmall'
+      // background='brand'
+      border='bottom'
+      elevation='xxsmall'
       round={props.round || {size: '4px', corner: 'top'}}
       pad='small'
       margin={{bottom: 'xsmall'}}>
@@ -18,7 +19,7 @@ export function ModalHeader(props) {
       <Box
         onMouseEnter={() => setHover(true)}
         onMouseLeave={() => setHover(false)}
-        background={hover ? 'brand-heavy' : null}
+        background={hover ? 'light-6' : null}
         width='30px'
         align='center'
         justify='center'>
