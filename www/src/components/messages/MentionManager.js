@@ -6,6 +6,7 @@ import {Box, Text, Drop} from 'grommet'
 import {Emoji} from 'grommet-icons'
 import {SEARCH_USERS} from './queries'
 import {SEARCH_COMMANDS} from '../commands/queries'
+import {EMOJI_Q} from '../emoji/queries'
 import HoveredBackground from '../utils/HoveredBackground'
 import EmojiPicker from '../emoji/EmojiPicker'
 import { emojiIndex } from 'emoji-mart'
@@ -44,20 +45,25 @@ function fetchCommands(client, query) {
   })
 }
 
-function fetchEmojis(query) {
+function fetchEmojis(client, query) {
   if (!query) return
-  const found =
-    emojiIndex.search(query)
-      .slice(0, 5)
-      .map((emoji) => {
-        return {
-          key: emoji.colons,
-          value: emoji.native,
-          suggestion: emojiSuggestion(emoji)
-        }
-      })
 
-  return Promise.resolve(found)
+  return client.query({
+    query: EMOJI_Q,
+    variables: {name: query}
+  }).then(({data}) => {
+    const customEmoji = data.emoji.edges.slice(0, 5).filter((e) => e.node.name.indexOf(query) >= 0).map((e) => ({
+      key: e.node.name,
+      value: `:${e.node.name}:`,
+      suggestion: customEmojiSuggestion(e.node)
+    }))
+    const defaultEmoji = emojiIndex.search(query).slice(0, 5).map((emoji) => ({
+      key: emoji.colons,
+      value: emoji.native,
+      suggestion: emojiSuggestion(emoji)
+    }))
+    return [...customEmoji, ...defaultEmoji]
+  })
 }
 
 export function userSuggestion(user) {
@@ -78,6 +84,15 @@ function commandSuggestion(command) {
   return (
     <Box direction='row' align='center' pad='xsmall'>
       <Text size='xsmall' weight='bold'>/{command.name}</Text>
+    </Box>
+  )
+}
+
+function customEmojiSuggestion(emoji) {
+  return (
+    <Box direction='row' align='center' pad='xsmall'>
+      <img width='15px' height='15px' alt={emoji.name} src={emoji.imageUrl} />
+      <Text size='xsmall'>:{emoji.name}:</Text>
     </Box>
   )
 }
@@ -167,7 +182,7 @@ class PluggableMentionManager extends Component {
     this.emojiPlugin = new SuggestionsPlugin({
       trigger: ':',
       capture: /:[^\s]+/,
-      suggestions: (text) => fetchEmojis(text),
+      suggestions: (text) => fetchEmojis(props.client, text),
       onEnter: (suggestion, change) => {
         replaceSuggestion(suggestion, change, ' ')
       }
@@ -218,6 +233,7 @@ function MentionManager(props) {
               setEditorState(state.value)
               props.setText(text)
               props.onChange(state)
+              props.disableSubmit(false)
             }}
             placeholder="this is for talking"
           />

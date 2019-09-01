@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useState, useRef} from 'react'
 import {Box, Text, Markdown, Stack} from 'grommet'
 import {Pin} from 'grommet-icons'
 import Avatar from '../users/Avatar'
@@ -8,10 +8,12 @@ import UserHandle from '../users/UserHandle'
 import MessageControls from './MessageControls'
 import MessageReactions from './MessageReactions'
 import PresenceIndicator from '../users/PresenceIndicator'
+import {TooltipContent} from '../utils/Tooltip'
 import BotIcon from '../utils/BotIcon'
 import WithPresence from '../utils/presence'
 import StructuredMessage from './StructuredMessage'
 import FileIcon, { defaultStyles } from 'react-file-icon'
+import {Emoji} from 'emoji-mart'
 
 function TextMessage(props) {
   return (
@@ -60,7 +62,11 @@ function WithEntities(props) {
   if (!props.entities || props.entities.length === 0) return (
     <MsgMarkdown>{props.text}</MsgMarkdown>
   )
-  return <span>{Array.from(splitText(props.text, props.entities))}</span>
+  return (
+    <Box direction='row' align='center' gap='xsmall'>
+      {Array.from(splitText(props.text, props.entities))}
+    </Box>
+  )
 }
 
 function* splitText(text, entities) {
@@ -81,12 +87,40 @@ function* splitText(text, entities) {
   }
 }
 
+function CustomEmoji(props) {
+  const targetRef = useRef()
+  const [open, setOpen] = useState(false)
+  return (
+    <>
+    <span
+      ref={targetRef}
+      onMouseEnter={() => setOpen(true)}
+      onMouseLeave={() => setOpen(false)}
+      style={{
+      backgroundImage: `url("${props.emoji.imageUrl}")`,
+      width: `${props.size}px`,
+      height: `${props.size}px`,
+      backgroundSize: 'contain'
+    }} />
+    {open && (
+      <TooltipContent targetRef={targetRef}>
+        <Text size='xsmall'>:{props.emoji.name}:</Text>
+      </TooltipContent>
+    )}
+    </>
+  )
+}
+
 function MessageEntity(props) {
   switch(props.entity.type) {
     case "MENTION":
       return <UserHandle size='xsmall' weight='bold' margin={{right: '0px'}} user={props.entity.user} />
     case "EMOJI":
-      return <span />
+      const emoji = props.entity.emoji
+      return (emoji.imageUrl ?
+        <CustomEmoji emoji={emoji} size={17} /> :
+        <Emoji tooltip emoji={emoji.name} size={17} />
+      )
     default:
       return <span />
   }

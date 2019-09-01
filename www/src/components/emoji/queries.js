@@ -1,11 +1,5 @@
 import gql from 'graphql-tag'
-
-export const EmojiFragment = gql`
-  fragment EmojiFragment on Emoji {
-    name
-    imageUrl
-  }
-`;
+import {EmojiFragment} from '../models/emoji'
 
 export const EMOJI_Q = gql`
   query {

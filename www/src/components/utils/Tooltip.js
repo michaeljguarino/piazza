@@ -1,6 +1,16 @@
 import React, {useState, useRef} from 'react'
 import {Box, Drop} from 'grommet'
 
+export function TooltipContent(props) {
+  return (
+    <Drop align={props.align || {bottom: 'top'}} target={props.targetRef.current} plain>
+      <Box round='small' background={props.background || 'dark-1'} pad='xsmall'>
+        {props.children}
+      </Box>
+    </Drop>
+  )
+}
+
 function Tooltip(props) {
   const targetRef = useRef()
   const [open, setOpen] = useState(false)
@@ -16,11 +26,9 @@ function Tooltip(props) {
         {target}
       </span>
       {open && (
-        <Drop align={props.align || {bottom: 'top'}} target={targetRef.current} plain>
-          <Box round='small' background={props.background || 'dark-1'} pad='xsmall'>
-            {dropContents}
-          </Box>
-        </Drop>
+        <TooltipContent align={props.align} targetRef={props.targetRef} background={props.background}>
+          {dropContents}
+        </TooltipContent>
       )}
     </>
   )

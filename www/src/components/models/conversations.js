@@ -1,5 +1,6 @@
 import gql from 'graphql-tag'
 import {UserFragment} from './users'
+import {EmojiFragment} from './emoji'
 
 export const ConversationFragment = gql`
   fragment ConversationFragment on Conversation {
@@ -65,6 +66,9 @@ export const MessageFragment = gql`
       user {
         ...UserFragment
       }
+      emoji {
+        ...EmojiFragment
+      }
     }
     creator {
       ...UserFragment
@@ -84,6 +88,7 @@ export const MessageFragment = gql`
   ${EmbedFragment}
   ${UserFragment}
   ${ReactionFragment}
+  ${EmojiFragment}
 `;
 
 export const ParticipantFragment = gql`
