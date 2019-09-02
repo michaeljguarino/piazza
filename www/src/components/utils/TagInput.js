@@ -13,7 +13,7 @@ const Tag = ({ children, onRemove, ...rest }) => {
       direction="row"
       align="center"
       pad={{horizontal: 'xxsmall'}}
-      background={hover ? 'tag-medium' : 'tag-light'}
+      background={hover ? 'tagMedium' : 'tagLight'}
       margin={{ vertical: "xxsmall" }}
       {...rest}
     >

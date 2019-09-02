@@ -8,7 +8,7 @@ function UserListEntry(props) {
   return (
     <Box
       style={{cursor: 'pointer'}}
-      background={hover ? 'light-hover' : null}
+      background={hover ? 'lightHover' : null}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
       direction='row'

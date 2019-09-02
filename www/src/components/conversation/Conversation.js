@@ -53,12 +53,12 @@ function ConversationName(props) {
 function Conversation(props) {
   let selected = props.conversation.id === props.currentConversation.id
   let unread = (props.conversation.unreadMessages > 0 && !selected)
-  let textProps = {color: (unread ? 'focus-text' : (selected ? 'active-text' : 'sidebar-text'))}
+  let textProps = {color: (unread ? 'focusText' : (selected ? 'activeText' : 'sidebarText'))}
 
   return (
     <HoveredBackground>
       <Box
-        brandHover={!selected}
+        sidebarHover={!selected}
         fill='horizontal'
         direction='row'
         align='center'

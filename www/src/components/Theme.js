@@ -3,19 +3,21 @@ import {SearchInput} from './utils/SelectSearchInput'
 
 export const DEFAULT_COLOR_THEME = {
   brand: '#2F415B',
-  'accent-1': '#CF6D57',
+  sidebar: '#2F415B',
+  action: '#CF6D57',
+  actionHover: '#ba624e',
   focus: '#CF6D57',
-  'brand-heavy': '#263449',
-  'tag-light': '#6d7a8c',
-  'tag-medium': '#59677c',
-  'focus-text': '#FFFFFF',
-  'active-text': '#FFFFFF',
-  'sidebar-text': '#C0C0C0',
-  'sidebar-text-hover': '#FFFFFF',
-  'highlight': '#cdd7e5',
-  'highlight-dark': '#a4acb7',
+  sidebarHover: '#263449',
+  tagLight: '#6d7a8c',
+  tagMedium: '#59677c',
+  focusText: '#FFFFFF',
+  activeText: '#FFFFFF',
+  sidebarText: '#C0C0C0',
+  sidebarTextHover: '#FFFFFF',
+  highlight: '#cdd7e5',
+  highlightDark: '#a4acb7',
   notif: '#EB4D5C',
-  'light-hover': '#EDEDED',
+  lightHover: '#EDEDED',
   presence: '#006633'
 }
 

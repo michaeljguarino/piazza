@@ -35,7 +35,7 @@ const Piazza = () => {
                 {name: 'convs', start: [0, 0], end: [0, 0]},
                 {name: 'msgs', start: [1, 0], end: [1, 0]},
               ]}>
-              <Box gridArea='convs' background='brand' elevation='xsmall'>
+              <Box gridArea='convs' background='sidebar' elevation='xsmall'>
                 <ConversationPanel
                   currentConversation={currentConversation}
                   conversations={conversations.edges}

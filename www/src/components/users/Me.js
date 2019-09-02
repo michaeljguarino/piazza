@@ -37,7 +37,7 @@ function Me(props) {
         (
         <HoveredBackground>
           <Box
-            brandHover
+            sidebarHover
             accentText
             style={{cursor: 'pointer'}}
             pad={{...props.pad, top: 'small', bottom: '7px'}}

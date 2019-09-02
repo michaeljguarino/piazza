@@ -1,13 +1,15 @@
-// #F8F8FA,#F8F8FA,#CAD1D9,#FFFFFF,#FFFFFF,#383F45,#60D156,#FF8669
 export const HOTH = {
-  brand: '#F8F8FA',
-  'brand-heavy': '#FFFFFF',
+  brand: '#2D9EE0',
+  sidebar: '#F8F8FA',
+  sidebarHover: '#FFFFFF',
   focus: '#2D9EE0',
-  'focus-text': '#383F45',
-  'active-text': '#FFFFFF',
-  'tag-light': '#F8F8FA',
-  'tag-medium': '#FFFFFF',
+  action: '#2D9EE0',
+  actionHover: '#298eca',
+  focusText: '#383F45',
+  activeText: '#FFFFFF',
+  tagLight: '#F8F8FA',
+  tagMedium: '#FFFFFF',
   presence: '#60D156',
   notif: '#DC5960',
-  'link': '#2D9EE0',
+  link: '#2D9EE0',
 }

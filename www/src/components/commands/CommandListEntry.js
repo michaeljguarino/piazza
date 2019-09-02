@@ -23,7 +23,7 @@ function CommandDisplay(props) {
       direction='row'
       align='center'
       pad={props.pad}
-      background={hover ? 'light-hover' : null}>
+      background={hover ? 'lightHover' : null}>
       <Box width='45px' align='center' justify='center'>
         <Avatar user={props.command.bot} />
       </Box>

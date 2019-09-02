@@ -33,9 +33,9 @@ const accentHover = css`
   }
 `;
 
-const brandHover = css`
+const sidebarHover = css`
   ${props => {
-    const color = normalizeColor('brand-heavy', props.theme)
+    const color = normalizeColor('sidebarHover', props.theme)
     const isDark = colorIsDark(color)
     const textColor = isDark ? 'white' : 'black'
 
@@ -57,14 +57,14 @@ const brandHover = css`
     `
   }}
   &:hover {
-    background: ${props => normalizeColor('brand-heavy', props.theme)}
+    background: ${props => normalizeColor('sidebarHover', props.theme)}
     color:
   }
 `;
 
 const highlightHover = css`
   ${props => {
-    const textColor = normalizeColor('focus-text', props.theme)
+    const textColor = normalizeColor('focusText', props.theme)
     const border = props.border ? `border: 1px solid ${textColor};` : null
     return `
       &:hover {
@@ -87,7 +87,7 @@ const highlightHover = css`
 function determineHover(props) {
   if (props.hoverable) return hoverStyle
   if (props.accentable) return accentHover
-  if (props.brandHover) return brandHover
+  if (props.sidebarHover) return sidebarHover
   if (props.highlight) return highlightHover
   return {}
 }

@@ -30,7 +30,7 @@ function Button(props) {
       pad={props.pad || BUTTON_PAD}
       align='center'
       justify='center'
-      background={props.disabled ? 'light-6' : (hover ? 'brand-heavy' : 'brand')}
+      background={props.disabled ? 'light-6' : (hover ? 'actionHover' : 'action')}
       margin={props.margin}
       width={props.width}
       height={props.height}
