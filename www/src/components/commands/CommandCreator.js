@@ -4,7 +4,7 @@ import {Box, TextArea, Select, Text} from 'grommet'
 import {ModalHeader} from '../utils/Modal'
 import CommandListEntry from './CommandListEntry'
 import InputField from '../utils/InputField'
-import Button from '../utils/Button'
+import Button, {SecondaryButton} from '../utils/Button'
 import {CREATE_COMMAND, COMMANDS_Q} from './queries'
 import {addCommand} from './utils'
 import {searchConversations} from '../search/ConversationSearch'
@@ -82,11 +82,11 @@ export function CommandForm(props) {
             value={props.formState.documentation}
             placeholder='Documentation for this commmand (markdown is encouraged)'
             onChange={(e) => props.setFormState({...props.formState, documentation: e.target.value})} />
-          <Box direction='row' justify='center'>
+          <Box direction='row' justify='end' align='center' gap='xsmall'>
+            <SecondaryButton round='xsmall' label='Cancel' onClick={() => props.setOpen(false)} />
             <Button
+              width='100px'
               onClick={mutation}
-              width='100%'
-              pad={{vertical: 'xsmall', horizontal: 'medium'}}
               round='xsmall'
               label={props.action || 'Create'} />
           </Box>

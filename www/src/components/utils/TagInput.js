@@ -23,7 +23,7 @@ const Tag = ({ children, onRemove, ...rest }) => {
         </Text>
       </Box>
       {onRemove && <Box width='15px' pad={padding} justify='center' align='center'>
-         <FormClose size="small" color="white" />
+         <FormClose size="small" />
       </Box>}
     </Box>
   );

@@ -4,8 +4,8 @@ import {SearchInput} from './utils/SelectSearchInput'
 export const DEFAULT_COLOR_THEME = {
   brand: '#2F415B',
   sidebar: '#2F415B',
-  action: '#CF6D57',
-  actionHover: '#ba624e',
+  action: '#2F415B',
+  actionHover: '#2a3b52',
   focus: '#CF6D57',
   sidebarHover: '#263449',
   tagLight: '#6d7a8c',
