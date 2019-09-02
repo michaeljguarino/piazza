@@ -9,7 +9,8 @@ defmodule Core.Schema do
     Platform,
     Notification,
     Invite,
-    Emoji
+    Emoji,
+    Brand
   }
   import_types Core.Schemas.Types
   import_types Core.Schemas.Inputs
@@ -21,6 +22,7 @@ defmodule Core.Schema do
       |> Dataloader.add_source(User, User.data(ctx))
       |> Dataloader.add_source(Platform, Platform.data(ctx))
       |> Dataloader.add_source(Emoji, Emoji.data(ctx))
+      |> Dataloader.add_source(Brand, Brand.data(ctx))
 
     Map.put(ctx, :loader, loader)
   end
@@ -108,6 +110,16 @@ defmodule Core.Schema do
     connection field :emoji, node_type: :emoji do
       middleware Core.Schemas.Authenticated
       resolve &Emoji.list_emoji/2
+    end
+
+    field :brand, :brand do
+      resolve safe_resolver(&Brand.resolve_brand/2)
+    end
+
+    connection field :themes, node_type: :theme do
+      middleware Core.Schemas.Authenticated
+
+      resolve &Brand.list_themes/2
     end
   end
 
@@ -290,6 +302,21 @@ defmodule Core.Schema do
       arg :attributes, non_null(:emoji_attributes)
 
       resolve safe_resolver(&Emoji.create_emoji/2)
+    end
+
+    field :create_theme, :theme do
+      middleware Core.Schemas.Authenticated
+      arg :name, non_null(:string)
+      arg :attributes, non_null(:theme_attributes)
+
+      resolve safe_resolver(&Brand.create_theme/2)
+    end
+
+    field :set_theme, :theme do
+      middleware Core.Schemas.Authenticated
+      arg :id, non_null(:id)
+
+      resolve safe_resolver(&Brand.set_theme/2)
     end
   end
 

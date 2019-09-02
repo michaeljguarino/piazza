@@ -20,7 +20,7 @@ defmodule Core.Models.User do
     field :deleted_at,    :utc_datetime_usec
 
     embeds_one :roles, Roles, on_replace: :update do
-      field :admin, :boolean, default: true
+      field :admin, :boolean, default: false
     end
 
     embeds_one :notification_preferences, NotificationPreferences, on_replace: :update

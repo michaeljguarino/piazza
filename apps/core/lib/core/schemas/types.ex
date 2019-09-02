@@ -1,6 +1,6 @@
 defmodule Core.Schemas.Types do
   use Core.Schemas.Base
-  alias Core.Resolvers.{Conversation, User, Platform, Emoji}
+  alias Core.Resolvers.{Conversation, User, Platform, Emoji, Brand}
 
   object :user do
     field :id,         :id
@@ -326,4 +326,34 @@ defmodule Core.Schemas.Types do
 
   connection node_type: :emoji
   delta :emoji
+
+  object :brand do
+    field :theme, :theme, resolve: fn brand, _, context -> Brand.get_theme(brand, context) end
+
+    timestamps()
+  end
+
+  object :theme do
+    field :id, :id
+    field :name, non_null(:string)
+
+    field :brand,         :string
+    field :sidebar,       :string
+    field :sidebar_hover, :string
+    field :focus,         :string
+    field :action,        :string
+    field :action_hover,  :string
+    field :focus_text,    :string
+    field :active_text,   :string
+    field :tag_light,     :string
+    field :tag_medium,    :string
+    field :presence,      :string
+    field :notif,         :string
+    field :link,          :string
+
+    field :creator, :user, resolve: dataloader(User)
+    timestamps()
+  end
+
+  connection node_type: :theme
 end

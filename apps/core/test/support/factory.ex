@@ -115,4 +115,24 @@ defmodule Core.Factory do
       creator: build(:user)
     }
   end
+
+  def brand_factory do
+    %Models.Brand{
+      theme: build(:theme)
+    }
+  end
+
+  def theme_factory do
+    %Models.Theme{
+      name: sequence(:theme, & "theme-#{&1}"),
+      creator: build(:user)
+    }
+  end
+
+  def user_theme_factory do
+    %Models.UserTheme{
+      user: build(:user),
+      theme: build(:theme)
+    }
+  end
 end

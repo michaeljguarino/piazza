@@ -92,4 +92,21 @@ defmodule Core.Schemas.Inputs do
     field :name, non_null(:string)
     field :fullname, :string
   end
+
+
+  input_object :theme_attributes do
+    field :brand,         :string
+    field :sidebar,       :string
+    field :sidebar_hover, :string
+    field :focus,         :string
+    field :action,        :string
+    field :action_hover,  :string
+    field :focus_text,    :string
+    field :active_text,   :string
+    field :tag_light,     :string
+    field :tag_medium,    :string
+    field :presence,      :string
+    field :notif,         :string
+    field :link,          :string
+  end
 end
