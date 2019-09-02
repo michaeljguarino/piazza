@@ -2,7 +2,7 @@
 import React from 'react'
 import {Box} from 'grommet'
 import {DropdownItem} from '../users/Me'
-import ThemeSelector from './ThemeSelector'
+import Themes from '../themes/Themes'
 import Modal, {ModalHeader} from '../utils/Modal'
 import StructuredMessageTester from './StructuredMessageTester'
 
@@ -21,7 +21,7 @@ function Tools(props) {
       {setOpen => (
         <Box>
           <ModalHeader text='Select a theme' setOpen={setOpen} />
-          <ThemeSelector callback={() => setOpen(false)} />
+          <Themes setOpen={setOpen} />
         </Box>
       )}
     </Modal>

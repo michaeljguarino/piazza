@@ -27,6 +27,12 @@ function ContentWrapper(props) {
   )
 }
 
+function MaybeWrap(props) {
+  if (props.noWrap) return props.children
+  const {children, ...rest} = props
+  return (<ContentWrapper {...rest}>{children}</ContentWrapper>)
+}
+
 function InterchangeableBox(props) {
   const [alternate, setAlternate] = useState(null)
 
@@ -34,7 +40,7 @@ function InterchangeableBox(props) {
     <TinyCrossfade duration={200} className='crossfade-wrapper' >
       {!alternate ?
         <Box key='original' {...props}>{props.children(setAlternate)}</Box>
-        : <ContentWrapper key='alternate' setAlternate={setAlternate}>{alternate}</ContentWrapper>
+        : <MaybeWrap key='alternate' noWrap={props.noWrap} setAlternate={setAlternate}>{alternate}</MaybeWrap>
       }
     </TinyCrossfade>
   )

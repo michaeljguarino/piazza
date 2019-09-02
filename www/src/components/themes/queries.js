@@ -37,3 +37,12 @@ export const SET_THEME = gql`
   }
   ${ThemeFragment}
 `;
+
+export const CREATE_THEME = gql`
+  mutation CreateTheme($name: String!, $attributes: ThemeAttributes!) {
+    createTheme(name: $name, attributes: $attributes) {
+      ...ThemeFragment
+    }
+  }
+  ${ThemeFragment}
+`;

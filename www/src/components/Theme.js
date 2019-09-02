@@ -70,17 +70,18 @@ function buildTheme(theme) {
   return merged
 }
 
-export const ThemeContext = React.createContext({theme: {}, name: null, id: null})
+export const ThemeContext = React.createContext({theme: {}, name: null, id: null, brand: null})
 
 function Theme(props) {
   return (
     <Query query={BRAND_Q}>
     {({loading, data}) => {
       if (loading) return <Loading height='100vh' width='100vw' />
-      const {id, name, ...themeAttrs} = data.brand.theme
+      const brand = data.brand
+      const {id, name, ...themeAttrs} = brand.theme
       const theme = buildTheme(themeAttrs)
       return (
-        <ThemeContext.Provider value={{theme, name, id}}>
+        <ThemeContext.Provider value={{theme, name, id, brand}}>
           {props.children(theme)}
         </ThemeContext.Provider>
       )

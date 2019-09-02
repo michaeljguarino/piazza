@@ -34,3 +34,10 @@ export function groupBy(list, key = (i) => i.id) {
   }
   return grouped
 }
+
+export function* chunk(array, chunkSize) {
+  let i, j;
+  for (i=0, j=array.length ; i<j; i += chunkSize) {
+    yield array.slice(i,i + chunkSize);
+}
+}
