@@ -1,5 +1,8 @@
-import React, {useState} from 'react'
+import React from 'react'
+import {Query} from 'react-apollo'
 import {SearchInput} from './utils/SelectSearchInput'
+import Loading from './utils/Loading'
+import {BRAND_Q} from './themes/queries'
 
 export const DEFAULT_COLOR_THEME = {
   brand: '#2F415B',
@@ -58,28 +61,6 @@ export const DEFAULT_THEME = {
   },
 }
 
-const STORAGE_KEY = 'piazza-theme'
-
-export function saveTheme(name, theme) {
-  if (!theme) {
-    localStorage.removeItem(STORAGE_KEY)
-    localStorage.removeItem(STORAGE_KEY + '-current')
-    return
-  }
-  localStorage.setItem(STORAGE_KEY + '-current', name)
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(theme))
-}
-
-export function currentTheme() {
-  return localStorage.getItem(STORAGE_KEY + '-current') || 'default'
-}
-
-export function fetchTheme() {
-  const item = localStorage.getItem(STORAGE_KEY)
-  if (!item) return DEFAULT_COLOR_THEME
-  return JSON.parse(item)
-}
-
 function buildTheme(theme) {
   let merged = {...DEFAULT_THEME}
   merged.global.colors = {...DEFAULT_COLOR_THEME, ...theme}
@@ -89,18 +70,22 @@ function buildTheme(theme) {
   return merged
 }
 
-export const ThemeContext = React.createContext({theme: {}, setTheme: null})
+export const ThemeContext = React.createContext({theme: {}, name: null, id: null})
 
 function Theme(props) {
-  const [theme, setTheme] = useState(buildTheme(fetchTheme()))
-  function wrappedSetTheme(theme) {
-    setTheme(buildTheme(theme))
-  }
-
   return (
-    <ThemeContext.Provider value={{theme, setTheme: wrappedSetTheme}}>
-      {props.children(theme)}
-    </ThemeContext.Provider>
+    <Query query={BRAND_Q}>
+    {({loading, data}) => {
+      if (loading) return <Loading height='100vh' width='100vw' />
+      const {id, name, ...themeAttrs} = data.brand.theme
+      const theme = buildTheme(themeAttrs)
+      return (
+        <ThemeContext.Provider value={{theme, name, id}}>
+          {props.children(theme)}
+        </ThemeContext.Provider>
+      )
+    }}
+    </Query>
   )
 }
 

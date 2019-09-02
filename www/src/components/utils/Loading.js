@@ -1,29 +1,17 @@
-import React, {Component} from 'react'
+import React from 'react'
 import {Box, Clock} from 'grommet'
 
-class Loading extends Component {
-  state = {
-    value: 10
-  }
-
-  UNSAFE_componentDidMount() {
-    this.timer = setInterval(() => {
-      const { value } = this.state;
-      this.setState({ value: value < 100 ? value + 10 : 100 });
-    }, 10);
-  }
-
-  componentWillUnmount() {
-    clearInterval(this.timer);
-  }
-
-  render() {
-    return (
-      <Box height={this.props.height || "100%"} width={this.props.width} direction='column' justify='center' align='center'>
-        <Clock type="digital" />
-      </Box>
-    )
-  }
+function Loading(props) {
+  return (
+    <Box
+      height={props.height || "100%"}
+      width={props.width}
+      direction='column'
+      justify='center'
+      align='center'>
+      <Clock type="digital" />
+    </Box>
+  )
 }
 
 export default Loading
