@@ -46,12 +46,43 @@ function removeConversation(cache, conversationId, setCurrentConversation) {
   });
 }
 
-function ConversationUpdate(props) {
+function ConversationUpdateForm(props) {
   const [attributes, setAttributes] = useState({
     name: props.conversation.name,
     topic: props.conversation.topic,
     public: props.conversation.public
   })
+
+  return (
+    <Mutation
+      mutation={UPDATE_CONVERSATION}
+      variables={{id: props.conversation.id, attributes: attributes}}
+      update={(cache, {data}) => {
+        const prev = cache.readQuery({ query: CONVERSATIONS_Q });
+        cache.writeQuery({
+          query: CONVERSATIONS_Q,
+          data: updateConversation(prev, data.updateConversation)
+        });
+        props.setOpen(false)
+      }} >
+    {(mutation) => (
+      <Box>
+        <ModalHeader setOpen={props.setOpen} text={`Update #${props.conversation.name}`}/>
+        <Box align='center' justify='center' pad='medium'>
+          <ConversationEditForm
+            cancel={() => props.setOpen(false)}
+            state={attributes}
+            mutation={mutation}
+            onStateChange={(update) => setAttributes({...attributes, ...update})}
+            action='Update' />
+        </Box>
+      </Box>
+    )}
+    </Mutation>
+  )
+}
+
+function ConversationUpdate(props) {
   return (
     <Modal target={
       <Anchor color= 'black' size='xsmall' margin={{right: '3px'}}>
@@ -59,31 +90,7 @@ function ConversationUpdate(props) {
       </Anchor>
     }>
     {setOpen => (
-      <Mutation
-        mutation={UPDATE_CONVERSATION}
-        variables={{id: props.conversation.id, attributes: attributes}}
-        update={(cache, {data}) => {
-          const {conversations} = cache.readQuery({ query: CONVERSATIONS_Q });
-          cache.writeQuery({
-            query: CONVERSATIONS_Q,
-            data: updateConversation(conversations, data.updateConversation)
-          });
-          setOpen(false)
-        }} >
-      {(mutation) => (
-        <Box>
-          <ModalHeader setOpen={setOpen} text={`Update #${props.conversation.name}`}/>
-          <Box align='center' justify='center' pad='medium'>
-            <ConversationEditForm
-              cancel={() => setOpen(false)}
-              state={attributes}
-              mutation={mutation}
-              onStateChange={(update) => setAttributes({...attributes, ...update})}
-              action='Update' />
-          </Box>
-        </Box>
-      )}
-      </Mutation>
+      <ConversationUpdateForm conversation={props.conversation} setOpen={setOpen} />
     )}
     </Modal>
   )
