@@ -13,7 +13,7 @@ import {ME_Q, UPDATE_USER} from './queries'
 import {CurrentUserContext} from '../login/EnsureLogin'
 import UpdatePassword from './UpdatePassword'
 import UpdateProfile from './UpdateProfile'
-import StructuredMessageTester from '../tools/StructuredMessageTester'
+import Tools from '../tools/Tools'
 
 export function DropdownItem(props) {
   const {onClick, ...rest} = props
@@ -96,14 +96,7 @@ function Me(props) {
                       )}
                     </Modal>
                     <SubMenu text='developer tools' setAlternate={setAlternate}>
-                       <Modal target={<DropdownItem text='structured message creator' />}>
-                        {setOpen => (
-                          <Box>
-                            <ModalHeader text='Structured Message Developer' setOpen={setOpen} />
-                            <StructuredMessageTester callback={() => setOpen(false)} />
-                          </Box>
-                        )}
-                      </Modal>
+                      <Tools />
                     </SubMenu>
                     <Box border='top'>
                       <DropdownItem pad={{horizontal: 'small', vertical: 'small'}} text='logout' onClick={_logout} />

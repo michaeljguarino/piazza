@@ -53,7 +53,7 @@ function ConversationName(props) {
 function Conversation(props) {
   let selected = props.conversation.id === props.currentConversation.id
   let unread = (props.conversation.unreadMessages > 0 && !selected)
-  let textProps = (props.selected) ? {} : {color: (unread ? 'white' : props.color)}
+  let textProps = {color: (unread ? 'focus-text' : (selected ? 'active-text' : 'sidebar-text'))}
 
   return (
     <HoveredBackground>
@@ -67,7 +67,7 @@ function Conversation(props) {
         style={{cursor: 'pointer'}}
         onClick={() => props.setCurrentConversation(props.conversation)}
         pad={props.pad}
-        background={selected ? 'accent-1' : null}
+        background={selected ? 'focus' : null}
         >
         <Box direction='row' width='100%' align='center'>
           <CurrentUserContext.Consumer>

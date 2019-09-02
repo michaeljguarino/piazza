@@ -32,7 +32,7 @@ function ChatCreator(props) {
                 size='small'
                 width='100%'
                 weight='bold'
-                color={props.textColor}>
+                color='sidebar-text'>
                   Chats
               </Text>
             </Box>
@@ -45,7 +45,7 @@ function ChatCreator(props) {
               height='20px'
               justify='center'
               align='center'>
-              <Add color={props.textColor} size="small" />
+              <Add color='sidebar-text' size="small" />
             </Box>
           </HoveredBackground>
         </Box>}>

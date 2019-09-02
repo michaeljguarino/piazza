@@ -25,11 +25,11 @@ const hoverStyle = css`
 
 const accentHover = css`
   &:hover {
-    color: ${props => normalizeColor('accent-1', props.theme)};
+    color: ${props => normalizeColor('focus', props.theme)};
   }
   &:hover svg {
-    fill: ${props => normalizeColor('accent-1', props.theme)} !important;
-    stroke: ${props => normalizeColor('accent-1', props.theme)} !important;
+    fill: ${props => normalizeColor('focus', props.theme)} !important;
+    stroke: ${props => normalizeColor('focus', props.theme)} !important;
   }
 `;
 
@@ -64,13 +64,12 @@ const brandHover = css`
 
 const highlightHover = css`
   ${props => {
-    const color = normalizeColor('brand-heavy', props.theme)
-    const isDark = colorIsDark(color)
-    const textColor = isDark ? 'white' : 'black'
-
+    const textColor = normalizeColor('focus-text', props.theme)
+    const border = props.border ? `border: 1px solid ${textColor};` : null
     return `
       &:hover {
         color: ${textColor};
+        ${border}
       }
 
       &:hover svg {

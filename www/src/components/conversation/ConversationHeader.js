@@ -54,7 +54,7 @@ function ConversationUpdate(props) {
   })
   return (
     <Modal target={
-      <Anchor size='xsmall' margin={{right: '3px'}}>
+      <Anchor color= 'black' size='xsmall' margin={{right: '3px'}}>
         <Markdown>{props.conversation.topic || "Add a description"}</Markdown>
       </Anchor>
     }>
@@ -91,7 +91,7 @@ function ConversationUpdate(props) {
 
 function ConversationName(props) {
   const [hover, setHover] = useState(false)
-  const color = hover ? 'accent-1' : null
+  const color = hover ? 'focus' : null
   const emptyColor = '#DADADA'
   return (
     <HoveredBackground>

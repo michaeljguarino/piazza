@@ -9,14 +9,12 @@ import {mergeAppend} from '../../utils/array'
 
 function ConversationPanel(props) {
   let padding = {left: '10px'}
-  let textColor = '#C0C0C0'
   return (
     <Box>
       <Me me={props.me} pad={padding} />
       <Box margin={{bottom: 'medium'}}>
         <ConversationCreator
           padding={padding}
-          textColor={textColor}
           setCurrentConversation={props.setCurrentConversation} />
         <Scroller
           id='conversations-list'
@@ -46,7 +44,6 @@ function ConversationPanel(props) {
             })}}
           mapper={(edge) => <Conversation
             pad={padding}
-            color={textColor}
             key={edge.node.id}
             currentConversation={props.currentConversation}
             setCurrentConversation={props.setCurrentConversation}
@@ -55,7 +52,6 @@ function ConversationPanel(props) {
       </Box>
       <Chats
         pad={padding}
-        color={textColor}
         currentConversation={props.currentConversation}
         setCurrentConversation={props.setCurrentConversation}
         chats={props.chats}

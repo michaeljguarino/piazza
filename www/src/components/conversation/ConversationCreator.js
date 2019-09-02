@@ -28,7 +28,7 @@ function ConversationCreator(props) {
                 size='small'
                 width='100%'
                 weight='bold'
-                color={props.textColor}>
+                color='sidebar-text'>
                   Conversations
               </Text>
             </HoveredBackground>
@@ -45,7 +45,7 @@ function ConversationCreator(props) {
               height='20px'
               justify='center'
               align='center'>
-              <Add color={props.textColor} size="small" />
+              <Add color='sidebar-text' size="small" />
             </Box>
           </HoveredBackground>}>
           {setOpen => (

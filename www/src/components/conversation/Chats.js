@@ -7,7 +7,7 @@ import {mergeAppend} from '../../utils/array'
 
 function Chats(props) {
   return (<Box>
-    <ChatCreator textColor={props.color} padding={props.pad} setCurrentConversation={props.setCurrentConversation} />
+    <ChatCreator padding={props.pad} setCurrentConversation={props.setCurrentConversation} />
     <Scroller
       id='chats-list'
       style={{
