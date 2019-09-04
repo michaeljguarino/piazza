@@ -66,6 +66,7 @@ export function MessageReaction(props) {
         isOpen={open}
         position={position}
         onClickOutside={() => toggleOpen(false)}
+        containerStyle={{zIndex: '100'}}
         content={
           <EmojiPicker onSelect={(emoji) => {
               mutation({variables: {messageId: props.message.id, name: emoji.id}})

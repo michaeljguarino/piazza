@@ -18,9 +18,10 @@ This is currently a near-complete slack app.  Some of the features include:
 * message pinning
 * message attachments
 * multiline messages
-* @-mentions, full emoji support with search (both support typeahead completion)
+* @-mentions, emoji support, custom emoji
 * markdown support
 * emoji reactions
+* theme support
 * configurable message retention
 
 The underlying api is implemented using graphql with elixir as the language choice.  Graphql was used mainly because I wanted to experiment with it, but also it has one of the more future-proof subscription mechanisms I've seen. The web client is written in react.

@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useState, useRef} from 'react'
 import {Mutation} from 'react-apollo'
 import {Box, Text} from 'grommet'
 import {THEME_FIELDS} from './constants'
@@ -9,33 +9,47 @@ import {ThemeContext} from '../Theme'
 import {ChromePicker} from 'react-color'
 import {addTheme} from './utils'
 import {CREATE_THEME, THEME_Q} from './queries'
+import Popover from 'react-tiny-popover'
+
 
 function ThemePicker(props) {
+  const dropRef = useRef()
   const [open, setOpen] = useState(false)
+  const [hover, setHover] = useState(false)
+
   return (
-    <Box gap='xsmall' width='30%'>
-      <Text weight='bold' size='small'>{props.field}</Text>
-      <Box direction='row' round='xsmall' border>
-        <Box width='100%' pad='xsmall'>
-          {props.color}
-        </Box>
-        <Box
-          width='90px'
-          background='1ight-4'
-          style={{cursor: 'pointer'}}
-          border='left'
-          pad='xsmall'
-          onClick={() => setOpen(!open)}>
-          Change
-        </Box>
-      </Box>
-      {open && (
+    <Popover 
+      isOpen={open} 
+      position={['bottom', 'top']}
+      onClickOutside={() => setOpen(false)}
+      containerStyle={{'z-index': '500'}}
+      content={
         <ChromePicker
           disableAlpha
           color={props.color}
           onChangeComplete={(color) => props.onChange(color.hex)}
-        />)}
-    </Box>
+        />}>
+      <Box ref={dropRef} gap='xsmall' width='30%'>
+        <Text weight='bold' size='small'>{props.field}</Text>
+        <Box direction='row' round='xsmall' border>
+          <Box width='100%' pad='xsmall'>
+            {props.color}
+          </Box>
+          <Box
+            width='90px'
+            background='light-3'
+            style={{cursor: 'pointer'}}
+            onMouseEnter={() => setHover(true)}
+            onMouseLeave={() => setHover(false)}
+            elevation={hover ? 'small' : null}
+            border='left'
+            pad='xsmall'
+            onClick={() => setOpen(true)}>
+            Change
+          </Box>
+        </Box>
+      </Box>
+    </Popover>
   )
 }
 
