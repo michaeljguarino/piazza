@@ -1,0 +1,62 @@
+apiVersion: iam.cnrm.cloud.google.com/v1alpha1
+kind: IAMServiceAccount
+metadata:
+  name: piazza-service-account
+  labels:
+{{ include "bootstrap.labels" . | indent 4 }}
+  annotations:
+    cnrm.cloud.google.com/deletion-policy: abandon
+spec:
+  displayName: Piazza GCS Admin
+---
+apiVersion: iam.cnrm.cloud.google.com/v1alpha1
+kind: IAMServiceAccountKey
+metadata:
+  name: piazza-serviceaccount
+  labels:
+{{ include "bootstrap.labels" . | indent 4 }}
+  annotations:
+    cnrm.cloud.google.com/deletion-policy: abandon
+spec:
+  publicKeyType: TYPE_X509_PEM_FILE
+  keyAlgorithm: KEY_ALG_RSA_2048
+  privateKeyType: TYPE_GOOGLE_CREDENTIALS_FILE
+  serviceAccountRef:
+    name: piazza-service-account
+---
+apiVersion: storage.cnrm.cloud.google.com/v1alpha2
+kind: StorageBucket
+metadata:
+  name: {{ .Values.gcp.bucket }}
+---
+apiVersion: storage.cnrm.cloud.google.com/v1alpha2
+kind: StorageBucketAccessControl
+metadata:
+  name: {{ .Values.gcp.bucket }}-allusers
+  annotations:
+    cnrm.cloud.google.com/deletion-policy: abandon
+spec:
+  bucketRef:
+    name: {{ .Values.gcp.bucket }}
+  entity: allUsers
+  role: READER
+---
+apiVersion: iam.cnrm.cloud.google.com/v1alpha1
+kind: IAMPolicy
+metadata:
+  name: piazza-storage-access
+  annotations:
+    cnrm.cloud.google.com/deletion-policy: abandon
+spec:
+  bucketRef:
+    name: {{ .Values.gcp.bucket }}
+  serviceAccountRef:
+    name: piazza-service-account
+  resourceRef:
+    apiVersion: storage.cnrm.cloud.google.com/v1alpha2
+    kind: StorageBucket
+    name: {{ .Values.gcp.bucket }}
+  bindings:
+  - role: roles/storage.admin
+    members:
+    - serviceAccount:piazza-service-account@{{ .Values.gcp.project }}.iam.gserviceaccount.com

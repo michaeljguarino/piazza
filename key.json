@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "piazza-247002",
+  "private_key_id": "4d703d05502d122fa3abbb58a51a78597ef6995b",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQC7pFjJl1GRqZq3\n1RuW9NdMJEFvMh9u/PW1LvJfzCe8gdOMuIGLVozq2qM/8414iA5UX/8MRkdrq1o9\nujw0Ne+dpkXQMI6oRqedR1KNUal6HokpjPsSUGJvTRb0PjTxxoBV3SnFKCqcgJ65\ndNPOJxOvDYg/nwNyKWSfyl3Q0HgOOltpLCfEWh8hGOwdOWRrGybiHxI50JhI5Nd1\nsLCgAFaZgTpS0kEPDu2YMpD9NYh4V2h5n0g+Pcz15UJCfttKyV0deCssLc3E3CEq\nraGe6W/n8whqpmQC2OAA1Z06V5IPRJSRHwV+BJbPvvXRWzrPqrrrSUTKwlH3EsQF\nvArjF6wrAgMBAAECggEAHYDXRwcoV6dbwNjcqC0iJwIyWan/YEOc3JqfmGlwvAaL\nvT4LfF2k9Y5gCb+hOFjoK+MWJpdsRmUgYMFGEw2B+f85TeU8oP/O/f9HXxn+dEmV\n1ncoyPXjrE1qNQgM6hEEf7uxBCNvI8Fjc5SHcwwY37bYe+xkLdCNVkSK4LjOj6ne\nwGjsPy30L9oKr/5p6gyZeeLxz1kEC0NHoY14Ws77Zu/vY/BknBWiwhrs/wBoqEgu\nhAn/Jv2+LzaYQGb/vF69qQA7GO42OMMzIM+r1MqhlRZzzl3f+JkhLDEVZOAlrLAq\nEsm+rE+SCdsZnTZKWO0mFZztf9tkxhucUhlm4lY8+QKBgQD7XhhvcqHMPp5qyBTr\nvEe1LAO0bvpoHkvGKiZFsENI5gZmp2KaXZ3DFBPNPtQjMdpUvfnT7TvZv2rMUrgk\nUHt95/zalRGAu/soznXMzOcMjPxmhHBbsZRRzz/xBmjbF1GxZxJxWhbuVQCWW2O3\nyaN4FQh+WJ7IdVW4TvfZ0bUh+QKBgQC/GZss5RY18mKXpCRvuk2mGCEDbeBmylVr\n2pZOwctiC/0l1I66qvoFPq2QCKCuNg8AID/zkLJSfSBaqJS2uFuPV+ridHiUEBw2\nVQS5hKwicjp+wAwDgsp0jBVN2SQNcMRMnR3L02EvKHIw5XRZV9m/W8lf3CLmfvvT\nvHy9/KAIQwKBgGttvpG68y1gQcIvOsm5EQh8BCVUHM7sy8OodezotQjtziSHOxvw\nEKGz7faU+IMGJmJ7Qs9xH1gjd9hVLf/PKcgYorckaHOVY3UAL9ZUaBa0FpcV2RNH\nJLWGFrTC4YNpRu/Dtl0dfJllWLfp3QdKNQP4MUYWR94yT21SypicCIa5AoGBAJiZ\n7A6HyZq+ufh5/RazYTpXXlWMsnui61+7J/gwTSc4h6hj+q4ZxpnVmWfBW/6B8Kyb\nFDZ9v8ibXvDGWisnQQZQoKLBe2BRFRZWAfXbelHvgcKhvXY4RU+YZZLK6T1KZZcA\niECxxZOQ6s8dDDIkMx/aPg6sjboegR5uD/bu+yRdAoGBANfdr4I968sPv2eTexkx\nq+v+eEInulMX+WZwd49l+sm9u+AVK98BVlByQ0A8hF4y7ckSqstVPsDyMZ82euoF\n8lthB3I634AGao+zq9dqyRn7mMeaWIRdql91OVtifoRXJhN4S8sOHxhTQ1ld1cmK\nohXYYUU4bffBYxL8MdFwt0Yh\n-----END PRIVATE KEY-----\n",
+  "client_email": "external-dns@piazza-247002.iam.gserviceaccount.com",
+  "client_id": "116154390215473144758",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/external-dns%40piazza-247002.iam.gserviceaccount.com"
+}

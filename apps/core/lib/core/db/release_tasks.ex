@@ -80,10 +80,11 @@ defmodule Core.DB.ReleaseTasks do
 
     seed_root
     |> File.ls()
-    |> IO.inspect()
     |> case do
       {:ok, files} ->
         files
+        |> Enum.sort()
+        |> IO.inspect(label: "seeds to run")
         |> Enum.map(&Path.join([seed_root, &1]))
         |> Enum.each(fn file ->
           IO.puts "Running seed for #{file}"
