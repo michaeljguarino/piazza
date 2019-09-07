@@ -5,8 +5,5 @@ dependencies:
 - name: rabbitmq
   repository: https://kubernetes-charts.storage.googleapis.com/
   version: 6.2.1
-- name: external-dns
-  repository: https://kubernetes-charts.storage.googleapis.com/
-  version: 2.3.2
-digest: sha256:17eb7654794498b9ac330d37b564d9ce530be0be36f37eab749fb0ff79bf5b69
-generated: "2019-07-17T22:43:35.750757-04:00"
+digest: sha256:c1d39994dc4ea038209ef2f4c927d90033bf764f4a386483b9e3aeedb73da2ea
+generated: "2019-09-07T10:50:44.878329-04:00"

@@ -9,8 +9,8 @@ postgresql:
   postgresqlDatabase: piazza
   resources:
     requests:
-      cpu: 1
-      memory: 2Gi
+      cpu: .5
+      memory: 1Gi
 
 rabbitmq:
   rabbitmq:
@@ -20,19 +20,7 @@ rabbitmq:
     requests:
       cpu: .3
       memory: 512Mi
-  replicas: 3
-
-external-dns:
-  provider: google
-  txtOwnerId: piazza
-  rbac:
-    create: true
-    serviceAccountName: external-dns
-  domainFilters:
-  - piazzaapp.com
-  google:
-    project: piazza-247002
-    serviceAccountSecret: externaldns-serviceaccount
+  replicas: 1
 
 image:
   tag: "0.5.0"
@@ -41,6 +29,7 @@ image:
 imagePullSecrets: []
 
 gql:
+  bucket: piazzapp-uploads
   port: 4000
   image: gcr.io/piazza-247002/gql
   gcsBucket: mguarino-piazza
@@ -63,7 +52,7 @@ www:
   dns: chat.piazzaapp.com
   port: 80
   image: gcr.io/piazza-247002/www
-  replicas: 2
+  replicas: 1
   resources:
     requests:
       cpu: .1

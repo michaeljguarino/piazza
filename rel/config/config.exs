@@ -1,6 +1,10 @@
 import Config
 import System, only: [get_env: 1]
 
+config :arc,
+  storage: Arc.Storage.GCS,
+  bucket: get_env("GCS_BUCKET")
+
 config :gql, GqlWeb.Endpoint,
   url: [host: get_env("HOST"), port: 80],
   check_origin: ["//#{get_env("HOST")}", "//piazza-gql"]

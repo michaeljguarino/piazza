@@ -37,7 +37,7 @@ spec:
           valueFrom:
             secretKeyRef:
               name: piazza-serviceaccount
-              key: credentials.json
+              key: key.json
         - name: GCS_BUCKET
           value: {{ .Values.gql.gcsBucket }}
       restartPolicy: Never
@@ -83,7 +83,7 @@ spec:
           valueFrom:
             secretKeyRef:
               name: piazza-serviceaccount
-              key: credentials.json
+              key: key.json
         - name: GCS_BUCKET
           value: {{ .Values.gql.gcsBucket }}
       restartPolicy: Never

@@ -32,7 +32,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: piazza-serviceaccount
-                  key: credentials.json
+                  key: key.json
             - name: HOST
               value: {{ .Values.ingress.dns }}
             - name: DEPLOYED_AT
