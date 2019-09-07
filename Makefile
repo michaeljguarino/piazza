@@ -59,6 +59,14 @@ connectdb: ## proxies the db in kubernetes via kubectl
 	@echo "run psql -U piazza -h 127.0.0.1 piazza to connect"
 	kubectl port-forward statefulset/piazza-postgresql 5432 -n piazza
 
+cli:
+	brew install kubernetes-helm || echo "Go to the helm website for better installation instructions"
+	gcloud init
+	gcloud services enable container.googleapis.com
+	gcloud services enable storage-api.googleapis.com
+	gcloud services enable storage-component.googleapis.com
+	gcloud services enable dns.googleapis.com
+
 bootstrap: ## initialize your helm/kubernetes environment
 	# create the cluster
 	gcloud container clusters create piazza \

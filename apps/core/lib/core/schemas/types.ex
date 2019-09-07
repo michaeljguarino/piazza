@@ -355,5 +355,13 @@ defmodule Core.Schemas.Types do
     timestamps()
   end
 
+  object :builtin_command do
+    field :name, :string
+    field :description, :string
+    field :documentation, :string
+    field :webhook, :string
+    field :avatar, :string
+  end
+
   connection node_type: :theme
 end

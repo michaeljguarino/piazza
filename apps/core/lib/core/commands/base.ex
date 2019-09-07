@@ -13,6 +13,8 @@ defmodule Core.Commands.Base do
 
   defmacro __before_compile__(_) do
     quote do
+      def name(), do: @base_command
+
       def documentation() do
         @commands
         |> Enum.map(fn command ->
@@ -62,5 +64,15 @@ defmodule Core.Commands.Base do
     quote do
       @handlers {@command, unquote(fun_name)}
     end
+  end
+
+  def command_record(module, description, webhook, avatar) do
+    %{
+      name: module.name(),
+      description: description,
+      documentation: module.documentation(),
+      webhook: webhook,
+      avatar: avatar
+    }
   end
 end
