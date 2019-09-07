@@ -121,6 +121,10 @@ defmodule Core.Schema do
 
       resolve &Brand.list_themes/2
     end
+
+    field :builtin_commands, list_of(:builtin_command) do
+      resolve fn _, _ -> {:ok, Core.Services.Platform.built_in()} end
+    end
   end
 
   mutation do
