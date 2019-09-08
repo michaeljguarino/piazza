@@ -1,7 +1,7 @@
 defmodule Core.Resolvers.Platform do
   use Core.Resolvers.Base, model: Core.Models.Command
   alias Core.Services.Platform
-  alias Core.Models.{Webhook, IncomingWebhook}
+  alias Core.Models.{Webhook, IncomingWebhook, InstallableCommand}
 
   def query(Command, _args), do: Command
   def query(Webhook, _args), do: Webhook
@@ -10,6 +10,11 @@ defmodule Core.Resolvers.Platform do
   def list_commands(args, _) do
     Command.any()
     |> Command.ordered()
+    |> paginate(args)
+  end
+
+  def list_installable_commands(args, _) do
+    InstallableCommand.ordered()
     |> paginate(args)
   end
 

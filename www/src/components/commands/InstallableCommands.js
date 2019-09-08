@@ -1,14 +1,14 @@
 import React, {useState} from 'react'
 import {Query} from 'react-apollo'
 import {Box, Text} from 'grommet'
-import {BUILT_IN, CREATE_COMMAND} from './queries'
+import {INSTALLABLE_COMMANDS, CREATE_COMMAND} from './queries'
 import Expander from '../utils/Expander'
 import Modal, {ModalHeader} from '../utils/Modal'
 import {formStateFromCommand} from './CommandEditor'
 import CommandListEntry from './CommandListEntry'
 import {CommandForm} from './CommandCreator'
 
-function BuiltInCommand(props) {
+function InstallableCommand(props) {
   const [hover, setHover] = useState(false)
   return (
     <Box
@@ -21,11 +21,11 @@ function BuiltInCommand(props) {
       gap='xsmall'
       background={hover ? 'lightHover' : null}>
       <Box width='45px' align='center' justify='center'>
-        <img alt='' src={props.builtin.avatar} width='45px' height='45px' />
+        <img alt='' src={props.installable.avatar} width='45px' height='45px' />
       </Box>
       <Box>
-        <Text size='small'>{props.builtin.name}</Text>
-        <Text size='small'>{props.builtin.description}</Text>
+        <Text size='small'>{props.installable.name}</Text>
+        <Text size='small'>{props.installable.description}</Text>
       </Box>
     </Box>
   )
@@ -43,7 +43,7 @@ function toCommand(builtin) {
   }
 }
 
-function BuiltInCommandCreator(props) {
+function InstallableCommandCreator(props) {
   const [formState, setFormState] = useState(formStateFromCommand(props.command))
   return (
     <Box width="600px" pad={{bottom: 'small'}} round='small'>
@@ -70,21 +70,21 @@ function BuiltInCommandCreator(props) {
   )
 }
 
-function WrappedBuiltInCommand(props) {
+function WrappedInstallableCommand(props) {
   return (
     <Modal
-      target={<BuiltInCommand {...props} />}>
+      target={<InstallableCommand {...props} />}>
     {(setOpen) => (
-      <BuiltInCommandCreator 
+      <InstallableCommandCreator 
         setOpen={setOpen} 
-        command={toCommand(props.builtin)}
-        additionalVars={{bot: {avatar: props.builtin.avatar}}}
+        command={toCommand(props.installable)}
+        additionalVars={{bot: {avatar: props.installable.avatar}}}
       />)}
     </Modal>
   )
 }
 
-function BuiltInCommands(props) {
+function InstallableCommands(props) {
   const [expanded, setExpanded] = useState(false)
   return (
     <Box>
@@ -93,14 +93,13 @@ function BuiltInCommands(props) {
       </Box>
       {expanded && (
         <Box style={{maxHeight: '100px'}}>
-          <Query query={BUILT_IN}>
+          <Query query={INSTALLABLE_COMMANDS}>
           {({data, loading}) => {
             if (loading) return null
-            console.log(data)
             return (
               <Box>
-                {data.builtinCommands.map((builtin, ind) => 
-                  <WrappedBuiltInCommand key={ind} builtin={builtin} />
+                {data.InstallableCommands.edges.map(({node}, ind) => 
+                  <WrappedInstallableCommand key={ind} installable={node} />
                 )}
               </Box>
             )
@@ -112,4 +111,4 @@ function BuiltInCommands(props) {
   )
 }
 
-export default BuiltInCommands
+export default InstallableCommands

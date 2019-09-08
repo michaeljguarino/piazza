@@ -122,8 +122,10 @@ defmodule Core.Schema do
       resolve &Brand.list_themes/2
     end
 
-    field :builtin_commands, list_of(:builtin_command) do
-      resolve fn _, _ -> {:ok, Core.Services.Platform.built_in()} end
+    connection field :installable_commands, node_type: :installable_command do
+      middleware Core.Schemas.Authenticated
+
+      resolve &Platform.list_installable_commands/2
     end
   end
 

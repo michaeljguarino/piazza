@@ -83,14 +83,18 @@ export const COMMAND_SUB = gql`
   ${CommandFragment}
 `;
 
-export const BUILT_IN = gql`
+export const INSTALLABLE_COMMANDS = gql`
   query {
-    builtinCommands {
-      name
-      description
-      documentation
-      webhook
-      avatar
+    installableCommands(first: 10) {
+      edges {
+        node {
+          name
+          description
+          documentation
+          webhook
+          avatar
+        }
+      }
     }
   }
 `;

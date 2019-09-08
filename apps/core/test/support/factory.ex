@@ -135,4 +135,14 @@ defmodule Core.Factory do
       theme: build(:theme)
     }
   end
+
+  def installable_command_factory do
+    %Models.InstallableCommand{
+      name: sequence(:installable_command, & "installable-#{&1}"),
+      description: "some command",
+      documentation: "write your docs",
+      avatar: "https://example.com",
+      webhook: "https://example.com/webhook"
+    }
+  end
 end
