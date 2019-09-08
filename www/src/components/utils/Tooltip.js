@@ -26,7 +26,7 @@ function Tooltip(props) {
         {target}
       </span>
       {open && (
-        <TooltipContent align={props.align} targetRef={props.targetRef} background={props.background}>
+        <TooltipContent align={props.align} targetRef={targetRef} background={props.background}>
           {dropContents}
         </TooltipContent>
       )}
