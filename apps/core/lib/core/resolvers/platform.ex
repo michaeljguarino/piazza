@@ -14,7 +14,8 @@ defmodule Core.Resolvers.Platform do
   end
 
   def list_installable_commands(args, _) do
-    InstallableCommand.ordered()
+    InstallableCommand.uninstalled()
+    |> InstallableCommand.ordered()
     |> paginate(args)
   end
 

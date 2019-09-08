@@ -2,7 +2,6 @@ import React, {useState} from 'react'
 import {Query} from 'react-apollo'
 import {Box, Text} from 'grommet'
 import {INSTALLABLE_COMMANDS, CREATE_COMMAND} from './queries'
-import Expander from '../utils/Expander'
 import Modal, {ModalHeader} from '../utils/Modal'
 import {formStateFromCommand} from './CommandEditor'
 import CommandListEntry from './CommandListEntry'
@@ -85,28 +84,25 @@ function WrappedInstallableCommand(props) {
 }
 
 function InstallableCommands(props) {
-  const [expanded, setExpanded] = useState(false)
   return (
-    <Box>
-      <Box onClick={() => setExpanded(!expanded)}>
-        <Expander text='Browse commands' expanded={expanded} />
+    <Box style={{maxHeight: '100px'}}>
+      <Box pad='small'>
+        <Text size='small'>
+          <i>We ship with a few commands you can choose to install as-is</i>
+        </Text>
       </Box>
-      {expanded && (
-        <Box style={{maxHeight: '100px'}}>
-          <Query query={INSTALLABLE_COMMANDS}>
-          {({data, loading}) => {
-            if (loading) return null
-            return (
-              <Box>
-                {data.InstallableCommands.edges.map(({node}, ind) => 
-                  <WrappedInstallableCommand key={ind} installable={node} />
-                )}
-              </Box>
-            )
-          }}
-          </Query>
-        </Box>
-      )}
+      <Query query={INSTALLABLE_COMMANDS}>
+      {({data, loading}) => {
+        if (loading) return null
+        return (
+          <Box>
+            {data.installableCommands.edges.map(({node}, ind) => 
+              <WrappedInstallableCommand key={ind} installable={node} />
+            )}
+          </Box>
+        )
+      }}
+      </Query>
     </Box>
   )
 }

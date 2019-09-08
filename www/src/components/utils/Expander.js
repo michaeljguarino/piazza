@@ -4,7 +4,7 @@ import {Next, Down} from 'grommet-icons'
 
 function Expander(props) {
   return (
-    <Box style={{cursor: 'pointer'}} direction='horizontal'>
+    <Box style={{cursor: 'pointer'}} direction='row'>
       <Box width='100%' justify='center' pad='small'>
         <Text size='small'>{props.text}</Text>
       </Box>
