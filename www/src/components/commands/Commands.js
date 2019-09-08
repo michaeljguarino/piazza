@@ -4,6 +4,7 @@ import {Code} from 'grommet-icons'
 import { Query } from 'react-apollo'
 import CommandListEntry from './CommandListEntry'
 import CommandCreator from './CommandCreator'
+import BuiltInCommands from './BuiltInCommands'
 import Scroller from '../utils/Scroller'
 import HoveredBackground from '../utils/HoveredBackground'
 import {COMMANDS_Q} from './queries'
@@ -41,10 +42,7 @@ function Commands(props) {
                   <Scroller
                     id='message-viewport'
                     edges={commandEdges}
-                    style={{
-                      overflow: 'auto',
-                      maxHeight: '80%'
-                    }}
+                    style={{overflow: 'auto', maxHeight: '80%'}}
                     mapper={(edge) => (
                       <CommandListEntry
                         key={edge.node.id}
@@ -78,13 +76,14 @@ function Commands(props) {
                 </Box>
               )}}
             </Query>
-            <Box pad='small' border='top'>
+            <Box margin={{top: 'xsmall'}} pad='small' border='top'>
               <Modal target={<Anchor size='small'>Create more</Anchor>}>
               {setOpen => (
                 <CommandCreator setOpen={setOpen} />
               )}
               </Modal>
             </Box>
+            <BuiltInCommands />
           </Box>
         )}
         </Flyout>

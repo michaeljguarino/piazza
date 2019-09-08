@@ -35,13 +35,20 @@ export function FlyoutProvider(props) {
 }
 
 export function FlyoutHeader(props) {
+  const [hover, setHover] = useState(false)
   return (
     <Box height='40px' direction='row' border='bottom' pad='small' margin={{bottom: 'small'}}>
       <Box width='100%' direction='row' justify='start' align='center'>
         <Text size='small'>{props.text.toUpperCase()}</Text>
       </Box>
-      <Box style={{cursor: 'pointer'}} align='center' justify='center' onClick={() => props.setOpen(false)}>
-        <Next size='15px' />
+      <Box 
+        onMouseEnter={() => setHover(true)} 
+        onMouseLeave={() => setHover(false)}
+        style={{cursor: 'pointer'}} 
+        align='center' 
+        justify='center' 
+        onClick={() => props.setOpen(false)}>
+        <Next size={hover ? '17px' : '15px'} />
       </Box>
     </Box>
   )
