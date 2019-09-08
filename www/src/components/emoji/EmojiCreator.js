@@ -19,7 +19,7 @@ function generatePreview(file, callback) {
   reader.readAsDataURL(file)
 }
 
-function EmojiForm(props) {
+export function EmojiForm(props) {
   const [image, setImage] = useState(null)
   const [name, setName] = useState(null)
 
