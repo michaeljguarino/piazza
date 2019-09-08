@@ -1,5 +1,6 @@
 defmodule Core.Models.InstallableCommand do
   use Core.DB.Schema
+  alias Core.Models.Command
 
   schema "installable_commands" do
     field :name,          :string
@@ -9,6 +10,14 @@ defmodule Core.Models.InstallableCommand do
     field :webhook,       :string
 
     timestamps()
+  end
+
+  def uninstalled(query \\ __MODULE__) do
+    from(ic in query,
+      left_join: c in Command,
+        on: ic.name == c.name,
+      where: is_nil(c.id)
+    )
   end
 
   def ordered(query \\ __MODULE__, order \\ [asc: :name]),
