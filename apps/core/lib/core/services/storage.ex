@@ -17,7 +17,7 @@ defmodule Core.Storage do
   #   {:convert, "-thumbnail 100x100^ -gravity center -extent 100x100 -format png", :png}
   # end
 
-  def storage_dir(_, {_file, %User{id: user_id}}), do: "uploads/avatars/#{user_id}"
+  def storage_dir(_, {_file, %User{avatar_id: avatar_id}}), do: "uploads/avatars/#{avatar_id}"
   def storage_dir(_, {_file, %Message{attachment_id: msg_id}}), do: "uploads/attachments/#{msg_id}"
   def storage_dir(_, {_file, %Emoji{image_id: emoji_id}}), do: "uploads/emoji/#{emoji_id}"
 

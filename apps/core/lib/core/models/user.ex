@@ -14,6 +14,7 @@ defmodule Core.Models.User do
     field :password_hash, :string
     field :bio,           :string
     field :bot,           :boolean, default: false
+    field :avatar_id,     :binary_id
     field :avatar,        Core.Storage.Type
 
     field :profile_img,   :map
@@ -65,6 +66,7 @@ defmodule Core.Models.User do
     |> validate_length(:name,     max: 255)
     |> validate_length(:password, min: 10)
     |> validate_format(:email, @email_re)
+    |> generate_uuid(:avatar_id)
     |> cast_attachments(attrs, [:avatar], allow_urls: true)
     |> cast_embed(:roles, with: &role_changeset/2)
     |> hash_password()

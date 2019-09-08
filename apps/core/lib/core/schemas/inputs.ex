@@ -69,7 +69,7 @@ defmodule Core.Schemas.Inputs do
     field :name,   :string
     field :email,  :string
     field :handle, :string
-    field :avatar, :upload
+    field :avatar, :upload_or_url
   end
 
   input_object :notification_prefs do

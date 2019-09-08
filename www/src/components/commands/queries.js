@@ -37,13 +37,15 @@ export const CREATE_COMMAND = gql`
       $documentation: String,
       $description: String,
       $incomingWebhook: IncomingWebhookAttributes,
-      $url: String!) {
+      $url: String!,
+      $bot: BotAttributes) {
     createCommand(attributes: {
       name: $name,
       documentation: $documentation,
       description: $description,
       webhook: {url: $url},
-      incomingWebhook: $incomingWebhook
+      incomingWebhook: $incomingWebhook,
+      bot: $bot
     }) {
       ...CommandFragment
     }
@@ -79,4 +81,16 @@ export const COMMAND_SUB = gql`
     }
   }
   ${CommandFragment}
+`;
+
+export const BUILT_IN = gql`
+  query {
+    builtinCommands {
+      name
+      description
+      documentation
+      webhook
+      avatar
+    }
+  }
 `;
