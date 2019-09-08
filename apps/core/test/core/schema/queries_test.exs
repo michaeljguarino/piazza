@@ -634,7 +634,7 @@ defmodule Core.Schema.QueriesTest do
     test "It will list installable commands in the system" do
       [first | installables] = insert_list(3, :installable_command)
       insert(:command, name: first.name)
-      
+
       {:ok, %{data: %{"installableCommands" => found}}} = run_query("""
         query {
           installableCommands(first: 5) {
@@ -646,7 +646,6 @@ defmodule Core.Schema.QueriesTest do
             }
           }
         }
-      
       """, %{}, %{current_user: insert(:user)})
 
       found_installables = from_connection(found)

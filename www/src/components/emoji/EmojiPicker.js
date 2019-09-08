@@ -6,22 +6,31 @@ import emojiData from 'emoji-mart/data/messenger.json'
 import { NimblePicker } from 'emoji-mart'
 import { EMOJI_Q } from './queries'
 import {toEmojiPicker} from './utils'
-import EmojiCreator from './EmojiCreator'
+
+function SafeNimblePicker(props) {
+  const {emoji, ...rest} = props
+  if (!emoji || emoji.length === 0) {
+    return (
+      <NimblePicker data={emojiData} {...rest} />
+    )
+  }
+
+  return (
+    <NimblePicker
+      data={emojiData}
+      custom={emoji.map(({node}) => toEmojiPicker(node))}
+      {...props} />
+  )
+}
 
 function EmojiPicker(props) {
   return (
-    <Box width='330px'>
+    <Box>
       <Query query={EMOJI_Q}>
       {({loading, data}) => {
         if (loading) return null
         const emoji = data.emoji.edges
-        console.log(emoji)
-        return (
-          <NimblePicker
-            title={<EmojiCreator />}
-            data={emojiData}
-            custom={emoji.map(({node}) => toEmojiPicker(node))}
-            {...props} />)
+        return (<SafeNimblePicker emoji={emoji} {...props} />)
       }}
       </Query>
     </Box>
