@@ -60,7 +60,9 @@ connectdb: ## proxies the db in kubernetes via kubectl
 	kubectl port-forward statefulset/piazza-postgresql 5432 -n piazza
 
 cli:
-	brew install kubernetes-helm || echo "Go to the helm website for better installation instructions"
+	@echo "Ensuring helm is installed..."
+	which helm || brew install kubernetes-helm || echo "Go to the helm website for better installation instructions"
+	@echo "setting up your gcloud cli (follow the instructions from google to install first)..."
 	gcloud init
 	gcloud services enable container.googleapis.com
 	gcloud services enable storage-api.googleapis.com

@@ -84,8 +84,12 @@ export const COMMAND_SUB = gql`
 `;
 
 export const INSTALLABLE_COMMANDS = gql`
-  query {
-    installableCommands(first: 10) {
+  query InstallableCommands($cursor: String) {
+    installableCommands(first: 10, after: $cursor) {
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
       edges {
         node {
           name

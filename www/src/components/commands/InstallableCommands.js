@@ -6,6 +6,8 @@ import Modal, {ModalHeader} from '../utils/Modal'
 import {formStateFromCommand} from './CommandEditor'
 import CommandListEntry from './CommandListEntry'
 import {CommandForm} from './CommandCreator'
+import Scroller from '../utils/Scroller'
+import {mergeAppend} from '../../utils/array'
 
 function InstallableCommand(props) {
   const [hover, setHover] = useState(false)
@@ -92,13 +94,33 @@ function InstallableCommands(props) {
         </Text>
       </Box>
       <Query query={INSTALLABLE_COMMANDS}>
-      {({data, loading}) => {
+      {({data, loading, fetchMore}) => {
         if (loading) return null
+        const {edges, pageInfo} = data.installableCommands
         return (
           <Box>
-            {data.installableCommands.edges.map(({node}, ind) => 
-              <WrappedInstallableCommand key={ind} installable={node} />
-            )}
+            <Scroller
+              id='installable-commands-viewport'
+              edges={edges}
+              style={{overflow: 'auto', maxHeight: '80%'}}
+              mapper={({node}) => (<WrappedInstallableCommand key={node.id} installable={node} />)}
+              onLoadMore={() => {
+                if (!pageInfo.hasNextPage) return
+                fetchMore({
+                  variables: {cursor: pageInfo.endCursor},
+                  updateQuery: (prev, {fetchMoreResult}) => {
+                    const {edges, pageInfo} = fetchMoreResult.installableCommands
+                    return edges.length ? {
+                      ...prev,
+                      installableCommands: {
+                        ...prev.installableCommands,
+                        pageInfo,
+                        edges: mergeAppend(edges, prev.installableCommands.edges, ({node}) => node.id)
+                      }
+                    } : prev;
+                  }
+                })
+              }}/>
           </Box>
         )
       }}

@@ -2,7 +2,7 @@
 
 A slack/RTC-like messaging system designed to be cheap, modern and distributable via kubernetes.
 
-An example deployment is available at http://chat.piazzaapp.com.
+An example deployment is available at https://chat.piazzaapp.com.
 
 ## Features
 
@@ -44,6 +44,19 @@ mix deps.get
 mix test
 ```
 
+To install in your own account:
+
+```bash
+make cli # if you haven't installed helm, configured gcloud
+make bootstrap # will create a new gke cluster and install a few necessary tools if you haven't already
+helm upgrade --install --namespace piazza bootstrap charts/bootstrap # if you need to create the bucket, install external dns
+make install # actually installs the chart
+```
+
+You can see an example configuration at `charts/values.example.yaml` showing what passwords/secrets need to be configured (don't check this into source control if you choose to put secrets in here of course).
+
+Ideally you reuse existing compute resources if you have an existing productionized cluster, so I wouldn't necessarily insist on the bootstrap scripts as is.  If you do forgo the bootstrap scripts, you will need to create a gcs bucket and service account with access to it, that file should be in a collocated secret named `piazza-serviceaccount`.
+
 ## Architecture
 The app is separated into three main deployable components:
 
@@ -80,11 +93,7 @@ make bootstrap # creates a gke cluster, and initializes helm for you
 
 On bootstrap, an admin user with email `admin@example.com` and password `temporary_password` is created.  In addition, the townhall public conversation is added, and a few simple slash commands are added to the workspace.
 
-The admin user is customizable.  You'll also want to create a few service accounts for your gcp account.  The command `make bootstrap` will assume the credentals for both are stored in the `creds/` folder (which is gitignored).  They are:
-
-* creds/gcp.json - allow access to the bucket configured at `gcp.gcsBucket` in your helm chart values
-* creds/externaldns.json - if you choose to install externaldns with this chart, give access to clouddns to this service account
-
+The admin user is customizable. See the example values.yaml for how that is done.
 
 The current setup is fairly closely tied to gcp.  It will configure a GCP NEG loadbalancer, for instance, which is what's required to implement target stickiness for websockets.  In addition, it will configure things like ssl certificates using the GKE-standard method.
 

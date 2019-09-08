@@ -12,6 +12,7 @@ import Flyout, {FlyoutHeader} from '../utils/Flyout'
 import Modal from '../utils/Modal'
 import Expander from '../utils/Expander'
 import {SecondaryButton} from '../utils/Button'
+import {mergeAppend} from '../../utils/array'
 
 function FlyoutContent(props) {
   const [expanded, setExpanded] = useState(false)
@@ -31,40 +32,32 @@ function FlyoutContent(props) {
         <Query query={COMMANDS_Q}>
         {({loading, data, fetchMore}) => {
           if (loading) return null
-          let commandEdges = data.commands.edges
-          let pageInfo = data.commands.pageInfo
+          const {edges, pageInfo} = data.commands
           return (
             <Box>
               <Scroller
-                id='message-viewport'
-                edges={commandEdges}
+                id='commands-viewport'
+                edges={edges}
                 style={{overflow: 'auto', maxHeight: '80%'}}
-                mapper={(edge) => (
+                mapper={({node}) => (
                   <CommandListEntry
-                    key={edge.node.id}
-                    pad={{vertical: 'xsmall', horizontal: 'small'}}
-                    command={edge.node}
-                    color={props.color} />
+                    key={node.id} pad={{vertical: 'xsmall', horizontal: 'small'}} command={node} />
                 )}
                 onLoadMore={() => {
-                  if (!pageInfo.hasNextPage) {
-                    return
-                  }
+                  if (!pageInfo.hasNextPage)  return
                   fetchMore({
                     variables: {cursor: pageInfo.endCursor},
                     updateQuery: (prev, {fetchMoreResult}) => {
-                      const edges = fetchMoreResult.commands.edges
-                      const pageInfo = fetchMoreResult.commands.pageInfo
-                      if (commandEdges.find((edge) => edge.node.id === edges[0].node.id)) {
-                        return prev;
-                      }
+                      const {edges, pageInfo} = fetchMoreResult.commands
+
                       return edges.length ? {
+                        ...prev,
                         commands: {
-                          ...prev,
-                          edges: [...prev.commands.edges, ...edges],
-                          pageInfo
+                          ...prev.commands,
+                          pageInfo,
+                          edges: mergeAppend(edges, prev.commands.edges, ({node}) => node.id)
                         }
-                      } : prev;
+                      } : prev
                     }
                   })
                 }}
@@ -73,10 +66,8 @@ function FlyoutContent(props) {
           )}}
         </Query>
         <Box margin={{top: 'xsmall'}} pad='small' border='top'>
-          <Modal target={<SecondaryButton label='Create more' />}>
-          {setOpen => (
-            <CommandCreator setOpen={setOpen} />
-          )}
+          <Modal target={<SecondaryButton round='xsmall' label='Create more' />}>
+          {setOpen => (<CommandCreator setOpen={setOpen} />)}
           </Modal>
         </Box>
         </>
@@ -101,9 +92,7 @@ function Commands(props) {
         align='center'
         justify='center'>
         <Flyout target={<Code size='25px' />}>
-        {setOpen => (
-          <FlyoutContent setOpen={setOpen} {...props} />
-        )}
+        {setOpen => (<FlyoutContent setOpen={setOpen} {...props} />)}
         </Flyout>
       </Box>
     </HoveredBackground>

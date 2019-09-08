@@ -41,7 +41,17 @@ export const DEFAULT_THEME = {
   select: {
     searchInput: SearchInput
   },
+  textArea: {
+    extend: {
+      fontWeight: 400
+    }
+  },
   textInput: {
+    extend: {
+      fontWeight: 400
+    }
+  },
+  textField: {
     extend: {
       fontWeight: 400
     }
