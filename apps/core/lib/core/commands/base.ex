@@ -68,7 +68,7 @@ defmodule Core.Commands.Base do
 
   def command_record(module, description, webhook, avatar) do
     %{
-      name: module.name(),
+      name: to_string(module.name()),
       description: description,
       documentation: module.documentation(),
       webhook: webhook,

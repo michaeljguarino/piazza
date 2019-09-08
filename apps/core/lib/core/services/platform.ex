@@ -8,11 +8,8 @@ defmodule Core.Services.Platform do
     IncomingWebhook,
     Command,
     WebhookRoute,
+    InstallableCommand
   }
-
-  alias Core.Commands.Github
-  import Core.Commands.Base, only: [command_record: 4]
-
   import Core.Policies.Platform
 
   def get_command(name), do: Core.Repo.get_by(Command, name: name)
@@ -24,17 +21,6 @@ defmodule Core.Services.Platform do
 
   def get_incoming_webhook(secure_id),
     do: Core.Repo.get_by(IncomingWebhook, secure_id: secure_id)
-  
-  def built_in() do
-    [
-      command_record(
-        Github, 
-        "Notifies you of things going on in your repos",
-        "http://piazza-gql:4000/webhooks/github",
-        "https://storage.googleapis.com/piazzaapp-uploads/uploads/avatars/06c16162-db11-408f-a8e1-1cff537ca99c/github_transparent.png"
-      )
-    ]
-  end
 
   def create_command(%{webhook: webhook_args, name: name} = args, user) do
     start_transaction()
@@ -82,6 +68,12 @@ defmodule Core.Services.Platform do
     |> maybe_update_incoming_webhook(args, user)
     |> execute(extract: :command)
     |> notify(:update, user)
+  end
+
+  def create_installable_command(attrs) do
+    %InstallableCommand{}
+    |> InstallableCommand.changeset(attrs)
+    |> Core.Repo.insert()
   end
 
   defp maybe_add_incoming_webhook(transaction, %{incoming_webhook: %{name: _} = incoming_webhook_args}, user) do

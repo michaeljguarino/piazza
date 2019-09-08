@@ -309,8 +309,18 @@ defmodule Core.Schemas.Types do
     field :conversation, :conversation, resolve: dataloader(Conversation)
   end
 
+  object :installable_command do
+    field :id, :id
+    field :name, :string
+    field :description, :string
+    field :documentation, :string
+    field :webhook, :string
+    field :avatar, :string
+  end
+
   connection node_type: :command
   connection node_type: :incoming_webhook
+  connection node_type: :installable_command
 
   object :emoji do
     field :id, :id
@@ -353,14 +363,6 @@ defmodule Core.Schemas.Types do
 
     field :creator, :user, resolve: dataloader(User)
     timestamps()
-  end
-
-  object :builtin_command do
-    field :name, :string
-    field :description, :string
-    field :documentation, :string
-    field :webhook, :string
-    field :avatar, :string
   end
 
   connection node_type: :theme

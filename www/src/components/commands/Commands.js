@@ -4,7 +4,7 @@ import {Code} from 'grommet-icons'
 import { Query } from 'react-apollo'
 import CommandListEntry from './CommandListEntry'
 import CommandCreator from './CommandCreator'
-import BuiltInCommands from './BuiltInCommands'
+import InstallableCommands from './InstallableCommands'
 import Scroller from '../utils/Scroller'
 import HoveredBackground from '../utils/HoveredBackground'
 import {COMMANDS_Q} from './queries'
@@ -83,7 +83,7 @@ function Commands(props) {
               )}
               </Modal>
             </Box>
-            <BuiltInCommands />
+            <InstallableCommands />
           </Box>
         )}
         </Flyout>

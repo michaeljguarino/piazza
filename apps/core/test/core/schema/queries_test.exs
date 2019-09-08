@@ -629,4 +629,27 @@ defmodule Core.Schema.QueriesTest do
       assert ids_equal(found_themes, themes)
     end
   end
+
+  describe "#installableCommands" do
+    test "It will list installable commands in the system" do
+      installables = insert_list(3, :installable_command)
+
+      {:ok, %{data: %{"installableCommands" => found}}} = run_query("""
+        query {
+          installableCommands(first: 5) {
+            edges {
+              node {
+                id
+                name
+              }
+            }
+          }
+        }
+      
+      """, %{}, %{current_user: insert(:user)})
+
+      found_installables = from_connection(found)
+      assert ids_equal(installables, found_installables)
+    end
+  end
 end

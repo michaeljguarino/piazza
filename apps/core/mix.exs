@@ -50,6 +50,7 @@ defmodule Core.MixProject do
       {:jason, "~> 1.0"},
       {:absinthe, "~> 1.4.6"},
       {:absinthe_relay, "~> 1.4.6"},
+      {:absinthe_plug, "~> 1.4.0"},
       {:arc, "~> 0.11.0"},
       {:arc_ecto, "~> 0.11.1"},
       {:arc_gcs, "~> 0.1.0"},
