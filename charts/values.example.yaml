@@ -1,0 +1,24 @@
+postgresql:
+  postgresqlPassword: psql_password
+
+rabbitmq:
+  rabbitmq:
+    password: rabbit_password
+    erlangCookie: erlang_cookie
+
+secrets:
+  jwt: jwt_secret
+  giphy: giphy_application_key
+  erlang: piazza_erlang_cookie
+  # optional
+  github_secret: secret_for_github_webhook
+  github_incoming_webhook: generated_github_incoming_webhook
+
+admin:
+  email: admin@example.com
+  handle: admin
+  name: "Your Admin"
+  password: "obviously a super strong password"
+
+gql:
+  gcsBucket: piazza-uploads
