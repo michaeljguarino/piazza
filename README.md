@@ -57,6 +57,19 @@ mix deps.get
 mix test
 ```
 
+To install in your own account:
+
+```bash
+make cli # if you haven't installed helm, configured gcloud
+make bootstrap # will create a new gke cluster and install a few necessary tools if you haven't already
+helm upgrade --install --namespace piazza bootstrap charts/bootstrap # if you need to create the bucket, install external dns
+make install # actually installs the chart
+```
+
+You can see an example configuration at `charts/values.example.yaml` showing what passwords/secrets need to be configured (don't check this into source control if you choose to put secrets in here of course).
+
+Ideally you reuse existing compute resources if you have an existing productionized cluster, so I wouldn't necessarily insist on the bootstrap scripts as is.  If you do forgo the bootstrap scripts, you will need to create a gcs bucket and service account with access to it, that file should be in a collocated secret named `piazza-serviceaccount`.
+
 ## Architecture
 The app is separated into three main deployable components:
 
