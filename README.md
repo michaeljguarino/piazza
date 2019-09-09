@@ -32,19 +32,7 @@ The other huge win is privacy.  Not only do you maintain complete control over y
 
 ## Installation
 
-You'll need elixir installed locally to develop on the api.  I'd recommend installing it via `asdf`, you can read more details about it here: https://asdf-vm.com/#/. There is already a .tool-versions present in the repo to specify the elixir/erlang versions needed.  Test dependencies are managed via docker using compose.
-
-To run tests:
-
-```bash
-cd /path/to/piazza
-make testsetup
-mix do local.hex, local.rebar
-mix deps.get
-mix test
-```
-
-To install in your own account:
+### To install in your own account:
 
 ```bash
 make cli # if you haven't installed helm, configured gcloud
@@ -56,6 +44,18 @@ make install # actually installs the chart
 You can see an example configuration at `charts/values.example.yaml` showing what passwords/secrets need to be configured (don't check this into source control if you choose to put secrets in here of course).
 
 Ideally you reuse existing compute resources if you have an existing productionized cluster, so I wouldn't necessarily insist on the bootstrap scripts as is.  If you do forgo the bootstrap scripts, you will need to create a gcs bucket and service account with access to it, that file should be in a collocated secret named `piazza-serviceaccount`.
+
+### To run tests:
+
+You'll need elixir installed locally to develop on the api.  I'd recommend installing it via `asdf`, you can read more details about it here: https://asdf-vm.com/#/. There is already a .tool-versions present in the repo to specify the elixir/erlang versions needed.  Test dependencies are managed via docker using compose.
+
+```bash
+cd /path/to/piazza
+make testsetup
+mix do local.hex, local.rebar
+mix deps.get
+mix test
+```
 
 ## Architecture
 The app is separated into three main deployable components:
