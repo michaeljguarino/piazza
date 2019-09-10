@@ -1,5 +1,5 @@
 defmodule Core.Models.User do
-  use Core.DB.Schema, derive_json: false
+  use Piazza.Ecto.Schema, derive_json: false
   use Arc.Ecto.Schema
   alias Core.Models.NotificationPreferences
 
@@ -31,7 +31,7 @@ defmodule Core.Models.User do
 
   defimpl Jason.Encoder, for: __MODULE__ do
     def encode(struct, opts) do
-      Core.DB.Schema.mapify(struct)
+      Piazza.Ecto.Schema.mapify(struct)
       |> Map.drop([:password, :password_hash])
       |> Jason.Encode.map(opts)
     end

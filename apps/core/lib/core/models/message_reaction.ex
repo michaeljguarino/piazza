@@ -1,5 +1,5 @@
 defmodule Core.Models.MessageReaction do
-  use Core.DB.Schema
+  use Piazza.Ecto.Schema
   alias Core.Models.{User, Message}
 
   schema "message_reactions" do

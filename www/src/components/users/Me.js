@@ -99,7 +99,7 @@ function Me(props) {
                       <Tools />
                     </SubMenu>
                     <Box border='top'>
-                      <DropdownItem pad={{horizontal: 'small', vertical: 'small'}} text='logout' onClick={_logout} />
+                      <DropdownItem text='logout' onClick={_logout} />
                     </Box>
                     </>
                   )}

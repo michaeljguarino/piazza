@@ -1,5 +1,5 @@
 defmodule Core.Models.Theme do
-  use Core.DB.Schema
+  use Piazza.Ecto.Schema
   alias Core.Models.User
 
   @fields ~w(

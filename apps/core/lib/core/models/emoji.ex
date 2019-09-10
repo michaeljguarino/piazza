@@ -1,5 +1,5 @@
 defmodule Core.Models.Emoji do
-  use Core.DB.Schema
+  use Piazza.Ecto.Schema
   use Arc.Ecto.Schema
 
   schema "emoji" do

@@ -1,5 +1,5 @@
 defmodule Core.Policies.User do
-  use Core.Policies.Base
+  use Piazza.Policy
   alias Core.Models.User
 
   def can?(%User{roles: %{admin: true}}, _, _), do: :pass

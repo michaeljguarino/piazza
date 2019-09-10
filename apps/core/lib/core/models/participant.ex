@@ -1,5 +1,5 @@
 defmodule Core.Models.Participant do
-  use Core.DB.Schema
+  use Piazza.Ecto.Schema
   alias Core.Models.{User, Conversation, NotificationPreferences}
 
   schema "participants" do

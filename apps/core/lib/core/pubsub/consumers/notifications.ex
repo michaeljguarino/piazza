@@ -1,5 +1,8 @@
 defmodule Core.PubSub.Consumers.Notifications do
-  use Core.PubSub.Consumers.Base, max_demand: 10
+  use Piazza.PubSub.Consumer, 
+    broadcaster: Core.PubSub.Broadcaster,
+    max_demand: 10
+  
   import Core.Services.Base
   alias Core.Notifications.Notifiable
   alias Core.Models.Notification

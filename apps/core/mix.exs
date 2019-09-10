@@ -40,9 +40,9 @@ defmodule Core.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:ecto_sql, "~> 3.1"},
+      {:ecto_sql, "~> 3.2"},
       {:thrift, github: "pinterest/elixir-thrift"},
-      {:ecto, "~> 3.1.7", override: true},
+      {:ecto, "~> 3.2"},
       {:plug_cowboy, "~> 2.1.0", override: true},
       {:timex, "~> 3.5"},
       {:postgrex, ">= 0.0.0"},
@@ -62,8 +62,9 @@ defmodule Core.MixProject do
       {:flow, "~> 0.14.3"},
       {:ex_machina, "~> 2.3", only: :test},
       {:mojito, "~> 0.3.0"},
-      {:ecto_enum, "~> 1.3"},
+      {:ecto_enum, "~> 1.3.2"},
       {:guardian, "~> 1.2.1"},
+      {:piazza_core, "~> 0.1.2"},
       {:botanist, "~> 0.1.0", git: "https://github.com/michaeljguarino/botanist.git", branch: "ecto3"},
 
       {:mock, "~> 0.3.3", only: :test},

@@ -1,5 +1,5 @@
 defmodule Core.Models.UserTheme do
-  use Core.DB.Schema
+  use Piazza.Ecto.Schema
   alias Core.Models.{Theme, User}
 
   schema "user_themes" do

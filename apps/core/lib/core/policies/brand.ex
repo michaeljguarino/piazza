@@ -1,5 +1,5 @@
 defmodule Core.Policies.Brand do
-  use Core.Policies.Base
+  use Piazza.Policy
   alias Core.Models.{Brand, User}
 
   def can?(%User{roles: %{admin: true}}, %Brand{}, :update), do: :pass

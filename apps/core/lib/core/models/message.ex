@@ -1,5 +1,5 @@
 defmodule Core.Models.Message do
-  use Core.DB.Schema
+  use Piazza.Ecto.Schema
   use Arc.Ecto.Schema
   alias Core.Models.{
     User,

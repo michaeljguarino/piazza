@@ -1,5 +1,5 @@
 defmodule Core.Models.NotificationPreferences do
-  use Core.DB.Schema
+  use Piazza.Ecto.Schema
 
   embedded_schema do
     field :mention, :boolean, default: true

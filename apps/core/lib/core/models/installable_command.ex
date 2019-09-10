@@ -1,5 +1,5 @@
 defmodule Core.Models.InstallableCommand do
-  use Core.DB.Schema
+  use Piazza.Ecto.Schema
   alias Core.Models.Command
 
   schema "installable_commands" do

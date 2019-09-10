@@ -1,5 +1,5 @@
 defmodule Core.Policies.Platform do
-  use Core.Policies.Base
+  use Piazza.Policy
   alias Core.Models.{User, IncomingWebhook}
 
   def can?(%User{} = user, %IncomingWebhook{} = incoming, action) do

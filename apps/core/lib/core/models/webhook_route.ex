@@ -1,5 +1,5 @@
 defmodule Core.Models.WebhookRoute do
-  use Core.DB.Schema
+  use Piazza.Ecto.Schema
   alias Core.Models.{Conversation, IncomingWebhook}
 
   schema "webhook_routes" do

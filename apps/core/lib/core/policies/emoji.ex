@@ -1,5 +1,5 @@
 defmodule Core.Policies.Emoji do
-  use Core.Policies.Base
+  use Piazza.Policy
   alias Core.Models.User
 
   def can?(%User{}, _, _), do: :pass

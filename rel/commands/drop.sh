@@ -1,3 +1,3 @@
 #!/bin/sh
 
-release_ctl eval --mfa "Core.DB.ReleaseTasks.drop/1" --argv -- "$@"
+release_ctl eval --mfa "Piazza.Ecto.ReleaseTasks.drop/1" --argv -- "$@"

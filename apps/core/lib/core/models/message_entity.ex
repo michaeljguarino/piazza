@@ -1,5 +1,5 @@
 defmodule Core.Models.MessageEntity do
-  use Core.DB.Schema
+  use Piazza.Ecto.Schema
   alias Core.Models.{Message, User, Emoji}
 
   defenum Type, mention: 0, emoji: 1

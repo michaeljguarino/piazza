@@ -1,8 +1,8 @@
 defmodule Core.Models.Webhook do
-  use Core.DB.Schema
+  use Piazza.Ecto.Schema
 
   schema "webhooks" do
-    field :url, Core.DB.Types.URI
+    field :url, Piazza.Ecto.Types.URI
     field :disabled, :boolean
     field :secret, :string
 

@@ -1,5 +1,5 @@
 defmodule Core.Models.Embed do
-  use Core.DB.Schema
+  use Piazza.Ecto.Schema
   import Core.Services.Base, only: [ok: 1]
 
   defenum Type, image: 0, video: 1, attachment: 2, site: 4, other: 3

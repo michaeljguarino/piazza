@@ -1,5 +1,5 @@
 defmodule Core.Models.Notification do
-  use Core.DB.Schema
+  use Piazza.Ecto.Schema
   alias Core.Models.{User, Message}
 
   defenum Type, mention: 0, message: 1

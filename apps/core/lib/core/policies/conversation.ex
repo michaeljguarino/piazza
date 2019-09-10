@@ -1,5 +1,5 @@
 defmodule Core.Policies.Conversation do
-  use Core.Policies.Base
+  use Piazza.Policy
   alias Core.Models.{User, Conversation, Message, Participant}
 
   def can?(%User{}, %Conversation{}, :create), do: :pass

@@ -12,7 +12,7 @@ export function SubMenu(props) {
       <Box width='100%'>
         <Text size='small'>{text}</Text>
       </Box>
-      <Box width='20px'>
+      <Box width='20px' align='center' justify='center'>
         <FormNext size='15px' />
       </Box>
     </MenuItem>
@@ -23,16 +23,19 @@ export function SubMenu(props) {
 export function MenuItem(props) {
   const {onClick, children, ...rest} = props
   return (
-    <HoveredBackground>
-      <Box
-        hoverable
-        style={{cursor: 'pointer'}}
-        pad={ITEM_PADDING}
-        onClick={() => onClick && onClick()}
-        {...rest}>
-        {children}
-      </Box>
-    </HoveredBackground>
+    <Box pad='xxsmall'>
+      <HoveredBackground>
+        <Box
+          hoverable
+          round='xsmall'
+          style={{cursor: 'pointer'}}
+          pad={ITEM_PADDING}
+          onClick={() => onClick && onClick()}
+          {...rest}>
+          {children}
+        </Box>
+      </HoveredBackground>
+    </Box>
   )
 }
 

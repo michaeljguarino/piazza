@@ -1,5 +1,5 @@
 defmodule Core.Models.Brand do
-  use Core.DB.Schema
+  use Piazza.Ecto.Schema
   alias Core.Models.Theme
 
   schema "brand" do

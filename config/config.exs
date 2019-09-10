@@ -13,6 +13,9 @@ import Config
 config :core,
   ecto_repos: [Core.Repo]
 
+config :piazza_core,
+  repos: [Core.Repo]
+
 # Sample configuration:
 #
 #     config :logger, :console,

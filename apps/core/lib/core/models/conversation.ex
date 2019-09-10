@@ -1,5 +1,5 @@
 defmodule Core.Models.Conversation do
-  use Core.DB.Schema
+  use Piazza.Ecto.Schema
   alias Core.Models.{
     Participant,
     Message,

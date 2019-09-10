@@ -1,5 +1,5 @@
 defmodule Core.Policies.Invite do
-  use Core.Policies.Base
+  use Piazza.Policy
   alias Core.Models.{User, Invite}
   alias Core.Services.Conversations
   alias Core.Policies.Conversation

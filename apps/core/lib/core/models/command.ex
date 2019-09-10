@@ -1,5 +1,5 @@
 defmodule Core.Models.Command do
-  use Core.DB.Schema
+  use Piazza.Ecto.Schema
   alias Core.Models.{User, Webhook, IncomingWebhook}
 
   schema "commands" do

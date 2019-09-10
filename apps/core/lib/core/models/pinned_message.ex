@@ -1,5 +1,5 @@
 defmodule Core.Models.PinnedMessage do
-  use Core.DB.Schema
+  use Piazza.Ecto.Schema
   alias Core.Models.{User, Conversation, Message}
 
   schema "pinned_messages" do
