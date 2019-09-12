@@ -98,6 +98,7 @@ function ChatCreator(props) {
             </Box>
             <Users
               onClick={addParticipant}
+              noFlyout
               ignore={new Set(participants.map((u) => u.id))}
               pad={{horizontal: 'small', vertical: 'xxsmall'}}
               onChat={() => setOpen(false)} />

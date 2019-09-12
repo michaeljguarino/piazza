@@ -79,7 +79,7 @@ function Me(props) {
                     {setOpen => (
                       <Box>
                         <ModalHeader text='Update Profile' setOpen={setOpen} />
-                        <Box gap='small' pad="medium" width='300px'>
+                        <Box gap='small' pad="medium" style={{minWidth: '400px'}}>
                           <UpdateProfile callback={() => setOpen(false)} me={me} />
                         </Box>
                       </Box>

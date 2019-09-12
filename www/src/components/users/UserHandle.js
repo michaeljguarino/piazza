@@ -1,13 +1,25 @@
 import React from 'react'
 import {Anchor, Text} from 'grommet'
-import Dropdown from '../utils/Dropdown'
 import UserDetail from './UserDetail'
 import WithPresence from '../utils/presence'
 import PresenceIndicator from './PresenceIndicator'
+import Flyout from '../utils/Flyout'
+
+function WithFlyout(props) {
+  if (props.noFlyout) return props.children
+
+  return (
+    <Flyout target={props.children}>
+    {setOpen => (
+      <UserDetail user={props.user} setOpen={setOpen} onChat={props.onChat} />
+    )}
+    </Flyout>
+  )
+}
 
 function UserHandle(props) {
   return (
-    <Dropdown align={props.align || {left: 'right'}}>
+    <WithFlyout {...props}>
       <Anchor>
         <Text size={props.size || 'small'} weight={props.weight} color={props.color} margin={props.margin || {right: '5px'}}>@{props.user.handle}</Text>
         {props.includePresence && (
@@ -16,8 +28,7 @@ function UserHandle(props) {
           </WithPresence>
         )}
       </Anchor>
-      <UserDetail user={props.user} onChat={props.onChat} />
-    </Dropdown>
+    </WithFlyout>
   )
 }
 

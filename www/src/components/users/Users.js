@@ -49,6 +49,7 @@ function Users(props) {
               }}
               mapper={(edge) => (
                 <UserListEntry
+                  noFlyout={props.noFlyout}
                   pad={props.pad}
                   onChat={props.onChat}
                   key={edge.node.id}

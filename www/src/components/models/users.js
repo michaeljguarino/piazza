@@ -10,5 +10,7 @@ export const UserFragment = gql`
     handle
     backgroundColor
     avatar
+    phone
+    title
   }
 `;

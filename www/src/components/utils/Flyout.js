@@ -42,7 +42,12 @@ export function FlyoutHeader(props) {
       onMouseLeave={() => setHover(false)}
       onClick={() => props.setOpen(false)}
       style={{cursor: 'pointer'}}
-      height='40px' direction='row' border='bottom' pad='small' margin={{bottom: 'small'}}>
+      background='light-1'
+      height='40px'
+      direction='row'
+      border='bottom'
+      pad='small' 
+      margin={{bottom: 'small'}}>
       <Box width='100%' direction='row' justify='start' align='center'>
         <Text size='small'>{props.text.toUpperCase()}</Text>
       </Box>

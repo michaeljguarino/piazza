@@ -1,7 +1,6 @@
 import React from 'react'
 import {Chat} from 'grommet-icons'
 import {Mutation} from 'react-apollo'
-import {Box} from 'grommet'
 import {CREATE_CHAT, CONVERSATIONS_Q} from './queries'
 import {addConversation} from './utils'
 import {Conversations} from '../login/MyConversations'
@@ -23,9 +22,9 @@ function CreateChat(props) {
         props.onChat && props.onChat()
       }} >
       {mutation => (
-        <Box style={{cursor: 'pointer'}} align='center' justify='center' onClick={mutation}>
+        <span style={{cursor: 'pointer'}} onClick={mutation}>
           <Chat size='15px' />
-        </Box>
+        </span>
       )}
       </Mutation>
     )}
