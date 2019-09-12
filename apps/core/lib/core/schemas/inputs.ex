@@ -12,6 +12,8 @@ defmodule Core.Schemas.Inputs do
     field :bio,      :string
     field :roles,    :role_attributes
     field :avatar,   :upload
+    field :title,    :string
+    field :phone,    :string
     field :notification_preferences, :notification_prefs
   end
 

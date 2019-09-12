@@ -9,20 +9,22 @@ function ContentWrapper(props) {
   return (
     <Box gap='xsmmall'>
       {props.children}
-      <HoveredBackground>
-        <Box
-          hoverable
-          style={{cursor: 'pointer'}}
-          onClick={() => props.setAlternate(null)}
-          pad={{horizontal: 'xsmall', vertical: 'small'}}
-          direction='row'
-          border='top'
-          align='center'
-          gap='xsmall'>
-          <FormPrevious size='15px' />
-          <Text size='small'>return to menu</Text>
-        </Box>
-      </HoveredBackground>
+      <Box pad='xxsmall' border='top'>
+        <HoveredBackground>
+          <Box
+            hoverable
+            style={{cursor: 'pointer'}}
+            onClick={() => props.setAlternate(null)}
+            pad={{vertical: 'xsmall', horizontal: 'small'}}
+            direction='row'
+            align='center'
+            round='xsmall'
+            gap='xsmall'>
+            <FormPrevious size='15px' />
+            <Text size='small'>return to menu</Text>
+          </Box>
+        </HoveredBackground>
+      </Box>
     </Box>
   )
 }

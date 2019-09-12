@@ -42,7 +42,7 @@ defmodule Core.MixProject do
     [
       {:ecto_sql, "~> 3.2"},
       {:thrift, github: "pinterest/elixir-thrift"},
-      {:ecto, "~> 3.2"},
+      {:ecto, "~> 3.2", override: true},
       {:plug_cowboy, "~> 2.1.0", override: true},
       {:timex, "~> 3.5"},
       {:postgrex, ">= 0.0.0"},

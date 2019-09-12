@@ -28,14 +28,14 @@ function Button(props) {
   return (
     <Box
       onClick={() => !props.disabled && props.onClick()}
-      style={{cursor: 'pointer'}}
+      style={!props.disabled ? {cursor: 'pointer'} : null} 
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
       pad={props.pad || BUTTON_PAD}
       align='center'
       justify='center'
       background={props.disabled ? 'light-6' : 'action'}
-      elevation={hover ? 'small' : null}
+      elevation={hover && !props.disabled ? 'small' : null}
       margin={props.margin}
       width={props.width}
       height={props.height}

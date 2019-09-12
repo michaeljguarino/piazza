@@ -19,6 +19,8 @@ function generatePreview(file, callback) {
   reader.readAsDataURL(file)
 }
 
+const MODAL_WIDTH = '400px'
+
 export function EmojiForm(props) {
   const [image, setImage] = useState(null)
   const [name, setName] = useState(null)
@@ -33,7 +35,7 @@ export function EmojiForm(props) {
         props.setOpen(false)
       }}>
     {mutation => (
-      <Box gap='small'>
+      <Box width={MODAL_WIDTH} gap='small'>
         <Box gap='xsmall'>
           <Box direction='row' gap='xsmall' align='center'>
             <Box border round='xsmall' width='35px' height='35px' pad='xsmall' align='center' justify='center'>
@@ -46,9 +48,7 @@ export function EmojiForm(props) {
               dims={{minWidth: 100, maxWidth: 500, minHeight: 100, maxHeight: 500}}
               onChange={(file) => generatePreview(file, setImage)}
             >
-              <Box style={{cursor: 'pointer'}} pad='xsmall' border round='xsmall'>
-                Upload Image
-              </Box>
+              <SecondaryButton round='xsmall' pad='xsmall' label='Upload Image' />
             </FilePicker>
           </Box>
         </Box>
@@ -85,7 +85,7 @@ function EmojiCreator(props) {
         </Box>
       }>
       {setOpen => (
-        <Box width="300px" round='small'>
+        <Box width={MODAL_WIDTH} round='small'>
           <ModalHeader text='Create a new emoji' setOpen={setOpen} />
           <Box pad='small'>
             <EmojiForm setOpen={setOpen} />

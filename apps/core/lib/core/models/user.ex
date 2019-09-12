@@ -13,6 +13,8 @@ defmodule Core.Models.User do
     field :jwt,           :string, virtual: true
     field :password_hash, :string
     field :bio,           :string
+    field :phone,         :string
+    field :title,         :string
     field :bot,           :boolean, default: false
     field :avatar_id,     :binary_id
     field :avatar,        Core.Storage.Type
@@ -37,7 +39,7 @@ defmodule Core.Models.User do
     end
   end
 
-  @valid ~w(email name handle password bio bot)a
+  @valid ~w(email name handle password bio bot phone title)a
 
   def ordered(query \\ __MODULE__, order \\ [asc: :email]), do: from(u in query, order_by: ^order)
 
