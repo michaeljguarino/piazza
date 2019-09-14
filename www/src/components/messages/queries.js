@@ -6,7 +6,7 @@ export const MESSAGES_Q = gql`
   query ConversationQuery($conversationId: ID!, $cursor: String) {
     conversation(id: $conversationId) {
       id
-      messages(first: 15, after: $cursor) {
+      messages(first: 25, after: $cursor) {
         pageInfo {
           endCursor
           hasNextPage
@@ -26,7 +26,7 @@ export const ANCHORED_MESSAGES = gql`
   query AnchoredMessages($conversationId: ID!, $beforeCursor: String, $afterCursor: String, $anchor: DateTime) {
     conversation(id: $conversationId) {
       id
-      before: messages(first: 10, after: $beforeCursor, anchor: $anchor, direction: BEFORE) {
+      before: messages(first: 15, after: $beforeCursor, anchor: $anchor, direction: BEFORE) {
         pageInfo {
           endCursor
           hasNextPage
@@ -37,7 +37,7 @@ export const ANCHORED_MESSAGES = gql`
           }
         }
       }
-      after: messages(first: 3, after: $afterCursor, anchor: $anchor, direction: AFTER) {
+      after: messages(first: 5, after: $afterCursor, anchor: $anchor, direction: AFTER) {
         pageInfo {
           endCursor
           hasNextPage

@@ -337,6 +337,8 @@ defmodule Core.Services.Conversations do
 
   def notify({:ok, %Participant{} = p}, :upsert, actor, nil),
     do: handle_notify(PubSub.ParticipantCreated, p, actor: actor)
+  def notify({:ok, %Participant{} = p}, :upsert, actor, %Participant{deleted_at: del})
+      when not is_nil(del), do: handle_notify(PubSub.ParticipantCreated, p, actor: actor)
   def notify({:ok, %Participant{} = p}, :upsert, actor, _),
     do: handle_notify(PubSub.ParticipantUpdated, p, actor: actor)
   def notify(error, _, _, _), do: error

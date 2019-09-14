@@ -34,15 +34,23 @@ export const BOX_ATTRS = {
 
 function removeConversation(cache, conversationId, setCurrentConversation) {
   setCurrentConversation(null)
-  const {conversations} = cache.readQuery({ query: CONVERSATIONS_Q });
+  const prev = cache.readQuery({ query: CONVERSATIONS_Q });
+  const convs = prev.conversations.edges.filter(({node}) => node.id !== conversationId)
+  const chats = prev.chats.edges.filter(({node}) => node.id !== conversationId)
 
   cache.writeQuery({
     query: CONVERSATIONS_Q,
     data: {
+      ...prev,
       conversations: {
-        ...conversations,
-        edges: conversations.edges.filter((edge) => edge.node.id !== conversationId),
-    }}
+        ...prev.conversations,
+        edges: convs
+      },
+      chats: {
+        ...prev.chats,
+        edges: chats
+      }
+    }
   });
 }
 

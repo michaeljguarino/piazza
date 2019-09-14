@@ -26,6 +26,8 @@ defmodule Core.PubSub.Participants.NotificationsTest do
       assert participant.user_id == user.id
       assert participant.conversation_id == conv.id
       refute participant.deleted_at
+
+      assert_receive {:event, %PubSub.ParticipantCreated{item: ^participant}}
     end
 
     test "it will ignore if the participant exists" do
