@@ -14,7 +14,7 @@ function UpdateProfile(props) {
   const [userFields, setUserFields] = useState(getUserFields(props.me))
   return (
     <Mutation mutation={UPDATE_USER} variables={{id: props.me.id, attributes: userFields}}>
-    {mutation => {
+    {(mutation, {loading})  => {
       const submit = () => {
         props.callback && props.callback()
         mutation()
@@ -42,7 +42,7 @@ function UpdateProfile(props) {
             />
             <Box direction='row' align='center' justify='end' gap='xsmall'>
               <SecondaryButton round='xsmall' label='Cancel' onClick={props.callback} />
-              <Button round='xsmall' label='Save' onClick={submit} />
+              <Button loading={loading} round='xsmall' label='Save' onClick={submit} />
             </Box>
           </Box>
           </>

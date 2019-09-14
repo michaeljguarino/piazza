@@ -13,7 +13,7 @@ function UpdatePassword(props) {
 
   return (
     <Mutation mutation={UPDATE_USER} variables={{id: props.me.id, attributes: {password: password}}}>
-    {(mutation, {error}) => {
+    {(mutation, {loading, error}) => {
       const wrapped = () => {
         if (password !== confirm) {
           setUnconfirmed(true)
@@ -43,7 +43,7 @@ function UpdatePassword(props) {
             onChange={(e) => setConfirm(e.target.value)} />
           <Box margin={{top: 'xsmall'}} direction='row' align='center' justify='end' gap='xsmall'>
             <SecondaryButton label='Cancel' onClick={props.callback} round='xsmall' />
-            <Button label='Change' round='xsmall' onClick={wrapped} />
+            <Button loading={loading} label='Change' round='xsmall' onClick={wrapped} />
           </Box>
         </Box>
       )

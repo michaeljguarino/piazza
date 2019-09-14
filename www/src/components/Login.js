@@ -67,7 +67,7 @@ class Login extends Component {
           variables={{ email, password, name, handle, inviteToken }}
           onCompleted={data => this._confirm(data)}
         >
-          { (mutation, {error}) => {
+          { (mutation, {loading, error}) => {
             return (
             <Box width="400px" background="light-1" pad='medium' border={{style: "hidden"}} round="small" elevation="small">
               {error && <Error errors={error} />}
@@ -112,6 +112,7 @@ class Login extends Component {
                   <Box direction="row" align="center">
                     <Button
                       onClick={mutation}
+                      loading={loading}
                       size='small'
                       round='xsmall'
                       pad={{vertical: 'xsmall', horizontal: 'medium'}}

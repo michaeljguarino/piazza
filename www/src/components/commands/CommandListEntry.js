@@ -15,6 +15,8 @@ function CommandDisplay(props) {
   const dropRef = useRef()
   const [hover, setHover] = useState(false)
   const [dropOpen, setDropOpen] = useState(false)
+  const showHover = !props.disableEdit && hover
+
   return (
     <Box
       onMouseEnter={() => setHover(true)}
@@ -23,7 +25,7 @@ function CommandDisplay(props) {
       direction='row'
       align='center'
       pad={props.pad}
-      background={hover ? 'lightHover' : null}>
+      background={showHover ? 'lightHover' : null}>
       <Box width='45px' align='center' justify='center'>
         <Avatar user={props.command.bot} />
       </Box>
@@ -32,7 +34,7 @@ function CommandDisplay(props) {
           <Anchor onClick={() => setDropOpen(true)}>
             <Text size='small' margin={{right: 'xsmall'}} color={props.color}>/{props.command.name}</Text>
           </Anchor>
-          {hover && (
+          {showHover && (
             <Box direction='row' animation={{type: 'fadeIn', duration: 200}} >
               <Modal
                 target={<Edit style={{cursor: 'pointer'}} size='10px' />}>

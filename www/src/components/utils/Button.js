@@ -1,5 +1,6 @@
 import React, {useState} from 'react'
 import {Box, Text} from 'grommet'
+import {BeatLoader} from 'react-spinners'
 
 const BUTTON_PAD = {horizontal: 'small', vertical: 'xsmall'}
 
@@ -12,6 +13,7 @@ export function SecondaryButton(props) {
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
       onClick={props.onClick}
+      direction='row'
       border
       align='center'
       justify='center'
@@ -32,6 +34,8 @@ function Button(props) {
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
       pad={props.pad || BUTTON_PAD}
+      direction='row'
+      gap='xsmall'
       align='center'
       justify='center'
       background={props.disabled ? 'light-6' : 'action'}
@@ -40,6 +44,7 @@ function Button(props) {
       width={props.width}
       height={props.height}
       round={props.round}>
+      {props.loading && <BeatLoader color='white' size={8} />}
       <Text size={props.textSize || 'small'}>{props.label}</Text>
     </Box>
   )
