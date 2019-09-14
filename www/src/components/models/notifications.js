@@ -15,6 +15,14 @@ export const NotificationFragment=gql`
         id
         name
         topic
+        chat
+        chatParticipants {
+          user {
+            id
+            name
+            handle
+          }
+        }
       }
     }
   }

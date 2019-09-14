@@ -23,7 +23,7 @@ export function SubMenu(props) {
 export function MenuItem(props) {
   const {onClick, children, ...rest} = props
   return (
-    <Box pad='xxsmall'>
+    <Box pad={{horizontal: 'xxsmall'}}>
       <HoveredBackground>
         <Box
           hoverable

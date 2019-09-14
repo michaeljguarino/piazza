@@ -9,34 +9,34 @@ import {EmojiForm} from '../emoji/EmojiCreator'
 
 function Tools(props) {
   return (
-    <>
-    <Modal target={<DropdownItem text='structured message creator' />}>
-    {setOpen => (
-      <Box>
-        <ModalHeader text='Structured Message Developer' setOpen={setOpen} />
-        <StructuredMessageTester callback={() => setOpen(false)} />
-      </Box>
-    )}
-    </Modal>
-    <Modal target={<DropdownItem text='theme selector' />}>
+    <Box pad={{bottom: 'xxsmall'}}>
+      <Modal target={<DropdownItem text='structured message creator' />}>
       {setOpen => (
         <Box>
-          <ModalHeader text='Select a theme' setOpen={setOpen} />
-          <Themes setOpen={setOpen} />
+          <ModalHeader text='Structured Message Developer' setOpen={setOpen} />
+          <StructuredMessageTester callback={() => setOpen(false)} />
         </Box>
       )}
-    </Modal>
-    <Modal target={<DropdownItem text='create emoji' />}>
-      {setOpen => (
-        <Box>
-          <ModalHeader text='Create an emoji' setOpen={setOpen} />
-          <Box pad='small'>
-            <EmojiForm setOpen={setOpen} />
+      </Modal>
+      <Modal target={<DropdownItem text='theme selector' />}>
+        {setOpen => (
+          <Box>
+            <ModalHeader text='Select a theme' setOpen={setOpen} />
+            <Themes setOpen={setOpen} />
           </Box>
-        </Box>
-      )}
-    </Modal>
-    </>
+        )}
+      </Modal>
+      <Modal target={<DropdownItem text='create emoji' />}>
+        {setOpen => (
+          <Box>
+            <ModalHeader text='Create an emoji' setOpen={setOpen} />
+            <Box pad='small'>
+              <EmojiForm setOpen={setOpen} />
+            </Box>
+          </Box>
+        )}
+      </Modal>
+    </Box>
   )
 }
 

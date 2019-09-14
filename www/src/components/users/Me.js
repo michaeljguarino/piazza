@@ -75,30 +75,32 @@ function Me(props) {
                   <InterchangeableBox>
                   {setAlternate => (
                     <>
-                    <Modal target={<DropdownItem text='update profile' />}>
-                    {setOpen => (
-                      <Box>
-                        <ModalHeader text='Update Profile' setOpen={setOpen} />
-                        <Box gap='small' pad="medium" style={{minWidth: '400px'}}>
-                          <UpdateProfile callback={() => setOpen(false)} me={me} />
-                        </Box>
-                      </Box>
-                    )}
-                    </Modal>
-                    <Modal target={<DropdownItem text='change password' />}>
+                    <Box pad={{bottom: 'xxsmall'}}>
+                      <Modal target={<DropdownItem text='update profile' />}>
                       {setOpen => (
-                        <Box width='400px'>
-                          <ModalHeader text='Update Password' setOpen={setOpen} />
-                          <Box gap='small' pad="medium">
-                            <UpdatePassword callback={() => setOpen(false)} me={me} />
+                        <Box>
+                          <ModalHeader text='Update Profile' setOpen={setOpen} />
+                          <Box gap='small' pad="medium" style={{minWidth: '400px'}}>
+                            <UpdateProfile callback={() => setOpen(false)} me={me} />
                           </Box>
                         </Box>
                       )}
-                    </Modal>
-                    <SubMenu text='developer tools' setAlternate={setAlternate}>
-                      <Tools />
-                    </SubMenu>
-                    <Box border='top'>
+                      </Modal>
+                      <Modal target={<DropdownItem text='change password' />}>
+                        {setOpen => (
+                          <Box width='400px'>
+                            <ModalHeader text='Update Password' setOpen={setOpen} />
+                            <Box gap='small' pad="medium">
+                              <UpdatePassword callback={() => setOpen(false)} me={me} />
+                            </Box>
+                          </Box>
+                        )}
+                      </Modal>
+                      <SubMenu text='developer tools' setAlternate={setAlternate}>
+                        <Tools />
+                      </SubMenu>
+                    </Box>
+                    <Box border='top' pad={{vertical: 'xxsmall'}}>
                       <DropdownItem text='logout' onClick={_logout} />
                     </Box>
                     </>

@@ -130,7 +130,7 @@ function ConversationDropdown(props) {
       align={{left: 'left', top: "bottom"}}
       target={<ConversationName me={props.me} conversation={props.conversation} />}>
       {setOpen => (
-        <InterchangeableBox width='230px' round='small'>
+        <InterchangeableBox width='230px' round='small' pad={{vertical: 'xxsmall'}}>
         {setAlternate => (
           <>
           <SubMenu
