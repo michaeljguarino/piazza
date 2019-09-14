@@ -390,6 +390,16 @@ defmodule Core.Services.ConversationsTest do
       assert_receive {:event, %PubSub.ParticipantDeleted{item: ^participant}}
     end
 
+    test "Removing yourself from a chat is a soft delete" do
+      chat = insert(:conversation, chat: true)
+      %{user: user} = insert(:participant, conversation: chat)
+
+      {:ok, deleted} = Conversations.delete_participant(chat.id, user.id, user)
+
+      assert deleted.deleted_at
+      assert refetch(deleted)
+    end
+
     test "Nonparticipants cannot delete participants" do
       user         = insert(:user)
       conversation = insert(:conversation)

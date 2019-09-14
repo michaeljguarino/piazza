@@ -63,6 +63,7 @@ defmodule Core.Services.Conversations do
       _ -> %Participant{conversation_id: conversation_id, user_id: uid}
     end
     |> Participant.changeset(attrs)
+    |> Ecto.Changeset.put_change(:deleted_at, nil)
     |> Core.Repo.insert_or_update()
     |> notify(:upsert, user, participant)
   end
@@ -96,7 +97,6 @@ defmodule Core.Services.Conversations do
     # the choice of a chat dedupe key is to provide a stable
     # means of deduping even if a handle is updated (although that
     # is currently unsupported).
-
     user_ids
     |> Enum.sort()
     |> Enum.join("::")
@@ -311,6 +311,20 @@ defmodule Core.Services.Conversations do
 
   def delete_participant(conv_id, user_id, user) do
     get_participant!(user_id, conv_id)
+    |> Core.Repo.preload([:conversation])
+    |> handle_delete_participant(user)
+  end
+
+  defp handle_delete_participant(
+    %Participant{user_id: uid, conversation: %{chat: true}} = participant, 
+    %User{id: uid}
+  ) do
+    participant
+    |> Ecto.Changeset.change(%{deleted_at: DateTime.utc_now()})
+    |> Core.Repo.update()
+  end
+  defp handle_delete_participant(participant, user) do
+    participant
     |> allow(user, :delete)
     |> when_ok(:delete)
     |> notify(:delete, user)

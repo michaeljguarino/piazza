@@ -413,6 +413,11 @@ defmodule Core.Schema.QueriesTest do
       chat   = insert(:conversation, chat: true, public: false)
       part   = insert(:participant, conversation: chat, user: user)
       others = insert_list(2, :participant, conversation: chat)
+      insert(:participant, 
+        conversation: build(:conversation, chat: true), 
+        user: user, 
+        deleted_at: DateTime.utc_now()
+      )
 
       {:ok, %{data: %{"chats" => found}}} = run_query("""
         query Chats($conversationCount: Int!) {

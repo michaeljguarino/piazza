@@ -4,6 +4,7 @@ defmodule Core.Models.Participant do
 
   schema "participants" do
     field :last_seen_at, :utc_datetime_usec
+    field :deleted_at, :utc_datetime_usec
 
     belongs_to :user, User
     belongs_to :conversation, Conversation
@@ -16,7 +17,7 @@ defmodule Core.Models.Participant do
   @valid ~w(user_id conversation_id last_seen_at)a
 
   def for_user(query \\ __MODULE__, user_id),
-    do: from(p in query, where: p.user_id == ^user_id)
+    do: from(p in query, where: p.user_id == ^user_id and is_nil(p.deleted_at))
 
   def for_conversation(query \\ __MODULE__, conv_id),
     do: from(p in query, where: p.conversation_id == ^conv_id)
