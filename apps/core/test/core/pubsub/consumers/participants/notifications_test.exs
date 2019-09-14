@@ -15,13 +15,26 @@ defmodule Core.PubSub.Participants.NotificationsTest do
       assert participant.conversation_id == notif.message.conversation_id
     end
 
-    test "it will ignore if the participant exists" do
-      %{conversation: conv, user: user, id: id} = insert(:participant)
+    test "It will upsert soft deleted participants" do
+      %{conversation: conv, user: user} = insert(:participant, deleted_at: DateTime.utc_now())
       message = insert(:message, conversation: conv)
       notif = insert(:notification, user: user, message: message)
       
       event = %PubSub.NotificationCreated{item: notif}
-      %Core.Models.Participant{id: ^id} = Participants.handle_event(event)
+      {:ok, participant} = Participants.handle_event(event)
+
+      assert participant.user_id == user.id
+      assert participant.conversation_id == conv.id
+      refute participant.deleted_at
+    end
+
+    test "it will ignore if the participant exists" do
+      %{conversation: conv, user: user} = insert(:participant)
+      message = insert(:message, conversation: conv)
+      notif = insert(:notification, user: user, message: message)
+      
+      event = %PubSub.NotificationCreated{item: notif}
+      :ok = Participants.handle_event(event)
     end
   end
 end

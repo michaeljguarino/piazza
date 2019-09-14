@@ -55,7 +55,7 @@ defmodule Core.Services.Conversations do
     |> execute(extract: :participant)
   end
 
-  defp upsert_participant(conversation_id, attrs, %User{id: uid} = user) do
+  def upsert_participant(conversation_id, attrs \\ %{}, %User{id: uid} = user) do
     participant = get_participant(uid, conversation_id)
 
     case participant do
