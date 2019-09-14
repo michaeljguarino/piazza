@@ -38,7 +38,7 @@ function UpdatePassword(props) {
             label='Confirm'
             labelWidth='80px'
             type='password'
-            value={password}
+            value={confirm}
             placeholder='battery horse fire stapler'
             onChange={(e) => setConfirm(e.target.value)} />
           <Box margin={{top: 'xsmall'}} direction='row' align='center' justify='end' gap='xsmall'>

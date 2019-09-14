@@ -156,23 +156,25 @@ class MessageInput extends Component {
                 onChange={text => {
                   this.notifyTyping()
                 }} />
-                <FilePicker
-                  onChange={ (file) => this.setState({useUpload: true, attachment: file})}
-                  maxSize={2000}
-                  onError={(msg) => console.log(msg)}
-                >
-                  <HoveredBackground>
-                    <Box
-                      accentable
-                      style={{cursor: "pointer"}}
-                      align='center'
-                      justify='center'
-                      height='40px'
-                      width="30px">
-                      <Attachment color={this.state.attachment ? SEND_COLOR : null} size='15px' />
-                    </Box>
-                  </HoveredBackground>
-                </FilePicker>
+                <HoveredBackground>
+                  <Box
+                    accentable
+                    style={{cursor: "pointer"}}>
+                    <FilePicker
+                        onChange={ (file) => this.setState({useUpload: true, attachment: file})}
+                        maxSize={2000}
+                        onError={(msg) => console.log(msg)}
+                      >
+                      <Box 
+                        align='center'
+                        justify='center'
+                        height='40px'
+                        width="30px">
+                        <Attachment color={this.state.attachment ? SEND_COLOR : null} size='15px' />
+                      </Box>
+                    </FilePicker>
+                  </Box>
+                </HoveredBackground>
             </Box>
           </Form>
         )}

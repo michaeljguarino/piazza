@@ -1,6 +1,6 @@
 # Piazza
 
-A slack/RTC-like messaging system designed to be cheap, modern and distributable via kubernetes.
+A slack/IRC-like messaging system designed to be cheap, modern and distributable via kubernetes.
 
 An example deployment is available at https://chat.piazzaapp.com.
 
