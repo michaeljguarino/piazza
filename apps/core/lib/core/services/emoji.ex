@@ -1,5 +1,6 @@
 defmodule Core.Services.Emoji do
   use Core.Services.Base
+  alias Core.PubSub
   alias Core.Models.Emoji
 
   import Core.Policies.Emoji
@@ -9,8 +10,10 @@ defmodule Core.Services.Emoji do
     |> Emoji.changeset(attrs)
     |> allow(user, :create)
     |> when_ok(:insert)
-    |> notify(:create)
+    |> notify(:create, user)
   end
 
-  defp notify(result, _), do: result
+  defp notify({:ok, %Emoji{} = emoji}, :create, actor), 
+    do: handle_notify(PubSub.EmojiCreated, emoji, actor: actor)
+  defp notify(result, _, _), do: result
 end

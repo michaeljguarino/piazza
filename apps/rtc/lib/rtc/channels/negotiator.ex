@@ -110,3 +110,10 @@ defimpl Rtc.Channels.Negotiator, for: Core.PubSub.CommmandUpdated do
   def negotiate(%{item: command}),
     do: {delta(command, :updated), [command_delta: "commands"]}
 end
+
+defimpl Rtc.Channels.Negotiator, for: Core.PubSub.EmojiCreated do
+  import Rtc.Channels.NegotiatorHelper
+
+  def negotiate(%{item: emoji}),
+    do: {delta(emoji, :create), [emoji_delta: "emoji"]}
+end

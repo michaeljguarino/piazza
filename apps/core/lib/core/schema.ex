@@ -359,6 +359,10 @@ defmodule Core.Schema do
       config fn _, _ -> {:ok, topic: "commands"} end
     end
 
+    field :emoji_delta, :emoji_delta do
+      config fn _, _ -> {:ok, topic: "emoji"} end
+    end
+
     field :pinned_message_delta, :pinned_message_delta do
       arg :conversation_id, :id
       config fn

@@ -1,6 +1,7 @@
 defmodule Core.Models.EmojiTest do
   use Core.DataCase, async: true
   alias Core.Services.Emoji, as: EmojiService
+  alias Core.PubSub
   @url "https://storage.googleapis.com/mguarino-piazza/uploads/avatars/6c269fbe-1aa7-4ae0-92ce-6c193aface1b/original.jpg?v=63732720702"
 
   describe "#create_emoji" do
@@ -11,6 +12,8 @@ defmodule Core.Models.EmojiTest do
       assert emoji.name == "michael"
       assert emoji.image
       assert emoji.creator_id == user.id
+
+      assert_receive {:event, %PubSub.EmojiCreated{item: ^emoji}}
     end
   end
 end

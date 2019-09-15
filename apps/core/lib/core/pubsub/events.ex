@@ -29,3 +29,5 @@ defmodule Core.PubSub.NotificationCreated, do: use Piazza.PubSub.Event
 defmodule Core.PubSub.PinnedMessageCreated, do: use Piazza.PubSub.Event
 
 defmodule Core.PubSub.PinnedMessageDeleted, do: use Piazza.PubSub.Event
+
+defmodule Core.PubSub.EmojiCreated, do: use Piazza.PubSub.Event
