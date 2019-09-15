@@ -6,6 +6,7 @@ import ConversationPanel from './conversation/ConversationPanel'
 import ConversationHeader from './conversation/ConversationHeader'
 import CurrentUser from './login/EnsureLogin'
 import MyConversations from './login/MyConversations'
+import EmojiProvider from './emoji/EmojiProvider'
 import {Box, Grid} from 'grommet'
 import {FlyoutProvider} from './utils/Flyout'
 
@@ -23,11 +24,11 @@ const Piazza = () => {
   return (
     <CurrentUser>
     {me => (
-      <FlyoutProvider>
-      {(flyoutContent) => (
-        <MyConversations sideEffects={[() => setAnchor(null)]}>
-        {(currentConversation, conversations, chats, setCurrentConversation, loadMore) => {
-          return (
+      <EmojiProvider>
+        <FlyoutProvider>
+        {(flyoutContent) => (
+          <MyConversations sideEffects={[() => setAnchor(null)]}>
+          {(currentConversation, conversations, chats, setCurrentConversation, loadMore) => (
             <Grid
               rows={['100vh']}
               columns={['200px', 'auto']}
@@ -69,12 +70,12 @@ const Piazza = () => {
                     conversation={currentConversation} />
                 </Box>
               </Box>
-          </Grid>
-          )
-        }}
-        </MyConversations>
-      )}
-      </FlyoutProvider>
+            </Grid>
+          )}
+          </MyConversations>
+        )}
+        </FlyoutProvider>
+      </EmojiProvider>
     )}
     </CurrentUser>
   )

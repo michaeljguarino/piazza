@@ -2,7 +2,6 @@ import React, {useState} from 'react'
 import {Box, Text} from 'grommet'
 import {FormPrevious} from 'grommet-icons'
 import HoveredBackground from './HoveredBackground'
-import TinyCrossfade from "react-tiny-crossfade"
 import {SwitchTransition, CSSTransition} from 'react-transition-group'
 import './interbox.css'
 

@@ -52,16 +52,22 @@ function fetchEmojis(client, query) {
     query: EMOJI_Q,
     variables: {name: query}
   }).then(({data}) => {
-    const customEmoji = data.emoji.edges.slice(0, 5).filter((e) => e.node.name.indexOf(query) >= 0).map((e) => ({
-      key: e.node.name,
-      value: `:${e.node.name}:`,
-      suggestion: customEmojiSuggestion(e.node)
-    }))
-    const defaultEmoji = emojiIndex.search(query).slice(0, 5).map((emoji) => ({
-      key: emoji.colons,
-      value: emoji.native,
-      suggestion: emojiSuggestion(emoji)
-    }))
+    const customEmoji = data.emoji.edges
+      .filter(({node}) => node.name.indexOf(query) >= 0)
+      .slice(0, 5)
+      .map(({node}) => ({
+        key: node.name,
+        value: `:${node.name}:`,
+        suggestion: customEmojiSuggestion(node)
+      }))
+    const defaultEmoji = emojiIndex
+      .search(query)
+      .slice(0, 5)
+      .map((emoji) => ({
+        key: emoji.colons,
+        value: emoji.native,
+        suggestion: emojiSuggestion(emoji)
+      }))
     return [...customEmoji, ...defaultEmoji]
   })
 }

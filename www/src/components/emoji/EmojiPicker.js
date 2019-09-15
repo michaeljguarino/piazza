@@ -4,7 +4,7 @@ import 'emoji-mart/css/emoji-mart.css'
 import emojiData from 'emoji-mart/data/messenger.json'
 import { NimblePicker } from 'emoji-mart'
 import { EMOJI_Q } from './queries'
-import {toEmojiPicker} from './utils'
+import { toEmojiPicker } from './utils'
 
 function SafeNimblePicker(props) {
   const {emoji, ...rest} = props
