@@ -34,6 +34,26 @@ defmodule Core.Models.StructuredMessageTest do
     end
   end
 
+  describe "#to_string" do
+    test "It will properly flatten and stringify a structured message" do
+      msg = %{
+        "_type" => "root",
+        "children" => [
+          %{"_type" => "attachment", "children" => [
+            %{"_type" => "box", "children" => [%{"_type" => "text", "value" => "some text"}]},
+            %{"_type" => "box", "children" => [%{"_type" => "link", "value" => "link"}]}
+          ]},
+          %{"_type" => "box", "children" => [
+            %{"_type" => "button", "attributes" => %{"primary" => true, "label" => "go"}}
+          ]}
+        ]
+      }
+
+      result = StructuredMessage.to_string(msg)
+      assert result == "some text link go"
+    end
+  end
+
   describe "#from_xml" do
     test "It can convert an xml representation to the canonical map form" do
       document = """

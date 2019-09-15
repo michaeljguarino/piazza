@@ -2,8 +2,16 @@ import React from 'react'
 import {Box, Text, Markdown, Anchor} from 'grommet'
 
 function video(props) {
-  const {url, ...rest} = props.attributes
-  return <video key={props.key} {...rest} src={url} />
+  const {url, loop, autoPlay, ...rest} = props.attributes
+  return (
+    <video 
+      key={props.key} 
+      loop={!!loop} 
+      autoPlay={!!autoPlay} 
+      {...rest} 
+      src={url}
+    />
+  )
 }
 
 function box(props) {

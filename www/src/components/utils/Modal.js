@@ -10,8 +10,7 @@ export function ModalHeader(props) {
       border='bottom'
       elevation='xxsmall'
       round={props.round || {size: '4px', corner: 'top'}}
-      pad='small'
-      margin={{bottom: 'xsmall'}}>
+      pad='small'>
       <Box direction='row' fill='horizontal' align='center'>
         <Text size='small' weight='bold'>{props.text}</Text>
       </Box>

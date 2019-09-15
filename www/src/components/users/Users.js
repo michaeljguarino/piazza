@@ -47,13 +47,13 @@ function Users(props) {
                 overflow: 'auto',
                 height: '100%'
               }}
-              mapper={(edge) => (
+              mapper={({node}) => (
                 <UserListEntry
                   noFlyout={props.noFlyout}
                   pad={props.pad}
                   onChat={props.onChat}
-                  key={edge.node.id}
-                  user={edge.node}
+                  key={node.id}
+                  user={node}
                   color={props.color}
                   onClick={props.onClick} />
               )}

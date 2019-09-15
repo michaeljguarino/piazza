@@ -47,4 +47,27 @@ defmodule Core.Models.StructuredMessage do
       parents ~w(text box attachment)
     end
   end
+
+  def to_string(msg) do
+    flatten(msg)
+    |> case do
+      nil -> []
+      flattened -> flattened
+    end
+    |> Enum.intersperse(" ")
+    |> IO.iodata_to_binary()
+  end
+
+  def flatten(%{"value" => value}) when is_binary(value),
+    do: [value]
+  def flatten(%{"attributes" => %{"value" => value}}) when is_binary(value),
+    do: [value]
+  def flatten(%{"_type" => "button", "attributes" => %{"label" => label}}),
+    do: [label]
+  def flatten(%{"children" => children}) when is_list(children) do
+    Enum.map(children, &flatten/1)
+    |> Enum.filter(& &1)
+    |> Enum.concat()
+  end
+  def flatten(_), do: nil
 end

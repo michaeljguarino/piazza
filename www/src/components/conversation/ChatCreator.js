@@ -9,6 +9,7 @@ import {addConversation} from './utils'
 import ParticipantInvite from './ParticipantInvite'
 import Users from '../users/Users'
 import Button from '../utils/Button'
+import {CurrentUserContext} from '../login/EnsureLogin'
 
 function ChatCreator(props) {
   const [participants, setParticipants] = useState([])
@@ -52,13 +53,13 @@ function ChatCreator(props) {
         {setOpen => (
           <Box width="400px" style={{maxHeight: '70vh'}} pad={{bottom: 'small'}} round='small'>
             <ModalHeader text='Start a chat' setOpen={setOpen} />
-            <Box height='80px'>
+            <Box style={{minHeight: '60px'}}>
               <ParticipantInvite
                 direction='row'
                 onAddParticipant={addParticipant}
                 onRemoveParticipant={removeParticipant}
                 additional={participants}
-                pad={{left: 'small', right: 'small', bottom: 'small', top: 'small'}}
+                pad='small'
                 mapper={(u) => u.id}>
               {(participants) => (
                 <Mutation
@@ -96,12 +97,16 @@ function ChatCreator(props) {
               pad={{horizontal: 'small', vertical: 'xxsmall'}}>
               <Text size='small'>Users</Text>
             </Box>
-            <Users
-              onClick={addParticipant}
-              noFlyout
-              ignore={new Set(participants.map((u) => u.id))}
-              pad={{horizontal: 'small', vertical: 'xxsmall'}}
-              onChat={() => setOpen(false)} />
+            <CurrentUserContext.Consumer>
+            {me => (
+              <Users
+                onClick={addParticipant}
+                noFlyout
+                ignore={new Set([me.id, ...participants.map((u) => u.id)])}
+                pad={{horizontal: 'small', vertical: 'xxsmall'}}
+                onChat={() => setOpen(false)} />
+            )}
+            </CurrentUserContext.Consumer>
           </Box>
         )}
       </Modal>

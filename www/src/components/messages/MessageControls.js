@@ -1,7 +1,7 @@
 import React, {useState, useRef} from 'react'
 import {Mutation} from 'react-apollo'
 import {Box, Drop, Text} from 'grommet'
-import {More, Emoji, Pin} from 'grommet-icons'
+import {More, Emoji, Pin, Trash} from 'grommet-icons'
 import HoveredBackground from '../utils/HoveredBackground'
 import MenuItem from '../utils/MenuItem'
 import Popover from 'react-tiny-popover'
@@ -32,7 +32,10 @@ function DeleteMessage(props) {
       }}>
       {mutation => (
         <MenuItem>
-          <Text size='small' onClick={mutation}>delete</Text>
+          <Box direction='row' align='center' gap='small'>
+            <Trash size='12px' />
+            <Text size='small' onClick={mutation}>delete message</Text>
+          </Box>
         </MenuItem>
       )}
     </Mutation>
@@ -155,7 +158,7 @@ function MessageControls(props) {
           margin={{top: '4px'}}
           onClickOutside={() => toggleOpen(false)}
           onEsc={() => toggleOpen(false)}>
-          <Box style={{minWidth: '100px'}}>
+          <Box style={{minWidth: '140px'}} pad={{vertical: 'xxsmall'}}>
             <DeleteMessage {...props} />
           </Box>
         </Drop>

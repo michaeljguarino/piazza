@@ -17,6 +17,7 @@ defmodule Core.Models.Message do
     field :attachment_id,      :binary_id
     field :pinned_at,          :utc_datetime_usec
     field :structured_message, StructuredMessage.Type
+    field :flattened_text,     :string
 
     belongs_to :creator,      User
     belongs_to :conversation, Conversation
@@ -34,10 +35,13 @@ defmodule Core.Models.Message do
   def for_conversation(query \\ __MODULE__, conv_id),
     do: from(m in query, where: m.conversation_id == ^conv_id)
 
+  @tsv_query "to_tsvector('english', ?) @@ to_tsquery(?)"
+  @tsv_rank "ts_rank_cd(to_tsvector('english', ?), to_tsquery(?))"
+
   def search(query \\ __MODULE__, search_query) do
     from(m in query,
-      where: fragment("to_tsvector('english', ?) @@ to_tsquery(?)", m.text, ^search_query),
-      order_by: [desc: fragment("ts_rank_cd(to_tsvector('english', ?), to_tsquery(?))", m.text, ^search_query)])
+      where: fragment(@tsv_query, m.text, ^search_query) or fragment(@tsv_query, m.flattened_text, ^search_query),
+      order_by: [desc: fragment(@tsv_rank, m.flattened_text, ^search_query)])
   end
 
   def with_anchor(query \\ __MODULE__, dt, direction)
@@ -83,5 +87,17 @@ defmodule Core.Models.Message do
     end)
     |> generate_uuid(:attachment_id)
     |> cast_attachments(attrs, [:attachment], allow_urls: true)
+    |> flatten_text()
+  end
+
+  defp flatten_text(changeset) do
+    if get_change(changeset, :text) || get_change(changeset, :structured_message) do
+      text = get_field(changeset, :text)
+      flattened = get_field(changeset, :structured_message) |> StructuredMessage.to_string()
+
+      put_change(changeset, :flattened_text, "#{text} #{flattened}")
+    else
+      changeset
+    end
   end
 end
