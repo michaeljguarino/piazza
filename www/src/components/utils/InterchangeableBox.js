@@ -3,7 +3,8 @@ import {Box, Text} from 'grommet'
 import {FormPrevious} from 'grommet-icons'
 import HoveredBackground from './HoveredBackground'
 import TinyCrossfade from "react-tiny-crossfade"
-import './crossfade.css'
+import {SwitchTransition, CSSTransition} from 'react-transition-group'
+import './interbox.css'
 
 function ContentWrapper(props) {
   return (
@@ -39,12 +40,14 @@ function InterchangeableBox(props) {
   const [alternate, setAlternate] = useState(null)
 
   return (
-    <TinyCrossfade duration={200} className='crossfade-wrapper' >
+    <SwitchTransition>
+      <CSSTransition key={alternate ? 'alternate' : 'original'} timeout={200} classNames='interbox'>
       {!alternate ?
-        <Box key='original' {...props}>{props.children(setAlternate)}</Box>
-        : <MaybeWrap key='alternate' noWrap={props.noWrap} setAlternate={setAlternate}>{alternate}</MaybeWrap>
+        <Box {...props}>{props.children(setAlternate)}</Box>
+        : <MaybeWrap noWrap={props.noWrap} setAlternate={setAlternate}>{alternate}</MaybeWrap>
       }
-    </TinyCrossfade>
+      </CSSTransition>
+    </SwitchTransition>
   )
 }
 

@@ -1,0 +1,16 @@
+.interbox-enter {
+  opacity: 0;
+}
+.interbox-enter-active {
+  opacity: 1;
+  transition: opacity 200ms;
+}
+
+.interbox-exit {
+  opacity: 1;
+}
+
+.interbox-exit-active {
+  opacity: 0;
+  transition: opacity 200ms;
+}
