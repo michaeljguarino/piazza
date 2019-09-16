@@ -16,9 +16,12 @@ function UserDetail(props) {
             <Avatar size='80px' user={props.user} rightMargin='0px' />
             <Box>
               <Text>{props.user.name}</Text>
-              <Text size='small'>@{props.user.handle} {props.user.id !== me.id && (
-                <CreateChat user={props.user} onChat={props.onChat} />
-              )}</Text>
+              <Box direction='row' align='center' gap='xsmall'>
+                <Text size='small'>@{props.user.handle}</Text>
+                {props.user.id !== me.id && (
+                  <CreateChat user={props.user} onChat={props.onChat} />
+                )}
+              </Box>
               <Text size='small' color='dark-6'>{props.user.title}</Text> 
             </Box>
           </Box>
@@ -27,6 +30,12 @@ function UserDetail(props) {
               <Text size='small' weight='bold'>Email:</Text>
               <Text size='small'>{props.user.email}</Text>
             </Box>
+          {props.user.phone && (
+            <Box direction='row' gap='xsmall'>
+              <Text size='small' weight='bold'>Phone:</Text>
+              <Text size='small'>{props.user.phone}</Text>
+            </Box>
+          )}
           {props.user.bio && (
             <Box>
               <Box>

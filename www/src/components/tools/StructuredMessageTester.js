@@ -1,5 +1,7 @@
-import React, {useState} from 'react'
-import {Box, TextArea} from 'grommet'
+import React, {useState, useRef} from 'react'
+import {Box} from 'grommet'
+import { Editor } from 'slate-react'
+import Plain from 'slate-plain-serializer'
 import StructuredMessage from '../messages/StructuredMessage'
 const parseXml = require('@rgrove/parse-xml')
 
@@ -11,7 +13,7 @@ function parseMessage(msg) {
     let message = convertJson(json.children[0])
     return <StructuredMessage {...message} />
   } catch(e) {
-    return e.message
+    return null
   }
 }
 
@@ -37,17 +39,26 @@ const DUMMY_MESSAGE = `<root>
 `
 
 function StructuredMessageTester(props) {
-  const [message, setMessage] = useState(DUMMY_MESSAGE)
+  const editorRef = useRef()
+  const [message, setMessage] = useState(parseMessage(DUMMY_MESSAGE))
 
   return (
-    <Box pad='medium' width='50vw' height='80vh' gap='medium'>
-      <Box direction='row' gap='medium' height='100%' fill='horizontal'>
-        <TextArea
-          value={message}
-          placeholder='Put your contents here'
-          onChange={(e) => setMessage(e.target.value) } />
-        <Box pad='small' border round='small' style={{minWidth: '60%'}}>
-          {parseMessage(message)}
+    <Box style={{maxHeight: '80vh'}} pad='medium' width='50vw' gap='medium'>
+      <Box direction='row' gap='medium' fill='horizontal'>
+        <Box border round='small' pad='xsmall'>
+          <Editor
+            ref={editorRef}
+            defaultValue={Plain.deserialize(DUMMY_MESSAGE)}
+            onChange={state => {
+              const text = Plain.serialize(state.value)
+              const parsed = parseMessage(text)
+              if (parsed) {
+                setMessage(parsed)
+              }
+            }} />
+        </Box>
+        <Box pad='xsmall' border round='small' style={{minWidth: '60%'}}>
+          {message}
         </Box>
       </Box>
     </Box>

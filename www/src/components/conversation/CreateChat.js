@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useState} from 'react'
 import {Chat} from 'grommet-icons'
 import {Mutation} from 'react-apollo'
 import {CREATE_CHAT, CONVERSATIONS_Q} from './queries'
@@ -6,6 +6,7 @@ import {addConversation} from './utils'
 import {Conversations} from '../login/MyConversations'
 
 function CreateChat(props) {
+  const [hover, setHover] = useState(false)
   return (
     <Conversations.Consumer>
     {({setCurrentConversation}) => (
@@ -22,9 +23,13 @@ function CreateChat(props) {
         props.onChat && props.onChat()
       }} >
       {mutation => (
-        <span style={{cursor: 'pointer'}} onClick={mutation}>
-          <Chat size='15px' />
-        </span>
+        <Chat 
+          onMouseEnter={() => setHover(true)}
+          onMouseLeave={() => setHover(false)}
+          color={hover ? 'focus' : 'dark-5'}
+          style={{cursor: 'pointer'}} 
+          onClick={mutation} 
+          size='15px' />
       )}
       </Mutation>
     )}

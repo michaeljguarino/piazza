@@ -1,6 +1,11 @@
 import React from 'react'
 import {Box, Text, Markdown, Anchor} from 'grommet'
 
+function recurse(children) {
+  if (!children) return null
+  return children.map(parse)
+}
+
 function video(props) {
   const {url, loop, autoPlay, ...rest} = props.attributes
   return (
@@ -18,7 +23,7 @@ function box(props) {
   const {children, attributes} = props
   return (
     <Box key={props.key} {...attributes}>
-      {children.map(parse)}
+      {recurse(children)}
     </Box>
   )
 }
@@ -32,7 +37,7 @@ function attachment(props, i) {
         borderLeftStyle: 'solid',
         borderLeftWidth: '2px',
         borderLeftColor: accent || 'rgba(35, 137, 215, 0.5)'}}>
-        {children.map(parse)}
+        {recurse(children)}
       </Box>
     </Box>
   )
@@ -67,7 +72,7 @@ function image(props) {
 function link(props) {
   const {attributes, children} = props
   const value = props.value || attributes.value
-  return <Anchor key={props.key} {...attributes}>{value ? value :  children.map(parse)}</Anchor>
+  return <Anchor key={props.key} {...attributes}>{value ? value :  recurse(children)}</Anchor>
 }
 
 function parse(struct, index) {
@@ -96,7 +101,7 @@ function StructuredMessage(props) {
   const {children} = props
   return (
     <Box fill='horizontal' gap='xsmall' {...(props.attributes || {})}>
-      {children.map(parse)}
+      {recurse(children)}
     </Box>
   )
 }
