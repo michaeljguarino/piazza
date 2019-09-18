@@ -15,6 +15,20 @@ import Plain from 'slate-plain-serializer'
 import SuggestionsPlugin from 'slate-smart-suggestions'
 import './MentionManager.css'
 
+const BUILTIN_MENTIONS = [
+  {mention: "here", explanation: "Notifies all members of the conversation"}
+]
+
+function findBuiltinMentions(query) {
+  return BUILTIN_MENTIONS
+    .filter(({mention}) => mention.indexOf(query) >= 0)
+    .map(({mention, explanation}) => ({
+      key: mention,
+      value: mention,
+      suggestion: builtinMention(mention, explanation)
+    }))
+}
+
 export function fetchUsers(client, query) {
   if (!query) return
 
@@ -27,6 +41,8 @@ export function fetchUsers(client, query) {
       value: edge.node.handle,
       suggestion: userSuggestion(edge.node)
     }))
+  }).then(userMentions => {
+    return findBuiltinMentions(query).concat(userMentions)
   })
 }
 
@@ -74,12 +90,14 @@ function fetchEmojis(client, query) {
 
 export function userSuggestion(user) {
   return (
-    <Box direction='row' align='center' pad='xsmall' gap='xsmall'>
-      <Avatar user={user} />
-      <Box justify='center' width='100%'>
-        <UserHandle user={user} />
+    <Box direction='row' align='center' pad='xsmall' gap='xsmall' justify='end'>
+      <Box style={{minWidth: '200px'}} direction='row'>
+        <Avatar user={user} />
+        <Box justify='center'>
+          <UserHandle user={user} />
+        </Box>
       </Box>
-      <Box direction='row' justify='end'>
+      <Box width='100%' direction='row' justify='end'>
         <Text size='small'>{user.name}</Text>
       </Box>
     </Box>
@@ -90,6 +108,15 @@ function commandSuggestion(command) {
   return (
     <Box direction='row' align='center' pad='xsmall'>
       <Text size='xsmall' weight='bold'>/{command.name}</Text>
+    </Box>
+  )
+}
+
+function builtinMention(mention, explanation) {
+  return (
+    <Box direction='row' align='center' pad='xsmall' gap='xsmall'>
+      <Text size='small' weight='bold'>@{mention}</Text>
+      <Text size='small'>{explanation}</Text>
     </Box>
   )
 }

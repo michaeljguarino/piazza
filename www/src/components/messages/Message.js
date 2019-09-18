@@ -121,6 +121,8 @@ function MessageEntity(props) {
         <CustomEmoji emoji={emoji} size={17} /> :
         <Emoji tooltip emoji={emoji.name} size={17} />
       )
+    case "CHANNEL_MENTION":
+      return <Text style={{background: PINNED_BACKGROUND}} size='small' weight='bold'>{"@" + props.entity.text}</Text>
     default:
       return <span />
   }

@@ -63,6 +63,7 @@ export const MessageFragment = gql`
       type
       startIndex
       length
+      text
       user {
         ...UserFragment
       }
