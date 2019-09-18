@@ -106,8 +106,9 @@ export function userSuggestion(user) {
 
 function commandSuggestion(command) {
   return (
-    <Box direction='row' align='center' pad='xsmall'>
+    <Box direction='row' align='center' pad='xsmall' gap='small'>
       <Text size='xsmall' weight='bold'>/{command.name}</Text>
+      <Text size='xsmall'><i>{command.description}</i></Text>
     </Box>
   )
 }
@@ -115,8 +116,8 @@ function commandSuggestion(command) {
 function builtinMention(mention, explanation) {
   return (
     <Box direction='row' align='center' pad='xsmall' gap='xsmall'>
-      <Text size='small' weight='bold'>@{mention}</Text>
-      <Text size='small'>{explanation}</Text>
+      <Text size='xsmall' weight='bold'>@{mention}</Text>
+      <Text size='xsmall'>{explanation}</Text>
     </Box>
   )
 }

@@ -10,6 +10,7 @@ function video(props) {
   const {url, loop, autoPlay, ...rest} = props.attributes
   return (
     <video 
+      style={{maxWidth: '250px', maxHeight: '250px'}}
       key={props.key} 
       loop={!!loop} 
       autoPlay={!!autoPlay} 
