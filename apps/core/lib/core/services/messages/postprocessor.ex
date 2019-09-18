@@ -14,9 +14,10 @@ defmodule Core.Services.Messages.PostProcessor do
   (so don't mention yourself)
   """
   def extract_entities(text, user) do
-    mentions = extract_mentions(text, user)
+    bare_mentions = extract_mentions(text, user)
     emoji = extract_emoji(text)
-    mention_entities = for {user, handle, {pos, len}} <- mentions do
+
+    mention_entities = for {user, handle, {pos, len}} <- inflate_users(bare_mentions) do
       timestamped(%{
         user_id: user.id,
         type: :mention,
@@ -25,6 +26,7 @@ defmodule Core.Services.Messages.PostProcessor do
         text: handle
       })
     end
+    
     emoji_entities = for {emoji, name, {pos, len}} <- emoji do
       timestamped(%{
         type: :emoji,
@@ -35,7 +37,23 @@ defmodule Core.Services.Messages.PostProcessor do
       })
     end
 
-    mention_entities ++ emoji_entities
+    channel_mentions(bare_mentions) ++ mention_entities ++ emoji_entities
+  end
+
+  defp channel_mentions(bare_mentions) do
+    bare_mentions
+    |> Enum.filter(fn
+      {"here", _} -> true
+      _ -> false
+    end)
+    |> Enum.map(fn {text, {pos, len}} ->
+      timestamped(%{
+        type: :channel_mention,
+        length: len,
+        start_index: pos,
+        text: text
+      })
+    end)
   end
 
   defp extract_emoji(text) do
@@ -57,7 +75,6 @@ defmodule Core.Services.Messages.PostProcessor do
       _ -> true
     end)
     |> Enum.take(@max_entities)
-    |> inflate_users()
   end
 
   defp inflate_users(mention_entities) do

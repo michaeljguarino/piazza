@@ -2,7 +2,8 @@ defmodule Core.Models.MessageEntity do
   use Piazza.Ecto.Schema
   alias Core.Models.{Message, User, Emoji}
 
-  defenum Type, mention: 0, emoji: 1
+  defenum Type, mention: 0, emoji: 1, channel_mention: 2
+
   schema "message_entities" do
     field :type, Type
     field :start_index, :integer

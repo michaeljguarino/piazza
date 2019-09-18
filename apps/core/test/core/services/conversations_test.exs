@@ -191,6 +191,18 @@ defmodule Core.Services.ConversationsTest do
       assert entity.text == "michael"
       assert entity.emoji_id == emoji.id
     end
+
+    test "It can mention entire channels" do
+      user = insert(:user)
+      conv = insert(:conversation)
+
+      {:ok, %{entities: [entity]}} = Conversations.create_message(conv.id, %{text: "hey @here"}, user)
+
+      assert entity.type == :channel_mention
+      assert entity.start_index == 4
+      assert entity.length == 5
+      assert entity.text == "here"
+    end
   end
 
   describe "#delete_message/2" do

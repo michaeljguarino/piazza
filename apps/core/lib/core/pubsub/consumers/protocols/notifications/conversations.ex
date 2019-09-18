@@ -12,16 +12,14 @@ defimpl Core.Notifications.Notifiable, for: Core.PubSub.MessageCreated do
     mentions     = filter_mentions(entities, by_user)
 
     mentioned_users = Enum.map(entities, & &1.user_id) |> MapSet.new()
+    has_channel_mention = Enum.any?(entities, & &1.type == :channel_mention)
+    mention_type = if has_channel_mention, do: :mention, else: :message
 
     participants
     |> Enum.filter(& &1.user_id not in mentioned_users)
     |> Enum.filter(& &1.user_id != msg.creator_id)
-    |> Enum.filter(fn
-      %{user: %{notification_preferences: %{message: false}}} -> false
-      %{notification_preferences: %{message: true}} -> true
-      _ -> false
-    end)
-    |> Enum.map(& {:message, &1.user_id})
+    |> Enum.filter(&filter_participant(&1, has_channel_mention))
+    |> Enum.map(& {mention_type, &1.user_id})
     |> Enum.concat(mentions)
   end
 
@@ -32,6 +30,11 @@ defimpl Core.Notifications.Notifiable, for: Core.PubSub.MessageCreated do
     |> Participant.preload([:user])
     |> Core.Repo.all()
   end
+
+  defp filter_participant(%{user: %{notification_preferences: %{message: false}}}, _), do: false
+  defp filter_participant(%{notification_preferences: %{message: true}}, _), do: true
+  defp filter_participant(_, true), do: true
+  defp filter_participant(_, _), do: false
 
   defp filter_mentions(entities, participants_by_user) do
     entities

@@ -22,6 +22,25 @@ defmodule Core.PubSub.Consumers.Notifications.ConversationsTest do
         do: assert_receive {:event, %PubSub.NotificationCreated{item: ^notif}}
     end
 
+    test "It will notify all mentions and participants if @here is used" do
+      msg = insert(:message)
+      mentions = insert_list(3, :message_entity, message: msg)
+      insert(:message_entity, message: msg, type: :channel_mention)
+      participant = insert(:participant, conversation: msg.conversation)
+
+      event = %PubSub.MessageCreated{item: msg}
+      {:ok, notifs} = Notifications.handle_event(event)
+
+      assert length(notifs) == 4
+      assert Enum.all?(notifs, & &1.type == :mention)
+      assert Enum.all?(notifs, & &1.actor_id == msg.creator_id)
+      assert Enum.map(notifs, & &1.user_id)
+             |> ids_equal([participant.user_id | Enum.map(mentions, & &1.user_id)])
+
+      for notif <- notifs,
+        do: assert_receive {:event, %PubSub.NotificationCreated{item: ^notif}}
+    end
+
     test "It will notify participants with message enabled" do
       msg = insert(:message)
       insert_list(2, :participant, conversation: msg.conversation)

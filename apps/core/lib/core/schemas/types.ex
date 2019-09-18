@@ -204,6 +204,7 @@ defmodule Core.Schemas.Types do
   enum :entity_type do
     value :mention
     value :emoji
+    value :channel_mention
   end
 
   object :message_entity do
