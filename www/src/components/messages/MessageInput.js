@@ -3,7 +3,7 @@ import {socket} from '../../helpers/client'
 import TimedCache from '../utils/TimedCache'
 import HoveredBackground from '../utils/HoveredBackground'
 import { Mutation } from 'react-apollo'
-import {Box, Form, Text, Markdown, Layer} from 'grommet'
+import {Box, Text, Markdown, Layer, Keyboard} from 'grommet'
 import {Attachment} from 'grommet-icons'
 import {FilePicker} from 'react-file-picker'
 import debounce from 'lodash/debounce'
@@ -126,11 +126,7 @@ class MessageInput extends Component {
             }}
         >
         {postMutation => (
-          <Form onSubmit={() => {
-              postMutation()
-              this.setState({attachment: null, text: ''})
-              this.props.resetHeight()
-            }} onKeyDown={(e) => {
+          <Keyboard onKeyDown={(e) => {
               if (e.key === 'Enter' && !e.shiftKey && !this.state.disableSubmit) {
                 postMutation()
                 this.setState({attachment: null, text: ''})
@@ -153,18 +149,16 @@ class MessageInput extends Component {
                 setText={(text) => this.setState({ text: text })}
                 disableSubmit={(disable) => this.setState({disableSubmit: disable})}
                 submitDisabled={this.state.disableSubmit}
-                onChange={text => {
-                  this.notifyTyping()
-                }} />
+                onChange={() => this.notifyTyping()} />
                 <HoveredBackground>
                   <Box
                     accentable
                     style={{cursor: "pointer"}}>
                     <FilePicker
-                        onChange={ (file) => this.setState({useUpload: true, attachment: file})}
-                        maxSize={2000}
-                        onError={(msg) => console.log(msg)}
-                      >
+                      onChange={(file) => this.setState({useUpload: true, attachment: file})}
+                      maxSize={2000}
+                      onError={(msg) => console.log(msg)}
+                    >
                       <Box 
                         align='center'
                         justify='center'
@@ -176,7 +170,7 @@ class MessageInput extends Component {
                   </Box>
                 </HoveredBackground>
             </Box>
-          </Form>
+          </Keyboard>
         )}
         </Mutation>
         <Box style={{height: '20px'}} pad={{top: '2px', bottom: '2px'}} align='center' direction='row' fill='horizontal'>

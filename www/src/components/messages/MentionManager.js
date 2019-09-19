@@ -257,7 +257,6 @@ function MentionManager(props) {
             onKeyDown={(e, editor, next) => {
               if (e.key === 'Enter' && !e.shiftKey && !props.submitDisabled) {
                 setEditorState(Plain.deserialize(''))
-                // e.preventDefault()
                 return
               }
               return next()
@@ -267,7 +266,6 @@ function MentionManager(props) {
               setEditorState(state.value)
               props.setText(text)
               props.onChange(state)
-              props.disableSubmit(false)
             }}
             placeholder="this is for talking"
           />
@@ -292,11 +290,11 @@ function MentionManager(props) {
               onEsc={() => setEmojiPicker(false)}
             >
               <EmojiPicker onSelect={(emoji) => {
-                  let text = Plain.serialize(editorState)
-                  text += ' ' + (emoji.native ? emoji.native : `:${emoji.short_names[0]}:`)
-                  props.setText(text)
-                  setEditorState(Plain.deserialize(text))
-                }} />
+                let text = Plain.serialize(editorState)
+                text += ' ' + (emoji.native ? emoji.native : `:${emoji.short_names[0]}:`)
+                props.setText(text)
+                setEditorState(Plain.deserialize(text))
+              }} />
             </Drop>
           )}
         </>
