@@ -1,6 +1,6 @@
 import React, {useState} from 'react'
 import {Mutation} from 'react-apollo'
-import {Box, Text, Markdown, Anchor} from 'grommet'
+import {Box, Text, Markdown, Anchor, Calendar} from 'grommet'
 import {Down} from 'grommet-icons'
 import CloseableDropdown from '../utils/CloseableDropdown'
 import Modal, {ModalHeader} from '../utils/Modal'
@@ -17,12 +17,9 @@ import NotificationsPreferences, {DEFAULT_PREFS} from '../users/NotificationPref
 import {updateConversation} from './utils'
 import {conversationNameString, Icon} from './Conversation'
 import pick from 'lodash/pick'
-import moment from 'moment'
 import InterchangeableBox from '../utils/InterchangeableBox'
 import MenuItem, {SubMenu} from '../utils/MenuItem'
 import HoveredBackground from '../utils/HoveredBackground'
-import {DayPickerSingleDateController} from 'react-dates'
-import 'react-dates/lib/css/_datepicker.css'
 
 export const BOX_ATTRS = {
   direction: "row",
@@ -123,6 +120,8 @@ function ConversationName(props) {
   )
 }
 
+const DROP_WIDTH = '230px'
+
 function ConversationDropdown(props) {
   const currentParticipant = props.conversation.currentParticipant || {}
   const variables = {
@@ -138,7 +137,7 @@ function ConversationDropdown(props) {
       align={{left: 'left', top: "bottom"}}
       target={<ConversationName me={props.me} conversation={props.conversation} />}>
       {setOpen => (
-        <InterchangeableBox width='230px' round='small' pad={{vertical: 'xxsmall'}}>
+        <InterchangeableBox width={DROP_WIDTH} round='small' pad={{vertical: 'xxsmall'}}>
         {setAlternate => (
           <>
           <SubMenu
@@ -146,7 +145,7 @@ function ConversationDropdown(props) {
             setAlternate={setAlternate}>
             <Mutation mutation={UPDATE_PARTICIPANT}>
             {mutation => (
-              <Box pad='small'>
+              <Box width={DROP_WIDTH} pad='small'>
                 <NotificationsPreferences
                   vars={variables}
                   preferences={pick(preferences, ['mention', 'message', 'participant'])}
@@ -158,15 +157,15 @@ function ConversationDropdown(props) {
           <SubMenu
             text='Jump to date'
             setAlternate={setAlternate}>
-            <DayPickerSingleDateController
-              date={moment()}
-              hideKeyboardShortcutsPanel
-              focused
-              onFocusChange={() => null}
-              onDateChange={(date) => {
-                setOpen(false)
-                props.setAnchor({timestamp: date.toISOString()})
-              }} />
+            <Box width={DROP_WIDTH} pad={{vertical: 'small'}} align='center' justify='center'>
+              <Calendar
+                date={(new Date()).toISOString()}
+                size='small'
+                onSelect={(date) => {
+                  setOpen(false)
+                  props.setAnchor({timestamp: date})
+                }} />
+            </Box>
           </SubMenu>
           <MenuItem>
             <Mutation

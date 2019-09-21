@@ -158,9 +158,18 @@ function PinHeader(props) {
   return null
 }
 
+function isConsecutive(message, next) {
+  if (!next) return false
+  if (message.creator.id !== next.creator.id) return false
+  const firstTime = moment(message.insertedAt)
+  const secondTime = moment(next.insertedAt)
+
+  return (firstTime.add(-1, 'minutes').isBefore(secondTime))
+}
+
 function MessageBody(props) {
   const date = moment(props.message.insertedAt)
-  const consecutive = props.message.creator.id === (props.next && props.next.creator.id)
+  const consecutive = isConsecutive(props.message, props.next)
   const background = (props.message.pin && !props.nopin) ? PINNED_BACKGROUND : null
   return (
     <Box fill='horizontal' background={background}>

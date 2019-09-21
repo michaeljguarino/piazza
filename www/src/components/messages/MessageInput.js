@@ -141,8 +141,7 @@ class MessageInput extends Component {
               direction="row"
               align="center"
               border
-              round='xsmall'
-            >
+              round='xsmall'>
               <MentionManager
                 parentRef={this.boxRef}
                 text={this.state.text}
