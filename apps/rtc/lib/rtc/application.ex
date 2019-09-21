@@ -11,7 +11,7 @@ defmodule Rtc.Application do
       Rtc.Presence,
       {Absinthe.Subscription, [RtcWeb.Endpoint]},
       {Cluster.Supervisor, [topologies, [name: Rtc.ClusterSupervisor]]}
-    ] ++ broker()
+    ] ++ broker() ++ thrift_server()
 
     opts = [strategy: :one_for_one, name: Rtc.Supervisor]
     Supervisor.start_link(children, opts)
@@ -46,6 +46,4 @@ defmodule Rtc.Application do
       type: :supervisor
     }
   end
-
-  defp host(), do: Application.get_env(:rtc, :gql_host)
 end

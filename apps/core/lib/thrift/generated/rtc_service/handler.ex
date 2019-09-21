@@ -1,4 +1,7 @@
 defmodule(Thrift.Generated.RtcService.Handler) do
   @moduledoc(false)
-  @callback(publish_event(event :: %Thrift.Generated.PubSubEvent{}) :: boolean())
+  (
+    @callback(list_active(req :: %Thrift.Generated.ActiveUserRequest{}) :: %Thrift.Generated.ActiveUsers{})
+    @callback(publish_event(event :: %Thrift.Generated.PubSubEvent{}) :: boolean())
+  )
 end

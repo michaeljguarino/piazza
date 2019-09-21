@@ -157,10 +157,11 @@ function ConversationDropdown(props) {
           <SubMenu
             text='Jump to date'
             setAlternate={setAlternate}>
-            <Box width={DROP_WIDTH} pad={{vertical: 'small'}} align='center' justify='center'>
+            <Box width={DROP_WIDTH} pad={{top: 'small'}} align='center' justify='center'>
               <Calendar
                 date={(new Date()).toISOString()}
                 size='small'
+                showAdjacentDays={false}
                 onSelect={(date) => {
                   setOpen(false)
                   props.setAnchor({timestamp: date})

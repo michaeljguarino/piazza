@@ -51,6 +51,14 @@ export const DEFAULT_THEME = {
       fontWeight: 400
     }
   },
+  calendar: {
+    day: {
+      extend: {
+        borderRadius: '5px',
+        fontWeight: 'normal'
+      }
+    }
+  },
   textField: {
     extend: {
       fontWeight: 400

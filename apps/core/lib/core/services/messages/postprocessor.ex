@@ -44,6 +44,7 @@ defmodule Core.Services.Messages.PostProcessor do
     bare_mentions
     |> Enum.filter(fn
       {"here", _} -> true
+      {"all", _} -> true
       _ -> false
     end)
     |> Enum.map(fn {text, {pos, len}} ->

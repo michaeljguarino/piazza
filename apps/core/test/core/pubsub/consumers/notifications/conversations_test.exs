@@ -1,6 +1,7 @@
 defmodule Core.PubSub.Consumers.Notifications.ConversationsTest do
   use Core.DataCase, async: true
-
+  import Mock
+  alias Thrift.Generated.{ActiveUsers, ActiveUser}
   alias Core.PubSub
   alias Core.PubSub.Consumers.Notifications
 
@@ -22,10 +23,10 @@ defmodule Core.PubSub.Consumers.Notifications.ConversationsTest do
         do: assert_receive {:event, %PubSub.NotificationCreated{item: ^notif}}
     end
 
-    test "It will notify all mentions and participants if @here is used" do
+    test "It will notify all mentions and participants if @all is used" do
       msg = insert(:message)
       mentions = insert_list(3, :message_entity, message: msg)
-      insert(:message_entity, message: msg, type: :channel_mention)
+      insert(:message_entity, message: msg, type: :channel_mention, text: "all")
       participant = insert(:participant, conversation: msg.conversation)
 
       event = %PubSub.MessageCreated{item: msg}
@@ -39,6 +40,26 @@ defmodule Core.PubSub.Consumers.Notifications.ConversationsTest do
 
       for notif <- notifs,
         do: assert_receive {:event, %PubSub.NotificationCreated{item: ^notif}}
+    end
+
+    test "It will notify online participants if @here is used" do
+      user = insert(:user)
+      with_mock Core.RtcClient, [
+        rpc: fn :list_active, %{scope: "lobby"} -> 
+          {:ok, %ActiveUsers{active_users: [%ActiveUser{user_id: user.id}]}}
+        end
+      ] do
+        msg = insert(:message)
+        insert(:message_entity, message: msg, type: :channel_mention, text: "here")
+        insert(:participant, conversation: msg.conversation, user: user)
+        insert(:participant, conversation: msg.conversation)
+
+        event = %PubSub.MessageCreated{item: msg}
+        {:ok, [notif]} = Notifications.handle_event(event)
+        
+        assert notif.type == :mention
+        assert notif.user_id == user.id
+      end
     end
 
     test "It will notify participants with message enabled" do

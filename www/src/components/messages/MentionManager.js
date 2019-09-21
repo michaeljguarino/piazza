@@ -16,7 +16,8 @@ import SuggestionsPlugin from 'slate-smart-suggestions'
 import './MentionManager.css'
 
 const BUILTIN_MENTIONS = [
-  {mention: "here", explanation: "Notifies all members of the conversation"}
+  {mention: "here", explanation: "Notifies all members of the conversation who are currently online"},
+  {mention: "all", explanation: "Notifies all participants in the conversation, even if offline"}
 ]
 
 function findBuiltinMentions(query) {
