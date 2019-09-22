@@ -93,7 +93,7 @@ bootstrap: ## initialize your helm/kubernetes environment
 	gcloud projects add-iam-policy-binding $(GCP_PROJECT) \
 		--member serviceAccount:external-dns@$(GCP_PROJECT).iam.gserviceaccount.com --role roles/dns.admin
 	gcloud iam service-accounts keys create --iam-account \
-                external-dns@piazza-247002.iam.gserviceaccount.com credentials.json
+                external-dns@$(GCP_PROJECT).iam.gserviceaccount.com credentials.json
 	kubectl create secret generic externaldns --from-file credentials.json --namespace piazza
 	rm credentials.json
 	

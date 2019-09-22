@@ -18,9 +18,11 @@ defmodule Core.Models.Message do
     field :pinned_at,          :utc_datetime_usec
     field :structured_message, StructuredMessage.Type
     field :flattened_text,     :string
+    field :reply_count,        :integer, default: 0
 
     belongs_to :creator,      User
     belongs_to :conversation, Conversation
+    belongs_to :parent,       __MODULE__
     has_many   :entities,     MessageEntity
     has_many   :reactions,    MessageReaction
     has_one    :pin,          PinnedMessage
@@ -30,7 +32,7 @@ defmodule Core.Models.Message do
     timestamps()
   end
 
-  @valid ~w(text structured_message)a
+  @valid ~w(text structured_message parent_id)a
 
   def for_conversation(query \\ __MODULE__, conv_id),
     do: from(m in query, where: m.conversation_id == ^conv_id)
@@ -78,6 +80,7 @@ defmodule Core.Models.Message do
     |> validate_required([:text, :creator_id, :conversation_id])
     |> foreign_key_constraint(:creator_id)
     |> foreign_key_constraint(:conversation_id)
+    |> foreign_key_constraint(:parent_id)
     |> validate_length(:text, max: 255)
     |> validate_change(:structured_message, fn _, message ->
       case StructuredMessage.validate(message) do

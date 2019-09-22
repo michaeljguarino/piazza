@@ -116,6 +116,21 @@ defmodule Core.Services.ConversationsTest do
       assert_receive {:event, %PubSub.MessageCreated{item: ^message}}
     end
 
+    test "Creating replies bump the parent's reply count" do
+      user = insert(:user)
+      conv = insert(:conversation)
+      msg  = insert(:message, conversation: conv)
+      insert(:participant, user: user, conversation: conv)
+
+      {:ok, reply} = Conversations.create_message(conv.id, %{text: "a reply", parent_id: msg.id}, user)
+
+      assert reply.parent_id == msg.id
+      assert reply.conversation_id == conv.id
+      assert reply.text == "a reply"
+
+      assert refetch(msg).reply_count == 1
+    end
+
     test "Structured messages can be defined with xml" do
       %{user: user, conversation: conversation} = insert(:participant)
 

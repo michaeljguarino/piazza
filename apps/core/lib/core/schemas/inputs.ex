@@ -31,6 +31,7 @@ defmodule Core.Schemas.Inputs do
   input_object :message_attributes do
     field :text,       :string
     field :attachment, :upload
+    field :parent_id,  :id
   end
 
   input_object :participant_attributes do

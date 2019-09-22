@@ -188,6 +188,14 @@ defmodule Core.Services.Conversations do
         _ -> {:ok, %{msg | entities: []}}
       end
     end)
+    |> add_operation(:parent, fn %{message: msg} ->
+      Core.Repo.preload(msg, [:parent])
+      |> Map.get(:parent)
+      |> case do
+        nil -> {:ok, msg}
+        msg -> Core.Repo.increment(msg, :reply_count)
+      end
+    end)
     |> execute(extract: :inflated)
     |> notify(:create, user)
   end

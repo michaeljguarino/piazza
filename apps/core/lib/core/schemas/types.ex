@@ -173,6 +173,7 @@ defmodule Core.Schemas.Types do
     field :text, non_null(:string)
     field :creator_id, non_null(:id)
     field :conversation_id, non_null(:id)
+    field :reply_count, non_null(:integer)
     field :structured_message, :map
     field :pinned_at, :datetime
     field :attachment, :string, resolve: fn
@@ -183,6 +184,7 @@ defmodule Core.Schemas.Types do
     field :entities, list_of(:message_entity), resolve: dataloader(Conversation)
     field :reactions, list_of(:message_reaction), resolve: dataloader(Conversation)
     field :pin, :pinned_message, resolve: dataloader(Conversation)
+    field :parent, :message, resolve: dataloader(Conversation)
     field :embed, :embed
 
     timestamps()

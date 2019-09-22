@@ -46,7 +46,8 @@ export function FlyoutHeader(props) {
       height='40px'
       direction='row'
       border='bottom'
-      pad='small' 
+      pad='small'
+      elevation={hover ? 'xsmall' : null}
       margin={{bottom: 'small'}}>
       <Box width='100%' direction='row' justify='start' align='center'>
         <Text size='small'>{props.text.toUpperCase()}</Text>
