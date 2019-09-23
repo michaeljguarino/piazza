@@ -198,6 +198,11 @@ function MessageBody(props) {
             {props.message.reactions && props.message.reactions.length > 0 && (
               <MessageReactions {...props} />
             )}
+            {props.message.parent && (
+              <Box style={{borderLeft: '2px solid grey'}}>
+                <Message noHover message={props.message.parent} />
+              </Box>
+            )}
           </Box>
         </Box>
       </Box>
@@ -208,7 +213,7 @@ function MessageBody(props) {
 function Message(props) {
   const [hover, setHover] = useState(false)
   const [pinnedHover, setPinnedHover] = useState(false)
-  const isHovered = pinnedHover || hover
+  const isHovered = (pinnedHover || hover) && !props.noHover
   const background = props.selected ? SELECTED_BACKGROUND : (isHovered && !props.message.pin) ? 'light-2' : null
   return (
     <Box

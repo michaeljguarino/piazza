@@ -1,7 +1,7 @@
 import React, {useState, useRef} from 'react'
 import {Mutation} from 'react-apollo'
 import {Box, Drop, Text} from 'grommet'
-import {More, Emoji, Pin, Trash} from 'grommet-icons'
+import {More, Emoji, Pin, Trash, BlockQuote} from 'grommet-icons'
 import HoveredBackground from '../utils/HoveredBackground'
 import MenuItem from '../utils/MenuItem'
 import Popover from 'react-tiny-popover'
@@ -142,6 +142,11 @@ function MessageControls(props) {
     <Box elevation='xsmall' background='white' direction='row' height='30px' border round='xsmall' margin={{right: '10px'}}>
       <MessageReaction {...props} />
       <PinMessage {...props} />
+      <HoveredBackground>
+        <Box accentable onClick={() => props.setReply(props.message)} {...CONTROL_ATTRS}>
+          <BlockQuote size='15px' />
+        </Box>
+      </HoveredBackground>
       <HoveredBackground>
         <Box
           accentable

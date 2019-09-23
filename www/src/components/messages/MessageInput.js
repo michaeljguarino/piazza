@@ -1,9 +1,9 @@
-import React, { Component, createRef } from 'react'
+import React, { Component, createRef, useRef } from 'react'
 import {socket} from '../../helpers/client'
 import TimedCache from '../utils/TimedCache'
 import HoveredBackground from '../utils/HoveredBackground'
 import { Mutation } from 'react-apollo'
-import {Box, Text, Markdown, Layer, Keyboard} from 'grommet'
+import {Box, Text, Markdown, Layer, Keyboard, Drop} from 'grommet'
 import {Attachment} from 'grommet-icons'
 import {FilePicker} from 'react-file-picker'
 import debounce from 'lodash/debounce'
@@ -11,6 +11,7 @@ import {CurrentUserContext} from '../login/EnsureLogin'
 import {MESSAGE_MUTATION, MESSAGES_Q} from './queries'
 import {applyNewMessage} from './utils'
 import MentionManager from './MentionManager'
+import {ReplyGutter} from './ReplyProvider'
 import { Progress } from 'react-sweet-progress';
 import "react-sweet-progress/lib/style.css";
 
@@ -92,8 +93,13 @@ class MessageInput extends Component {
   render() {
     this.setupChannel()
     const { text, attachment } = this.state
+    const parentId = this.props.reply && this.props.reply.id
     return (
-      <Box style={{maxHeight: '210px', minHeight: 'auto'}} fill='horizontal' pad={{horizontal: '10px'}}>
+      <Box 
+        ref={this.props.dropRef}
+        style={{maxHeight: '210px', minHeight: 'auto'}} 
+        fill='horizontal' 
+        pad={{horizontal: '10px'}}>
         {this.state.uploadProgress && (
           <Layer plain modal={false} position='bottom'>
             <Box width='400px'>
@@ -105,7 +111,7 @@ class MessageInput extends Component {
         )}
         <Mutation
             mutation={MESSAGE_MUTATION}
-            variables={{conversationId: this.props.conversation.id, attributes: {text, attachment}}}
+            variables={{conversationId: this.props.conversation.id, attributes: {text, attachment, parentId}}}
             context= {{
               fetchOptions: {
                 useUpload: this.state.useUpload,
@@ -123,6 +129,7 @@ class MessageInput extends Component {
                 data: applyNewMessage(data, createMessage)
               })
               this.setState({uploadProgress: null})
+              this.props.setReply(null)
             }}
         >
         {postMutation => (
@@ -136,11 +143,11 @@ class MessageInput extends Component {
               }
             }}>
             <Box
+              border
               fill='horizontal'
               height='calc(100%-20px)'
               direction="row"
               align="center"
-              border
               round='xsmall'>
               <MentionManager
                 parentRef={this.boxRef}
@@ -149,25 +156,25 @@ class MessageInput extends Component {
                 disableSubmit={(disable) => this.setState({disableSubmit: disable})}
                 submitDisabled={this.state.disableSubmit}
                 onChange={() => this.notifyTyping()} />
-                <HoveredBackground>
-                  <Box
-                    accentable
-                    style={{cursor: "pointer"}}>
-                    <FilePicker
-                      onChange={(file) => this.setState({useUpload: true, attachment: file})}
-                      maxSize={2000}
-                      onError={(msg) => console.log(msg)}
-                    >
-                      <Box 
-                        align='center'
-                        justify='center'
-                        height='40px'
-                        width="30px">
-                        <Attachment color={this.state.attachment ? SEND_COLOR : null} size='15px' />
-                      </Box>
-                    </FilePicker>
-                  </Box>
-                </HoveredBackground>
+              <HoveredBackground>
+                <Box
+                  accentable
+                  style={{cursor: "pointer"}}>
+                  <FilePicker
+                    onChange={(file) => this.setState({useUpload: true, attachment: file})}
+                    maxSize={2000}
+                    onError={(msg) => console.log(msg)}
+                  >
+                    <Box 
+                      align='center'
+                      justify='center'
+                      height='40px'
+                      width="30px">
+                      <Attachment color={this.state.attachment ? SEND_COLOR : null} size='15px' />
+                    </Box>
+                  </FilePicker>
+                </Box>
+              </HoveredBackground>
             </Box>
           </Keyboard>
         )}
@@ -185,4 +192,19 @@ class MessageInput extends Component {
   }
 }
 
-export default MessageInput
+function WrappedMessageInput(props) {
+  const dropRef = useRef()
+
+  return (
+    <>
+      {props.reply && (
+        <Drop target={dropRef.current} align={{bottom: 'top'}}>
+          <ReplyGutter {...props}/>
+        </Drop>
+      )}
+      <MessageInput dropRef={dropRef} {...props} />
+    </>
+  )
+}
+
+export default WrappedMessageInput

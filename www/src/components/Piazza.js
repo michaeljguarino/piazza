@@ -2,6 +2,7 @@ import React, {useState} from 'react'
 import MessageList from './messages/MessageList'
 import AnchoredMessageList from './messages/AnchoredMessageList'
 import MessageInput from './messages/MessageInput'
+import ReplyProvider from './messages/ReplyProvider'
 import ConversationPanel from './conversation/ConversationPanel'
 import ConversationHeader from './conversation/ConversationHeader'
 import CurrentUser from './login/EnsureLogin'
@@ -53,22 +54,32 @@ const Piazza = () => {
                     setCurrentConversation={setCurrentConversation}
                     setAnchor={setAnchor} />
                 </Box>
-                <Box style={{height: 'calc(100vh - 70px)', maxHeight: 'calc(100vh - 70px)'}}>
-                  <Box height='100%' direction='row'>
-                    {anchor ? <AnchoredMessageList
-                                anchor={anchor}
-                                textHeight={textHeight}
-                                conversation={currentConversation}
-                                setAnchor={setAnchor} /> :
-                              <MessageList textHeight={textHeight} conversation={currentConversation} />}
-                    {flyoutContent}
+                <ReplyProvider>
+                {(reply, setReply) => (
+                  <Box style={{height: 'calc(100vh - 70px)', maxHeight: 'calc(100vh - 70px)'}}>
+                    <Box height='100%' direction='row'>
+                      {anchor ? <AnchoredMessageList
+                                  anchor={anchor}
+                                  textHeight={textHeight}
+                                  conversation={currentConversation}
+                                  setReply={setReply}
+                                  setAnchor={setAnchor} /> :
+                                <MessageList
+                                  textHeight={textHeight}
+                                  setReply={setReply}
+                                  conversation={currentConversation} />}
+                      {flyoutContent}
+                    </Box>
+                    <MessageInput
+                      height={textHeight}
+                      incrementHeight={incrementHeight}
+                      resetHeight={resetHeight}
+                      reply={reply}
+                      setReply={setReply}
+                      conversation={currentConversation} />
                   </Box>
-                  <MessageInput
-                    height={textHeight}
-                    incrementHeight={incrementHeight}
-                    resetHeight={resetHeight}
-                    conversation={currentConversation} />
-                </Box>
+                )}
+                </ReplyProvider>
               </Box>
             </Grid>
           )}

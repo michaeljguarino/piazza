@@ -51,8 +51,8 @@ export const ReactionFragment = gql`
   }
 `;
 
-export const MessageFragment = gql`
-  fragment MessageFragment on Message {
+export const MessageSubFragment = gql`
+  fragment MessageSubFragment on Message {
     id
     text
     insertedAt
@@ -90,6 +90,16 @@ export const MessageFragment = gql`
   ${UserFragment}
   ${ReactionFragment}
   ${EmojiFragment}
+`;
+
+export const MessageFragment = gql`
+  fragment MessageFragment on Message {
+    ...MessageSubFragment
+    parent {
+      ...MessageSubFragment
+    }
+  }
+  ${MessageSubFragment}
 `;
 
 export const ParticipantFragment = gql`

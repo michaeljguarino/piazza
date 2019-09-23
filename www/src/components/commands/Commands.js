@@ -1,6 +1,6 @@
 import React, {useState} from 'react'
 import {Box, Text} from 'grommet'
-import {Code} from 'grommet-icons'
+import {Terminal} from 'grommet-icons'
 import { Query } from 'react-apollo'
 import CommandListEntry from './CommandListEntry'
 import CommandCreator from './CommandCreator'
@@ -91,7 +91,7 @@ function Commands(props) {
         margin={{horizontal: '10px'}}
         align='center'
         justify='center'>
-        <Flyout target={<Code size='25px' />}>
+        <Flyout target={<Terminal size='25px' />}>
         {setOpen => (<FlyoutContent setOpen={setOpen} {...props} />)}
         </Flyout>
       </Box>

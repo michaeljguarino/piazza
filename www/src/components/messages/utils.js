@@ -30,7 +30,9 @@ export function updateMessage(prev, message) {
 }
 
 export function removeMessage(prev, message) {
-  return replaceEdges(prev, prev.conversation.messages.edges.filter((e) => e.node.id !== message.id))
+  return replaceEdges(prev, prev.conversation.messages.edges.filter(({node}) => {
+    return node.id !== message.id && (!node.parent || node.parent.id !== message.id)
+  }))
 }
 
 function replacePinnedMessagesAndIncrement(prev, edges, inc) {

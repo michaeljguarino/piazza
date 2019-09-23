@@ -55,6 +55,7 @@ function AnchoredMessageList(props) {
                   key={edge.node.id}
                   conversation={props.conversation}
                   message={edge.node}
+                  setReply={props.setReply}
                   next={next.node} />
               )}
               onLoadMore={(direction) => {

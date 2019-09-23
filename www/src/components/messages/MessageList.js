@@ -64,6 +64,7 @@ class MessageList extends Component {
                     key={edge.node.id}
                     conversation={this.props.conversation}
                     message={edge.node}
+                    setReply={this.props.setReply}
                     next={next.node} />
                 )}
                 onLoadMore={() => {
