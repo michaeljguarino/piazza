@@ -68,57 +68,23 @@ cli:
 	gcloud services enable storage-api.googleapis.com
 	gcloud services enable storage-component.googleapis.com
 	gcloud services enable dns.googleapis.com
+	gcloud services enable cloudresourcemanager.googleapis.com
 
 bootstrap: ## initialize your helm/kubernetes environment
 	# create the cluster
-	gcloud container clusters create piazza \
-    --enable-ip-alias \
-    --create-subnetwork="" \
-    --network=default \
-    --zone=us-east1-b
-
+	cd terraform/gcp && \
+		terraform init && \
+		terraform validate && \
+		terraform apply
+	
+	# prime kubeconfig so we can proceed
 	gcloud container clusters get-credentials piazza
-
-	# setup helm, perhaps with too broad rbac perms
-	kubectl -n kube-system create serviceaccount tiller
-	kubectl create clusterrolebinding tiller --clusterrole cluster-admin --serviceaccount=kube-system:tiller
+	
+	# bootstrap the cluster
+	cd - && cd terraform/kube && \
+		terraform init && \
+		terraform validate && \
+		terraform apply
+	
+	# initialize helm
 	helm init --service-account=tiller
-
-	# setup the piazza namespace
-	kubectl create namespace piazza
-	kubectl annotate namespace piazza cnrm.cloud.google.com/project-id=$(GCP_PROJECT)
-
-	# set up external dns service account manually because config connector is still behind
-	gcloud iam service-accounts create external-dns || echo "external-dns service account already created"
-	gcloud projects add-iam-policy-binding $(GCP_PROJECT) \
-		--member serviceAccount:external-dns@$(GCP_PROJECT).iam.gserviceaccount.com --role roles/dns.admin
-	gcloud iam service-accounts keys create --iam-account \
-                external-dns@$(GCP_PROJECT).iam.gserviceaccount.com credentials.json
-	kubectl create secret generic externaldns --from-file credentials.json --namespace piazza
-	rm credentials.json
-	
-	# set up gcp config connector
-	gcloud iam service-accounts create cnrm-system
-	gcloud projects add-iam-policy-binding $(GCP_PROJECT) \
-		--member serviceAccount:cnrm-system@$(GCP_PROJECT).iam.gserviceaccount.com \
-		--role roles/owner
-	gcloud projects add-iam-policy-binding $(GCP_PROJECT) \
-		--member serviceAccount:cnrm-system@$(GCP_PROJECT).iam.gserviceaccount.com \
-		--role roles/storage.admin
-	gcloud iam service-accounts keys create --iam-account \
- 		cnrm-system@$(GCP_PROJECT).iam.gserviceaccount.com key.json
-	gcloud services enable cloudresourcemanager.googleapis.com
-	
-	kubectl create namespace cnrm-system
-	kubectl create secret generic gcp-key --from-file key.json --namespace cnrm-system
-	rm key.json
-
-	curl -X GET -LO \
-		-H "Authorization: Bearer `gcloud auth print-access-token`" \
-		--location-trusted \
-		https://us-central1-cnrm-eap.cloudfunctions.net/download/latest/infra/install-bundle.tar.gz
-	
-	tar -zxvf install-bundle.tar.gz
-	kubectl apply -f install-bundle/
-	rm -rf install-bundle/
-	rm install-bundle.tar.gz

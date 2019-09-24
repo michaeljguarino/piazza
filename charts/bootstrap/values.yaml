@@ -12,5 +12,5 @@ external-dns:
   domainFilters:
   - piazzaapp.com
   google:
-    project: piazza-247002
+    project: piazza-testing
     serviceAccountSecret: externaldns
