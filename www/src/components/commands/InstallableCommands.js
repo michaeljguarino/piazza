@@ -87,7 +87,7 @@ function WrappedInstallableCommand(props) {
 
 function InstallableCommands(props) {
   return (
-    <Box style={{maxHeight: '100px'}}>
+    <Box>
       <Box pad='small'>
         <Text size='small'>
           <i>We ship with a few commands you can choose to install as-is</i>

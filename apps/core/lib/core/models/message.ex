@@ -42,7 +42,7 @@ defmodule Core.Models.Message do
 
   def search(query \\ __MODULE__, search_query) do
     from(m in query,
-      where: fragment(@tsv_query, m.text, ^search_query) or fragment(@tsv_query, m.flattened_text, ^search_query),
+      where: fragment(@tsv_query, m.flattened_text, ^search_query),
       order_by: [desc: fragment(@tsv_rank, m.flattened_text, ^search_query)])
   end
 

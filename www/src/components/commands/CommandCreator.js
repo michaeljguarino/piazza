@@ -43,12 +43,14 @@ export function CommandForm(props) {
   const additionalVars = props.vars || {}
   const {incomingWebhook, ...form} = props.formState
   const vars = incomingWebhook ? {...additionalVars, ...form, incomingWebhook} : {...additionalVars, ...form}
+  const [loading, setLoading] = useState(false)
 
   return (
     <Mutation
       mutation={props.mutation || CREATE_COMMAND}
       variables={vars}
       update={(cache, {data}) => {
+        setLoading(false)
         const prev = cache.readQuery({ query: COMMANDS_Q })
         cache.writeQuery({query: COMMANDS_Q, data: addCommand(prev, data.createCommand || data.updateCommand)})
         props.setOpen(false)
@@ -86,7 +88,11 @@ export function CommandForm(props) {
             <SecondaryButton round='xsmall' label='Cancel' onClick={() => props.setOpen(false)} />
             <Button
               width='100px'
-              onClick={mutation}
+              loading={loading}
+              onClick={() => {
+                setLoading(true)
+                mutation()
+              }}
               round='xsmall'
               label={props.action || 'Create'} />
           </Box>

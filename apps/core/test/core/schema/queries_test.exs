@@ -177,7 +177,7 @@ defmodule Core.Schema.QueriesTest do
     test "It will search messages" do
       conversation = insert(:conversation)
       messages = for i <- 1..3,
-        do: insert(:message, text: "query #{i}", conversation: conversation)
+        do: insert(:message, flattened_text: "query #{i}", conversation: conversation)
       insert_list(3, :message, conversation: conversation)
       %{user: user} = insert(:participant, conversation: conversation)
 
@@ -413,9 +413,9 @@ defmodule Core.Schema.QueriesTest do
       chat   = insert(:conversation, chat: true, public: false)
       part   = insert(:participant, conversation: chat, user: user)
       others = insert_list(2, :participant, conversation: chat)
-      insert(:participant, 
-        conversation: build(:conversation, chat: true), 
-        user: user, 
+      insert(:participant,
+        conversation: build(:conversation, chat: true),
+        user: user,
         deleted_at: DateTime.utc_now()
       )
 

@@ -6,10 +6,10 @@ alias Core.Services.Platform
 seed do
   {:ok, _} =
     command_record(
-      Github, 
+      Github,
       "Notifies you of things going on in your repos",
       "http://piazza-gql:4000/webhooks/github",
-      "https://storage.cloud.google.com/mguarino-piazza/uploads/github.png"
+      "https://storage.googleapis.com/piazzaapp-assets/github.png"
     )
     |> Platform.create_installable_command()
 end

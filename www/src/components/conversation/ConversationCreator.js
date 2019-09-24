@@ -10,7 +10,7 @@ import {addConversation} from './utils'
 import ConversationSearch from '../search/ConversationSearch'
 
 function ConversationCreator(props) {
-  const [state, setState] = useState({})
+  const [state, setState] = useState({public: true})
   const [searching, setSearching] = useState(false)
   return (
     <Box fill='horizontal' pad={{right: '10px'}} margin={{top: 'medium'}}>

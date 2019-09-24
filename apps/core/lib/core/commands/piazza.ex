@@ -5,7 +5,6 @@ defmodule Core.Commands.Piazza do
 
   command :piazza
 
-
   subcommand :invite do
     args ["handle"]
     doc "Adds a user as a participant to the conversation"
