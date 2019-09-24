@@ -15,6 +15,9 @@ config :core, :consumers, [
   Core.EchoConsumer
 ]
 
+config :goth,
+  json: System.get_env("GOOGLE_APPLICATION_CREDENTIALS") |> File.read!()
+
 config :core, Core.TestBroker,
   adapter: ConduitAMQP,
   url: "amqp://rabbitmq:rabbitmq@localhost"

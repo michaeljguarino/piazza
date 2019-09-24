@@ -31,7 +31,7 @@ imagePullSecrets: []
 gql:
   port: 4000
   image: gcr.io/piazza-247002/gql
-  gcsBucket: piazza-testing-uploads
+  gcsBucket: piazzaapp-uploads
   resources:
     requests:
       cpu: .3

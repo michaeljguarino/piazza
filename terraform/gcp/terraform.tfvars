@@ -1,6 +1,4 @@
-gcp_project_id = "piazza-testing"
-
-backend_bucket = "piazza-testing-terraform"
+gcp_project_id = "piazza-247002"
 
 cluster_name = "piazza"
 

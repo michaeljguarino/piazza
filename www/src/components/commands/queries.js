@@ -92,6 +92,7 @@ export const INSTALLABLE_COMMANDS = gql`
       }
       edges {
         node {
+          id
           name
           description
           documentation

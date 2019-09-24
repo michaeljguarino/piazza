@@ -64,15 +64,12 @@ resource "google_service_account_key" "piazza" {
 resource "google_storage_bucket" "piazza_bucket" {
   name = "${var.piazza_bucket}"
   project = "${var.gcp_project_id}"
-
+  force_destroy = true
 }
 
 resource "google_storage_bucket_acl" "piazza_bucket_acl" {
   bucket = "${google_storage_bucket.piazza_bucket.name}"
-
-  role_entity = [
-    "READER:allUsers",
-  ]
+  predefined_acl = "publicRead"
 }
 
 resource "google_storage_bucket_iam_member" "piazza" {

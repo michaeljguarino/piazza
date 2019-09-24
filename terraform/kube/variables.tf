@@ -3,14 +3,6 @@ variable "cluster_name" {
   default = "piazza" 
 }
 
-variable "backend_bucket" {
-  type = "string"
-  
-  description = <<EOF
-The bucket to use for storing tf state
-EOF
-}
-
 variable "piazza_bucket" {
   type = "string"
   description = <<EOF
@@ -21,6 +13,9 @@ EOF
 variable "gcp_location" {
   type = string
   default = "us-east1-b"
+  description = <<EOF
+The region you wish to deploy to
+EOF
 }
 
 variable "gcp_project_id" {

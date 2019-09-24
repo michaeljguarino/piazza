@@ -1,5 +1,3 @@
-gcp_project_id = "piazza-testing"
+gcp_project_id = "piazza-247002"
 
-backend_bucket = "piazza-testing-terraform"
-
-piazza_bucket = "piazza-testing-uploads"
+piazza_bucket = "piazzaapp-uploads"

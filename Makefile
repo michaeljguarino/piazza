@@ -71,7 +71,15 @@ cli:
 	gcloud services enable cloudresourcemanager.googleapis.com
 
 bootstrap: ## initialize your helm/kubernetes environment
-	# create the cluster
+	# create service account for terraform
+	mkdir -p ~/.gcp
+	gcloud iam service-accounts create terraform
+	gcloud projects add-iam-policy-binding $(GCP_PROJECT) --member "serviceAccount:terraform@$(GCP_PROJECT).iam.gserviceaccount.com" --role "roles/owner"
+	gcloud projects add-iam-policy-binding $(GCP_PROJECT) --member "serviceAccount:terraform@$(GCP_PROJECT).iam.gserviceaccount.com" --role "roles/storage.admin"
+	gcloud iam service-accounts keys create ~/.gcp/key.json --iam-account terraform@$(GCP_PROJECT).iam.gserviceaccount.com
+	export GOOGLE_APPLICATION_CREDENTIALS="${HOME}/.gcp/key.json"
+
+	create the cluster
 	cd terraform/gcp && \
 		terraform init && \
 		terraform validate && \

@@ -14,6 +14,8 @@ blocks:
     - name: Test
       commands:
       - checkout
+      - echo $GOOGLE_APPLICATION_CREDENTIALS > key.json
+      - export GOOGLE_APPLICATION_CREDENTIALS="$(pwd)/key.json"
       - sem-version elixir 1.9.0
       - make testup
       - mix local.hex --force

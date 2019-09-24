@@ -6,14 +6,6 @@ The ID of the project in which the resources belong.
 EOF
 }
 
-variable "backend_bucket" {
-  type = "string"
-  
-  description = <<EOF
-The bucket to use for storing tf state
-EOF
-}
-
 variable "cluster_name" {
   type = "string"
 

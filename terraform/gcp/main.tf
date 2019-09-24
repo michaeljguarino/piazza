@@ -26,7 +26,7 @@ resource "google_compute_subnetwork" "vpc_subnetwork" {
 
   ip_cidr_range = "${var.vpc_subnetwork_cidr_range}"
 
-  network = "${var.vpc_network_name}"
+  network = "${google_compute_network.vpc_network.name}"
 
   secondary_ip_range {
     range_name    = "${var.cluster_secondary_range_name}"

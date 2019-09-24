@@ -23,7 +23,7 @@ defmodule Core.Models.InstallableCommand do
   def ordered(query \\ __MODULE__, order \\ [asc: :name]),
     do: from(ic in query, order_by: ^order)
 
-  @valid ~w(name description documentation avatar)a
+  @valid ~w(name description documentation avatar webhook)a
 
   def changeset(model, attrs \\ %{}) do
     model
