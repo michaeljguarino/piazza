@@ -171,6 +171,14 @@ defmodule Core.Services.Conversations do
     |> notify(:update, user)
   end
 
+  def update_message(message_id, attrs, user) do
+    get_message!(message_id)
+    |> Message.changeset(attrs)
+    |> allow(user, :update)
+    |> when_ok(:update)
+    |> notify(:update, user)
+  end
+
   def create_message(conv_id, attrs, user) do
     start_transaction()
     |> add_operation(:message, fn _ ->
@@ -324,7 +332,7 @@ defmodule Core.Services.Conversations do
   end
 
   defp handle_delete_participant(
-    %Participant{user_id: uid, conversation: %{chat: true}} = participant, 
+    %Participant{user_id: uid, conversation: %{chat: true}} = participant,
     %User{id: uid}
   ) do
     participant

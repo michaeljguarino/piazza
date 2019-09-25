@@ -88,7 +88,7 @@ defmodule Core.Schema.ConversationMutationsTest do
   end
 
   describe "createMessage" do
-    test "it will update a conversation by id" do
+    test "it will create a new message" do
       user         = insert(:user)
       conversation = insert(:conversation)
       insert(:participant, conversation: conversation, user: user)
@@ -105,6 +105,24 @@ defmodule Core.Schema.ConversationMutationsTest do
 
       assert submap?(params, result)
       verify_record(Message, result)
+    end
+  end
+
+  describe "editMessage" do
+    test "it will update a message by id" do
+      msg = insert(:message)
+
+      {:ok, %{data: %{"editMessage" => result}}} = run_query("""
+        mutation EditMessage($id: ID!, $attrs: MessageAttributes!) {
+          editMessage(messageId: $id, attributes: $attrs) {
+            id
+            text
+          }
+        }
+      """, %{"id" => msg.id, "attrs" => %{"text" => "updated"}}, %{current_user: msg.creator})
+
+      assert result["text"] == "updated"
+      assert result["id"] == msg.id
     end
   end
 

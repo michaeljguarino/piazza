@@ -220,6 +220,27 @@ defmodule Core.Services.ConversationsTest do
     end
   end
 
+  describe "#update_message/3" do
+    test "The message creator can update messages" do
+      msg = insert(:message)
+
+      {:ok, updated} = Conversations.update_message(msg.id, %{text: "updated"}, msg.creator)
+
+      assert updated.id == msg.id
+      assert updated.text == "updated"
+
+      assert_receive {:event, %PubSub.MessageUpdated{item: ^updated}}
+    end
+
+    test "Other users cannot update" do
+      msg  = insert(:message)
+      user = insert(:user)
+      insert(:participant, user: user, conversation: msg.conversation)
+
+      {:error, _} = Conversations.update_message(msg.id, %{text: "updated"}, user)
+    end
+  end
+
   describe "#delete_message/2" do
     test "Users can delete their own messages" do
       user = insert(:user)

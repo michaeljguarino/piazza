@@ -5,6 +5,7 @@ defmodule Core.Policies.Conversation do
   def can?(%User{}, %Conversation{}, :create), do: :pass
   def can?(%User{bot: true}, %Message{}, :create), do: :pass
   def can?(%User{id: uid}, %Message{creator_id: uid}, :delete), do: :continue
+  def can?(%User{id: uid}, %Message{creator_id: uid}, :update), do: :continue
   def can?(%User{roles: %{admin: true}}, %Message{}, :delete), do: :continue
   def can?(%User{id: uid}, %Message{} = message, action) when action in [:create, :edit] do
     case Core.Repo.preload(message, [:conversation]) do
