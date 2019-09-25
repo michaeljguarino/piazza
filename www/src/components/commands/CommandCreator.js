@@ -1,6 +1,6 @@
-import React, {useState} from 'react'
+import React, {useState, useRef} from 'react'
 import {Mutation, ApolloConsumer} from 'react-apollo'
-import {Box, TextArea, Select, Text} from 'grommet'
+import {Box, Select, Text} from 'grommet'
 import {ModalHeader} from '../utils/Modal'
 import CommandListEntry from './CommandListEntry'
 import InputField from '../utils/InputField'
@@ -8,6 +8,8 @@ import Button, {SecondaryButton} from '../utils/Button'
 import {CREATE_COMMAND, COMMANDS_Q} from './queries'
 import {addCommand} from './utils'
 import {searchConversations} from '../search/ConversationSearch'
+import { Editor } from 'slate-react'
+import Plain from 'slate-plain-serializer'
 
 const LABEL_WIDTH = '100px'
 
@@ -40,6 +42,7 @@ function ConversationSelector(props) {
 }
 
 export function CommandForm(props) {
+  const editorRef = useRef()
   const additionalVars = props.vars || {}
   const {incomingWebhook, ...form} = props.formState
   const vars = incomingWebhook ? {...additionalVars, ...form, incomingWebhook} : {...additionalVars, ...form}
@@ -80,10 +83,16 @@ export function CommandForm(props) {
               props.setFormState({...props.formState, incomingWebhook: {name: conv.name}})
             }} />
           </Box>
-          <TextArea
-            value={props.formState.documentation}
-            placeholder='Documentation for this commmand (markdown is encouraged)'
-            onChange={(e) => props.setFormState({...props.formState, documentation: e.target.value})} />
+          <Box style={{minHeight: '150px'}} pad='small' border round='xsmall'>
+            <Editor
+              ref={editorRef}
+              defaultValue={Plain.deserialize(props.formState.documentation)}
+              placeholder='Documentation for this commmand (markdown is encouraged)'
+              onChange={state => {
+                const text = Plain.serialize(state.value)
+                props.setFormState({...props.formState, documentation: text})
+              }} />
+          </Box>
           <Box direction='row' justify='end' align='center' gap='xsmall'>
             <SecondaryButton round='xsmall' label='Cancel' onClick={() => props.setOpen(false)} />
             <Button
@@ -112,8 +121,8 @@ function CommandCreator(props) {
   return (
     <Box width="600px" pad={{bottom: 'small'}} round='small'>
       <ModalHeader text='Create a command' setOpen={props.setOpen} />
-      <Box pad={{horizontal: 'medium', bottom: 'small'}} gap='medium'>
-        <Box direction='row' align='center' pad='small' border='bottom'>
+      <Box pad={{horizontal: 'medium', bottom: 'small'}}>
+        <Box direction='row' align='center' pad={{vertical: 'small'}}>
           <Box align='center'>
             <CommandListEntry disableEdit command={{
               ...formState,
