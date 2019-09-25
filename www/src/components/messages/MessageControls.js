@@ -1,13 +1,15 @@
 import React, {useState, useRef} from 'react'
 import {Mutation} from 'react-apollo'
 import {Box, Drop, Text} from 'grommet'
-import {More, Emoji, Pin, Trash, BlockQuote} from 'grommet-icons'
+import {More, Emoji, Pin, Trash, BlockQuote, Edit} from 'grommet-icons'
 import HoveredBackground from '../utils/HoveredBackground'
 import MenuItem from '../utils/MenuItem'
 import Popover from 'react-tiny-popover'
 import {DELETE_MESSAGE, CREATE_REACTION, MESSAGES_Q, PIN_MESSAGE, PINNED_MESSAGES} from './queries'
 import {removeMessage, updateMessage, addPinnedMessage, removePinnedMessage} from './utils'
-import EmojiPicker from '../emoji/EmojiPicker';
+import EmojiPicker from '../emoji/EmojiPicker'
+import {CurrentUserContext} from '../login/EnsureLogin'
+
 
 const CONTROL_ATTRS = {
   style: {cursor: 'pointer'},
@@ -139,36 +141,50 @@ function MessageControls(props) {
   }
 
   return (
+    <CurrentUserContext.Consumer>
+    {me => (
     <Box elevation='xsmall' background='white' direction='row' height='30px' border round='xsmall' margin={{right: '10px'}}>
       <MessageReaction {...props} />
       <PinMessage {...props} />
       <HoveredBackground>
-        <Box accentable onClick={() => props.setReply(props.message)} {...CONTROL_ATTRS}>
+        <Box
+          accentable
+          onClick={() => props.setReply(props.message)}
+          {...CONTROL_ATTRS}
+          border={props.message.creator.id === me.id ? 'right' : null}>
           <BlockQuote size='15px' />
         </Box>
       </HoveredBackground>
-      <HoveredBackground>
-        <Box
-          accentable
-          ref={dropRef}
-          onClick={() => toggleOpen(!moreOpen)}
-          {...CONTROL_ATTRS}>
-          <More size='15px'  />
-        </Box>
-      </HoveredBackground>
-      {moreOpen && (
-        <Drop
-          target={dropRef.current}
-          align={{top: 'bottom'}}
-          margin={{top: '4px'}}
-          onClickOutside={() => toggleOpen(false)}
-          onEsc={() => toggleOpen(false)}>
-          <Box style={{minWidth: '140px'}} pad={{vertical: 'xxsmall'}}>
-            <DeleteMessage {...props} />
+      {props.message.creator.id === me.id && (
+        <>
+        <HoveredBackground>
+          <Box accentable ref={dropRef} onClick={() => toggleOpen(!moreOpen)} {...CONTROL_ATTRS}>
+            <More size='15px' />
           </Box>
-        </Drop>
+        </HoveredBackground>
+        {moreOpen && (
+          <Drop
+            target={dropRef.current}
+            align={{top: 'bottom'}}
+            margin={{top: '4px'}}
+            onClickOutside={() => toggleOpen(false)}
+            onEsc={() => toggleOpen(false)}>
+            <Box style={{minWidth: '140px'}} pad={{vertical: 'xxsmall'}}>
+              <MenuItem>
+                <Box direction='row' align='center' gap='small'>
+                  <Edit size='12px' />
+                  <Text size='small' onClick={() => props.setEditing(true)}>edit message</Text>
+                </Box>
+              </MenuItem>
+              <DeleteMessage {...props} />
+            </Box>
+          </Drop>
         )}
+        </>
+      )}
     </Box>
+    )}
+    </CurrentUserContext.Consumer>
   )
 }
 

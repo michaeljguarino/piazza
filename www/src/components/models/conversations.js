@@ -59,6 +59,7 @@ export const MessageSubFragment = gql`
     pinnedAt
     attachment
     structuredMessage
+    conversationId
     entities {
       type
       startIndex

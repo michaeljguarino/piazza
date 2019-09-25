@@ -7,6 +7,7 @@ import MessageEmbed from './MessageEmbed'
 import UserHandle from '../users/UserHandle'
 import MessageControls from './MessageControls'
 import MessageReactions from './MessageReactions'
+import MessageEdit from './MessageEdit'
 import PresenceIndicator from '../users/PresenceIndicator'
 import {TooltipContent} from '../utils/Tooltip'
 import BotIcon from '../utils/BotIcon'
@@ -177,7 +178,7 @@ function MessageBody(props) {
       <Box direction='row' pad={{vertical: 'xsmall', left: 'small'}}>
         {!consecutive && <Avatar user={props.message.creator} /> }
         {consecutive && <Box width='45px'></Box>}
-        <Box>
+        <Box fill={props.editing ? 'horizontal' : false}>
           {!consecutive &&
             <Box direction='row' align='center'>
               <Text weight='bold' size='15px' margin={{right: '5px'}}>
@@ -193,8 +194,11 @@ function MessageBody(props) {
                 {date.fromNow()}
               </Text>
             </Box>}
-          <Box width='100%'>
-            <MessageSwitch {...props.message} />
+          <Box fill='horizontal'>
+            {props.editing ?
+              <MessageEdit message={props.message} setEditing={props.setEditing} /> :
+              <MessageSwitch {...props.message} />
+            }
             {props.message.reactions && props.message.reactions.length > 0 && (
               <MessageReactions {...props} />
             )}
@@ -213,8 +217,15 @@ function MessageBody(props) {
 function Message(props) {
   const [hover, setHover] = useState(false)
   const [pinnedHover, setPinnedHover] = useState(false)
-  const isHovered = (pinnedHover || hover) && !props.noHover
+  const [editing, setEditing] = useState(false)
+  const isHovered = (pinnedHover || hover) && !props.noHover && !editing
   const background = props.selected ? SELECTED_BACKGROUND : (isHovered && !props.message.pin) ? 'light-2' : null
+
+  function wrappedSetEditing(editing) {
+    setPinnedHover(false)
+    setEditing(editing)
+  }
+
   return (
     <Box
       onClick={props.onClick}
@@ -223,8 +234,15 @@ function Message(props) {
       background={background}
       flex={false}>
       <Stack fill anchor='top-right'>
-        <MessageBody hover={isHovered} setPinnedHover={setPinnedHover} {...props} />
-        {isHovered && <MessageControls setPinnedHover={setPinnedHover} {...props} />}
+        <MessageBody
+          editing={editing}
+          setEditing={wrappedSetEditing}
+          hover={isHovered}
+          setPinnedHover={setPinnedHover}
+          {...props} />
+        {isHovered && (
+          <MessageControls setEditing={wrappedSetEditing} setPinnedHover={setPinnedHover} {...props} />
+        )}
       </Stack>
     </Box>
   )

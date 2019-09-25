@@ -9,12 +9,12 @@ function recurse(children) {
 function video(props) {
   const {url, loop, autoPlay, ...rest} = props.attributes
   return (
-    <video 
+    <video
       style={{maxWidth: '250px', maxHeight: '250px'}}
-      key={props.key} 
-      loop={!!loop} 
-      autoPlay={!!autoPlay} 
-      {...rest} 
+      key={props.key}
+      loop={!!loop}
+      autoPlay={!!autoPlay}
+      {...rest}
       src={url}
     />
   )
@@ -33,7 +33,7 @@ function attachment(props, i) {
   const {children, attributes} = props
   const {accent, ...rest} = attributes || {}
   return (
-    <Box key={props.key} border fill='horizontal' background='white'>
+    <Box key={props.key} border background='white'>
       <Box {...rest} style={{
         borderLeftStyle: 'solid',
         borderLeftWidth: '2px',
@@ -101,7 +101,7 @@ function parse(struct, index) {
 function StructuredMessage(props) {
   const {children} = props
   return (
-    <Box fill='horizontal' gap='xsmall' {...(props.attributes || {})}>
+    <Box gap='xsmall' {...(props.attributes || {})}>
       {recurse(children)}
     </Box>
   )

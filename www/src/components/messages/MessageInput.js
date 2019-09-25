@@ -95,10 +95,10 @@ class MessageInput extends Component {
     const { text, attachment } = this.state
     const parentId = this.props.reply && this.props.reply.id
     return (
-      <Box 
+      <Box
         ref={this.props.dropRef}
-        style={{maxHeight: '210px', minHeight: 'auto'}} 
-        fill='horizontal' 
+        style={{maxHeight: '210px', minHeight: 'auto'}}
+        fill='horizontal'
         pad={{horizontal: '10px'}}>
         {this.state.uploadProgress && (
           <Layer plain modal={false} position='bottom'>
@@ -165,7 +165,7 @@ class MessageInput extends Component {
                     maxSize={2000}
                     onError={(msg) => console.log(msg)}
                   >
-                    <Box 
+                    <Box
                       align='center'
                       justify='center'
                       height='40px'

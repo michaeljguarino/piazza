@@ -79,20 +79,20 @@ bootstrap: ## initialize your helm/kubernetes environment
 	gcloud iam service-accounts keys create ~/.gcp/key.json --iam-account terraform@$(GCP_PROJECT).iam.gserviceaccount.com
 	export GOOGLE_APPLICATION_CREDENTIALS="${HOME}/.gcp/key.json"
 
-	create the cluster
+	# create the cluster
 	cd terraform/gcp && \
 		terraform init && \
 		terraform validate && \
 		terraform apply
-	
+
 	# prime kubeconfig so we can proceed
 	gcloud container clusters get-credentials piazza
-	
+
 	# bootstrap the cluster
 	cd - && cd terraform/kube && \
 		terraform init && \
 		terraform validate && \
 		terraform apply
-	
+
 	# initialize helm
 	helm init --service-account=tiller

@@ -176,3 +176,12 @@ export const PINNED_MESSAGE_SUB = gql`
   }
   ${MessageFragment}
 `;
+
+export const EDIT_MESSAGE = gql`
+  mutation EditMessage($id: ID!, $attributes: MessageAttributes!) {
+    editMessage(messageId: $id, attributes: $attributes) {
+      ...MessageFragment
+    }
+  }
+  ${MessageFragment}
+`;
