@@ -13,6 +13,7 @@ import {TooltipContent} from '../utils/Tooltip'
 import BotIcon from '../utils/BotIcon'
 import WithPresence from '../utils/presence'
 import StructuredMessage from './StructuredMessage'
+import Divider from '../utils/Divider'
 import FileIcon, { defaultStyles } from 'react-file-icon'
 import {Emoji} from 'emoji-mart'
 
@@ -168,6 +169,14 @@ function isConsecutive(message, next) {
   return (firstTime.add(-1, 'minutes').isBefore(secondTime))
 }
 
+function sameDay(message, next) {
+  if (!next) return true
+  const firstTime = moment(message.insertedAt)
+  const secondTime = moment(next.insertedAt)
+
+  return firstTime.isSame(secondTime, 'day');
+}
+
 function MessageBody(props) {
   const date = moment(props.message.insertedAt)
   const consecutive = isConsecutive(props.message, props.next)
@@ -214,6 +223,20 @@ function MessageBody(props) {
   )
 }
 
+function DateDivider(props) {
+  if (sameDay(props.message, props.next)) return null
+
+  const date = moment(props.message.insertedAt).calendar(null, {
+    sameDay: '[Today]',
+    nextDay: '[Tomorrow]',
+    lastDay: '[Yesterday]',
+    lastWeek: 'dddd',
+    sameElse: 'DD/MM/YYYY'
+  });
+
+  return <Divider text={date} />
+}
+
 function Message(props) {
   const [hover, setHover] = useState(false)
   const [pinnedHover, setPinnedHover] = useState(false)
@@ -227,6 +250,7 @@ function Message(props) {
   }
 
   return (
+    <>
     <Box
       onClick={props.onClick}
       onMouseEnter={() => setHover(true)}
@@ -245,6 +269,8 @@ function Message(props) {
         )}
       </Stack>
     </Box>
+    <DateDivider message={props.message} next={props.next} />
+    </>
   )
 }
 
