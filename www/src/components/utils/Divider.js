@@ -29,7 +29,7 @@ function Divider(props) {
     <ThemeContext.Consumer>
     {theme => (
       <StyledDivider theme={theme} color={props.color}>
-        <Text size='small' weight='bold'>{props.text}</Text>
+        <Text size='small' weight='500'>{props.text}</Text>
       </StyledDivider>
     )}
     </ThemeContext.Consumer>

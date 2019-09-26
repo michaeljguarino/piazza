@@ -23,8 +23,8 @@ function MessageEdit(props) {
         props.setEditing(false)
       }}>
     {mutation => (
-      <Box pad='small' gap='xsmall'>
-        <Box direction='row' fill='horizontal' round='xsmall' pad='xxsmall' border>
+      <Box pad={{horizontal: 'small'}} gap='xsmall'>
+        <Box direction='row' fill='horizontal' round='xsmall' pad='xsmall' border>
           <MentionManager
             submitDisabled
             text={text}

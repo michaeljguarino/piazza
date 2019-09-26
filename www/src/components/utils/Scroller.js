@@ -27,7 +27,7 @@ class Scroller extends Component {
   };
 
   render() {
-    let entries = Array.from(lookahead(this.props.edges, this.props.mapper))
+    let entries = Array.from(lookahead(this.props.edges, (edge, next) => this.props.mapper(edge, next)))
     return (
       <div id={this.props.id} onScroll={this.handleOnScroll} style={this.props.style}>
         {entries.length > 0 ? entries : this.props.emptyState}

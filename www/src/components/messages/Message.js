@@ -188,7 +188,7 @@ function MessageBody(props) {
         {!consecutive && <Avatar user={props.message.creator} /> }
         {consecutive && <Box width='45px'></Box>}
         <Box fill={props.editing ? 'horizontal' : false}>
-          {!consecutive &&
+          {!consecutive && !props.editing &&
             <Box direction='row' align='center'>
               <Text weight='bold' size='15px' margin={{right: '5px'}}>
                 {props.message.creator.name}
@@ -231,7 +231,7 @@ function DateDivider(props) {
     nextDay: '[Tomorrow]',
     lastDay: '[Yesterday]',
     lastWeek: 'dddd',
-    sameElse: 'DD/MM/YYYY'
+    sameElse: 'dddd, MMMM Do'
   });
 
   return <Divider text={date} />
