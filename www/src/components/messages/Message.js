@@ -259,7 +259,6 @@ function Message(props) {
       <>
       <VisibilitySensor
         scrollCheck
-        scrollDelay={0}
         partialVisibility
         containment={props.parentRef && props.parentRef.current}
         onChange={(visible) => visible ? addMessage(props.message) : removeMessage(props.message)}>

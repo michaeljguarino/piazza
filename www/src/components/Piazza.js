@@ -17,9 +17,14 @@ import {formatDate} from './messages/Message'
 function DividerText(props) {
   const last = lastMessage(props.visible)
   if (!last) return null
-  
+
   return (
-    <Box style={{marginTop: '-11px'}} background='#fff' pad={{horizontal: '8px'}}>
+    <Box style={{
+        zIndex: 5,
+        marginTop: '-11px',
+        position: 'absolute',
+        top: 70,
+      }} background='#fff' pad={{horizontal: '8px'}}>
       <Text style={{fontWeight: 500}} size='small'>
         {formatDate(last.insertedAt)}
       </Text>
