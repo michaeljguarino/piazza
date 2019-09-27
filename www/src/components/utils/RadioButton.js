@@ -3,6 +3,7 @@ import {Box, ThemeContext} from 'grommet'
 import {normalizeColor} from './colors'
 
 function RadioButton(props) {
+  const [hover, setHover] = useState(false)
   const [enabled, setEnabled] = useState(!!props.enabled)
   const enabledStyle = enabled ? {borderColor: normalizeColor('focus', props.theme)} : {}
 
@@ -13,6 +14,8 @@ function RadioButton(props) {
 
   return (
     <Box
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
       onClick={() => wrappedSetEnabled(!enabled)}
       direction='row'
       pad='xsmall'
@@ -20,6 +23,7 @@ function RadioButton(props) {
       round='xsmall'
       align='center'
       gap='xsmall'
+      elevation={hover ? 'xsmall' : null}
       style={{cursor: 'pointer', ...enabledStyle}}>
       <Box width='30px' align='center' justify='center'>
         <Box width='21px' height='21px' round='full' align='center' justify='center' border>

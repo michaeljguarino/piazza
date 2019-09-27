@@ -24,6 +24,7 @@ const MODAL_WIDTH = '400px'
 export function EmojiForm(props) {
   const [image, setImage] = useState(null)
   const [name, setName] = useState(null)
+  const [hover, setHover] = useState(false)
 
   return (
     <Mutation
@@ -39,22 +40,44 @@ export function EmojiForm(props) {
     {mutation => (
       <Box width={MODAL_WIDTH} gap='small'>
         <Box gap='xsmall'>
-          <Box direction='row' gap='xsmall' align='center'>
-            <Box border round='xsmall' width='35px' height='35px' pad='xsmall' align='center' justify='center'>
-              {image ? <img alt='' width='30px' height='30px' src={image.previewUrl} /> :
-                <CloudUpload size='25px' />
-              }
-            </Box>
-            <FilePicker
-              extensions={['jpg', 'jpeg', 'png']}
-              dims={{minWidth: 100, maxWidth: 500, minHeight: 100, maxHeight: 500}}
-              onChange={(file) => generatePreview(file, setImage)}
+          <Text size='small' weight='bold'>First upload an image:</Text>
+          <FilePicker
+            extensions={['jpg', 'jpeg', 'png']}
+            dims={{minWidth: 100, maxWidth: 500, minHeight: 100, maxHeight: 500}}
+            onChange={(file) => generatePreview(file, setImage)}
+          >
+            <Box
+              border
+              width='140px'
+              direction='row'
+              align='center'
+              round='xsmall'
+              elevation={hover ? 'small' : null}
             >
-              <SecondaryButton round='xsmall' pad='xsmall' label='Upload Image' />
-            </FilePicker>
-          </Box>
+              <Box
+                style={{borderTopLeftRadius: '6px', borderBottomLeftRadius: '6px'}}
+                border='right'
+                width='35px'
+                height='35px'
+                pad='xsmall'
+                align='center'
+                justify='center'>
+                {image ? <img alt='' width='30px' height='30px' src={image.previewUrl} /> :
+                  <CloudUpload size='25px' />
+                }
+              </Box>
+              <Box
+                pad='xsmall'
+                onMouseEnter={() => setHover(true)}
+                onMouseLeave={() => setHover(false)}
+                style={{cursor: 'pointer'}}>
+                Find image
+              </Box>
+            </Box>
+          </FilePicker>
         </Box>
         <Box gap='xsmall'>
+          <Text size='small' weight='bold'>Then give it a name:</Text>
           <InputField
             label='name'
             value={name}
