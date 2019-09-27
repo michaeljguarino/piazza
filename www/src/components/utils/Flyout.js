@@ -17,6 +17,14 @@ function FlyoutContent(props) {
   )
 }
 
+export function FlyoutContainer(props) {
+  return (
+    <Box animation={{type: 'fadeIn', duration: 400, delay: 0}} {...props}>
+      {props.children}
+    </Box>
+  )
+}
+
 export function FlyoutProvider(props) {
   const [flyoutContent, setFlyoutContent] = useState(null)
   function setOpen(open) {
@@ -37,8 +45,8 @@ export function FlyoutProvider(props) {
 export function FlyoutHeader(props) {
   const [hover, setHover] = useState(false)
   return (
-    <Box 
-      onMouseEnter={() => setHover(true)} 
+    <Box
+      onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
       onClick={() => props.setOpen(false)}
       style={{cursor: 'pointer'}}

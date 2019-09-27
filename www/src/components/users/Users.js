@@ -3,7 +3,7 @@ import {Box} from 'grommet'
 import {User} from 'grommet-icons'
 import { Query } from 'react-apollo'
 import Scroller from '../utils/Scroller'
-import Flyout, {FlyoutHeader} from '../utils/Flyout'
+import Flyout, {FlyoutHeader, FlyoutContainer} from '../utils/Flyout'
 import HoveredBackground from '../utils/HoveredBackground'
 import UserListEntry from './UserListEntry'
 import {mergeAppend} from '../../utils/array'
@@ -20,10 +20,10 @@ export function UserIcon(props) {
         justify='center'>
         <Flyout target={<User size='25px' />}>
         {setOpen => (
-          <Box>
+          <FlyoutContainer>
             <FlyoutHeader text='Users' setOpen={setOpen} />
             <Users width='30vw' pad={{horizontal: 'small', vertical: 'xsmall'}} ignore={new Set()} />
-          </Box>
+          </FlyoutContainer>
         )}
         </Flyout>
       </Box>

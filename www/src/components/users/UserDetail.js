@@ -3,13 +3,13 @@ import {Box, Text} from 'grommet'
 import Avatar from './Avatar'
 import CreateChat from '../conversation/CreateChat'
 import {CurrentUserContext} from '../login/EnsureLogin'
-import {FlyoutHeader} from '../utils/Flyout'
+import {FlyoutHeader, FlyoutContainer} from '../utils/Flyout'
 
 function UserDetail(props) {
   return (
     <CurrentUserContext.Consumer>
     {me => (
-      <Box width='30vw'>
+      <FlyoutContainer width='30vw'>
         <FlyoutHeader setOpen={props.setOpen} text={props.user.name} />
         <Box direction="column" pad='small' gap='small'>
           <Box direction="row" gap='xsmall'>
@@ -22,7 +22,7 @@ function UserDetail(props) {
                   <CreateChat user={props.user} onChat={props.onChat} />
                 )}
               </Box>
-              <Text size='small' color='dark-6'>{props.user.title}</Text> 
+              <Text size='small' color='dark-6'>{props.user.title}</Text>
             </Box>
           </Box>
           <Box direction="column" gap='xsmall'>
@@ -46,7 +46,7 @@ function UserDetail(props) {
           )}
           </Box>
         </Box>
-      </Box>
+      </FlyoutContainer>
     )}
     </CurrentUserContext.Consumer>
   )

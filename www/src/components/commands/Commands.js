@@ -8,7 +8,7 @@ import InstallableCommands from './InstallableCommands'
 import Scroller from '../utils/Scroller'
 import HoveredBackground from '../utils/HoveredBackground'
 import {COMMANDS_Q} from './queries'
-import Flyout, {FlyoutHeader} from '../utils/Flyout'
+import Flyout, {FlyoutHeader, FlyoutContainer} from '../utils/Flyout'
 import Modal from '../utils/Modal'
 import Expander from '../utils/Expander'
 import {SecondaryButton} from '../utils/Button'
@@ -17,7 +17,7 @@ import {mergeAppend} from '../../utils/array'
 function FlyoutContent(props) {
   const [expanded, setExpanded] = useState(false)
   return (
-    <Box>
+    <FlyoutContainer>
       <FlyoutHeader text='Commands' setOpen={props.setOpen} />
       {!expanded && (
         <>
@@ -78,7 +78,7 @@ function FlyoutContent(props) {
         </Box>
         {expanded && (<InstallableCommands />)}
       </Box>
-    </Box>
+    </FlyoutContainer>
   )
 }
 

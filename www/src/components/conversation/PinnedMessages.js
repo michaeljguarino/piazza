@@ -3,7 +3,7 @@ import {Query} from 'react-apollo'
 import {Box, Text} from 'grommet'
 import {Pin} from 'grommet-icons'
 import Scroller from '../utils/Scroller'
-import Flyout, {FlyoutHeader} from '../utils/Flyout'
+import Flyout, {FlyoutHeader, FlyoutContainer} from '../utils/Flyout'
 import HoveredBackground from '../utils/HoveredBackground'
 import SubscriptionWrapper from '../utils/SubscriptionWrapper'
 import {PINNED_MESSAGES, PINNED_MESSAGE_SUB} from '../messages/queries'
@@ -60,7 +60,7 @@ function PinnedMessages(props) {
             </HoveredBackground>
           }>
           {setOpen => (
-            <Box width='50vw'>
+            <FlyoutContainer width='50vw'>
               <FlyoutHeader text='Pinned Messages' setOpen={setOpen} />
               <Box pad='small'>
                 <Text size='small'>
@@ -109,7 +109,7 @@ function PinnedMessages(props) {
                     }
                   })
                 }} />
-            </Box>
+            </FlyoutContainer>
           )}
           </Flyout>
         </SubscriptionWrapper>

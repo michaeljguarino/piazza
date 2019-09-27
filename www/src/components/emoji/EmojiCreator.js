@@ -1,7 +1,7 @@
 import React, {useState} from 'react'
 import {Mutation} from 'react-apollo'
 import {Box, Text, ThemeContext} from 'grommet'
-import {CloudUpload} from 'grommet-icons'
+import {DocumentImage} from 'grommet-icons'
 import Modal, {ModalHeader} from '../utils/Modal'
 import InputField from '../utils/InputField'
 import Button, {SecondaryButton} from '../utils/Button'
@@ -24,8 +24,7 @@ const MODAL_WIDTH = '400px'
 export function EmojiForm(props) {
   const [image, setImage] = useState(null)
   const [name, setName] = useState(null)
-  const [hover, setHover] = useState(false)
-
+  console.log(image)
   return (
     <Mutation
       mutation={CREATE_EMOJI}
@@ -40,47 +39,37 @@ export function EmojiForm(props) {
     {mutation => (
       <Box width={MODAL_WIDTH} gap='small'>
         <Box gap='xsmall'>
-          <Text size='small' weight='bold'>First upload an image:</Text>
-          <FilePicker
-            extensions={['jpg', 'jpeg', 'png']}
-            dims={{minWidth: 100, maxWidth: 500, minHeight: 100, maxHeight: 500}}
-            onChange={(file) => generatePreview(file, setImage)}
-          >
+          <Text size='small' weight='bold'>1. Upload an image</Text>
+          <Box direction='row' gap='small' align='center'>
             <Box
+              width='60px'
+              height='60px'
+              background='light-2'
               border
-              width='140px'
-              direction='row'
+              pad='xsmall'
               align='center'
-              round='xsmall'
-              elevation={hover ? 'small' : null}
-            >
-              <Box
-                style={{borderTopLeftRadius: '6px', borderBottomLeftRadius: '6px'}}
-                border='right'
-                width='35px'
-                height='35px'
-                pad='xsmall'
-                align='center'
-                justify='center'>
-                {image ? <img alt='' width='30px' height='30px' src={image.previewUrl} /> :
-                  <CloudUpload size='25px' />
-                }
-              </Box>
-              <Box
-                pad='xsmall'
-                onMouseEnter={() => setHover(true)}
-                onMouseLeave={() => setHover(false)}
-                style={{cursor: 'pointer'}}>
-                Find image
-              </Box>
+              justify='center'>
+              {image ? <img alt='' width='40px' height='40px' src={image.previewUrl} /> :
+                <DocumentImage size='20px' />
+              }
             </Box>
-          </FilePicker>
+            <Box gap='xsmall'>
+              <Text size='small'>{image ? image.file.name : 'Select an image'}</Text>
+              <FilePicker
+                extensions={['jpg', 'jpeg', 'png']}
+                dims={{minWidth: 100, maxWidth: 500, minHeight: 100, maxHeight: 500}}
+                onChange={(file) => generatePreview(file, setImage)}
+              >
+                <SecondaryButton round='xsmall' label='Upload' />
+              </FilePicker>
+            </Box>
+          </Box>
         </Box>
         <Box gap='xsmall'>
-          <Text size='small' weight='bold'>Then give it a name:</Text>
+          <Text size='small' weight='bold'>2. Give it a name</Text>
           <InputField
             label='name'
-            value={name}
+            value={name || ''}
             placeholder='my_emoji'
             onChange={(e) => setName(e.target.value)} />
         </Box>

@@ -3,7 +3,7 @@ import {Query} from 'react-apollo'
 import {Box, Text} from 'grommet'
 import {UserNew} from 'grommet-icons'
 import Scroller from '../utils/Scroller'
-import Flyout, {FlyoutHeader} from '../utils/Flyout'
+import Flyout, {FlyoutHeader, FlyoutContainer} from '../utils/Flyout'
 import Avatar from '../users/Avatar'
 import UserHandle from '../users/UserHandle'
 import {PARTICIPANTS_Q, PARTICIPANT_SUB} from './queries'
@@ -104,7 +104,7 @@ function Participants(props) {
             </HoveredBackground>
           }>
           {setOpen => (
-            <Box width='40vw'>
+            <FlyoutContainer width='40vw'>
               <FlyoutHeader text='Participants' setOpen={setOpen} />
               <Box
                 pad={{left: "small", right: 'small', bottom: 'small'}}
@@ -156,7 +156,7 @@ function Participants(props) {
               )}
               </ParticipantInvite>
               <MagicLinkInvite conversation={props.conversation} />
-            </Box>
+            </FlyoutContainer>
           )}
           </Flyout>
         </SubscriptionWrapper>

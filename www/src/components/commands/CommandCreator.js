@@ -20,7 +20,7 @@ function ConversationSelector(props) {
     <ApolloConsumer>
       {client => (
         <Select
-          placeholder='Select a conversation for the incoming webhook'
+          placeholder='Select a conversation'
           searchPlaceholder='Search conversations'
           emptySearchMessage='Nothing found'
           value={value ? value.label : undefined}
