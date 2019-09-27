@@ -90,7 +90,7 @@ function NotificationIcon(props) {
   return (
     <>
     {currentNotification && (
-      <BrowserNotif 
+      <BrowserNotif
       setCurrentNotification={setCurrentNotification}
       {...currentNotification} />
     )}
@@ -122,13 +122,12 @@ function NotificationIcon(props) {
                     <Notification size='25px' />
                     {(unseen && unseen > 0) ?
                       <Box
-                        background="brand"
+                        background='notif'
                         align='center'
                         justify='center'
                         height='15px'
                         width='15px'
-                        round
-                      >
+                        round>
                         <Text size='10px'>{unseen}</Text>
                       </Box> : <span></span>
                     }
@@ -139,8 +138,7 @@ function NotificationIcon(props) {
                       edges={edges}
                       fetchMore={fetchMore}
                       pageInfo={pageInfo}
-                      {...props}
-                      />
+                      {...props} />
                   </Box>
                 </Dropdown>
             )}

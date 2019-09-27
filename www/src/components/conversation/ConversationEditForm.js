@@ -1,12 +1,13 @@
 import React from 'react'
-import {Keyboard, Box, CheckBox} from 'grommet'
+import {Keyboard, Box} from 'grommet'
 import Button, {SecondaryButton} from '../utils/Button'
 import InputField from '../utils/InputField'
+import RadioButton from '../utils/RadioButton'
 
 function ConversationEditForm(props) {
   return (
     <Keyboard onEnter={props.mutation}>
-      <Box width="300px" gap='small'>
+      <Box width="330px" gap='small'>
         <InputField
           label='Name'
           value={props.state.name}
@@ -17,12 +18,11 @@ function ConversationEditForm(props) {
           value={props.state.topic}
           placeholder='conversation topic'
           onChange={(e) => props.onStateChange({topic: e.target.value})} />
-        <Box direction='row' align='center'>
-          <CheckBox
-            margin={{top: 'small'}}
-            label='Public'
-            checked={props.state.public}
-            onChange={(e) => props.onStateChange({public: e.target.checked})}
+        <Box gap='small'>
+          <RadioButton
+            label='Public (the conversation is searchable)'
+            enabled={props.state.public}
+            onChange={(e) => props.onStateChange({public: e})}
           />
         </Box>
         <Box direction='row' justify='end' gap='xsmall'>
