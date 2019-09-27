@@ -1,5 +1,6 @@
 import React from 'react'
 import {Box, Text, ThemeContext} from 'grommet'
+import {User, Lock, Logout} from 'grommet-icons'
 import Avatar from './Avatar'
 import { Mutation } from 'react-apollo'
 import CloseableDropdown from '../utils/CloseableDropdown'
@@ -19,7 +20,10 @@ export function DropdownItem(props) {
   const {onClick, ...rest} = props
   return (
     <MenuItem onClick={() => onClick && onClick()} {...rest}>
-      <Text size='small'>{props.text}</Text>
+      <Box direction='row' align='center' gap='xsmall'>
+        {props.icon && React.createElement(props.icon, {size: '12px'})}
+        <Text size='small'>{props.text}</Text>
+      </Box>
     </MenuItem>
   )
 }
@@ -67,7 +71,7 @@ function Me(props) {
                 </Box>
               }>
               {setDropdownOpen => (
-                <Box width="200px">
+                <Box width="225px">
                   <Box pad='small' direction="row" align="center">
                     <Avatar user={me} rightMargin='10px' />
                     <Text size="small" weight='bold'>{me.name}</Text>
@@ -76,7 +80,7 @@ function Me(props) {
                   {setAlternate => (
                     <>
                     <Box pad={{bottom: 'xxsmall'}}>
-                      <Modal target={<DropdownItem text='update profile' />}>
+                      <Modal target={<DropdownItem icon={User} text='update profile' />}>
                       {setOpen => (
                         <Box>
                           <ModalHeader text='Update Profile' setOpen={setOpen} />
@@ -86,7 +90,7 @@ function Me(props) {
                         </Box>
                       )}
                       </Modal>
-                      <Modal target={<DropdownItem text='change password' />}>
+                      <Modal target={<DropdownItem icon={Lock} text='change password' />}>
                         {setOpen => (
                           <Box width='400px'>
                             <ModalHeader text='Update Password' setOpen={setOpen} />
@@ -101,7 +105,14 @@ function Me(props) {
                       </SubMenu>
                     </Box>
                     <Box border='top' pad={{vertical: 'xxsmall'}}>
-                      <DropdownItem text='logout' onClick={_logout} />
+                      <MenuItem onClick={_logout}>
+                        <Box direction='row' align='center'>
+                          <Box width='100%'>
+                            <Text size='small'>logout</Text>
+                          </Box>
+                          <Logout size='12px' />
+                        </Box>
+                      </MenuItem>
                     </Box>
                     </>
                   )}

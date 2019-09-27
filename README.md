@@ -34,6 +34,10 @@ The other huge win is privacy.  Not only do you maintain complete control over y
 
 ### To install in your own account:
 
+You'll need both helm and terraform to fully install the system.  (If you already have a kube cluster,
+you can skip most of the tf part, although you still might need to create a bucket for file assets, ensure
+you have an ingress controller enabled, etc.)
+
 ```bash
 make cli # if you haven't installed helm, configured gcloud
 make bootstrap # will create a new gke cluster and install a few necessary tools if you haven't already

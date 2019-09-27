@@ -1,6 +1,7 @@
 
 import React from 'react'
 import {Box} from 'grommet'
+import {Emoji, Iteration, Keyboard} from 'grommet-icons'
 import {DropdownItem} from '../users/Me'
 import Themes from '../themes/Themes'
 import Modal, {ModalHeader} from '../utils/Modal'
@@ -10,7 +11,7 @@ import {EmojiForm} from '../emoji/EmojiCreator'
 function Tools(props) {
   return (
     <Box pad={{bottom: 'xxsmall'}}>
-      <Modal target={<DropdownItem text='structured message creator' />}>
+      <Modal target={<DropdownItem icon={Keyboard} text='structured message creator' />}>
       {setOpen => (
         <Box>
           <ModalHeader text='Structured Message Developer' setOpen={setOpen} />
@@ -18,7 +19,7 @@ function Tools(props) {
         </Box>
       )}
       </Modal>
-      <Modal target={<DropdownItem text='theme selector' />}>
+      <Modal target={<DropdownItem icon={Iteration} text='theme selector' />}>
         {setOpen => (
           <Box>
             <ModalHeader text='Select a theme' setOpen={setOpen} />
@@ -26,7 +27,7 @@ function Tools(props) {
           </Box>
         )}
       </Modal>
-      <Modal target={<DropdownItem text='create emoji' />}>
+      <Modal target={<DropdownItem icon={Emoji} text='create emoji' />}>
         {setOpen => (
           <Box>
             <ModalHeader text='Create an emoji' setOpen={setOpen} />

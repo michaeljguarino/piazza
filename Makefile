@@ -62,6 +62,7 @@ connectdb: ## proxies the db in kubernetes via kubectl
 cli:
 	@echo "Ensuring helm is installed..."
 	which helm || brew install kubernetes-helm || echo "Go to the helm website for better installation instructions"
+	which terraform || brew install terraform || echo "Install terraform for your system as well"
 	@echo "setting up your gcloud cli (follow the instructions from google to install first)..."
 	gcloud init
 	gcloud services enable container.googleapis.com
