@@ -10,7 +10,7 @@ ${props => (
     flex-basis: 100%;
     align-items: center;
     color: ${normalizeColor(props.color || 'dark-1', props.theme)};
-    margin: 8px 0px;
+    margin: ${props.margin || '8px'} 0px;
     &::before, &::after {
       content: "";
       flex-grow: 1;
@@ -18,7 +18,7 @@ ${props => (
       height: 1px;
       font-size: 0px;
       line-height: 0px;
-      margin: 0px 8px;
+      margin: 0px ${props.textMargin || '8px'};
     }
   `
 )}
@@ -29,7 +29,7 @@ function Divider(props) {
     <ThemeContext.Consumer>
     {theme => (
       <StyledDivider theme={theme} color={props.color}>
-        <Text size='small' weight='500'>{props.text}</Text>
+        {props.text && <Text style={{fontWeight: 500}} size='small'>{props.text}</Text>}
       </StyledDivider>
     )}
     </ThemeContext.Consumer>

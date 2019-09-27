@@ -17,15 +17,15 @@ export function ReplyGutter(props) {
       <Box style={{borderLeft: "2px solid gray"}}>
         <Stack anchor='top-right'>
           <Message noHover message={props.reply} {...props} />
-          <Box 
+          <Box
             width='25px'
             height='25px'
             align='center'
             justify='center'
             style={{cursor: 'pointer'}}
             onClick={() => props.setReply(null)}
-            onMouseEnter={() => setHover(true)} 
-            onMouseLeave={() => setHover(false)} 
+            onMouseEnter={() => setHover(true)}
+            onMouseLeave={() => setHover(false)}
             background={hover ? 'light-3' : null}>
             <Close size='15px' />
           </Box>

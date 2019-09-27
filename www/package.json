@@ -45,6 +45,7 @@
     "react-tiny-crossfade": "^2.0.0",
     "react-tiny-popover": "^3.4.5",
     "react-transition-group": "^4.3.0",
+    "react-visibility-sensor": "^5.1.1",
     "react-web-notification": "^0.6.1",
     "react-with-styles-interface-aphrodite": "^6.0.1",
     "slate": "^0.47.4",

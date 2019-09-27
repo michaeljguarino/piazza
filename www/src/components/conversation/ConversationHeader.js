@@ -189,7 +189,7 @@ function ConversationDropdown(props) {
 
 function ConversationHeader(props) {
   return (
-    <Box direction='row' border='bottom' align='center' pad={{left: '20px', top: '7px', bottom: '7px'}}>
+    <Box fill='horizontal' direction='row' border='bottom' align='center' pad={{left: '20px', top: '7px', bottom: '7px'}}>
       <Box fill='horizontal' direction='column'>
         <CurrentUserContext.Consumer>
         {me => (<ConversationDropdown me={me} {...props} />)}

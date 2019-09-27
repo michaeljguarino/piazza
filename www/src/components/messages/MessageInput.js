@@ -15,8 +15,6 @@ import {ReplyGutter} from './ReplyProvider'
 import { Progress } from 'react-sweet-progress';
 import "react-sweet-progress/lib/style.css";
 
-
-
 const TEXT_SIZE='xsmall'
 const TEXT_COLOR='dark-4'
 const SEND_COLOR='status-ok'
@@ -110,38 +108,38 @@ class MessageInput extends Component {
           </Layer>
         )}
         <Mutation
-            mutation={MESSAGE_MUTATION}
-            variables={{conversationId: this.props.conversation.id, attributes: {text, attachment, parentId}}}
-            context= {{
-              fetchOptions: {
-                useUpload: this.state.useUpload,
-                onProgress: (ev) => {
-                  this.setState({uploadProgress: Math.round((ev.loaded / ev.total) * 100)});
-                },
-                onAbortPossible: () => null
-              }
-            }}
-            update={(cache, {data: {createMessage}}) => {
-              const data = cache.readQuery({query: MESSAGES_Q, variables: {conversationId: this.props.conversation.id}})
-              cache.writeQuery({
-                query: MESSAGES_Q,
-                variables: {conversationId: this.props.conversation.id},
-                data: applyNewMessage(data, createMessage)
-              })
-              this.setState({uploadProgress: null})
-              this.props.setReply(null)
-            }}
+          mutation={MESSAGE_MUTATION}
+          variables={{conversationId: this.props.conversation.id, attributes: {text, attachment, parentId}}}
+          context= {{
+            fetchOptions: {
+              useUpload: this.state.useUpload,
+              onProgress: (ev) => {
+                this.setState({uploadProgress: Math.round((ev.loaded / ev.total) * 100)});
+              },
+              onAbortPossible: () => null
+            }
+          }}
+          update={(cache, {data: {createMessage}}) => {
+            const data = cache.readQuery({query: MESSAGES_Q, variables: {conversationId: this.props.conversation.id}})
+            cache.writeQuery({
+              query: MESSAGES_Q,
+              variables: {conversationId: this.props.conversation.id},
+              data: applyNewMessage(data, createMessage)
+            })
+            this.setState({uploadProgress: null})
+            this.props.setReply(null)
+          }}
         >
         {postMutation => (
           <Keyboard onKeyDown={(e) => {
-              if (e.key === 'Enter' && !e.shiftKey && !this.state.disableSubmit) {
-                postMutation()
-                this.setState({attachment: null, text: ''})
-                this.props.resetHeight()
-              } else if (e.key === 'Enter' && e.shiftKey) {
-                this.props.incrementHeight()
-              }
-            }}>
+            if (e.key === 'Enter' && !e.shiftKey && !this.state.disableSubmit) {
+              postMutation()
+              this.setState({attachment: null, text: ''})
+              this.props.resetHeight()
+            } else if (e.key === 'Enter' && e.shiftKey) {
+              this.props.incrementHeight()
+            }
+          }}>
             <Box
               border
               fill='horizontal'

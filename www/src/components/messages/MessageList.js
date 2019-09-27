@@ -59,9 +59,10 @@ class MessageList extends Component {
                   justifyContent: 'flex-start',
                   flexDirection: 'column-reverse',
                 }}
-                mapper={(edge, next) => (
+                mapper={(edge, next, ref) => (
                   <Message
                     key={edge.node.id}
+                    parentRef={ref}
                     conversation={this.props.conversation}
                     message={edge.node}
                     setReply={this.props.setReply}

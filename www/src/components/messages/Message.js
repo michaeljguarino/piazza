@@ -4,6 +4,7 @@ import {Pin} from 'grommet-icons'
 import Avatar from '../users/Avatar'
 import moment from 'moment'
 import MessageEmbed from './MessageEmbed'
+import {VisibleMessagesContext} from './VisibleMessages'
 import UserHandle from '../users/UserHandle'
 import MessageControls from './MessageControls'
 import MessageReactions from './MessageReactions'
@@ -16,6 +17,7 @@ import StructuredMessage from './StructuredMessage'
 import Divider from '../utils/Divider'
 import FileIcon, { defaultStyles } from 'react-file-icon'
 import {Emoji} from 'emoji-mart'
+import VisibilitySensor from 'react-visibility-sensor'
 
 function TextMessage(props) {
   return (
@@ -223,18 +225,20 @@ function MessageBody(props) {
   )
 }
 
+export function formatDate(dt) {
+return moment(dt).calendar(null, {
+  sameDay: '[Today]',
+  nextDay: '[Tomorrow]',
+  lastDay: '[Yesterday]',
+  lastWeek: 'dddd',
+  sameElse: 'dddd, MMMM Do'
+});
+}
+
 function DateDivider(props) {
   if (sameDay(props.message, props.next)) return null
 
-  const date = moment(props.message.insertedAt).calendar(null, {
-    sameDay: '[Today]',
-    nextDay: '[Tomorrow]',
-    lastDay: '[Yesterday]',
-    lastWeek: 'dddd',
-    sameElse: 'dddd, MMMM Do'
-  });
-
-  return <Divider text={date} />
+  return <Divider text={formatDate(props.message.insertedAt)} />
 }
 
 function Message(props) {
@@ -250,27 +254,38 @@ function Message(props) {
   }
 
   return (
-    <>
-    <Box
-      onClick={props.onClick}
-      onMouseEnter={() => setHover(true)}
-      onMouseLeave={() => setHover(false)}
-      background={background}
-      flex={false}>
-      <Stack fill anchor='top-right'>
-        <MessageBody
-          editing={editing}
-          setEditing={wrappedSetEditing}
-          hover={isHovered}
-          setPinnedHover={setPinnedHover}
-          {...props} />
-        {isHovered && (
-          <MessageControls setEditing={wrappedSetEditing} setPinnedHover={setPinnedHover} {...props} />
-        )}
-      </Stack>
-    </Box>
-    <DateDivider message={props.message} next={props.next} />
-    </>
+    <VisibleMessagesContext.Consumer>
+    {({addMessage, removeMessage}) => (
+      <>
+      <VisibilitySensor
+        scrollCheck
+        scrollDelay={0}
+        partialVisibility
+        containment={props.parentRef && props.parentRef.current}
+        onChange={(visible) => visible ? addMessage(props.message) : removeMessage(props.message)}>
+        <Box
+          onClick={props.onClick}
+          onMouseEnter={() => setHover(true)}
+          onMouseLeave={() => setHover(false)}
+          background={background}
+          flex={false}>
+          <Stack fill anchor='top-right'>
+            <MessageBody
+              editing={editing}
+              setEditing={wrappedSetEditing}
+              hover={isHovered}
+              setPinnedHover={setPinnedHover}
+              {...props} />
+            {isHovered && (
+              <MessageControls setEditing={wrappedSetEditing} setPinnedHover={setPinnedHover} {...props} />
+            )}
+          </Stack>
+        </Box>
+      </VisibilitySensor>
+      <DateDivider message={props.message} next={props.next} />
+      </>
+    )}
+    </VisibleMessagesContext.Consumer>
   )
 }
 
