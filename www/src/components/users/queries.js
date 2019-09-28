@@ -45,7 +45,10 @@ export const USERS_Q = gql`
 export const USER_SUB = gql`
   subscription {
     userDelta {
-      ...UserFragment
+      delta
+      payload {
+        ...UserFragment
+      }
     }
   }
   ${UserFragment}

@@ -37,8 +37,8 @@ export function EmojiForm(props) {
         props.setOpen(false)
       }}>
     {mutation => (
-      <Box width={MODAL_WIDTH} gap='small'>
-        <Box gap='xsmall'>
+      <Box width={MODAL_WIDTH} gap='medium'>
+        <Box gap='small'>
           <Text size='small' weight='bold'>1. Upload an image</Text>
           <Box direction='row' gap='small' align='center' pad={{left: 'medium'}}>
             <Box
@@ -65,7 +65,7 @@ export function EmojiForm(props) {
             </Box>
           </Box>
         </Box>
-        <Box gap='xsmall'>
+        <Box gap='small'>
           <Text size='small' weight='bold'>2. Give it a name</Text>
           <Box pad={{left: 'medium'}}>
             <InputField

@@ -7,7 +7,10 @@ import Flyout, {FlyoutHeader, FlyoutContainer} from '../utils/Flyout'
 import HoveredBackground from '../utils/HoveredBackground'
 import UserListEntry from './UserListEntry'
 import {mergeAppend} from '../../utils/array'
-import {USERS_Q} from './queries'
+import {USERS_Q, USER_SUB} from './queries'
+import {updateUser, addUser} from './utils'
+import SubscriptionWrapper from '../utils/SubscriptionWrapper'
+
 
 export function UserIcon(props) {
   return (
@@ -31,6 +34,25 @@ export function UserIcon(props) {
   )
 }
 
+async function _subscribeToMore(subscribeToMore) {
+  return subscribeToMore({
+    document: USER_SUB,
+    updateQuery: (prev, {subscriptionData}) => {
+      if (!subscriptionData.data) return prev
+      const {payload, delta}  = subscriptionData.data.userDelta
+
+      switch (delta) {
+        case "UPDATE":
+          return updateUser(prev, payload)
+        case "CREATE":
+          return addUser(prev, payload)
+        default:
+          return prev
+      }
+    }
+  })
+}
+
 function Users(props) {
   return (
     <Box width={props.width}>
@@ -40,6 +62,9 @@ function Users(props) {
           let userEdges = data.users.edges
           let pageInfo = data.users.pageInfo
           return (
+            <SubscriptionWrapper
+              id="users"
+              startSubscription={() => _subscribeToMore(subscribeToMore)}>
             <Scroller
               id='message-viewport'
               edges={userEdges.filter(({node}) => !props.ignore.has(node.id))}
@@ -79,6 +104,7 @@ function Users(props) {
                 })
               }}
             />
+            </SubscriptionWrapper>
           )
         }}
       </Query>
