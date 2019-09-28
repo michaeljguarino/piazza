@@ -1,8 +1,7 @@
 import React from 'react'
-import {Keyboard, Box} from 'grommet'
+import {Keyboard, Box, CheckBox} from 'grommet'
 import Button, {SecondaryButton} from '../utils/Button'
 import InputField from '../utils/InputField'
-import RadioButton from '../utils/RadioButton'
 
 function ConversationEditForm(props) {
   return (
@@ -19,10 +18,13 @@ function ConversationEditForm(props) {
           placeholder='conversation topic'
           onChange={(e) => props.onStateChange({topic: e.target.value})} />
         <Box gap='small'>
-          <RadioButton
-            label='Public (the conversation is searchable)'
-            enabled={props.state.public}
-            onChange={(e) => props.onStateChange({public: e})}
+          <CheckBox
+            toggle
+            label={props.state.public ?
+              'Public (the conversation is searchable)' :
+              'Private (can only join via invite)'}
+            checked={props.state.public}
+            onChange={(e) => props.onStateChange({public: e.target.checked})}
           />
         </Box>
         <Box direction='row' justify='end' gap='xsmall'>

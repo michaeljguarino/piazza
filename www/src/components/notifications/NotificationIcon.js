@@ -128,7 +128,7 @@ function NotificationIcon(props) {
                         height='15px'
                         width='15px'
                         round>
-                        <Text size='10px'>{unseen}</Text>
+                        <Text color='white' size='10px'>{unseen}</Text>
                       </Box> : <span></span>
                     }
                   </Stack>

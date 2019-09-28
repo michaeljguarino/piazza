@@ -40,7 +40,7 @@ export function EmojiForm(props) {
       <Box width={MODAL_WIDTH} gap='small'>
         <Box gap='xsmall'>
           <Text size='small' weight='bold'>1. Upload an image</Text>
-          <Box direction='row' gap='small' align='center'>
+          <Box direction='row' gap='small' align='center' pad={{left: 'medium'}}>
             <Box
               width='60px'
               height='60px'
@@ -67,11 +67,13 @@ export function EmojiForm(props) {
         </Box>
         <Box gap='xsmall'>
           <Text size='small' weight='bold'>2. Give it a name</Text>
-          <InputField
-            label='name'
-            value={name || ''}
-            placeholder='my_emoji'
-            onChange={(e) => setName(e.target.value)} />
+          <Box pad={{left: 'medium'}}>
+            <InputField
+              label='name'
+              value={name || ''}
+              placeholder='my_emoji'
+              onChange={(e) => setName(e.target.value)} />
+          </Box>
         </Box>
         <Box gap='xsmall' direction='row' fill='horizontal' justify='end'>
           <SecondaryButton round='xsmall' pad='xsmall' label='Cancel' onClick={() => props.setOpen(false)} />

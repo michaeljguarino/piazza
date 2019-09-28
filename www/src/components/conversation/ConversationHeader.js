@@ -120,7 +120,7 @@ function ConversationName(props) {
   )
 }
 
-const DROP_WIDTH = '230px'
+const DROP_WIDTH = '240px'
 
 function ConversationDropdown(props) {
   const currentParticipant = props.conversation.currentParticipant || {}

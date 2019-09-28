@@ -43,9 +43,9 @@ function StructuredMessageTester(props) {
   const [message, setMessage] = useState(parseMessage(DUMMY_MESSAGE))
 
   return (
-    <Box style={{maxHeight: '80vh'}} pad='medium' width='50vw' gap='medium'>
+    <Box style={{maxHeight: '80vh', minWidth: '40vw'}} pad='medium' gap='medium'>
       <Box direction='row' gap='medium' fill='horizontal'>
-        <Box border round='small' pad='xsmall'>
+        <Box border round='small' pad='xsmall' style={{minWidth: '60%'}}>
           <Editor
             ref={editorRef}
             defaultValue={Plain.deserialize(DUMMY_MESSAGE)}
@@ -57,7 +57,7 @@ function StructuredMessageTester(props) {
               }
             }} />
         </Box>
-        <Box pad='xsmall' border round='small' style={{minWidth: '60%'}}>
+        <Box pad='xsmall' border round='small' fill='horizontal'>
           {message}
         </Box>
       </Box>

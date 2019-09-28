@@ -1,6 +1,5 @@
 import React, {useState} from 'react'
-import {Form, Box, Text} from 'grommet'
-import RadioButton from '../utils/RadioButton'
+import {Form, Box, Text, CheckBox} from 'grommet'
 
 export const DEFAULT_PREFS = {mention: true, message: false, participant: false}
 const filterPrefs = ({mention, message, participant}) => ({mention, message, participant})
@@ -18,18 +17,21 @@ function NotificationPreferences(props) {
       <Text>Notification Settings</Text>
       <Form onSubmit={() => props.mutation({variables: {...props.vars, prefs: preferences}})}>
         <Box gap='xsmall'>
-          <RadioButton
+          <CheckBox
+            toggle
             label="on each mention"
-            enabled={preferences.mention}
-            onChange={(e) => onChange({mention: e})} />
-          <RadioButton
+            checked={preferences.mention}
+            onChange={(e) => onChange({mention: e.target.checked})} />
+          <CheckBox
+            toggle
             label="on each new participant"
-            enabled={preferences.participant}
-            onChange={(e) => onChange({participant: e})} />
-          <RadioButton
+            checked={preferences.participant}
+            onChange={(e) => onChange({participant: e.target.checked})} />
+          <CheckBox
+            toggle
             label="on each message"
-            enabled={preferences.message}
-            onChange={(e) => onChange({message: e})} />
+            checked={preferences.message}
+            onChange={(e) => onChange({message: e.target.checked})} />
         </Box>
       </Form>
     </Box>
