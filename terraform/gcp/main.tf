@@ -69,7 +69,7 @@ resource "google_container_cluster" "cluster" {
 
     enable_private_nodes = false
 
-    master_ipv4_cidr_block = "${var.master_ipv4_cidr_block}"
+    # master_ipv4_cidr_block = "${var.master_ipv4_cidr_block}"
   }
 
   # Configuration options for the NetworkPolicy feature.
@@ -174,7 +174,7 @@ resource "google_container_node_pool" "node_pool" {
       "https://www.googleapis.com/auth/monitoring",
       "https://www.googleapis.com/auth/devstorage.read_only",
       "https://www.googleapis.com/auth/service.management.readonly",
-      "https://www.googleapis.com/auth/servicecontrol" 
+      "https://www.googleapis.com/auth/servicecontrol"
     ]
 
     metadata = {
