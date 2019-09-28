@@ -77,6 +77,7 @@ class MessageInput extends Component {
       this.channel.leave()
       this.channel = socket.channel(this.topic)
       this.channel.join()
+      this.channel.on("typing", (msg) => this.cache.add(msg.handle))
     }
   }
 
