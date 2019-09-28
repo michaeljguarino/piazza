@@ -14,6 +14,7 @@ import MentionManager from './MentionManager'
 import {ReplyGutter} from './ReplyProvider'
 import { Progress } from 'react-sweet-progress';
 import "react-sweet-progress/lib/style.css";
+import Plain from 'slate-plain-serializer'
 
 const TEXT_SIZE='xsmall'
 const TEXT_COLOR='dark-4'
@@ -48,7 +49,7 @@ function HelpDoc(props) {
 
 class MessageInput extends Component {
   state = {
-    text: '',
+    text: Plain.deserialize(''),
     typists: [],
     uploadProgress: null,
     useUpload: false,
@@ -110,7 +111,6 @@ class MessageInput extends Component {
         )}
         <Mutation
           mutation={MESSAGE_MUTATION}
-          variables={{conversationId: this.props.conversation.id, attributes: {text, attachment, parentId}}}
           context= {{
             fetchOptions: {
               useUpload: this.state.useUpload,
@@ -134,7 +134,10 @@ class MessageInput extends Component {
         {postMutation => (
           <Keyboard onKeyDown={(e) => {
             if (e.key === 'Enter' && !e.shiftKey && !this.state.disableSubmit) {
-              postMutation()
+              postMutation({variables: {
+                conversationId: this.props.conversation.id,
+                attributes: {attachment, parentId, text: Plain.serialize(text)}
+              }})
               this.setState({attachment: null, text: ''})
               this.props.resetHeight()
             } else if (e.key === 'Enter' && e.shiftKey) {

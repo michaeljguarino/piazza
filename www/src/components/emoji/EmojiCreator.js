@@ -1,9 +1,8 @@
 import React, {useState} from 'react'
 import {Mutation} from 'react-apollo'
-import {Box, Text, ThemeContext} from 'grommet'
+import {Box, Text, ThemeContext, TextInput} from 'grommet'
 import {DocumentImage} from 'grommet-icons'
 import Modal, {ModalHeader} from '../utils/Modal'
-import InputField from '../utils/InputField'
 import Button, {SecondaryButton} from '../utils/Button'
 import {FilePicker} from 'react-file-picker'
 import {CREATE_EMOJI, EMOJI_Q} from './queries'
@@ -23,8 +22,7 @@ const MODAL_WIDTH = '400px'
 
 export function EmojiForm(props) {
   const [image, setImage] = useState(null)
-  const [name, setName] = useState(null)
-  console.log(image)
+  const [name, setName] = useState('')
   return (
     <Mutation
       mutation={CREATE_EMOJI}
@@ -38,6 +36,11 @@ export function EmojiForm(props) {
       }}>
     {mutation => (
       <Box width={MODAL_WIDTH} gap='medium'>
+        <Text size='small'>
+          <i>Custom emojis can be found in the * section of the emoji picker, or
+          while searching using :emoji_name:
+          </i>
+        </Text>
         <Box gap='small'>
           <Text size='small' weight='bold'>1. Upload an image</Text>
           <Box direction='row' gap='small' align='center' pad={{left: 'medium'}}>
@@ -67,11 +70,11 @@ export function EmojiForm(props) {
         </Box>
         <Box gap='small'>
           <Text size='small' weight='bold'>2. Give it a name</Text>
-          <Box pad={{left: 'medium'}}>
-            <InputField
+          <Box pad={{left: 'medium'}} direction='row'>
+            <TextInput
               label='name'
-              value={name || ''}
-              placeholder='my_emoji'
+              value={name}
+              placeholder="emoji_name"
               onChange={(e) => setName(e.target.value)} />
           </Box>
         </Box>

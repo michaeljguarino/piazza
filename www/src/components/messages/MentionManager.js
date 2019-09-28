@@ -222,10 +222,11 @@ class PluggableMentionManager extends Component {
         replaceSuggestion(suggestion, change, ' ')
       }
     })
+    this.plugins = [this.mentionPlugin, this.commandPlugin, this.emojiPlugin]
   }
 
   render() {
-    return this.props.children([this.mentionPlugin, this.commandPlugin, this.emojiPlugin])
+    return this.props.children(this.plugins)
   }
 }
 
@@ -233,7 +234,7 @@ function MentionManager(props) {
   const emojiRef = useRef()
   const editorRef = useRef()
   const [emojiPicker, setEmojiPicker] = useState(false)
-  const [editorState, setEditorState] = useState(Plain.deserialize(props.text))
+  const [editorState, setEditorState] = useState(props.text)
   return (
     <ApolloConsumer>
     {client => (
@@ -242,7 +243,6 @@ function MentionManager(props) {
           <>
           <Editor
             ref={editorRef}
-            defaultValue={Plain.deserialize(props.text)}
             value={editorState}
             plugins={plugins}
             style={{
@@ -263,9 +263,8 @@ function MentionManager(props) {
               return next()
             }}
             onChange={state => {
-              let text = Plain.serialize(state.value)
               setEditorState(state.value)
-              props.setText(text)
+              props.setText(state.value)
               props.onChange(state)
             }}
             placeholder='this is for talking'

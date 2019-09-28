@@ -5,13 +5,13 @@ import MentionManager from './MentionManager'
 import Button, {SecondaryButton} from '../utils/Button'
 import {EDIT_MESSAGE, MESSAGES_Q} from './queries'
 import {updateMessage} from './utils'
+import Plain from 'slate-plain-serializer'
 
 function MessageEdit(props) {
-  const [text, setText] = useState(props.message.text)
+  const [text, setText] = useState(Plain.deserialize(props.message.text))
   return (
     <Mutation
       mutation={EDIT_MESSAGE}
-      variables={{id: props.message.id, attributes: {text: text}}}
       update={(cache, {data: {editMessage}}) => {
         const convId = props.message.conversationId
         const data = cache.readQuery({query: MESSAGES_Q, variables: {conversationId: convId}})
@@ -23,7 +23,7 @@ function MessageEdit(props) {
         props.setEditing(false)
       }}>
     {mutation => (
-      <Box pad={{horizontal: 'small'}} gap='xsmall'>
+      <Box pad={{right: 'small'}} gap='xsmall'>
         <Box direction='row' fill='horizontal' round='xsmall' pad='xsmall' border>
           <MentionManager
             submitDisabled
@@ -33,7 +33,9 @@ function MessageEdit(props) {
             disableSubmit={() => null} />
         </Box>
         <Box direction='row' gap='xsmall'>
-          <Button label='Update' round='xsmall' onClick={mutation} />
+          <Button label='Update' round='xsmall' onClick={() => (
+            mutation({variables: {id: props.message.id, attributes: {text: Plain.serialize(text)}}})
+          )} />
           <SecondaryButton label='Cancel' round='xsmall' onClick={() => props.setEditing(false)} />
         </Box>
       </Box>
