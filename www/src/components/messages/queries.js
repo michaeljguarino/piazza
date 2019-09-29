@@ -37,7 +37,7 @@ export const ANCHORED_MESSAGES = gql`
           }
         }
       }
-      after: messages(first: 5, after: $afterCursor, anchor: $anchor, direction: AFTER) {
+      after: messages(first: 15, after: $afterCursor, anchor: $anchor, direction: AFTER) {
         pageInfo {
           endCursor
           hasNextPage

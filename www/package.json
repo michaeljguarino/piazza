@@ -49,6 +49,7 @@
     "react-visibility-sensor": "^5.1.1",
     "react-web-notification": "^0.6.1",
     "react-with-styles-interface-aphrodite": "^6.0.1",
+    "scroll-into-view": "^1.9.7",
     "slate": "^0.47.4",
     "slate-prism": "^0.5.0",
     "slate-react": "^0.22.4",

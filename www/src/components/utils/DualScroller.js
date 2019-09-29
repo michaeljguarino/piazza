@@ -1,41 +1,39 @@
-import React, { Component, createRef } from "react";
+import React, { useRef, useEffect } from "react"
 import {lookahead} from '../../utils/array'
+import scrollIntoView from 'scroll-into-view'
 
 export const DIRECTION = {
   BEFORE: "before",
   AFTER: "after"
 }
 
-class DualScroller extends Component {
-  scrollRef = createRef()
+function DualScroller(props) {
+  const scrollRef = useRef()
 
-  UNSAFE_componentDidMount() {
-    window.addEventListener("scroll", this.handleOnScroll, false);
-  }
+  useEffect(() => {
+    if (props.scrollTo) {
+      scrollIntoView(document.getElementById(props.scrollTo), {time: 100, align: {top: 0}})
+    }
+  }, [props.scrollTo])
 
-  componentWillUnmount() {
-    window.removeEventListener("scroll", this.handleOnScroll);
-  }
-
-  handleOnScroll = () => {
-    let elem = document.getElementById(this.props.id);
+  const handleOnScroll = () => {
+    let elem = document.getElementById(props.id);
     if (elem.scrollTop >= (elem.scrollHeight - elem.offsetHeight)) {
-      this.props.onLoadMore(DIRECTION.AFTER);
+      props.onLoadMore(DIRECTION.AFTER);
     }
 
     if (elem.scrollTop <= elem.offsetHeight) {
-      this.props.onLoadMore(DIRECTION.BEFORE)
+      props.onLoadMore(DIRECTION.BEFORE)
     }
-  };
-
-  render() {
-    let entries = Array.from(lookahead(this.props.edges, (edge, next) => this.props.mapper(edge, next, this.scrollRef)))
-    return (
-      <div ref={this.scrollRef} id={this.props.id} onScroll={this.handleOnScroll} style={this.props.style}>
-        {entries.length > 0 ? entries : this.props.emptyState}
-      </div>
-    );
   }
+
+
+  let entries = Array.from(lookahead(props.edges, (edge, next) => props.mapper(edge, next, scrollRef)))
+  return (
+    <div ref={scrollRef} id={props.id} onScroll={handleOnScroll} style={props.style}>
+      {entries.length > 0 ? entries : props.emptyState}
+    </div>
+  )
 }
 
 export default DualScroller

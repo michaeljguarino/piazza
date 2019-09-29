@@ -30,16 +30,18 @@ function AnchoredMessageList(props) {
   return (
     <Query query={ANCHORED_MESSAGES} variables={defaultVars} fetchPolicy='cache-and-network'>
       {({loading, error, data, fetchMore}) => {
-        if (loading && !data.conversation) return <Loading height='calc(100vh - 135px)' />
+        if (loading && !data.conversation) return <Loading height='calc(100vh - 135px)' width='100%' />
         if (error) return <div>wtf</div>
 
         let results = data.conversation
         let allEdges = [...Array.from(reverse(results.before.edges)), ...results.after.edges]
+        const scrollTo = props.anchor.id ? props.anchor.id : (results.after.edges[0] && results.after.edges[0].node.id)
         return (
           <Stack anchor="bottom" fill>
             <DualScroller
               id='message-viewport'
               edges={Array.from(reverse(allEdges))}
+              scrollTo={scrollTo}
               overlay={<RecentItemsOverlay {...props} />}
               style={{
                 overflow: 'auto',

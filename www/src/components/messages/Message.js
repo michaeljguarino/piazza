@@ -263,6 +263,7 @@ function Message(props) {
         containment={props.parentRef && props.parentRef.current}
         onChange={(visible) => visible ? addMessage(props.message) : removeMessage(props.message)}>
         <Box
+          id={props.message.id}
           onClick={props.onClick}
           onMouseEnter={() => setHover(true)}
           onMouseLeave={() => setHover(false)}

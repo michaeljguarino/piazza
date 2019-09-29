@@ -1,41 +1,31 @@
-import React, { Component, createRef } from "react";
+import React, { useRef } from "react";
 import {lookahead} from '../../utils/array'
 
-class Scroller extends Component {
-  scrollRef = createRef()
+function Scroller(props) {
+  const scrollRef = useRef()
 
-  UNSAFE_componentDidMount() {
-    window.addEventListener("scroll", this.handleOnScroll, false);
-  }
-
-  componentWillUnmount() {
-    window.removeEventListener("scroll", this.handleOnScroll);
-  }
-
-  handleOnScroll = () => {
-    let direction = this.props.direction || 'down'
+  const handleOnScroll = () => {
+    let direction = props.direction || 'down'
     if (direction === 'down') {
-      let elem = document.getElementById(this.props.id);
+      let elem = document.getElementById(props.id)
       if (elem.scrollTop >= (elem.scrollHeight - elem.offsetHeight)) {
-        this.props.onLoadMore();
+        props.onLoadMore()
       }
     } else {
-      let elem = document.getElementById(this.props.id);
+      let elem = document.getElementById(props.id)
       if (elem.scrollTop <= elem.offsetHeight) {
         console.log('scrolling')
-        this.props.onLoadMore()
+        props.onLoadMore()
       }
     }
-  };
-
-  render() {
-    let entries = Array.from(lookahead(this.props.edges, (edge, next) => this.props.mapper(edge, next, this.scrollRef)))
-    return (
-      <div ref={this.scrollRef} id={this.props.id} onScroll={this.handleOnScroll} style={this.props.style}>
-        {entries.length > 0 ? entries : this.props.emptyState}
-      </div>
-    );
   }
+
+  let entries = Array.from(lookahead(props.edges, (edge, next) => props.mapper(edge, next, scrollRef)))
+  return (
+    <div ref={scrollRef} id={props.id} onScroll={handleOnScroll} style={props.style}>
+      {entries.length > 0 ? entries : props.emptyState}
+    </div>
+  )
 }
 
 export default Scroller
