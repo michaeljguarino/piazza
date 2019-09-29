@@ -51,9 +51,10 @@ function AnchoredMessageList(props) {
                 justifyContent: 'flex-start',
                 flexDirection: 'column-reverse',
               }}
-              mapper={(edge, next, ref) => (
+              mapper={(edge, next, ref, pos) => (
                 <Message
                   parentRef={ref}
+                  pos={pos}
                   selected={edge.node.id === props.anchor.id}
                   key={edge.node.id}
                   conversation={props.conversation}

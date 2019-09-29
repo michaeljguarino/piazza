@@ -1,4 +1,4 @@
-import React, {useState, useRef} from 'react'
+import React, {useState, useRef, useEffect} from 'react'
 import {Box, Text, Markdown, Stack} from 'grommet'
 import {Pin} from 'grommet-icons'
 import Avatar from '../users/Avatar'
@@ -17,7 +17,7 @@ import StructuredMessage from './StructuredMessage'
 import Divider from '../utils/Divider'
 import FileIcon, { defaultStyles } from 'react-file-icon'
 import {Emoji} from 'emoji-mart'
-import VisibilitySensor from 'react-visibility-sensor'
+import {intersectRect} from '../../utils/geo'
 
 function TextMessage(props) {
   return (
@@ -242,6 +242,7 @@ function DateDivider(props) {
 }
 
 function Message(props) {
+  const msgRef = useRef()
   const [hover, setHover] = useState(false)
   const [pinnedHover, setPinnedHover] = useState(false)
   const [editing, setEditing] = useState(false)
@@ -253,40 +254,54 @@ function Message(props) {
     setEditing(editing)
   }
 
+  const {addMessage, removeMessage} = props
+
+  useEffect(() => {
+    if (!props.parentRef || !props.parentRef.current || !msgRef.current) return
+    const parent = props.parentRef.current.getBoundingClientRect()
+    const child = msgRef.current.getBoundingClientRect()
+    if (intersectRect(parent, child)) {
+      addMessage(props.message)
+    } else {
+      removeMessage(props.message)
+    }
+  }, [props.pos])
+
+  return (
+    <>
+    <Box
+      ref={msgRef}
+      id={props.message.id}
+      onClick={props.onClick}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      background={background}
+      flex={false}>
+      <Stack fill anchor='top-right'>
+        <MessageBody
+          editing={editing}
+          setEditing={wrappedSetEditing}
+          hover={isHovered}
+          setPinnedHover={setPinnedHover}
+          {...props} />
+        {isHovered && (
+          <MessageControls setEditing={wrappedSetEditing} setPinnedHover={setPinnedHover} {...props} />
+        )}
+      </Stack>
+    </Box>
+    <DateDivider message={props.message} next={props.next} />
+    </>
+  )
+}
+
+function WrappedMessage(props) {
   return (
     <VisibleMessagesContext.Consumer>
     {({addMessage, removeMessage}) => (
-      <>
-      <VisibilitySensor
-        scrollCheck
-        partialVisibility
-        containment={props.parentRef && props.parentRef.current}
-        onChange={(visible) => visible ? addMessage(props.message) : removeMessage(props.message)}>
-        <Box
-          id={props.message.id}
-          onClick={props.onClick}
-          onMouseEnter={() => setHover(true)}
-          onMouseLeave={() => setHover(false)}
-          background={background}
-          flex={false}>
-          <Stack fill anchor='top-right'>
-            <MessageBody
-              editing={editing}
-              setEditing={wrappedSetEditing}
-              hover={isHovered}
-              setPinnedHover={setPinnedHover}
-              {...props} />
-            {isHovered && (
-              <MessageControls setEditing={wrappedSetEditing} setPinnedHover={setPinnedHover} {...props} />
-            )}
-          </Stack>
-        </Box>
-      </VisibilitySensor>
-      <DateDivider message={props.message} next={props.next} />
-      </>
+      <Message {...props} addMessage={addMessage} removeMessage={removeMessage} />
     )}
     </VisibleMessagesContext.Consumer>
   )
 }
 
-export default Message
+export default WrappedMessage
