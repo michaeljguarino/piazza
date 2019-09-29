@@ -43,7 +43,7 @@ function Modal(props) {
         <Layer
           modal
           position={props.position || 'center'}
-          onClickOutside={() => setOpen(false)}
+          onClickOutside={() => props.disableClickOutside ? null : setOpen(false)}
           onEsc={() => setOpen(false)} >
           {props.children(setOpen)}
         </Layer>

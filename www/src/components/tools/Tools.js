@@ -20,12 +20,7 @@ function Tools(props) {
       )}
       </Modal>
       <Modal target={<DropdownItem icon={Iteration} text='theme selector' />}>
-        {setOpen => (
-          <Box>
-            <ModalHeader text='Select a theme' setOpen={setOpen} />
-            <Themes setOpen={setOpen} />
-          </Box>
-        )}
+        {setOpen => (<Themes setOpen={setOpen} />)}
       </Modal>
       <Modal target={<DropdownItem icon={Emoji} text='create emoji' />}>
         {setOpen => (
