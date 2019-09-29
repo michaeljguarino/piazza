@@ -59,7 +59,12 @@ defmodule Core.Models.Message do
 
   def pinned(query \\ __MODULE__), do: from(m in query, where: not is_nil(m.pinned_at))
 
-  def unarchived(query \\ __MODULE__), do: query # haven't implemented archival yet
+  def unarchived(query \\ __MODULE__) do
+    from(m in query,
+      join: c in assoc(m, :conversation),
+      where: is_nil(c.archived_at)
+    )
+  end
 
   @seconds_in_day 60 * 60 * 24
 

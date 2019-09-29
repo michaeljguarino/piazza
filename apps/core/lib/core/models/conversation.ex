@@ -16,6 +16,7 @@ defmodule Core.Models.Conversation do
     field :pinned_messages, :integer
     field :chat,            :boolean, default: false
     field :chat_dedupe_key, :string
+    field :archived_at,     :utc_datetime_usec
 
     has_one  :current_participant, Participant
     has_many :participants,        Participant
@@ -26,7 +27,7 @@ defmodule Core.Models.Conversation do
     timestamps()
   end
 
-  @valid ~w(name public global topic chat chat_dedupe_key)a
+  @valid ~w(name public global topic chat chat_dedupe_key archived_at)a
 
   def nonchat(query \\ __MODULE__), do: from(c in query, where: not c.chat)
 
@@ -38,6 +39,12 @@ defmodule Core.Models.Conversation do
         on: p.conversation_id == c.id
     )
   end
+
+  def unarchived(query \\ __MODULE__),
+    do: from(c in query, where: is_nil(c.archived_at))
+
+  def archived(query \\ __MODULE__),
+    do: from(c in query, where: not is_nil(c.archived_at))
 
   def accessible(query \\ any(), user_id) do
     from(c in query,
@@ -111,9 +118,16 @@ defmodule Core.Models.Conversation do
   def changeset(model, attrs \\ %{}) do
     model
     |> cast(attrs, @valid)
+    |> mod_archived(attrs)
     |> validate_required([:name, :public])
     |> validate_length(:name, max: 255)
     |> unique_constraint(:name)
     |> unique_constraint(:chat_dedupe_key)
   end
+
+  defp mod_archived(cs, %{archived: true}),
+    do: put_new_change(cs, :archived_at, fn -> DateTime.utc_now() end)
+  defp mod_archived(cs, %{archived: false}),
+    do: put_change(cs, :archived_at, nil)
+  defp mod_archived(cs, _), do: cs
 end

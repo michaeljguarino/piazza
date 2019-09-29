@@ -49,6 +49,7 @@ defmodule Core.Schemas.Types do
     field :global,              non_null(:boolean)
     field :chat,                non_null(:boolean)
     field :topic,               :string
+    field :archived_at,         :datetime
     field :creator,             :user, resolve: dataloader(User)
     field :current_participant, :participant, resolve: dataloader(Conversation)
 

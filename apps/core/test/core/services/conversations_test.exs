@@ -73,6 +73,16 @@ defmodule Core.Services.ConversationsTest do
       assert_receive {:event, %PubSub.ConversationUpdated{item: ^updated}}
     end
 
+    test "It can modify the archived timestamp" do
+      user = insert(:user)
+      conversation = insert(:conversation)
+      insert(:participant, user: user, conversation: conversation)
+
+      {:ok, updated} = Conversations.update_conversation(conversation.id, %{archived: true}, user)
+
+      assert updated.archived_at
+    end
+
     test "Nonparticipants cannot update conversations" do
       user = insert(:user)
       conversation = insert(:conversation)
