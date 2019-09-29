@@ -17,7 +17,7 @@ function ConversationEditForm(props) {
           value={props.state.topic}
           placeholder='conversation topic'
           onChange={(e) => props.onStateChange({topic: e.target.value})} />
-        <Box gap='small'>
+        <Box gap='small' border='horizontal' pad={{vertical: 'small'}}>
           <CheckBox
             toggle
             label={props.state.public ?
@@ -25,6 +25,14 @@ function ConversationEditForm(props) {
               'Private (can only join via invite)'}
             checked={props.state.public}
             onChange={(e) => props.onStateChange({public: e.target.checked})}
+          />
+          <CheckBox
+            toggle
+            label={props.state.archived ?
+              "Archived (messages won't be pruned)" :
+              'Unarchived (old messages will be pruned)'}
+            checked={props.state.archived}
+            onChange={(e) => props.onStateChange({archived: e.target.checked})}
           />
         </Box>
         <Box direction='row' justify='end' gap='xsmall'>

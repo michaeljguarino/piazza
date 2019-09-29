@@ -55,7 +55,8 @@ function ConversationUpdateForm(props) {
   const [attributes, setAttributes] = useState({
     name: props.conversation.name,
     topic: props.conversation.topic,
-    public: props.conversation.public
+    public: props.conversation.public,
+    archived: !!props.conversation.archivedAt
   })
 
   return (

@@ -9,6 +9,7 @@ export const ConversationFragment = gql`
     chat
     public
     topic
+    archivedAt
     unreadMessages
     unreadNotifications
     currentParticipant {
