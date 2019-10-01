@@ -21,18 +21,20 @@ function DualScroller(props) {
   }, [props.scrollTo])
 
   const handleOnScroll = () => {
-    let elem = document.getElementById(props.id);
-    if (elem.scrollTop >= (elem.scrollHeight - elem.offsetHeight)) {
+    const elem = scrollRef.current
+    const offset = (props.offset || 0) * elem.scrollHeight
+
+    if (elem.scrollTop >= (elem.scrollHeight - elem.offsetHeight - offset)) {
       props.onLoadMore(DIRECTION.AFTER)
     }
 
-    if (elem.scrollTop <= elem.offsetHeight) {
+    if (elem.scrollTop <= elem.offsetHeight + offset) {
       props.onLoadMore(DIRECTION.BEFORE)
     }
     updatePosition(elem.scrollTop)
   }
 
-  let entries = Array.from(lookahead(props.edges, (edge, next) => props.mapper(edge, next, scrollRef, pos)))
+  const entries = Array.from(lookahead(props.edges, (edge, next) => props.mapper(edge, next, scrollRef, pos)))
   return (
     <div ref={scrollRef} id={props.id} onScroll={handleOnScroll} style={props.style}>
       {entries.length > 0 ? entries : props.emptyState}

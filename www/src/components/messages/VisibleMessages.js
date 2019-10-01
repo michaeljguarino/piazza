@@ -25,11 +25,13 @@ function VisibleMessages(props) {
   const [visible, setVisible] = useState({})
 
   function addMessage(message) {
+    if (visible[message.id]) return
     visible[message.id] = message
     setVisible({...visible})
   }
 
   function removeMessage(message) {
+    if (!visible[message.id]) return
     delete visible[message.id]
     setVisible({...visible})
   }

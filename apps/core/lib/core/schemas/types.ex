@@ -139,6 +139,7 @@ defmodule Core.Schemas.Types do
     field :notification_preferences, :notification_preferences
     field :user, :user, resolve: dataloader(User)
     field :conversation, :conversation, resolve: dataloader(Conversation)
+    field :last_seen_at, :datetime
 
     timestamps()
   end
