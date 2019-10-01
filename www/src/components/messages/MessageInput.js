@@ -15,6 +15,7 @@ import {ReplyGutter} from './ReplyProvider'
 import { Progress } from 'react-sweet-progress';
 import "react-sweet-progress/lib/style.css";
 import Plain from 'slate-plain-serializer'
+import moment from 'moment'
 
 const TEXT_SIZE='xsmall'
 const TEXT_COLOR='dark-4'
@@ -129,6 +130,7 @@ class MessageInput extends Component {
             })
             this.setState({uploadProgress: null})
             this.props.setReply(null)
+            this.props.setWaterline(moment().add(5, 'minutes').toISOString())
           }}
         >
         {postMutation => (

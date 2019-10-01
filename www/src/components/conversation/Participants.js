@@ -61,7 +61,7 @@ function Participant(props) {
   )
 }
 
-const _subscribeToParticipantDeltas = async (props, subscribeToMore) => {
+const _subscribeToParticipantDeltas = (props, subscribeToMore) => {
   return subscribeToMore({
     document: PARTICIPANT_SUB,
     variables: {conversationId: props.conversation.id},

@@ -9,6 +9,7 @@ ${props => (
     display: flex;
     flex-basis: 100%;
     align-items: center;
+    max-height: 30px;
     color: ${normalizeColor(props.color || 'dark-1', props.theme)};
     margin: ${props.margin || '8px'} 0px;
     &::before, &::after {

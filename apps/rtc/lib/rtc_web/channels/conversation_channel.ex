@@ -3,7 +3,7 @@ defmodule RtcWeb.ConversationChannel do
   alias Core.Services.Conversations
   alias Thrift.Generated.PingParticipant
 
-  @ping_interval 30_000
+  @ping_interval 120_000
 
   def join("conversation:" <> id, _params, socket) do
     socket = assign(socket, :conversation_id, id)

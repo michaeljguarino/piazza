@@ -12,7 +12,7 @@ import {mergeAppend} from '../../utils/array'
 import {BOX_ATTRS} from './ConversationHeader'
 import Message from '../messages/Message'
 
-const _subscribeToNewPins = async (conversationId, subscribeToMore) => {
+const _subscribeToNewPins = (conversationId, subscribeToMore) => {
   return subscribeToMore({
     document: PINNED_MESSAGE_SUB,
     variables: {conversationId: conversationId},

@@ -10,11 +10,14 @@ const POLL_INTERVAL=30000
 export const Conversations = React.createContext({
                                 currentConversation: null,
                                 conversations: null,
-                                setCurrentConversation: null
+                                setCurrentConversation: null,
+                                waterline: null,
+                                setWaterline: null
                              })
 
 function MyConversations(props) {
   const [currentConversation, setCurrentConversation] = useState(null)
+  const [waterline, setWaterline] = useState(null)
 
   return (
     <FlyoutContext.Consumer>
@@ -39,18 +42,34 @@ function MyConversations(props) {
             }
             setOpen(false)
 
+            setWaterline(conv.currentParticipant && conv.currentParticipant.lastSeenAt)
             setCurrentConversation(conv)
           }
           subscribeToNewConversations(subscribeToMore)
+          const lastSeenAt = (
+            current &&
+            current.currentParticipant &&
+            current.currentParticipant.lastSeenAt
+          )
           return (
             <Conversations.Provider value={{
+              setWaterline,
+              waterline: waterline || lastSeenAt,
               currentConversation: current,
               conversations: data.conversations,
               chats: data.chats,
               setCurrentConversation: wrappedSetCurrentConversation,
               loadMore: loadMore
             }}>
-              {props.children(current, data.conversations, data.chats, wrappedSetCurrentConversation, loadMore)}
+              {props.children(
+                current,
+                data.conversations,
+                data.chats,
+                wrappedSetCurrentConversation,
+                loadMore,
+                waterline,
+                setWaterline
+              )}
             </Conversations.Provider>
           )
         }}

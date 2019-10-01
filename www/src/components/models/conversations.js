@@ -13,6 +13,7 @@ export const ConversationFragment = gql`
     unreadMessages
     unreadNotifications
     currentParticipant {
+      lastSeenAt
       notificationPreferences {
         mention
         participant

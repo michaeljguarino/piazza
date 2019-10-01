@@ -34,7 +34,7 @@ export function UserIcon(props) {
   )
 }
 
-async function _subscribeToMore(subscribeToMore) {
+function _subscribeToMore(subscribeToMore) {
   return subscribeToMore({
     document: USER_SUB,
     updateQuery: (prev, {subscriptionData}) => {

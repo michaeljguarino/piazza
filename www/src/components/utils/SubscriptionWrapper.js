@@ -9,7 +9,7 @@ class SubscriptionWrapper extends React.Component {
     if (props.id !== this.props.id) {
       console.log(`subscribing to ${props.id}`)
       this._unsubscribe()
-      this.reregister()
+      this.unsubscribe = props.startSubscription()
     }
   }
 
@@ -26,10 +26,9 @@ class SubscriptionWrapper extends React.Component {
   }
 
   reregister() {
+    if (this.unsubscribe) return
     console.log(`subscribing to ${this.props.id}`)
-    this.props.startSubscription().then((unsub) => {
-      this.unsubscribe = unsub
-    })
+    this.unsubscribe = this.props.startSubscription()
   }
 
   render() {

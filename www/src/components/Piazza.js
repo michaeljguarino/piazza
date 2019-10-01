@@ -52,7 +52,7 @@ const Piazza = () => {
           <VisibleMessages>
           {(visible, clear) => (
             <MyConversations sideEffects={[() => setAnchor(null), clear]}>
-            {(currentConversation, conversations, chats, setCurrentConversation, loadMore) => (
+            {(currentConversation, conversations, chats, setCurrentConversation, loadMore, waterline, setWaterline) => (
               <Grid
                 rows={['100vh']}
                 columns={['200px', 'auto']}
@@ -91,6 +91,7 @@ const Piazza = () => {
                                   <MessageList
                                     textHeight={textHeight}
                                     setReply={setReply}
+                                    waterline={waterline}
                                     conversation={currentConversation} />}
                         {flyoutContent}
                       </Box>
@@ -100,6 +101,7 @@ const Piazza = () => {
                         resetHeight={resetHeight}
                         reply={reply}
                         setReply={setReply}
+                        setWaterline={setWaterline}
                         conversation={currentConversation} />
                     </Box>
                   )}

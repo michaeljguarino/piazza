@@ -19,7 +19,6 @@ function Scroller(props) {
     } else {
       let elem = document.getElementById(props.id)
       if (elem.scrollTop <= elem.offsetHeight) {
-        console.log('scrolling')
         props.onLoadMore()
       }
       updatePosition(elem.scrollTop)

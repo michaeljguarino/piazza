@@ -241,6 +241,21 @@ function DateDivider(props) {
   return <Divider text={formatDate(props.message.insertedAt)} />
 }
 
+function Waterline(props) {
+  if (!props.waterline || !props.next) return null
+
+  const waterline = moment(props.waterline)
+  const current = moment(props.message.insertedAt)
+  const next = moment(props.next.insertedAt)
+
+  if (waterline.isBefore(next)) return null
+  if (waterline.isAfter(current)) return null
+
+  return (
+    <Divider text='unread' color='notif' />
+  )
+}
+
 function Message(props) {
   const msgRef = useRef()
   const [hover, setHover] = useState(false)
@@ -289,6 +304,7 @@ function Message(props) {
         )}
       </Stack>
     </Box>
+    <Waterline message={props.message} next={props.next} waterline={props.waterline} />
     <DateDivider message={props.message} next={props.next} />
     </>
   )

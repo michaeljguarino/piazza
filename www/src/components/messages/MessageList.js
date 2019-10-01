@@ -9,7 +9,7 @@ import {MESSAGES_Q, NEW_MESSAGES_SUB} from './queries'
 import {applyNewMessage, removeMessage} from './utils'
 
 function MessageList(props) {
-  const _subscribeToNewMessages = async (subscribeToMore) => {
+  const _subscribeToNewMessages = (subscribeToMore) => {
     return subscribeToMore({
       document: NEW_MESSAGES_SUB,
       variables: {conversationId: props.conversation.id},
@@ -40,9 +40,8 @@ function MessageList(props) {
         return (
           <SubscriptionWrapper
             id={props.conversation.id}
-            startSubscription={() => {
-            return _subscribeToNewMessages(subscribeToMore)
-          }}>
+            startSubscription={() => _subscribeToNewMessages(subscribeToMore)}
+          >
             <Scroller
               id='message-viewport'
               edges={messageEdges}
@@ -57,6 +56,7 @@ function MessageList(props) {
               }}
               mapper={(edge, next, ref, pos) => (
                 <Message
+                  waterline={props.waterline}
                   key={edge.node.id}
                   parentRef={ref}
                   pos={pos}
