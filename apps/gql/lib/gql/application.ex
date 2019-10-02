@@ -6,12 +6,10 @@ defmodule Gql.Application do
   use Application
 
   def start(_type, _args) do
-    # List all child processes to be supervised
+    topologies = Application.get_env(:libcluster, :topologies)
     children = [
-      # Start the endpoint when the application starts
-      GqlWeb.Endpoint
-      # Starts a worker by calling: Gql.Worker.start_link(arg)
-      # {Gql.Worker, arg},
+      GqlWeb.Endpoint,
+      {Cluster.Supervisor, [topologies, [name: Gql.ClusterSupervisor]]}
     ] ++ start_server()
 
     # See https://hexdocs.pm/elixir/Supervisor.html

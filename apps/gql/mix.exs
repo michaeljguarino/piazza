@@ -48,6 +48,7 @@ defmodule Gql.MixProject do
       {:plug_cowboy, "~> 2.0"},
       {:guardian, "~> 1.2.1"},
       {:cors_plug, "~> 2.0"},
+      {:libcluster, "~> 3.1.1"},
 
       {:core, in_umbrella: true},
     ]
