@@ -6,7 +6,6 @@ import {subscribeToNewConversations, updateConversations} from '../conversation/
 import {CONVERSATIONS_Q} from '../conversation/queries'
 import {FlyoutContext} from '../utils/Flyout'
 
-const POLL_INTERVAL=30000
 export const Conversations = React.createContext({
                                 currentConversation: null,
                                 conversations: null,
@@ -24,7 +23,7 @@ function MyConversations(props) {
     {({setOpen}) => (
       <ApolloConsumer>
       {client => (
-        <Query query={CONVERSATIONS_Q} pollInterval={POLL_INTERVAL}>
+        <Query query={CONVERSATIONS_Q}>
         {({loading, _error, data, loadMore, subscribeToMore}) => {
           if (loading) return (<Box height="100vh"><Loading /></Box>)
           let current = currentConversation || data.conversations.edges[0].node

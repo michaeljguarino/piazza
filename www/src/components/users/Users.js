@@ -10,7 +10,7 @@ import {mergeAppend} from '../../utils/array'
 import {USERS_Q, USER_SUB} from './queries'
 import {updateUser, addUser} from './utils'
 import SubscriptionWrapper from '../utils/SubscriptionWrapper'
-
+import {ICON_HEIGHT, ICON_SPREAD} from '../Piazza'
 
 export function UserIcon(props) {
   return (
@@ -18,10 +18,10 @@ export function UserIcon(props) {
       <Box
         accentable
         style={{cursor: 'pointer'}}
-        margin={{horizontal: '10px'}}
+        margin={{horizontal: ICON_SPREAD}}
         align='center'
         justify='center'>
-        <Flyout target={<User size='25px' />}>
+        <Flyout target={<User size={ICON_HEIGHT} />}>
         {setOpen => (
           <FlyoutContainer>
             <FlyoutHeader text='Users' setOpen={setOpen} />

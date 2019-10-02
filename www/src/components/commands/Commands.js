@@ -13,6 +13,7 @@ import Modal from '../utils/Modal'
 import Expander from '../utils/Expander'
 import {SecondaryButton} from '../utils/Button'
 import {mergeAppend} from '../../utils/array'
+import {ICON_HEIGHT, ICON_SPREAD} from '../Piazza'
 
 function FlyoutContent(props) {
   const [expanded, setExpanded] = useState(false)
@@ -88,10 +89,10 @@ function Commands(props) {
       <Box
         accentable
         style={{cursor: 'pointer'}}
-        margin={{horizontal: '10px'}}
+        margin={{horizontal: ICON_SPREAD}}
         align='center'
         justify='center'>
-        <Flyout target={<Terminal size='25px' />}>
+        <Flyout target={<Terminal size={ICON_HEIGHT} />}>
         {setOpen => (<FlyoutContent setOpen={setOpen} {...props} />)}
         </Flyout>
       </Box>

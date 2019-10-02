@@ -81,6 +81,19 @@ export const NEW_MESSAGES_SUB = gql`
   ${MessageFragment}
 `;
 
+
+export const MESSAGES_SUB = gql`
+  subscription {
+    messageDelta {
+      delta
+      payload {
+        ...MessageFragment
+      }
+    }
+  }
+  ${MessageFragment}
+`;
+
 export const MESSAGE_MUTATION = gql`
   mutation CreateMessage($conversationId: ID!, $attributes: MessageAttributes!) {
     createMessage(conversationId: $conversationId, attributes: $attributes) {

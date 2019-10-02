@@ -10,7 +10,7 @@ import {updateConversations} from '../conversation/utils'
 import WebNotification from 'react-web-notification';
 import {CurrentUserContext} from '../login/EnsureLogin'
 import {conversationNameString} from '../conversation/Conversation'
-
+import {ICON_HEIGHT, ICON_SPREAD} from '../Piazza'
 
 async function _subscribeToNewNotifications(subscribeToMore, unseen, setUnseen, setCurrentNotification) {
   subscribeToMore({
@@ -97,7 +97,7 @@ function NotificationIcon(props) {
     <HoveredBackground>
       <Box
         accentable
-        margin={{left: '10px', right: '20px'}}
+        margin={{left: ICON_SPREAD, right: '15px'}}
         align='center'
         justify='center'>
         <Query query={NOTIFICATIONS_Q}>
@@ -119,7 +119,7 @@ function NotificationIcon(props) {
               {mutation => (
                 <Dropdown onClose={mutation}>
                   <Stack anchor="top-right" style={{cursor: 'pointer'}}>
-                    <Notification size='25px' />
+                    <Notification size={ICON_HEIGHT} />
                     {(unseen && unseen > 0) ?
                       <Box
                         background='notif'

@@ -19,7 +19,7 @@ function FlyoutContent(props) {
 
 export function FlyoutContainer(props) {
   return (
-    <Box animation={{type: 'fadeIn', duration: 400, delay: 0}} {...props}>
+    <Box animation={{type: 'fadeIn', duration: 200, delay: 0}} {...props}>
       {props.children}
     </Box>
   )
