@@ -252,7 +252,7 @@ function Waterline(props) {
   if (waterline.isAfter(current)) return null
 
   return (
-    <Divider text='unread' color='notif' />
+    <Divider text='unread' color='notif' align='flex-end' />
   )
 }
 

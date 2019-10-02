@@ -47,7 +47,16 @@ defmodule Core.Services.Conversations do
   def bump_last_seen(conversation_id, user) do
     start_transaction()
     |> add_operation(:participant, fn _ ->
-      upsert_participant(conversation_id, %{last_seen_at: DateTime.utc_now()}, user)
+      participant = get_participant(user.id, conversation_id)
+      result =
+        participant
+        |> do_upsert_participant(conversation_id, %{last_seen_at: DateTime.utc_now()}, user)
+
+      # only notify on create to avoid cache spam
+      case participant do
+        nil -> notify(result, :create, user)
+        _ -> result
+      end
     end)
     |> add_operation(:notifs, fn _ ->
       Notifications.view_notifications(conversation_id, user)
@@ -58,14 +67,19 @@ defmodule Core.Services.Conversations do
   def upsert_participant(conversation_id, attrs \\ %{}, %User{id: uid} = user) do
     participant = get_participant(uid, conversation_id)
 
+    participant
+    |> do_upsert_participant(conversation_id, attrs, user)
+    |> notify(:upsert, user, participant)
+  end
+
+  defp do_upsert_participant(participant, conv_id, attrs, %User{id: uid}) do
     case participant do
       %Participant{} = p -> p
-      _ -> %Participant{conversation_id: conversation_id, user_id: uid}
+      _ -> %Participant{conversation_id: conv_id, user_id: uid}
     end
     |> Participant.changeset(attrs)
     |> Ecto.Changeset.put_change(:deleted_at, nil)
     |> Core.Repo.insert_or_update()
-    |> notify(:upsert, user, participant)
   end
 
   def create_chat(user_ids, %User{} = user) when is_list(user_ids) do
@@ -146,6 +160,13 @@ defmodule Core.Services.Conversations do
     end)
     |> execute(extract: :conversation)
     |> notify(:upsert, user, conversation)
+  end
+
+  def get_participants(conversation_id) do
+    Participant.for_conversation(conversation_id)
+    |> Participant.preload([:user])
+    |> Participant.ordered()
+    |> Core.Cache.list_cache(:participants, conversation_id)
   end
 
   def update_conversation(id, attrs, user) do

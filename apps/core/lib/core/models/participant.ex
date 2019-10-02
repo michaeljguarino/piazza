@@ -31,6 +31,9 @@ defmodule Core.Models.Participant do
   def preload(query \\ __MODULE__, preloads),
     do: from(p in query, preload: ^preloads)
 
+  def ordered(query \\ __MODULE__, order \\ [asc: :id]),
+    do: from(p in query, order_by: ^order)
+
   def changeset(model, attrs \\ %{}) do
     model
     |> cast(attrs, @valid)

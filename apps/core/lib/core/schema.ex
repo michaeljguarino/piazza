@@ -347,9 +347,12 @@ defmodule Core.Schema do
     end
 
     field :message_delta, :message_delta do
-      arg :conversation_id, non_null(:id)
-      config fn %{conversation_id: id}, %{context: %{current_user: user}} ->
-        Conversation.authorize_subscription(id, user, "messages:#{id}")
+      arg :conversation_id, :id
+      config fn
+        %{conversation_id: id}, %{context: %{current_user: user}} ->
+          Conversation.authorize_subscription(id, user, "messages:#{id}")
+        _, %{context: %{current_user: user}} ->
+          {:ok, topic: "messages:user:#{user.id}"}
       end
     end
 

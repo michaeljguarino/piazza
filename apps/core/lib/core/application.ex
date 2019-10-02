@@ -4,11 +4,14 @@ defmodule Core.Application do
   @moduledoc false
   use Application
   alias Thrift.Generated.RtcService.Binary.Framed.Client
+  import Cachex.Spec
+  import Supervisor.Spec
 
   def start(_type, _args) do
     children = [
       Core.Repo,
-      Core.PubSub.Broadcaster
+      Core.PubSub.Broadcaster,
+      worker(Cachex, [:participants, [expiration: expiration(default: :timer.minutes(20))]])
     ] ++ consumers()
       ++ broker()
       ++ rtc_client()

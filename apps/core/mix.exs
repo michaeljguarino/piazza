@@ -65,6 +65,8 @@ defmodule Core.MixProject do
       {:ecto_enum, "~> 1.3.2"},
       {:guardian, "~> 1.2.1"},
       {:piazza_core, "~> 0.1.2"},
+      {:cachex, "~> 3.2"},
+      {:libring, "~> 1.0"},
       {:botanist, "~> 0.1.0", git: "https://github.com/michaeljguarino/botanist.git", branch: "ecto3"},
       {:hackney, "~> 1.15.1", git: "https://github.com/benoitc/hackney.git", override: true},
 

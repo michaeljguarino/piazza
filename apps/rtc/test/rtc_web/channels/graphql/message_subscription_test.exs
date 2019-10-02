@@ -2,6 +2,92 @@ defmodule RtcWeb.Channels.MessageSubscriptionTest do
   use RtcWeb.ChannelCase, async: false
   alias Core.PubSub
 
+  describe "fanout message delta" do
+    test "users can see created messages" do
+      user = insert(:user)
+
+      {:ok, socket} = establish_socket(user)
+
+      ref = push_doc(socket, """
+        subscription {
+          messageDelta {
+            delta
+            payload {
+              id
+              text
+            }
+          }
+        }
+      """)
+
+      assert_reply(ref, :ok, %{subscriptionId: _})
+
+      msg = insert(:message)
+      publish_event(%PubSub.MessageFanout{item: msg, user: user, delta: PubSub.MessageCreated})
+
+      assert_push("subscription:data", %{result: %{data: %{"messageDelta" => doc}}})
+      assert doc["delta"] == "CREATE"
+      assert doc["payload"]["id"] == msg.id
+      assert doc["payload"]["text"] == msg.text
+    end
+
+    test "users can see deleted messages" do
+      user = insert(:user)
+
+      {:ok, socket} = establish_socket(user)
+
+      ref = push_doc(socket, """
+        subscription {
+          messageDelta {
+            delta
+            payload {
+              id
+              text
+            }
+          }
+        }
+      """)
+
+      assert_reply(ref, :ok, %{subscriptionId: _})
+
+      msg = insert(:message)
+      publish_event(%PubSub.MessageFanout{item: msg, user: user, delta: PubSub.MessageDeleted})
+
+      assert_push("subscription:data", %{result: %{data: %{"messageDelta" => doc}}})
+      assert doc["delta"] == "DELETE"
+      assert doc["payload"]["id"] == msg.id
+      assert doc["payload"]["text"] == msg.text
+    end
+
+    test "users can see updated messages" do
+      user = insert(:user)
+
+      {:ok, socket} = establish_socket(user)
+
+      ref = push_doc(socket, """
+        subscription {
+          messageDelta {
+            delta
+            payload {
+              id
+              text
+            }
+          }
+        }
+      """)
+
+      assert_reply(ref, :ok, %{subscriptionId: _})
+
+      msg = insert(:message)
+      publish_event(%PubSub.MessageFanout{item: msg, user: user, delta: PubSub.MessageUpdated})
+
+      assert_push("subscription:data", %{result: %{data: %{"messageDelta" => doc}}})
+      assert doc["delta"] == "UPDATE"
+      assert doc["payload"]["id"] == msg.id
+      assert doc["payload"]["text"] == msg.text
+    end
+  end
+
   describe "message delta" do
     test "participants can see new messages in private conversations" do
       user = insert(:user)

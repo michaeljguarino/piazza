@@ -14,6 +14,7 @@ defimpl Core.PubSub.Realtime, for: [
   Core.PubSub.ConversationUpdated,
   Core.PubSub.ConversationDeleted,
   Core.PubSub.MessageCreated,
+  Core.PubSub.MessageFanout,
   Core.PubSub.MessageDeleted,
   Core.PubSub.MessageUpdated,
   Core.PubSub.ParticipantCreated,

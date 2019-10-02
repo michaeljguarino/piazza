@@ -28,7 +28,7 @@ defmodule Core.Notifications.ChannelMention do
 end
 
 defimpl Core.Notifications.Notifiable, for: Core.PubSub.MessageCreated do
-  alias Core.Models.Participant
+  alias Core.Services.Conversations
   alias Core.Notifications.ChannelMention
 
   def preload(%{item: msg} = event),
@@ -37,49 +37,67 @@ defimpl Core.Notifications.Notifiable, for: Core.PubSub.MessageCreated do
   def message(%{item: msg}), do: msg
 
   def notifs(%{item: %{entities: entities} = msg}) do
-    participants = get_participants(msg.conversation_id)
-    by_user      = Enum.into(participants, %{}, & {&1.user_id, &1})
-    mentions     = filter_mentions(entities, by_user)
-
-    mentioned_users = Enum.map(entities, & &1.user_id) |> MapSet.new()
+    mentions     = mentions_by_user(entities)
     channel_mentions = ChannelMention.compile(entities)
 
-    participants
-    |> Enum.filter(& &1.user_id not in mentioned_users)
-    |> Enum.filter(& &1.user_id != msg.creator_id)
-    |> Enum.filter(&filter_participant(&1, channel_mentions))
-    |> Enum.map(& {notif_type(channel_mentions), &1.user_id})
-    |> Enum.concat(mentions)
+    Conversations.get_participants(msg.conversation_id)
+    |> Stream.filter(& &1.user_id != msg.creator_id)
+    |> Enum.reduce({[], mentions}, fn %{user_id: uid} = participant, {notifs, remaining} ->
+      remaining = Map.delete(remaining, uid)
+      case notif(participant, mentions[uid], channel_mentions) do
+        nil -> {notifs, remaining}
+        notif -> {[notif | notifs], remaining}
+      end
+    end)
+    |> combine()
+  end
+
+  defp combine({notifs, remaining}) do
+    notifs ++ Enum.map(remaining, fn {uid, type} -> {type, uid} end)
   end
 
   def actor(%{item: %{creator: user}}), do: user
 
-  defp get_participants(conversation_id) do
-    Participant.for_conversation(conversation_id)
-    |> Participant.preload([:user])
-    |> Core.Repo.all()
+  defp notif(participant, mention, channel_mentions) do
+    with nil <- mention_notif(participant, mention),
+      do: message_notif(participant, channel_mentions)
   end
+
+  defp mention_notif(_, nil), do: nil
+  defp mention_notif(%{notification_preferences: %{mention: false}}, _),
+    do: nil
+  defp mention_notif(%{user_id: user_id}, type), do: {type, user_id}
+
+  defp message_notif(%{user: %{notification_preferences: %{message: false}}}, _), do: nil
+  defp message_notif(%{user_id: user_id}, %{all: true}), do: {:mention, user_id}
+  defp message_notif(%{user_id: user_id, notification_preferences: %{message: true}}, channel),
+    do: {notif_type(channel), user_id}
+  defp message_notif(%{user_id: user_id}, %{here: true, user_ids: user_ids}) do
+    case Enum.member?(user_ids, user_id) do
+      true -> {:mention, user_id}
+      _ -> nil
+    end
+  end
+  defp message_notif(_, _), do: nil
 
   defp notif_type(%{all: true}), do: :mention
   defp notif_type(%{here: true}), do: :mention
   defp notif_type(_), do: :message
 
-  defp filter_participant(%{user: %{notification_preferences: %{message: false}}}, _), do: false
-  defp filter_participant(%{notification_preferences: %{message: true}}, _), do: true
-  defp filter_participant(_, %{all: true}), do: true
-  defp filter_participant(%{user: %{id: id}}, %{here: true, user_ids: user_ids}), 
-    do: id in user_ids
-  defp filter_participant(_, _), do: false
-
-  defp filter_mentions(entities, participants_by_user) do
+  defp mentions_by_user(entities) do
     entities
     |> Enum.filter(& &1.type == :mention)
-    |> Enum.map(& {&1, participants_by_user[&1.user_id]})
     |> Enum.filter(fn
-      {%{user: %{notification_preferences: %{mention: false}}}, _} -> false
-      {_, %{notification_preferences: %{mention: false}}} -> false
+      %{user: %{notification_preferences: %{mention: false}}} -> false
       _ -> true
     end)
-    |> Enum.map(fn {%{user_id: user_id}, _} -> {:mention, user_id} end)
+    |> Enum.into(%{}, fn %{user_id: user_id} -> {user_id, :mention} end)
+    # |> Enum.map(& {&1, participants_by_user[&1.user_id]})
+    # |> Enum.filter(fn
+    #   {%{user: %{notification_preferences: %{mention: false}}}, _} -> false
+    #   {_, %{notification_preferences: %{mention: false}}} -> false
+    #   _ -> true
+    # end)
+    # |> Enum.map(fn {%{user_id: user_id}, _} -> {:mention, user_id} end)
   end
 end

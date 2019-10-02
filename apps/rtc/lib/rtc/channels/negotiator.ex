@@ -60,12 +60,26 @@ defimpl Rtc.Channels.Negotiator, for: Core.PubSub.MessageUpdated do
     do: {delta(message, :update), [message_delta: "messages:#{id}"]}
 end
 
+
+defimpl Rtc.Channels.Negotiator, for: Core.PubSub.MessageFanout do
+  import Rtc.Channels.NegotiatorHelper
+  alias Core.PubSub
+
+  def negotiate(%{item: message, user: %{id: uid}, delta: event}),
+    do: {delta(message, to_delta(event)), [message_delta: "messages:user:#{uid}"]}
+
+  defp to_delta(PubSub.MessageCreated), do: :create
+  defp to_delta(PubSub.MessageUpdated), do: :update
+  defp to_delta(PubSub.MessageDeleted), do: :delete
+end
+
 defimpl Rtc.Channels.Negotiator, for: Core.PubSub.PinnedMessageDeleted do
   import Rtc.Channels.NegotiatorHelper
 
   def negotiate(%{item: %{conversation_id: id} = pin}),
     do: {delta(pin, :delete), [pinned_message_delta: "pinned_messages:#{id}"]}
 end
+
 
 defimpl Rtc.Channels.Negotiator, for: Core.PubSub.PinnedMessageCreated do
   import Rtc.Channels.NegotiatorHelper
