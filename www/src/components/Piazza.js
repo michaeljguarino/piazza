@@ -38,15 +38,6 @@ function DividerText(props) {
 
 const Piazza = () => {
   const [anchor, setAnchor] = useState(null)
-  const [textHeight, setTextHeight] = useState(70)
-
-  const incrementHeight = () => {
-    if (textHeight >= 210) {
-      return
-    }
-    setTextHeight(textHeight + 20)
-  }
-  const resetHeight = () => setTextHeight(70)
   return (
     <CurrentUser>
     {me => (
@@ -85,25 +76,20 @@ const Piazza = () => {
                     </Box>
                     <ReplyProvider>
                     {(reply, setReply) => (
-                      <Box style={{maxHeight: 'calc(100vh - 60px)'}}>
+                      <Box style={{height: '100%', maxHeight: 'calc(100vh - 60px)'}}>
                         <Box id='msg-view' height='100%' direction='row'>
                           {anchor ? <AnchoredMessageList
                                       anchor={anchor}
-                                      textHeight={textHeight}
                                       conversation={currentConversation}
                                       setReply={setReply}
                                       setAnchor={setAnchor} /> :
                                     <MessageList
-                                      textHeight={textHeight}
                                       setReply={setReply}
                                       waterline={waterline}
                                       conversation={currentConversation} />}
                           {flyoutContent}
                         </Box>
                         <MessageInput
-                          height={textHeight}
-                          incrementHeight={incrementHeight}
-                          resetHeight={resetHeight}
                           reply={reply}
                           setReply={setReply}
                           setWaterline={setWaterline}

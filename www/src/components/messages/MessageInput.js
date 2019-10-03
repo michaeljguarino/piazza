@@ -141,9 +141,6 @@ class MessageInput extends Component {
                 attributes: {attachment, parentId, text: Plain.serialize(text)}
               }})
               this.setState({attachment: null, text: ''})
-              this.props.resetHeight()
-            } else if (e.key === 'Enter' && e.shiftKey) {
-              this.props.incrementHeight()
             }
           }}>
             <Box
