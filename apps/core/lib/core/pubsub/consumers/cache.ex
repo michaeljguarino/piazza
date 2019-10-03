@@ -4,8 +4,6 @@ defmodule Core.PubSub.Consumers.Cache do
     max_demand: 20
 
   def handle_event(event) do
-    with {table, key} <- Core.PubSub.Cache.query(event),
-         {:ok, val} <- Core.Cache.get(table, key),
-      do: Core.PubSub.Cache.prime(event, val)
+    Core.PubSub.Cache.prime(event)
   end
 end

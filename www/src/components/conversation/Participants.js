@@ -19,18 +19,32 @@ import MagicLinkInvite from './MagicLinkInvite'
 function addParticipant(participant, prev) {
   const participants = prev.conversation.participants.edges
   const exists = participants.find((edge) => edge.node.id === participant.id);
-  if (exists) return prev;
+  if (exists) return updateParticipant(participant, prev)
 
-  let participantNode = {node: participant, __typename: "ParticipantEdge"}
+  let edge = {node: participant, __typename: "ParticipantEdge"}
   return Object.assign({}, prev, {
     conversation: {
       ...prev.conversation,
       participants: {
         ...prev.conversation.participants,
-        edges: [participantNode, ...participants],
+        edges: [edge, ...participants],
       }
     }
   })
+}
+
+function updateParticipant(participant, prev) {
+  const edges = prev.conversation.participants
+  return {
+    ...prev,
+    conversation: {
+      ...prev.conversation,
+      participants: {
+        ...prev.conversation.participants,
+        edges: edges.map(e => e.node.id === participant.id ? {...e, node: participant} : e)
+      }
+    }
+  }
 }
 
 function deleteParticipant(participant, prev) {
@@ -75,6 +89,8 @@ const _subscribeToParticipantDeltas = (props, subscribeToMore) => {
           return addParticipant(participant, prev)
         case "DELETE":
           return deleteParticipant(participant, prev)
+        case "UPDATE":
+          return updateParticipant(participant, prev)
         default:
           return prev
       }

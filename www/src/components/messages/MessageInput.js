@@ -31,7 +31,7 @@ function Typing(props) {
     return <Text color={TEXT_COLOR} size={TEXT_SIZE}>{typists[0]} is typing...</Text>
   }
 
-  if (typists.length < 3) {
+  if (typists.length <= 3) {
     return <Text color={TEXT_COLOR} size={TEXT_SIZE}>{Array.join(typists, ", ")} are typing...</Text>
   }
 

@@ -12,11 +12,23 @@ defmodule Core.Cache do
   def del(table, key),
     do: call_cache(:del, table, [key])
 
+  def transaction(table, key, fun) do
+    call_cache(:transaction, table, [[key], fun])
+  end
+
   def list_cache(query, table, key) do
     case fetch(table, key, fn _ -> list_fallback(query) end) do
       {:ok, val} -> val
       {:commit, val} -> val
       _ -> Core.Repo.stream(query, method: :keyset)
+    end
+  end
+
+  def refresh(cache, key, fun) do
+    Cachex.get(cache, key)
+    |> case do
+      {:ok, val} -> Cachex.put(cache, key, fun.(val))
+      res -> res
     end
   end
 
@@ -36,13 +48,16 @@ defmodule Core.Cache do
 
   defp call_remote(function, table, [k | _] = args) do
     ring = mk_ring()
-    node = HashRing.key_to_node(ring, {table, k})
+    node = HashRing.key_to_node(ring, {table, hash_key(k)})
 
     case :rpc.call(node, Cachex, function, [table | args]) do
       {:badrpc, error} -> {:error, error}
       res -> res
     end
   end
+
+  defp hash_key([k]), do: k
+  defp hash_key(k), do: k
 
   defp mk_ring() do
     HashRing.new()

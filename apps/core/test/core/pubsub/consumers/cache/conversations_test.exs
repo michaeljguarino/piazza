@@ -6,12 +6,12 @@ defmodule Core.PubSub.Consumers.CacheTest do
   describe "ParticipantCreated" do
     test "It will drop cache" do
       participant = insert(:participant)
-      Core.Cache.put(:participants, participant.conversation_id, [participant])
+      Core.Cache.put(:participants, participant.conversation_id, [])
 
       event = %PubSub.ParticipantCreated{item: participant}
-      {:ok, true} = Cache.handle_event(event)
+      {:ok, _} = Cache.handle_event(event)
 
-      {:ok, nil} = Core.Cache.get(:participants, participant.conversation_id)
+      {:ok, [^participant]} = Core.Cache.get(:participants, participant.conversation_id)
     end
   end
 
@@ -21,21 +21,21 @@ defmodule Core.PubSub.Consumers.CacheTest do
       Core.Cache.put(:participants, participant.conversation_id, [participant])
 
       event = %PubSub.ParticipantDeleted{item: participant}
-      {:ok, true} = Cache.handle_event(event)
+      {:ok, _} = Cache.handle_event(event)
 
-      {:ok, nil} = Core.Cache.get(:participants, participant.conversation_id)
+      {:ok, []} = Core.Cache.get(:participants, participant.conversation_id)
     end
   end
 
   describe "ParticipantUpdated" do
     test "It will drop cache" do
       participant = insert(:participant)
-      Core.Cache.put(:participants, participant.conversation_id, [participant])
+      Core.Cache.put(:participants, participant.conversation_id, [%{participant | user: nil}])
 
-      event = %PubSub.ParticipantDeleted{item: participant}
-      {:ok, true} = Cache.handle_event(event)
+      event = %PubSub.ParticipantUpdated{item: participant}
+      {:ok, _} = Cache.handle_event(event)
 
-      {:ok, nil} = Core.Cache.get(:participants, participant.conversation_id)
+      {:ok, [^participant]} = Core.Cache.get(:participants, participant.conversation_id)
     end
   end
 end

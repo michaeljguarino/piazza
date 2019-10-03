@@ -85,7 +85,7 @@ const Piazza = () => {
                     </Box>
                     <ReplyProvider>
                     {(reply, setReply) => (
-                      <Box style={{height: 'calc(100vh - 60px)', maxHeight: 'calc(100vh - 70px)'}}>
+                      <Box style={{maxHeight: 'calc(100vh - 60px)'}}>
                         <Box id='msg-view' height='100%' direction='row'>
                           {anchor ? <AnchoredMessageList
                                       anchor={anchor}
