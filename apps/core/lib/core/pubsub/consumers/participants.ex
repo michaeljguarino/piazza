@@ -1,11 +1,15 @@
 defmodule Core.PubSub.Participants do
-  use Piazza.PubSub.Consumer, 
+  @moduledoc """
+  Modifies the pariticpants in a conversation in response to
+  various events
+  """
+  use Piazza.PubSub.Consumer,
     broadcaster: Core.PubSub.Broadcaster,
     max_demand: 10
   alias Core.Models.Participant
-  
+
   alias Core.Services.Conversations
-  
+
   def handle_event(event) do
     with {conv_id, user_id, actor_id} <- Core.PubSub.Invitable.invite(event),
          participant <- Conversations.get_participant(user_id, conv_id) do

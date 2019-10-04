@@ -1,5 +1,10 @@
 defprotocol Rtc.Channels.Negotiator do
   @fallback_to_any true
+
+  @doc """
+  Returns the payload and topics for a graphql subscription event
+  """
+  @spec negotiate(term) :: {map, keyword}
   def negotiate(event)
 end
 

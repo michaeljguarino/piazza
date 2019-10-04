@@ -2,6 +2,7 @@ defmodule Core.Services.Base do
   defmacro __using__(_) do
     quote do
       import Core.Services.Base
+      @type error ::  {:error, atom | binary | %Ecto.Changeset{}}
     end
   end
 

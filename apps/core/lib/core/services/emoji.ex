@@ -5,6 +5,13 @@ defmodule Core.Services.Emoji do
 
   import Core.Policies.Emoji
 
+  @doc """
+  Creates a new custom emoji
+
+  allowed roles:
+  * all
+  """
+  @spec create_emoji(map, User.t) :: {:ok, Emoji.t} | error
   def create_emoji(attrs, user) do
     %Emoji{creator_id: user.id}
     |> Emoji.changeset(attrs)
@@ -13,7 +20,7 @@ defmodule Core.Services.Emoji do
     |> notify(:create, user)
   end
 
-  defp notify({:ok, %Emoji{} = emoji}, :create, actor), 
+  defp notify({:ok, %Emoji{} = emoji}, :create, actor),
     do: handle_notify(PubSub.EmojiCreated, emoji, actor: actor)
   defp notify(result, _, _), do: result
 end

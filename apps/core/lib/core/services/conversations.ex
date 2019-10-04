@@ -13,30 +13,47 @@ defmodule Core.Services.Conversations do
   }
   import Core.Policies.Conversation
 
+  @type conversation_resp :: {:ok, Conversation.t} | error
+  @type msg_resp :: {:ok, Message.t} | error
+  @type participant_resp :: {:ok, Participant.t} | error
+
+  @spec get_message!(binary) :: Message.t
   def get_message!(id),
     do: Core.Repo.get!(Message, id)
 
+  @spec get_conversation!(binary) :: Conversation.t
   def get_conversation!(id),
     do: Core.Repo.get!(Conversation, id)
 
+  @spec get_conversation(binary) :: Conversation.t | nil
   def get_conversation(id),
     do: Core.Repo.get(Conversation, id)
 
+  @spec get_conversation_by_name(binary) :: Conversation.t | nil
   def get_conversation_by_name(name),
     do: Core.Repo.get_by(Conversation, name: name)
 
+  @spec get_conversation_by_name!(binary) :: Conversation.t
   def get_conversation_by_name!(name),
     do: Core.Repo.get_by!(Conversation, name: name)
 
+  @spec get_conversation_by_dedupe_key(binary) :: Conversation.t | nil
   def get_conversation_by_dedupe_key(dedupe_key),
     do: Core.Repo.get_by(Conversation, chat_dedupe_key: dedupe_key)
 
+  @spec get_participant(binary, binary) :: Participant.t | nil
   def get_participant(user_id, conv_id),
     do: Core.Repo.get_by(Participant, user_id: user_id, conversation_id: conv_id)
 
+  @spec get_participant!(binary, binary) :: Participant.t
   def get_participant!(user_id, conv_id),
     do: Core.Repo.get_by!(Participant, user_id: user_id, conversation_id: conv_id)
 
+  @doc """
+  Tests if the user can perform a given action in a conversation, returns
+  a tag tuple for the result for chaining
+  """
+  @spec authorize(binary, User.t, atom) :: {:ok, Conversation.t} | {:error, :not_found}
   def authorize(conv_id, user, policy) do
     case get_conversation(conv_id) do
       %Conversation{} = conv -> allow(conv, user, policy)
@@ -44,6 +61,13 @@ defmodule Core.Services.Conversations do
     end
   end
 
+  @doc """
+  Updates the last_seen_at timestamp on the participant for a conversation (and
+  alternatively creates the participant if soft-deleted/not present)
+
+  Also wipes all notifications for this conversation
+  """
+  @spec bump_last_seen(binary, User.t) :: participant_resp
   def bump_last_seen(conversation_id, user) do
     start_transaction()
     |> add_operation(:participant, fn _ ->
@@ -59,6 +83,11 @@ defmodule Core.Services.Conversations do
     |> execute(extract: :participant)
   end
 
+  @doc """
+  Upserts a participant in `conversation_id` against the given user,
+  with attrs merged in.  Useful for bumping timestamps/bulk inserts
+  """
+  @spec upsert_participant(binary, map, User.t) :: participant_resp
   def upsert_participant(conversation_id, attrs \\ %{}, %User{id: uid} = user) do
     participant = get_participant(uid, conversation_id)
 
@@ -72,6 +101,10 @@ defmodule Core.Services.Conversations do
     |> notify(:upsert, user, participant)
   end
 
+  @doc """
+  Creates a new chat styled conversation with user and the given user ids
+  """
+  @spec create_chat([binary], User.t) :: conversation_resp
   def create_chat(user_ids, %User{} = user) when is_list(user_ids) do
     other_users = Users.get_users_by_id(user_ids)
     chat_name  = chat_name([user | other_users])
@@ -91,6 +124,10 @@ defmodule Core.Services.Conversations do
   end
   def create_chat(user_id, %User{} = user), do: create_chat([user_id], user)
 
+  @doc """
+  Gets the canonical chat name given a set of users
+  """
+  @spec chat_name([User.t]) :: binary
   def chat_name(users) do
     Enum.map(users, & &1.handle)
     |> Enum.sort()
@@ -114,6 +151,14 @@ defmodule Core.Services.Conversations do
     end)
   end
 
+  @doc """
+  Creates a new conversation with the given attrs.  Also adds a default
+  participant for the creator
+
+  Allowed roles:
+  * all
+  """
+  @spec create_conversation(map, User.t) :: conversation_resp
   def create_conversation(attrs, user) do
     start_transaction()
     |> add_operation(:conversation, fn _ ->
@@ -131,6 +176,10 @@ defmodule Core.Services.Conversations do
     |> notify(:create, user)
   end
 
+  @doc """
+  Utility for conversation upserts,
+  """
+  @spec upsert_conversation(binary, map, User.t) :: conversation_resp
   def upsert_conversation(name, attrs, user) when is_binary(name),
     do: get_conversation_by_name(name) |> upsert_conversation(attrs, user)
   def upsert_conversation(conversation, attrs, user) do
@@ -152,6 +201,11 @@ defmodule Core.Services.Conversations do
     |> notify(:upsert, user, conversation)
   end
 
+  @doc """
+  Gets a (cached) view of all participants.  If the list is too large for cache,
+  the response will be a stream
+  """
+  @spec get_participants(binary) :: [Participant.t] | %Bourne.Stream{}
   def get_participants(conversation_id) do
     Participant.for_conversation(conversation_id)
     |> Participant.preload([:user])
@@ -159,6 +213,14 @@ defmodule Core.Services.Conversations do
     |> Core.Cache.list_cache(:participants, conversation_id)
   end
 
+  @doc """
+  Updates the conversation by id
+
+  allowed roles:
+  - participant
+  - admin
+  """
+  @spec update_conversation(binary, map, User.t) :: conversation_resp
   def update_conversation(id, attrs, user) do
     get_conversation!(id)
     |> Conversation.changeset(attrs)
@@ -167,6 +229,14 @@ defmodule Core.Services.Conversations do
     |> notify(:update, user)
   end
 
+  @doc """
+  Deletes a conversation
+
+  allowed roles:
+  * participant
+  * admin
+  """
+  @spec delete_conversation(binary, User.t) :: conversation_resp
   def delete_conversation(id, user) do
     get_conversation!(id)
     |> allow(user, :delete)
@@ -174,6 +244,14 @@ defmodule Core.Services.Conversations do
     |> notify(:delete, user)
   end
 
+  @doc """
+  Updates participant attrs for `user_id` in `conv_id`
+
+  allowed roles:
+  * self
+  * admin
+  """
+  @spec update_participant(binary, binary, map, User.t) :: participant_resp
   def update_participant(conv_id, user_id, attrs, user) do
     get_participant!(user_id, conv_id)
     |> Participant.changeset(attrs)
@@ -182,6 +260,13 @@ defmodule Core.Services.Conversations do
     |> notify(:update, user)
   end
 
+  @doc """
+  Updates a given message.
+
+  allowed roles:
+  * creator
+  """
+  @spec update_message(binary, map, User.t) :: msg_resp
   def update_message(message_id, attrs, user) do
     get_message!(message_id)
     |> Message.changeset(attrs)
@@ -190,6 +275,14 @@ defmodule Core.Services.Conversations do
     |> notify(:update, user)
   end
 
+  @doc """
+  Creates a new message
+
+  allowed roles:
+  * participant
+  * bot
+  """
+  @spec create_message(binary, map, User.t) :: msg_resp
   def create_message(conv_id, attrs, user) do
     start_transaction()
     |> add_operation(:message, fn _ ->
@@ -219,6 +312,13 @@ defmodule Core.Services.Conversations do
     |> notify(:create, user)
   end
 
+  @doc """
+  Adds/removes a given pinned message for `message_id`
+
+  allowed roles:
+  * participant
+  """
+  @spec toggle_pin(binary, boolean, User.t) :: {:ok, PinnedMessage.t} | error
   def toggle_pin(message_id, pinned \\ true, user) do
     start_transaction()
     |> add_operation(:message, fn _ ->
@@ -250,7 +350,7 @@ defmodule Core.Services.Conversations do
     end
   end
 
-  def do_toggle_pin(message, true, user) do
+  defp do_toggle_pin(message, true, user) do
     %PinnedMessage{user_id: user.id}
     |> PinnedMessage.changeset(%{
       message_id: message.id,
@@ -258,12 +358,19 @@ defmodule Core.Services.Conversations do
     })
     |> Core.Repo.insert()
   end
-  def do_toggle_pin(message, _, _user) do
+  defp do_toggle_pin(message, _, _user) do
     Core.Repo.get_by!(PinnedMessage,
       message_id: message.id, conversation_id: message.conversation_id)
     |> Core.Repo.delete()
   end
 
+  @doc """
+  Creates a new MessageReaction record for `message_id`
+
+  Allowed roles:
+  * participant
+  """
+  @spec create_reaction(binary, binary, User.t) :: {:ok, MessageReaction.t} | error
   def create_reaction(message_id, name, user) do
     start_transaction()
     |> add_operation(:allow, fn _ ->
@@ -282,6 +389,13 @@ defmodule Core.Services.Conversations do
     |> notify(:update, user)
   end
 
+  @doc """
+  Removes the message reaction against `name`
+
+  allowed roles:
+  * creator
+  """
+  @spec delete_reaction(binary, binary, User.t) :: {:ok, MessageReaction.t} | error
   def delete_reaction(message_id, name, user) do
     start_transaction()
     |> add_operation(:reaction, fn _ ->
@@ -296,6 +410,13 @@ defmodule Core.Services.Conversations do
     |> notify(:update, user)
   end
 
+  @doc """
+  Deletes a message
+
+  allowed roles:
+  * creator
+  """
+  @spec delete_message(binary, User.t) :: msg_resp
   def delete_message(message_id, user) do
     get_message!(message_id)
     |> allow(user, :delete)
@@ -303,6 +424,13 @@ defmodule Core.Services.Conversations do
     |> notify(:delete, user)
   end
 
+  @doc """
+  Creates a new participant in a conversation
+
+  allowed roles:
+  * participant
+  """
+  @spec create_participant(map, User.t) :: participant_resp
   def create_participant(attrs, user) do
     %Participant{}
     |> Participant.changeset(attrs)
@@ -311,6 +439,13 @@ defmodule Core.Services.Conversations do
     |> notify(:create, user)
   end
 
+  @doc """
+  Creates participants for all users with the given handles (max 10)
+
+  allowed roles:
+  * participant
+  """
+  @spec create_participants([binary], binary, User.t) :: {:ok, [Participant.t]} | error
   def create_participants(handles, conversation_id, user) do
     conversation = get_conversation!(conversation_id)
     with handles when length(handles) < 10 <- handles,
@@ -336,6 +471,14 @@ defmodule Core.Services.Conversations do
     end
   end
 
+  @doc """
+  Deletes a participant record if found.  Interesting caveat, chat participants
+  are not hard deleted as we want to wake them back up on new messages.
+
+  allowed roles:
+  * self
+  """
+  @spec delete_participant(binary, binary, User.t) :: participant_resp
   def delete_participant(conv_id, user_id, user) do
     get_participant!(user_id, conv_id)
     |> Core.Repo.preload([:conversation])
@@ -357,6 +500,10 @@ defmodule Core.Services.Conversations do
     |> notify(:delete, user)
   end
 
+
+  @doc """
+  notify is opened up in this service for reuse in pubsub handlers
+  """
   def notify({:ok, %Conversation{} = c}, :upsert, actor, nil),
     do: handle_notify(PubSub.ConversationCreated, c, actor: actor)
   def notify({:ok, %Conversation{} = c}, :upsert, actor, _),

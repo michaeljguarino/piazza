@@ -1,5 +1,9 @@
 defmodule Core.PubSub.Consumers.Recurse do
-  use Piazza.PubSub.Consumer, 
+  @moduledoc """
+  Consumer for handling generic pubsub action on the current event
+  stream.  Things like unfurling urls should go here
+  """
+  use Piazza.PubSub.Consumer,
     broadcaster: Core.PubSub.Broadcaster,
     max_demand: 10
 

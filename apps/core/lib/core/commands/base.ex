@@ -1,4 +1,9 @@
 defmodule Core.Commands.Base do
+  @moduledoc """
+  Simple command dsl for built-in slash commands.  See `Core.Commands.Piazza` for
+  usage, the api is straightforward.
+  """
+
   defmacro __using__(_) do
     quote do
       import Core.Commands.Base

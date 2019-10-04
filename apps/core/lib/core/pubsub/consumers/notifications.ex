@@ -1,8 +1,14 @@
 defmodule Core.PubSub.Consumers.Notifications do
-  use Piazza.PubSub.Consumer, 
+  @moduledoc """
+  Sends notifications.
+
+  Supported events:
+  * MessageCreated
+  """
+  use Piazza.PubSub.Consumer,
     broadcaster: Core.PubSub.Broadcaster,
     max_demand: 10
-  
+
   import Core.Services.Base
   alias Core.Notifications.Notifiable
   alias Core.Models.Notification

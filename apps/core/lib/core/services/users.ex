@@ -4,26 +4,40 @@ defmodule Core.Services.Users do
   alias Core.PubSub
   import Core.Policies.User
 
+  @type user_resp :: {:ok, User.t} | error
+
+  @spec get_user(binary) :: User.t | nil
   def get_user(id), do: Core.Repo.get(User, id)
 
+  @spec get_user_by_email(binary) :: User.t | nil
   def get_user_by_email(email), do: Core.Repo.get_by(User, email: email)
 
+  @spec get_user_by_handle(binary) :: User.t | nil
   def get_user_by_handle(handle), do: Core.Repo.get_by(User, handle: handle)
 
+  @spec get_users_by_handles([binary]) :: [User.t]
   def get_users_by_handles(handles) do
     User.with_handles(handles)
     |> Core.Repo.all()
   end
 
+  @spec get_user!(binary) :: User.t
   def get_user!(id), do: Core.Repo.get!(User, id)
 
+  @spec get_user_by_email!(binary) :: User.t
   def get_user_by_email!(email), do: Core.Repo.get_by!(User, email: email)
 
+  @spec get_users_by_id([binary]) :: [User.t]
   def get_users_by_id(user_ids) do
     User.for_ids(user_ids)
     |> Core.Repo.all()
   end
 
+  @doc """
+  Checks if the password is valid and returns a tagged tuple
+  with the user if so.
+  """
+  @spec login_user(binary, binary) :: user_resp
   def login_user(email, password) do
     with %User{deleted_at: nil} = user <- get_user_by_email!(email),
          {:ok, user} <- Argon2.check_pass(user, password) do
@@ -34,6 +48,13 @@ defmodule Core.Services.Users do
     end
   end
 
+  @doc """
+  Creates a new user record, performed on behalf of another user
+
+  allowed roles:
+  * admin
+  """
+  @spec create_user(map, User.t) :: user_resp
   def create_user(attrs, user) do
     %User{}
     |> User.changeset(attrs)
@@ -42,6 +63,11 @@ defmodule Core.Services.Users do
     |> notify(:create)
   end
 
+
+  @doc """
+  Creates a user within the context of a signup
+  """
+  @spec create_user(map) :: user_resp
   def create_user(attrs) do
     %User{}
     |> User.changeset(attrs)
@@ -49,6 +75,14 @@ defmodule Core.Services.Users do
     |> notify(:create)
   end
 
+  @doc """
+  Updates a user by id
+
+  allowed roles;
+  * self
+  * admin
+  """
+  @spec update_user(binary, map, User.t) :: user_resp
   def update_user(id, attrs, user) do
     Core.Repo.get!(User, id)
     |> User.changeset(attrs)
@@ -57,6 +91,15 @@ defmodule Core.Services.Users do
     |> notify(:update)
   end
 
+  @doc """
+  Removes a user from the instance.  Note: this is a soft delete,
+  and really just prevents logins.
+
+  allowed roles:
+  * admin
+  * self
+  """
+  @spec delete_user(binary, User.t) :: user_resp
   def delete_user(id, user) do
     get_user!(id)
     |> Ecto.Changeset.change(%{deleted_at: DateTime.utc_now()})

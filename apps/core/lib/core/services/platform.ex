@@ -12,16 +12,31 @@ defmodule Core.Services.Platform do
   }
   import Core.Policies.Platform
 
+  @type command_resp :: {:ok, Command.t} | error
+  @type incoming_webhook_resp :: {:ok, IncomingWebhook.t} | error
+
+  @spec get_command(binary) :: Command.t
   def get_command(name), do: Core.Repo.get_by(Command, name: name)
 
+  @spec get_command!(binary) :: Command.t
   def get_command!(name), do: Core.Repo.get_by!(Command, name: name)
 
+  @spec get_incoming_webhook!(binary) :: IncomingWebhook.t
   def get_incoming_webhook!(secure_id),
     do: Core.Repo.get_by!(IncomingWebhook, secure_id: secure_id)
 
+  @spec get_incoming_webhook(binary) :: IncomingWebhook.t | nil
   def get_incoming_webhook(secure_id),
     do: Core.Repo.get_by(IncomingWebhook, secure_id: secure_id)
 
+  @doc """
+  Creates a new command in this instance, including an associated webhook,
+  bot user, and optional incoming webhook
+
+  qllowed roles:
+  * all
+  """
+  @spec create_command(map, User.t) :: command_resp
   def create_command(%{webhook: webhook_args, name: name} = args, user) do
     start_transaction()
     |> add_operation(:bot, fn _ ->
@@ -46,6 +61,13 @@ defmodule Core.Services.Platform do
     |> notify(:create, user)
   end
 
+  @doc """
+  Updates attributes on a command and all secondary records
+
+  allowed roles:
+  * admin
+  """
+  @spec update_command(binary, map, User.t) :: command_resp
   def update_command(name, args, user) do
     start_transaction()
     |> add_operation(:command, fn _ ->
@@ -70,6 +92,12 @@ defmodule Core.Services.Platform do
     |> notify(:update, user)
   end
 
+  @doc """
+  Creates a new installable command stub record.
+
+  Should really only be used in migrations
+  """
+  @spec create_installable_command(map) :: {:ok, InstallableCommand.t} | error
   def create_installable_command(attrs) do
     %InstallableCommand{}
     |> InstallableCommand.changeset(attrs)
@@ -90,6 +118,13 @@ defmodule Core.Services.Platform do
   end
   defp maybe_update_incoming_webhook(transaction, _, _), do: transaction
 
+  @doc """
+  Creates an incoming webhook for a command
+
+  allowed roles:
+  * admin
+  """
+  @spec create_incoming_webhook(map, Command.t, User.t) :: incoming_webhook_resp
   def create_incoming_webhook(%{name: name} = args, %Command{id: command_id, bot_id: bot_id} = command, user) do
     %IncomingWebhook{command_id: command_id, creator_id: user.id}
     |> IncomingWebhook.changeset(%{
@@ -101,6 +136,10 @@ defmodule Core.Services.Platform do
     |> when_ok(:insert)
   end
 
+  @doc """
+  Same as create_incoming_webhook, but an upsert
+  """
+  @spec upsert_incoming_webhook(nil | IncomingWebhook.t, map, Command.t, User.t) :: incoming_webhook_resp
   def upsert_incoming_webhook(nil, args, command, user), do: create_incoming_webhook(args, command, user)
   def upsert_incoming_webhook(%IncomingWebhook{} = incoming, args, _, user) do
     incoming
@@ -112,6 +151,12 @@ defmodule Core.Services.Platform do
   defp resolve_conversation_id(%{name: name}, _), do: Conversations.get_conversation_by_name!(name).id
   defp resolve_conversation_id(_, %IncomingWebhook{conversation_id: id}), do: id
 
+  @doc """
+  Handles the body of an incoming webhook request. If `"route_key"` is specified at the top level,
+  will look up in the incoming webhooks routing table to select the appropriate conversation for the
+  post.
+  """
+  @spec dispatch_incoming_webhook(map, IncomingWebhook.t) :: Core.Services.Conversations.msg_resp | error
   def dispatch_incoming_webhook(%{"route_key" => route_key} = msg, %IncomingWebhook{} = incoming_webhook) do
     %{bot: bot, conversation_id: conv_id} = Core.Repo.preload(incoming_webhook, [:bot])
     case Core.Repo.get_by(WebhookRoute, incoming_webhook_id: incoming_webhook.id, route_key: route_key) do
@@ -126,6 +171,11 @@ defmodule Core.Services.Platform do
   def dispatch_incoming_webhook(msg, secure_id),
     do: dispatch_incoming_webhook(msg, get_incoming_webhook!(secure_id))
 
+  @doc """
+  Creates a route for directing payloads to incoming webhooks, see `dispatch_incoming_webhook/2`
+  for more.
+  """
+  @spec upsert_webhook_route(binary, binary, Command.t) :: {:ok, WebhookRoute.t} | error
   def upsert_webhook_route(route_key, conv_id, %Command{} = command) do
     with %{incoming_webhook: %{id: id}} <- Core.Repo.preload(command, [:incoming_webhook]) do
       case Core.Repo.get_by(WebhookRoute, route_key: route_key, incoming_webhook_id: id) do

@@ -1,4 +1,9 @@
 defmodule Core.PubSub.Consumers.Fanout do
+  @moduledoc """
+  Splits and resends given event into a list of
+  duplicate events, for instance for each participant
+  in a conversation.
+  """
   use Piazza.PubSub.Consumer,
     broadcaster: Core.PubSub.Broadcaster,
     max_demand: 10
