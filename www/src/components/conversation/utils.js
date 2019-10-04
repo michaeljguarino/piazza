@@ -47,6 +47,8 @@ export function subscribeToNewConversations(subscribeToMore) {
           return addConversation(prev, participant.conversation)
         case "DELETE":
           return removeConversation(prev, participant.conversation)
+        case "UPDATE":
+          return updateConversation(prev, participant.conversation)
         default:
           return prev
       }

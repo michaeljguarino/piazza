@@ -111,6 +111,15 @@ defimpl Rtc.Channels.Negotiator, for: Core.PubSub.ParticipantDeleted do
   end
 end
 
+defimpl Rtc.Channels.Negotiator, for: Core.PubSub.ParticipantUpdated do
+  import Rtc.Channels.NegotiatorHelper
+
+  def negotiate(%{item: %{conversation_id: id, user_id: uid} = participant}) do
+    {delta(participant, :update),
+     [participant_delta: "participants:#{id}", participant_delta: "participants:mine:#{uid}"]}
+  end
+end
+
 defimpl Rtc.Channels.Negotiator, for: Core.PubSub.NotificationCreated do
   def negotiate(%{item: %{user_id: id} = notification}),
     do: {notification, [new_notifications: "notifications:#{id}"]}

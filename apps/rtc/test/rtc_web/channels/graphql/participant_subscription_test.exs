@@ -106,6 +106,35 @@ defmodule RtcWeb.Channels.ParticipantsubscriptionTest do
     end
   end
 
+  describe "updated participants" do
+    test "updated participants are pushed also" do
+      user = insert(:user)
+      conv = insert(:conversation, public: false)
+      insert(:participant, user: user, conversation: conv)
+      {:ok, socket} = establish_socket(user)
+
+      ref = push_doc(socket, """
+        subscription UpdatedParticipants($id: ID!) {
+          participantDelta(conversationId: $id) {
+            delta
+            payload {
+              id
+              userId
+            }
+          }
+        }
+      """, variables: %{"id" => conv.id})
+
+      assert_reply(ref, :ok, %{subscriptionId: _})
+
+      publish_event(%PubSub.ParticipantUpdated{item: insert(:participant, conversation: conv)})
+      assert_push("subscription:data", %{result: %{data: %{"participantDelta" => doc}}})
+      assert doc["delta"] == "UPDATE"
+      assert doc["payload"]["id"]
+      assert doc["payload"]["userId"]
+    end
+  end
+
   describe "my participants" do
     test "anyone can watch for their own participant creates" do
       user = insert(:user)

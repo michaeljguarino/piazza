@@ -19,6 +19,7 @@ defimpl Core.PubSub.Realtime, for: [
   Core.PubSub.MessageUpdated,
   Core.PubSub.ParticipantCreated,
   Core.PubSub.ParticipantDeleted,
+  Core.PubSub.ParticipantUpdated,
   Core.PubSub.NotificationCreated,
   Core.PubSub.PinnedMessageCreated,
   Core.PubSub.PinnedMessageDeleted,
