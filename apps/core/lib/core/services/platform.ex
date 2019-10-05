@@ -201,7 +201,7 @@ defmodule Core.Services.Platform do
   @spec dispatch_interaction(binary, binary) :: {:ok, Interaction.t}
   def dispatch_interaction(payload, interaction_id) do
     Core.Repo.get!(Interaction, interaction_id)
-    |> Core.Repo.preload([:message, :command])
+    |> Core.Repo.preload([:message, [command: [:webhook, :bot]]])
     |> Map.put(:payload, payload)
     |> notify(:dispatch)
   end

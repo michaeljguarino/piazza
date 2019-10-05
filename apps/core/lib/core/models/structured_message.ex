@@ -23,7 +23,7 @@ defmodule Core.Models.StructuredMessage do
     end
 
     component "button" do
-      attributes ~w(primary label href target)
+      attributes ~w(primary label href target interaction payload)
       parents ~w(box)
     end
 

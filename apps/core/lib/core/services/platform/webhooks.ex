@@ -35,7 +35,8 @@ defmodule Core.Services.Platform.Webhooks do
     case Platform.upsert_webhook_route(route_key, conv_id, command) do
       {:ok, _} ->
         Conversations.create_message(conv_id, %{text: "Subscribed this conversation to #{route_key}"}, bot)
-      _ -> Conversations.create_message(conv_id, %{text: "Could not subscribe to #{route_key} for reasons"}, bot)
+      _ ->
+        Conversations.create_message(conv_id, %{text: "Could not subscribe to #{route_key} for reasons"}, bot)
     end
   end
   defp webhook_interaction(%{"dialog" => msg}, _, %Command{bot: bot}, message),

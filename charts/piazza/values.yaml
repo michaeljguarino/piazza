@@ -97,8 +97,6 @@ crons:
   - name: RETENTION_POLICY
     value: 1
 
-
-
 dbPasswordSecret: piazza-postgresql
 rabbitPasswordSecret: piazza-rabbitmq
 

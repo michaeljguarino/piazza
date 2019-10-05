@@ -31,6 +31,7 @@ defmodule GqlWeb.Router do
     pipe_through [:api]
 
     post "/giphy", WebhookController, :giphy
+    post "/giphy/interaction", WebhookController, :giphy_interaction
     post "/piazza", WebhookController, :piazza
     post "/github", WebhookController, :github
   end
