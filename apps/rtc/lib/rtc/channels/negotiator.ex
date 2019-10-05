@@ -145,3 +145,8 @@ defimpl Rtc.Channels.Negotiator, for: Core.PubSub.EmojiCreated do
   def negotiate(%{item: emoji}),
     do: {delta(emoji, :create), [emoji_delta: "emoji"]}
 end
+
+defimpl Rtc.Channels.Negotiator, for: Core.PubSub.DialogCreated do
+  def negotiate(%{item: %{anchor_message: %{creator_id: user_id}} = dialog}),
+    do: {dialog, [dialog: "dialog:#{user_id}"]}
+end

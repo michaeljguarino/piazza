@@ -306,6 +306,14 @@ defmodule Core.Schema do
       resolve safe_resolver(&Platform.update_command/2)
     end
 
+    field :dispatch_interaction, :interaction do
+      middleware Core.Schemas.Authenticated
+      arg :id, non_null(:id)
+      arg :payload, non_null(:string)
+
+      resolve safe_resolver(&Platform.dispatch_interaction/2)
+    end
+
     field :view_notifications, list_of(:notification) do
       middleware Core.Schemas.Authenticated
       resolve safe_resolver(&Notification.view_notifications/2)
@@ -343,6 +351,12 @@ defmodule Core.Schema do
       arg :id, non_null(:id)
       config fn %{id: id}, %{context: %{current_user: user}} ->
         Conversation.authorize_subscription(id, user, "conversations:#{id}")
+      end
+    end
+
+    field :dialog, :dialog do
+      config fn _, %{context: %{current_user: user}} ->
+        {:ok, topic: "dialog:#{user.id}"}
       end
     end
 

@@ -492,4 +492,16 @@ defmodule Core.Services.ConversationsTest do
       )
     end
   end
+
+  describe "#create_dialog" do
+    test "It will send an event" do
+      msg = insert(:message)
+      user = insert(:user)
+      structured_msg = "<root><text>Hello World!</text></root>"
+
+      {:ok, dialog} = Conversations.create_dialog(structured_msg, msg, user)
+
+      assert_receive {:event, %PubSub.DialogCreated{item: ^dialog}}
+    end
+  end
 end

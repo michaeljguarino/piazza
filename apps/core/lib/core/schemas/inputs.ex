@@ -97,7 +97,6 @@ defmodule Core.Schemas.Inputs do
     field :fullname, :string
   end
 
-
   input_object :theme_attributes do
     field :brand,         :string
     field :sidebar,       :string

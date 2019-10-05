@@ -7,12 +7,9 @@ defimpl Core.Recurse.Traversable, for: Core.PubSub.MessageCreated do
   3. Send it to the webhook q
   4. Core.Aquaduct.WebhookSubscriber picks it up, and calls Core.Services.Platform.Webhooks.send_hook
   """
-  alias Core.Services.Platform
-  alias Core.Models.{Command}
   alias Core.Utils.Url
 
-  def traverse(%{item: %{text: text} = message, actor: actor} = event) do
-    parse_command(event)
+  def traverse(%{item: %{text: text} = message, actor: actor}) do
     Url.find_urls(text)
     |> unfurl_urls(message, actor)
   end
@@ -33,17 +30,6 @@ defimpl Core.Recurse.Traversable, for: Core.PubSub.MessageCreated do
   defp text(%{title: title}), do: title
   defp text(%{description: description}), do: description
   defp text(%{url: url}), do: url
-
-  def parse_command(%{actor: %{bot: true}}), do: :ok # prevent recursive commands
-  def parse_command(%{item: %{text: "/" <> text} = msg}) do
-    with [command | _]  <- String.split(text, " "),
-         %Command{} = c <- Platform.get_command(command),
-         command <- Core.Repo.preload(c, [:webhook, :bot]) do
-      payload = {command, Core.Repo.preload(msg, [:creator, :conversation])}
-      Core.Aquaduct.Broker.publish(%Conduit.Message{body: payload}, :webhook)
-    end
-  end
-  def parse_command(_), do: :ok
 end
 
 defimpl Core.Recurse.Traversable, for: Core.PubSub.ConversationCreated do

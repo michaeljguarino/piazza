@@ -145,4 +145,11 @@ defmodule Core.Factory do
       webhook: "https://example.com/webhook"
     }
   end
+
+  def interaction_factory do
+    %Models.Interaction{
+      command: build(:command),
+      message: build(:message)
+    }
+  end
 end

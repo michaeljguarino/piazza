@@ -16,8 +16,7 @@ defmodule GqlWeb.WebhookController do
          {:ok, message} <- Piazza.dispatch(msg, command, args) do
       json(conn, %{text: message})
     else
-      _ ->
-        json(conn, %{text: "I don't understand what #{args} means, perhaps look at the help doc"})
+      _ -> json(conn, %{text: "I don't understand what #{args} means, perhaps look at the help doc"})
     end
   end
 

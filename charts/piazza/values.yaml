@@ -90,6 +90,12 @@ crons:
   crontab: "0 1 * * *"
   envVars:
   - <<: *inviteRetentionPolicy
+- cronName: piazza-prune-interactions
+  cronModule: Prune.Interactions
+  crontab: "30 1 * * *"
+  envVars:
+  - name: RETENTION_POLICY
+    value: 1
 
 
 

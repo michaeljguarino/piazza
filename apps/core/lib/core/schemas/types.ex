@@ -203,6 +203,20 @@ defmodule Core.Schemas.Types do
     timestamps()
   end
 
+  object :dialog do
+    field :structured_message, :map
+    field :anchor_message, :message
+    field :user, :user
+  end
+
+  object :interaction do
+    field :id, non_null(:id)
+    field :message, :message, resolve: dataloader(Conversation)
+    field :command, :command, resolve: dataloader(Platform)
+
+    timestamps()
+  end
+
   delta :message
 
   enum :entity_type do

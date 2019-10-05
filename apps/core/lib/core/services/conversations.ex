@@ -9,7 +9,8 @@ defmodule Core.Services.Conversations do
     MessageEntity,
     User,
     MessageReaction,
-    PinnedMessage
+    PinnedMessage,
+    Dialog
   }
   import Core.Policies.Conversation
 
@@ -500,6 +501,14 @@ defmodule Core.Services.Conversations do
     |> notify(:delete, user)
   end
 
+  @doc """
+  Issues a dialog anchored to the given message
+  """
+  @spec create_dialog(binary | map, Message.t, User.t) :: {:ok, Dialog.t} | error
+  def create_dialog(message, anchor, user) do
+    with {:ok, dialog} <- Dialog.build_dialog(message, anchor, user),
+      do: handle_notify(PubSub.DialogCreated, dialog, actor: user)
+  end
 
   @doc """
   notify is opened up in this service for reuse in pubsub handlers

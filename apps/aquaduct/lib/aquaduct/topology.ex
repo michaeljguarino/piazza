@@ -10,6 +10,9 @@ defmodule Aquaduct.Topology do
 
         queue "piazza.webhook", from: ["piazza.webhook"], exchange: "piazza.topic", durable: true
         queue "zzz.piazza.webhook", from: ["zzz.piazza.webhook"], exchange: "piazza.topic", durable: true
+
+        queue "piazza.interaction", from: ["piazza.interaction"], exchange: "piazza.topic", durable: true
+        queue "zzz.piazza.interaction", from: ["zzz.piazza.interaction"], exchange: "piazza.topic", durable: true
       end
 
       pipeline :out_tracking do
@@ -32,6 +35,7 @@ defmodule Aquaduct.Topology do
 
         publish :rtc, exchange: "piazza.topic", to: "piazza.rtc"
         publish :webhook, exchange: "piazza.topic", to: "piazza.webhook"
+        publish :interaction, exchange: "piazza.topic", to: "piazza.interaction"
       end
 
       outgoing do

@@ -8,7 +8,9 @@ defmodule Core.Services.Platform do
     IncomingWebhook,
     Command,
     WebhookRoute,
-    InstallableCommand
+    InstallableCommand,
+    Message,
+    Interaction
   }
   import Core.Policies.Platform
 
@@ -193,6 +195,28 @@ defmodule Core.Services.Platform do
     end
   end
 
+  @doc """
+  If the interaction exists, hydrates it and dispatches it with the given payload
+  """
+  @spec dispatch_interaction(binary, binary) :: {:ok, Interaction.t}
+  def dispatch_interaction(payload, interaction_id) do
+    Core.Repo.get!(Interaction, interaction_id)
+    |> Core.Repo.preload([:message, :command])
+    |> Map.put(:payload, payload)
+    |> notify(:dispatch)
+  end
+
+  @doc """
+  Creates a new interaction against a webhook, message pair which can be used
+  to validate callbacks in dialogs/etc
+  """
+  @spec create_interaction(Command.t, Message.t) :: {:ok, Interaction.t} | error
+  def create_interaction(%Command{id: cid}, %Message{id: mid}) do
+    %Interaction{command_id: cid, message_id: mid}
+    |> Interaction.changeset()
+    |> Core.Repo.insert()
+  end
+
   defp inflated_bot_args(args, name) do
     args
     |> Map.put_new(:name, name)
@@ -200,6 +224,9 @@ defmodule Core.Services.Platform do
     |> Map.put_new(:password, :crypto.strong_rand_bytes(64) |> Base.url_encode64())
     |> Map.put_new(:email, "#{name}+bot@piazzapp.com")
   end
+
+  defp notify(%Interaction{} = interaction, :dispatch),
+    do: handle_notify(PubSub.InteractionDispatched, interaction)
 
   defp notify({:ok, %Command{} = c}, :create, actor),
     do: handle_notify(PubSub.CommandCreated, c, actor: actor)

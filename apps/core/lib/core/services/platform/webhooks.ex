@@ -3,42 +3,55 @@ defmodule Core.Services.Platform.Webhooks do
   alias Core.Services.{Conversations, Platform}
   require Logger
 
-  def send_hook(
-    %Command{webhook: %{url: url, secret: secret}} = command,
+  def send_hook(%Command{webhook: %{url: url}} = command, payload, message),
+    do: do_send_hook(url, command, payload, message)
+
+  def send_interaction(%Command{webhook: %{url: url}} = command, payload, message) do
+    Path.join(url, "interaction")
+    |> do_send_hook(command, payload, message)
+  end
+
+  defp do_send_hook(
+    url,
+    %Command{webhook: %{secret: secret}} = command,
+    payload,
     %{conversation_id: conv_id} = message
   ) do
-    with {:ok, payload} <- Jason.encode(message),
+    with {:ok, %{id: id}} <- Platform.create_interaction(command, message),
          {:ok, %Mojito.Response{
                 body: response,
                 status_code: 200
             }
-          } <- Mojito.post(url, webhook_headers(payload, secret), payload),
+          } <- Mojito.post(url, webhook_headers(id, payload, secret), payload),
          {:ok, msg} <- handle_response(response) do
-      webhook_interaction(msg, conv_id, command)
+      webhook_interaction(msg, conv_id, command, message)
     else
       {:ok, %Mojito.Response{body: body}} -> {:error, :request_failed, body}
       error -> error
     end
   end
 
-  defp webhook_interaction(%{"subscribe" => route_key}, conv_id, %Command{bot: bot} = command) do
+  defp webhook_interaction(%{"subscribe" => route_key}, conv_id, %Command{bot: bot} = command, _) do
     case Platform.upsert_webhook_route(route_key, conv_id, command) do
       {:ok, _} ->
         Conversations.create_message(conv_id, %{text: "Subscribed this conversation to #{route_key}"}, bot)
       _ -> Conversations.create_message(conv_id, %{text: "Could not subscribe to #{route_key} for reasons"}, bot)
     end
   end
-  defp webhook_interaction(msg, conv_id, %Command{bot: bot}),
+  defp webhook_interaction(%{"dialog" => msg}, _, %Command{bot: bot}, message),
+    do: Conversations.create_dialog(msg, message, bot)
+  defp webhook_interaction(msg, conv_id, %Command{bot: bot}, _),
     do: Conversations.create_message(conv_id, msg, bot)
 
-  defp webhook_headers(payload, secret) do
+  defp webhook_headers(id, payload, secret) do
     epoch = :os.system_time(:millisecond)
     signature = :crypto.hash(:sha, "#{payload}:#{epoch}:#{secret}") |> Base.url_encode64()
     [
       {"content-type", "application/json"},
       {"accept", "application/json"},
       {"x-piazza-signature", signature},
-      {"x-piazza-timestamp", "#{epoch}"}
+      {"x-piazza-timestamp", "#{epoch}"},
+      {"x-piazza-interaction-id", id}
     ]
   end
 

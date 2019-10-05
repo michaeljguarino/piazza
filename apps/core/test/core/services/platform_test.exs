@@ -118,4 +118,15 @@ defmodule Core.Services.PlatformTest do
       assert incoming.routable
     end
   end
+
+  describe "#dispatch_interaction/2" do
+    test "It will send a InteractionDispatched event with the given payload" do
+      %{id: id} = insert(:interaction)
+      payload = "some payload"
+
+      {:ok, _} = Platform.dispatch_interaction(payload, id)
+
+      assert_receive {:event, %PubSub.InteractionDispatched{item: %{id: ^id, payload: ^payload}}}
+    end
+  end
 end

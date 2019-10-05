@@ -322,4 +322,38 @@ defmodule RtcWeb.Channels.MessageSubscriptionTest do
       refute_reply(ref, :ok, %{subscriptionId: _})
     end
   end
+
+  describe "dialog" do
+    test "It will send to a given user" do
+      user = insert(:user)
+      msg  = insert(:message, creator: user)
+      bot  = insert(:user, bot: true)
+      {:ok, socket} = establish_socket(user)
+
+      ref = push_doc(socket, """
+        subscription {
+          dialog {
+            anchorMessage {
+              id
+            }
+            user {
+              id
+            }
+            structuredMessage
+          }
+        }
+      """)
+
+      assert_reply(ref, :ok, %{subscriptionId: _})
+
+      structured_message = "<root><text>Hello World!</text></root>"
+      {:ok, dialog} = Core.Models.Dialog.build_dialog(structured_message, msg, bot)
+      publish_event(%PubSub.DialogCreated{item: dialog})
+
+      assert_push("subscription:data", %{result: %{data: %{"dialog" => doc}}})
+      assert doc["anchorMessage"]["id"] == msg.id
+      assert doc["user"]["id"] == bot.id
+      assert is_map(doc["structuredMessage"])
+    end
+  end
 end

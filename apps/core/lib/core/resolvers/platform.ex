@@ -25,11 +25,12 @@ defmodule Core.Resolvers.Platform do
     |> paginate(args)
   end
 
-  def create_command(%{attributes: attrs}, %{context: %{current_user: user}}) do
-    Platform.create_command(attrs, user)
-  end
+  def create_command(%{attributes: attrs}, %{context: %{current_user: user}}),
+    do: Platform.create_command(attrs, user)
 
-  def update_command(%{name: name, attributes: attrs}, %{context: %{current_user: user}}) do
-    Platform.update_command(name, attrs, user)
-  end
+  def update_command(%{name: name, attributes: attrs}, %{context: %{current_user: user}}),
+    do: Platform.update_command(name, attrs, user)
+
+  def dispatch_interaction(%{id: id, payload: payload}, _),
+    do: Platform.dispatch_interaction(payload, id)
 end

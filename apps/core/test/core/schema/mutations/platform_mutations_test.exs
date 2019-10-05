@@ -85,4 +85,29 @@ defmodule Core.Schema.PlatformMutationsTest do
       assert result["documentation"] == "Sends you gifs"
     end
   end
+
+  describe "dispatchInteraction" do
+    test "It will dispatch and return an interaction" do
+      user = insert(:user)
+      interaction = insert(:interaction)
+
+      {:ok, %{data: %{"dispatchInteraction" => result}}} = run_query("""
+        mutation DispatchInteraction($id: ID!, $payload: String!) {
+          dispatchInteraction(id: $id, payload: $payload) {
+            id
+            command {
+              id
+            }
+            message {
+              id
+            }
+          }
+        }
+      """, %{"id" => interaction.id, "payload" => "some payload"}, %{current_user: user})
+
+      assert result["id"] == interaction.id
+      assert result["command"]["id"] == interaction.command.id
+      assert result["message"]["id"] == interaction.message.id
+    end
+  end
 end
