@@ -1,6 +1,6 @@
 import React, {useState} from 'react'
 import {Box, Stack, Text} from 'grommet'
-import {Query, Mutation} from 'react-apollo'
+import {Query, Mutation, ApolloConsumer} from 'react-apollo'
 import {Notification} from 'grommet-icons'
 import Dropdown from '../utils/Dropdown'
 import HoveredBackground from '../utils/HoveredBackground'
@@ -12,8 +12,8 @@ import {CurrentUserContext} from '../login/EnsureLogin'
 import {conversationNameString} from '../conversation/Conversation'
 import {ICON_HEIGHT, ICON_SPREAD} from '../Piazza'
 
-async function _subscribeToNewNotifications(subscribeToMore, unseen, setUnseen, setCurrentNotification) {
-  subscribeToMore({
+function _subscribeToNewNotifications(subscribeToMore, unseen, setUnseen, setCurrentNotification, client, updateConversations) {
+  return subscribeToMore({
     document: NEW_NOTIFICATIONS_SUB,
     updateQuery: (prev, { subscriptionData }) => {
       if (!subscriptionData.data) return prev
@@ -22,6 +22,11 @@ async function _subscribeToNewNotifications(subscribeToMore, unseen, setUnseen, 
       if (edges.find(({node}) => node.id === newNotification.id)) return prev
       setUnseen(unseen + 1)
       setCurrentNotification(newNotification)
+      updateConversations(
+        client,
+        ({node}) => node.id === newNotification.message.conversation.id,
+        (e) => ({...e, node: {...e.node, unreadNotifications: e.node.unreadNotifications + 1}})
+      )
 
       let newNotificationNode = {node: newNotification, __typename: "NotificationEdge"}
       return Object.assign({}, prev, {
@@ -100,51 +105,56 @@ function NotificationIcon(props) {
         margin={{left: ICON_SPREAD, right: '15px'}}
         align='center'
         justify='center'>
-        <Query query={NOTIFICATIONS_Q}>
-          {({data, loading, fetchMore, subscribeToMore}) => {
-            if (loading) return (<Notification size='25px' />)
-            let edges = data.notifications.edges
-            let pageInfo = data.notifications.pageInfo
-            _subscribeToNewNotifications(subscribeToMore, unseen, setUnseen, setCurrentNotification)
-            return (
-              <Mutation mutation={VIEW_NOTIFICATIONS} update={(cache, {data: {viewNotifications}}) => {
-                const {notifications} = cache.readQuery({ query: NOTIFICATIONS_Q });
-                cache.writeQuery({
-                  query: NOTIFICATIONS_Q,
-                  data: {notifications: {...notifications, edges: []}}
-                });
-                updateConversations(cache, () => true, (e) => ({...e, node: {...e.node, unreadNotifications: 0}}))
-                setUnseen(0)
-              }}>
-              {mutation => (
-                <Dropdown onClose={mutation}>
-                  <Stack anchor="top-right" style={{cursor: 'pointer'}}>
-                    <Notification size={ICON_HEIGHT} />
-                    {(unseen && unseen > 0) ?
-                      <Box
-                        background='notif'
-                        align='center'
-                        justify='center'
-                        height='15px'
-                        width='15px'
-                        round>
-                        <Text color='white' size='10px'>{unseen}</Text>
-                      </Box> : <span></span>
-                    }
-                  </Stack>
-                  <Box pad='small' align='center' justify='center' width='300px'>
-                    <NotificationList
-                      setUnseen={setUnseen}
-                      edges={edges}
-                      fetchMore={fetchMore}
-                      pageInfo={pageInfo}
-                      {...props} />
-                  </Box>
-                </Dropdown>
-            )}
-            </Mutation>
-          )}}
-        </Query>
+        <ApolloConsumer>
+        {(client) => (
+          <Query query={NOTIFICATIONS_Q}>
+            {({data, loading, fetchMore, subscribeToMore}) => {
+              if (loading) return (<Notification size='25px' />)
+              let edges = data.notifications.edges
+              let pageInfo = data.notifications.pageInfo
+              _subscribeToNewNotifications(
+                subscribeToMore, unseen, setUnseen, setCurrentNotification, client, updateConversations)
+              return (
+                <Mutation mutation={VIEW_NOTIFICATIONS} update={(cache, {data: {viewNotifications}}) => {
+                  const {notifications} = cache.readQuery({ query: NOTIFICATIONS_Q });
+                  cache.writeQuery({
+                    query: NOTIFICATIONS_Q,
+                    data: {notifications: {...notifications, edges: []}}
+                  });
+                  updateConversations(cache, () => true, (e) => ({...e, node: {...e.node, unreadNotifications: 0}}))
+                  setUnseen(0)
+                }}>
+                {mutation => (
+                  <Dropdown onClose={mutation}>
+                    <Stack anchor="top-right" style={{cursor: 'pointer'}}>
+                      <Notification size={ICON_HEIGHT} />
+                      {(unseen && unseen > 0) ?
+                        <Box
+                          background='notif'
+                          align='center'
+                          justify='center'
+                          height='15px'
+                          width='15px'
+                          round>
+                          <Text color='white' size='10px'>{unseen}</Text>
+                        </Box> : <span></span>
+                      }
+                    </Stack>
+                    <Box pad='small' align='center' justify='center' width='300px'>
+                      <NotificationList
+                        setUnseen={setUnseen}
+                        edges={edges}
+                        fetchMore={fetchMore}
+                        pageInfo={pageInfo}
+                        {...props} />
+                    </Box>
+                  </Dropdown>
+              )}
+              </Mutation>
+            )}}
+          </Query>
+        )}
+        </ApolloConsumer>
       </Box>
     </HoveredBackground>
     </>
