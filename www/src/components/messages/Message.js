@@ -33,6 +33,7 @@ const PIN_COLOR='rgb(242,199,68)'
 const SELECTED_BACKGROUND='rgba(255, 229, 119, 0.5)'
 
 function AttachmentMessage(props) {
+  const [hover, setHover] = useState(false)
   const filename = props.attachment.split("?")[0]
   const ext = extension(filename)
   const styles = defaultStyles[ext] || {}
@@ -42,7 +43,17 @@ function AttachmentMessage(props) {
         <TextMessage {...props} />
       </Box>
       <a href={props.attachment} download style={{color: 'inherit', textDecoration: 'none'}}>
-        <Box border elevation='xsmall' round='small' align="center" direction='row' pad='xsmall' gap='small'>
+        <Box
+          onMouseEnter={() => setHover(true)}
+          onMouseLeave={() => setHover(false)}
+          border
+          elevation={hover ? 'small' : 'xsmall'}
+          background={hover ? null : '#fff'}
+          round='xsmall'
+          align="center"
+          direction='row'
+          pad='xsmall'
+          gap='small'>
           <FileIcon extension={ext} size={40} {...styles} />
           <Box>
             <Text size='small'>{filename.split("/").pop()}</Text>

@@ -27,7 +27,6 @@ function MessageList(props) {
     {(dialog, setDialog) => (
       <Subscription subscription={DIALOG_SUB} onSubscriptionData={({subscriptionData}) => {
         if (!subscriptionData.data) return
-
         setDialog(subscriptionData.data.dialog)
       }}>
       {() => (

@@ -1,6 +1,8 @@
 defmodule GqlWeb.Endpoint do
   use Phoenix.Endpoint, otp_app: :gql
 
+  @upload_maximum 50_000_000
+
   socket "/socket", GqlWeb.UserSocket,
     websocket: true,
     longpoll: false
@@ -19,7 +21,7 @@ defmodule GqlWeb.Endpoint do
   plug Plug.Telemetry, event_prefix: [:phoenix, :endpoint]
 
   plug Plug.Parsers,
-    parsers: [:urlencoded, :multipart, :json],
+    parsers: [:urlencoded, {:multipart, length: @upload_maximum}, :json],
     pass: ["*/*"],
     json_decoder: Phoenix.json_library(),
     body_reader: {Gql.CacheBodyReader, :read_body, []}
