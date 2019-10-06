@@ -2,12 +2,10 @@ import React, {useState} from 'react'
 import {Box, Text} from 'grommet'
 import {FormPrevious} from 'grommet-icons'
 import HoveredBackground from './HoveredBackground'
-import {SwitchTransition, CSSTransition} from 'react-transition-group'
-import './interbox.css'
 
 function ContentWrapper(props) {
   return (
-    <Box gap='xsmmall'>
+    <Box gap='xsmmall' animation={slideAnimate('slideRight')}>
       {props.children}
       <Box pad='xxsmall' border='top'>
         <HoveredBackground>
@@ -35,18 +33,23 @@ function MaybeWrap(props) {
   return (<ContentWrapper {...rest}>{children}</ContentWrapper>)
 }
 
-function InterchangeableBox(props) {
-  const [alternate, setAlternate] = useState(null)
+function slideAnimate(type) {
+  return {type: type, duration: 150, delay: 0, size: 'xlarge'}
+}
 
-  return (
-    <SwitchTransition>
-      <CSSTransition key={alternate ? 'alternate' : 'original'} timeout={200} classNames='interbox'>
-      {!alternate ?
-        <Box {...props}>{props.children(setAlternate)}</Box>
-        : <MaybeWrap noWrap={props.noWrap} setAlternate={setAlternate}>{alternate}</MaybeWrap>
-      }
-      </CSSTransition>
-    </SwitchTransition>
+function InterchangeableBox(props) {
+  const [loaded, setLoaded] = useState(false)
+  const [alternate, setAlternate] = useState(null)
+  function wrappedSetAlternate(alternate) {
+    setLoaded(true)
+    setAlternate(alternate)
+  }
+
+  return (!alternate ?
+    <Box animation={loaded && !props.noWrap ? slideAnimate('slideLeft') : null} {...props}>
+      {props.children(wrappedSetAlternate)}
+    </Box>
+    : <MaybeWrap noWrap={props.noWrap} setAlternate={wrappedSetAlternate}>{alternate}</MaybeWrap>
   )
 }
 

@@ -15,6 +15,7 @@ import WithPresence from '../utils/presence'
 import PresenceIndicator from '../users/PresenceIndicator'
 import ParticipantInvite, {ParticipantInviteButton} from './ParticipantInvite'
 import MagicLinkInvite from './MagicLinkInvite'
+import {Loader} from './utils'
 
 function addParticipant(participant, prev) {
   const participants = prev.conversation.participants.edges
@@ -102,7 +103,7 @@ function Participants(props) {
   return (
     <Query query={PARTICIPANTS_Q} variables={{conversationId: props.conversation.id}}>
     {({loading, data, fetchMore, subscribeToMore}) => {
-      if (loading) return (<Box direction='row'>...</Box>)
+      if (loading) return <Loader />
       let pageInfo = data.conversation.participants.pageInfo
       let edges = data.conversation.participants.edges
       return (

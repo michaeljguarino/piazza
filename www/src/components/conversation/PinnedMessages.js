@@ -11,6 +11,7 @@ import {addPinnedMessage, removePinnedMessage} from '../messages/utils'
 import {mergeAppend} from '../../utils/array'
 import {BOX_ATTRS} from './ConversationHeader'
 import Message from '../messages/Message'
+import {Loader} from './utils'
 
 const _subscribeToNewPins = (conversationId, subscribeToMore) => {
   return subscribeToMore({
@@ -39,7 +40,7 @@ function PinnedMessages(props) {
       query={PINNED_MESSAGES}
       variables={{conversationId: props.conversation.id}}>
     {({loading, data, fetchMore, subscribeToMore}) => {
-      if (loading) return (<Box direction='row'>...</Box>)
+      if (loading) return <Loader />
       const conv = data.conversation
       const messageEdges = data.conversation.pinnedMessages.edges
       const pageInfo = data.conversation.pinnedMessages.pageInfo

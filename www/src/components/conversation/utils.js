@@ -1,5 +1,16 @@
+import React from 'react'
+import {Box} from 'grommet'
 import {CONVERSATIONS_Q, CONVERSATIONS_SUB} from './queries'
 import sortBy from 'lodash/sortBy'
+import {BarLoader} from 'react-spinners'
+
+export function Loader(props) {
+  return (
+    <Box height='100%' align='center' justify='center' border='right' pad={{horizontal: 'xsmall'}}>
+      <BarLoader height={4} width={15} />
+    </Box>
+  )
+}
 
 export function updateUnreadMessages(client, conversationId, update) {
   updateConversations(

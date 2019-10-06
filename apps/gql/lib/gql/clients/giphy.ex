@@ -1,6 +1,6 @@
 defmodule Gql.Clients.Giphy do
   require Logger
-  @sample_size 10
+  @sample_size 15
 
   def random(search_query, interaction) do
     params = URI.encode_query(%{
@@ -22,11 +22,26 @@ defmodule Gql.Clients.Giphy do
 
   def get(path, headers \\ []) do
     path = "#{endpoint()}#{path}"
-    case Mojito.get(path, headers) do
+    retry(fn -> Mojito.get(path, headers) end)
+    |> case do
       {:ok, %Mojito.Response{body: body, status_code: 200}} -> Jason.decode(body)
       error ->
         Logger.error "Error from giphy: #{inspect(error)}"
         {:error, :not_found}
+    end
+  end
+
+  defp retry(func, retries \\ 0, max_retries \\ 2, result \\ {:error, :not_found})
+  defp retry(_, retries, retries, result), do: result
+  defp retry(func, retries, max_retries, _) do
+    if retries > 0 do
+      :timer.sleep(100)
+    end
+
+    case func.() do
+      {:error, %Mojito.Error{}} = error ->
+        retry(func, retries + 1, max_retries, error)
+      result -> result
     end
   end
 
@@ -36,7 +51,7 @@ defmodule Gql.Clients.Giphy do
     select_payload = Jason.encode!(%{select: pruned, search: search}) |> xml_escape()
     """
     <root>
-      <box pad="small">
+      <box pad="small" gap="small">
         <box>
           <link href="#{pruned}" target="_blank">
             <video url="#{pruned}" autoPlay="true" loop="true" />

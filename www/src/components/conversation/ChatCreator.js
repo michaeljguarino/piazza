@@ -51,9 +51,13 @@ function ChatCreator(props) {
           </HoveredBackground>
         </Box>}>
         {setOpen => (
-          <Box width="400px" style={{maxHeight: '70vh'}} pad={{bottom: 'small'}} round='small'>
+          <Box
+            width="400px"
+            style={{maxHeight: '70vh'}}
+            pad={{bottom: 'small'}}
+            round='small'>
             <ModalHeader text='Start a chat' setOpen={setOpen} />
-            <Box style={{minHeight: '60px'}}>
+            <Box style={{minHeight: '60px'}} border='bottom' margin={{bottom: 'small'}}>
               <ParticipantInvite
                 direction='row'
                 onAddParticipant={addParticipant}
@@ -87,15 +91,6 @@ function ChatCreator(props) {
                 </Mutation>
               )}
               </ParticipantInvite>
-            </Box>
-            <Box
-              background='light-3'
-              border='horizontal'
-              elevation='xxsmall'
-              margin={{bottom: 'xsmall'}}
-              justify='center'
-              pad={{horizontal: 'small', vertical: 'xxsmall'}}>
-              <Text size='small'>Users</Text>
             </Box>
             <CurrentUserContext.Consumer>
             {me => (

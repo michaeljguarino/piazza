@@ -1,5 +1,6 @@
 import React from 'react'
-import {Box, Clock} from 'grommet'
+import {Box} from 'grommet'
+import {HashLoader} from 'react-spinners'
 
 function Loading(props) {
   return (
@@ -9,7 +10,7 @@ function Loading(props) {
       direction='column'
       justify='center'
       align='center'>
-      <Clock type="digital" />
+      <HashLoader size={50} />
     </Box>
   )
 }
