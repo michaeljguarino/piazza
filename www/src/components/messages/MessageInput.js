@@ -14,8 +14,9 @@ import MentionManager from './MentionManager'
 import {ReplyGutter} from './ReplyProvider'
 import { Progress } from 'react-sweet-progress';
 import "react-sweet-progress/lib/style.css";
-import Plain from 'slate-plain-serializer'
 import moment from 'moment'
+import Plain from 'slate-plain-serializer'
+
 
 const TEXT_SIZE='xsmall'
 const TEXT_COLOR='dark-4'
@@ -50,7 +51,7 @@ function HelpDoc(props) {
 
 class MessageInput extends Component {
   state = {
-    text: Plain.deserialize(''),
+    editorState: Plain.deserialize(''),
     typists: [],
     uploadProgress: null,
     useUpload: false,
@@ -93,7 +94,7 @@ class MessageInput extends Component {
 
   render() {
     this.setupChannel()
-    const { text, attachment } = this.state
+    const { editorState, attachment } = this.state
     const parentId = this.props.reply && this.props.reply.id
     return (
       <Box
@@ -138,9 +139,9 @@ class MessageInput extends Component {
             if (e.key === 'Enter' && !e.shiftKey && !this.state.disableSubmit) {
               postMutation({variables: {
                 conversationId: this.props.conversation.id,
-                attributes: {attachment, parentId, text: Plain.serialize(text)}
+                attributes: {attachment, parentId, text: Plain.serialize(editorState)}
               }})
-              this.setState({attachment: null, text: ''})
+              this.setState({attachment: null, editorState: Plain.deserialize('')})
             }
           }}>
             <Box
@@ -152,10 +153,10 @@ class MessageInput extends Component {
               round='xsmall'>
               <MentionManager
                 parentRef={this.boxRef}
-                text={this.state.text}
-                setText={(text) => this.setState({ text: text })}
+                editorState={editorState}
+                setEditorState={(editorState) => this.setState({editorState: editorState})}
                 disableSubmit={(disable) => this.setState({disableSubmit: disable})}
-                submitDisabled={this.state.disableSubmit}
+                clearable={!this.state.disableSubmit}
                 onChange={() => this.notifyTyping()} />
               <HoveredBackground>
                 <Box

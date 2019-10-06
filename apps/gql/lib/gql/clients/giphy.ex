@@ -1,4 +1,5 @@
 defmodule Gql.Clients.Giphy do
+  require Logger
   @sample_size 10
 
   def random(search_query, interaction) do
@@ -7,14 +8,14 @@ defmodule Gql.Clients.Giphy do
       q: search_query,
       limit: @sample_size
     })
-    with {:ok, url}    <- fetch(params) do
+    with {:ok, url} <- fetch(params) do
       {:ok, %{dialog: build_dialog(url, search_query, interaction)}}
     end
   end
 
   def fetch(params) do
     case get("gifs/search?#{params}") do
-      {:ok, %{"data" => [_ | _] = results}} ->  Enum.random(results) |> select_url()
+      {:ok, %{"data" => [_ | _] = results}} -> Enum.random(results) |> select_url()
       _ -> {:error, :not_found}
     end
   end
@@ -23,7 +24,9 @@ defmodule Gql.Clients.Giphy do
     path = "#{endpoint()}#{path}"
     case Mojito.get(path, headers) do
       {:ok, %Mojito.Response{body: body, status_code: 200}} -> Jason.decode(body)
-      _ -> {:error, :not_found}
+      error ->
+        Logger.error "Error from giphy: #{inspect(error)}"
+        {:error, :not_found}
     end
   end
 
@@ -34,13 +37,15 @@ defmodule Gql.Clients.Giphy do
     """
     <root>
       <box pad="small">
-        <link href="#{pruned}" target="_blank">
-          <video url="#{pruned}" autoPlay="true" loop="true" />
-        </link>
-      </box>
-      <box direction="row" gap="xsmall">
-        <button interaction="#{interaction}" payload="#{shuffle_payload}" label="shuffle" />
-        <button interaction="#{interaction}" payload="#{select_payload}" label="select" primary="true" />
+        <box>
+          <link href="#{pruned}" target="_blank">
+            <video url="#{pruned}" autoPlay="true" loop="true" />
+          </link>
+        </box>
+        <box direction="row" gap="xsmall">
+          <button interaction="#{interaction}" payload="#{shuffle_payload}" label="shuffle" />
+          <button interaction="#{interaction}" payload="#{select_payload}" label="select" primary="true" />
+        </box>
       </box>
     </root>
     """

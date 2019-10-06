@@ -18,6 +18,7 @@ export function SecondaryButton(props) {
       align='center'
       justify='center'
       elevation={hover ? 'small' : null}
+      background='#fff'
       pad={pad || BUTTON_PAD}
       {...rest}>
       <Text size='small'>{label}</Text>
@@ -30,7 +31,7 @@ function Button(props) {
   return (
     <Box
       onClick={() => !props.disabled && props.onClick()}
-      style={!props.disabled ? {cursor: 'pointer'} : null} 
+      style={!props.disabled ? {cursor: 'pointer'} : null}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
       pad={props.pad || BUTTON_PAD}

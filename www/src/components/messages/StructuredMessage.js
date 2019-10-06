@@ -1,5 +1,9 @@
 import React from 'react'
+import {Mutation} from 'react-apollo'
 import {Box, Text, Markdown, Anchor} from 'grommet'
+import Button, {SecondaryButton} from '../utils/Button'
+import {INTERACTION} from './queries'
+import {DialogContext} from './MessageList'
 
 function recurse(children) {
   if (!children) return null
@@ -76,6 +80,36 @@ function link(props) {
   return <Anchor key={props.key} {...attributes}>{value ? value :  recurse(children)}</Anchor>
 }
 
+function button(props) {
+  const {interaction, payload, ...rest} = props.attributes
+  if (interaction) {
+    return (
+      <DialogContext.Consumer>
+      {({setDialog}) => (
+        <Mutation
+          key={props.key}
+          mutation={INTERACTION}
+          variables={{payload, id: interaction}}
+          update={() => setDialog(null)}>
+        {mutation => (
+          buttonComponent({...rest, onClick: mutation})
+        )}
+        </Mutation>
+      )}
+      </DialogContext.Consumer>
+    )
+  }
+  return buttonComponent(rest)
+}
+
+function buttonComponent(props) {
+  if (props.primary) {
+    return <Button key={props.key} round='xsmall' {...props} />
+  }
+
+  return <SecondaryButton key={props.key} round='xsmall' {...props} />
+}
+
 function parse(struct, index) {
   const props = {...struct, key: index}
   switch (struct._type) {
@@ -93,6 +127,8 @@ function parse(struct, index) {
       return image(props)
     case "link":
       return link(props)
+    case "button":
+      return button(props)
     default:
       return null
   }

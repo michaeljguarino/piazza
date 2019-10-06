@@ -34,7 +34,7 @@ function addParticipant(participant, prev) {
 }
 
 function updateParticipant(participant, prev) {
-  const edges = prev.conversation.participants
+  const edges = prev.conversation.participants.edges
   return {
     ...prev,
     conversation: {

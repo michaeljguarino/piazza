@@ -3332,7 +3332,7 @@ create-hmac@^1.1.0, create-hmac@^1.1.2, create-hmac@^1.1.4:
     safe-buffer "^5.0.1"
     sha.js "^2.4.8"
 
-create-react-class@^15.6.0, create-react-class@^15.6.2:
+create-react-class@^15.6.2:
   version "15.6.3"
   resolved "https://registry.yarnpkg.com/create-react-class/-/create-react-class-15.6.3.tgz#2d73237fb3f970ae6ebe011a9e66f46dbca80036"
   integrity sha512-M+/3Q6E6DLO6Yx3OwrWjwHBnvfXXYA7W+dFjt/ZDBemHO1DDZhsalX/NUtnTYclN6GfnBDRh4qRHjcDHmlJBJg==
@@ -9204,13 +9204,6 @@ react-outside-click-handler@^1.3.0:
     object.values "^1.1.0"
     prop-types "^15.7.2"
 
-react-portal@^3.0.0:
-  version "3.2.0"
-  resolved "https://registry.yarnpkg.com/react-portal/-/react-portal-3.2.0.tgz#4224e19b2b05d5cbe730a7ba0e34ec7585de0043"
-  integrity sha512-avb1FreAZAVCvNNyS2dCpxZiPYPJnAasHYPxdVBTROgNFeI+KSb+OoMHNsC1GbDawESCriPwCX+qKua6WSPIFw==
-  dependencies:
-    prop-types "^15.5.8"
-
 react-portal@^4.1.5, react-portal@^4.2.0:
   version "4.2.0"
   resolved "https://registry.yarnpkg.com/react-portal/-/react-portal-4.2.0.tgz#5400831cdb0ae64dccb8128121cf076089ab1afd"
@@ -9417,17 +9410,6 @@ react-with-styles@^3.2.3:
     object.assign "^4.1.0"
     prop-types "^15.6.2"
     react-with-direction "^1.3.0"
-
-react@^15.3.1:
-  version "15.6.2"
-  resolved "https://registry.yarnpkg.com/react/-/react-15.6.2.tgz#dba0434ab439cfe82f108f0f511663908179aa72"
-  integrity sha1-26BDSrQ5z+gvEI8PURZjkIF5qnI=
-  dependencies:
-    create-react-class "^15.6.0"
-    fbjs "^0.8.9"
-    loose-envify "^1.1.0"
-    object-assign "^4.1.0"
-    prop-types "^15.5.10"
 
 react@^16.2.0:
   version "16.8.6"
@@ -10256,18 +10238,10 @@ slate-react@^0.22.4:
 
 "slate-smart-suggestions@https://github.com/michaeljguarino/slate-suggestions":
   version "1.1.2"
-  resolved "https://github.com/michaeljguarino/slate-suggestions#fe259a834583ca8efc871d7e53a4e9692c0b6aa6"
+  resolved "https://github.com/michaeljguarino/slate-suggestions#c1a85a4df4e736e776c370cecfc0baca8a836db8"
   dependencies:
     react-click-outside tj/react-click-outside
     react-portal "^4.2.0"
-
-slate-suggestions@^0.4.0:
-  version "0.4.0"
-  resolved "https://registry.yarnpkg.com/slate-suggestions/-/slate-suggestions-0.4.0.tgz#d503943625c614e12448631a0c44cca963c343ca"
-  integrity sha1-1QOUNiXGFOEkSGMaDETMqWPDQ8o=
-  dependencies:
-    react "^15.3.1"
-    react-portal "^3.0.0"
 
 slate@^0.47.4:
   version "0.47.4"

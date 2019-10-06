@@ -21,13 +21,15 @@ defmodule GqlWeb.WebhookControllerTest do
 
         {:ok, %{"_type" => "root", "children" => [
           %{"_type" => "box", "children" => [
-            %{"_type" => "link", "children" => [
-              %{"_type" => "video", "attributes" => %{"url" => url}}
+            %{"_type" => "box", "children" => [
+              %{"_type" => "link", "children" => [
+                %{"_type" => "video", "attributes" => %{"url" => url}}
+              ]}
+            ]},
+            %{"_type" => "box", "children" => [
+              %{"_type" => "button", "attributes" => %{"label" => "shuffle", "payload" => shuffle}},
+              %{"_type" => "button", "attributes" => %{"label" => "select", "payload" => select}}
             ]}
-          ]},
-          %{"_type" => "box", "children" => [
-            %{"_type" => "button", "attributes" => %{"label" => "shuffle", "payload" => shuffle}},
-            %{"_type" => "button", "attributes" => %{"label" => "select", "payload" => select}}
           ]}
         ]} = result} = StructuredMessage.Xml.from_xml(result["dialog"])
 
@@ -58,13 +60,15 @@ defmodule GqlWeb.WebhookControllerTest do
 
         {:ok, %{"_type" => "root", "children" => [
           %{"_type" => "box", "children" => [
-            %{"_type" => "link", "children" => [
-              %{"_type" => "video", "attributes" => %{"url" => url}}
+            %{"_type" => "box", "children" => [
+              %{"_type" => "link", "children" => [
+                %{"_type" => "video", "attributes" => %{"url" => url}}
+              ]}
+            ]},
+            %{"_type" => "box", "children" => [
+              %{"_type" => "button", "attributes" => %{"label" => "shuffle", "payload" => shuffle}},
+              %{"_type" => "button", "attributes" => %{"label" => "select", "payload" => select}}
             ]}
-          ]},
-          %{"_type" => "box", "children" => [
-            %{"_type" => "button", "attributes" => %{"label" => "shuffle", "payload" => shuffle}},
-            %{"_type" => "button", "attributes" => %{"label" => "select", "payload" => select}}
           ]}
         ]} = result} = StructuredMessage.Xml.from_xml(result["dialog"])
 

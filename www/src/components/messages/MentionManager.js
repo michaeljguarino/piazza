@@ -173,6 +173,7 @@ function getCurrentWord(text, index, initialIndex) {
 }
 
 function replaceSuggestion(suggestion, change, prefix='') {
+
   const { anchorText, selection } = change.value
   const { offset } = selection.anchor
 
@@ -191,6 +192,8 @@ function replaceSuggestion(suggestion, change, prefix='') {
     .insertText(newText)
     .focus()
     .moveToEndOfText()
+
+  console.log(change.value)
 
   return false;
 }
@@ -234,16 +237,15 @@ function MentionManager(props) {
   const emojiRef = useRef()
   const editorRef = useRef()
   const [emojiPicker, setEmojiPicker] = useState(false)
-  const [editorState, setEditorState] = useState(props.text)
   return (
     <ApolloConsumer>
     {client => (
-      <PluggableMentionManager client={client} disableSubmit={props.disableSubmit}>
+      <PluggableMentionManager client={client}>
         {(plugins) => (
           <>
           <Editor
             ref={editorRef}
-            value={editorState}
+            value={props.editorState}
             plugins={plugins}
             style={{
               overflow: 'auto',
@@ -255,17 +257,9 @@ function MentionManager(props) {
               paddingTop: '3px',
               paddingBottom: '3px'
             }}
-            onKeyDown={(e, editor, next) => {
-              if (e.key === 'Enter' && !e.shiftKey && !props.submitDisabled) {
-                setEditorState(Plain.deserialize(''))
-                return
-              }
-              return next()
-            }}
             onChange={state => {
-              setEditorState(state.value)
-              props.setText(state.value)
               props.onChange(state)
+              props.setEditorState(state.value)
             }}
             placeholder='this is for talking'
           />
@@ -275,7 +269,7 @@ function MentionManager(props) {
               <SuggestionPortal
                 alignTop
                 key={index}
-                value={editorState}
+                value={props.editorState}
                 onOpen={() => props.disableSubmit(true)}
                 onClose={() => props.disableSubmit(false)}
               />
@@ -290,10 +284,9 @@ function MentionManager(props) {
               onEsc={() => setEmojiPicker(false)}
             >
               <EmojiPicker onSelect={(emoji) => {
-                let text = Plain.serialize(editorState)
+                let text = Plain.serialize(props.editorState)
                 text += ' ' + (emoji.native ? emoji.native : `:${emoji.short_names[0]}:`)
-                props.setText(text)
-                setEditorState(Plain.deserialize(text))
+                props.setEditorState(Plain.deserialize(text))
               }} />
             </Drop>
           )}

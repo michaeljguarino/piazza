@@ -8,7 +8,7 @@ import {updateMessage} from './utils'
 import Plain from 'slate-plain-serializer'
 
 function MessageEdit(props) {
-  const [text, setText] = useState(Plain.deserialize(props.message.text))
+  const [editorState, setEditorState] = useState(Plain.deserialize(props.message.text))
   return (
     <Mutation
       mutation={EDIT_MESSAGE}
@@ -27,14 +27,14 @@ function MessageEdit(props) {
         <Box direction='row' fill='horizontal' round='xsmall' pad='xsmall' border>
           <MentionManager
             submitDisabled
-            text={text}
-            setText={setText}
+            editorState={editorState}
+            setEditorState={setEditorState}
             onChange={() => null}
             disableSubmit={() => null} />
         </Box>
         <Box direction='row' gap='xsmall'>
           <Button label='Update' round='xsmall' onClick={() => (
-            mutation({variables: {id: props.message.id, attributes: {text: Plain.serialize(text)}}})
+            mutation({variables: {id: props.message.id, attributes: {text: Plain.serialize(editorState)}}})
           )} />
           <SecondaryButton label='Cancel' round='xsmall' onClick={() => props.setEditing(false)} />
         </Box>

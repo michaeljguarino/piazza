@@ -198,3 +198,22 @@ export const EDIT_MESSAGE = gql`
   }
   ${MessageFragment}
 `;
+
+export const DIALOG_SUB = gql`
+  subscription {
+    dialog {
+      structuredMessage
+      anchorMessage {
+        id
+      }
+    }
+  }
+`;
+
+export const INTERACTION = gql`
+  mutation DispatchInteraction($id: ID!, $payload: String!) {
+    dispatchInteraction(id: $id, payload: $payload) {
+      id
+    }
+  }
+`;

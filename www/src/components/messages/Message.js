@@ -221,6 +221,18 @@ function MessageBody(props) {
           </Box>
         </Box>
       </Box>
+      {props.dialog && props.dialog.anchorMessage.id === props.message.id && (
+        <Dialog {...props} />
+      )}
+    </Box>
+  )
+}
+
+function Dialog(props) {
+  return (
+    <Box background={PINNED_BACKGROUND} pad={{vertical: 'small', left: '55px'}} fill='horizontal'>
+      <Text size='xsmall' color='dark-4'>only visible to you</Text>
+      <StructuredMessage {...props.dialog.structuredMessage} />
     </Box>
   )
 }
