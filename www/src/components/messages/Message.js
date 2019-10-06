@@ -275,7 +275,11 @@ function Waterline(props) {
   if (waterline.isAfter(current)) return null
 
   return (
-    <Divider text='unread' color='notif' align='flex-end' />
+    <Box direction='row' border={{color: 'notif', side: 'bottom'}} justify='end' margin={{vertical: 'small'}}>
+      <Box background='#fff' pad='small' align='center' margin={{top: '-22px'}}>
+        <Text color='notif' size='small'>unread messages</Text>
+      </Box>
+    </Box>
   )
 }
 
