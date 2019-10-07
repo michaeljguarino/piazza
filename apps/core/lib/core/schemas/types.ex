@@ -178,9 +178,7 @@ defmodule Core.Schemas.Types do
     field :reply_count, non_null(:integer)
     field :structured_message, :map
     field :pinned_at, :datetime
-    field :attachment, :string, resolve: fn
-      message, _, _ -> {:ok, Core.Storage.url({message.attachment, message}, :original)}
-    end
+    field :file, :file, resolve: dataloader(Conversation)
     field :creator, :user, resolve: dataloader(User)
     field :conversation, :conversation, resolve: dataloader(Conversation)
     field :entities, list_of(:message_entity), resolve: dataloader(Conversation)
@@ -201,6 +199,25 @@ defmodule Core.Schemas.Types do
     field :user, :user, resolve: dataloader(User)
 
     timestamps()
+  end
+
+  object :file do
+    field :id, non_null(:id)
+    field :object, non_null(:string), resolve: fn
+      file, _, _ -> {:ok, Core.Storage.url({file.object, file}, :original)}
+    end
+    field :filename, non_null(:string)
+    field :filesize, :integer
+    field :media_type, :media_type
+
+    timestamps()
+  end
+
+  enum :media_type do
+    value :image
+    value :video
+    value :audio
+    value :other
   end
 
   object :dialog do

@@ -17,7 +17,7 @@ seed do
     tag_medium: "#FFFFFF",
     presence: "#60D156",
     notif: "#DC5960",
-    link: "#2D9EE0"
+    link: "#383F45"
   }, "hoth", admin)
 
   {:ok, %{id: id}} = Brand.create_theme(%{

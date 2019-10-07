@@ -14,8 +14,8 @@ import {TooltipContent} from '../utils/Tooltip'
 import BotIcon from '../utils/BotIcon'
 import WithPresence from '../utils/presence'
 import StructuredMessage from './StructuredMessage'
+import File from './File'
 import Divider from '../utils/Divider'
-import FileIcon, { defaultStyles } from 'react-file-icon'
 import {Emoji} from 'emoji-mart'
 import {intersectRect} from '../../utils/geo'
 
@@ -27,42 +27,9 @@ function TextMessage(props) {
   )
 }
 
-const extension = (file) => file.split('.').pop()
 const PINNED_BACKGROUND='rgba(var(--sk_secondary_highlight,242,199,68),.1)'
 const PIN_COLOR='rgb(242,199,68)'
 const SELECTED_BACKGROUND='rgba(255, 229, 119, 0.5)'
-
-function AttachmentMessage(props) {
-  const [hover, setHover] = useState(false)
-  const filename = props.attachment.split("?")[0]
-  const ext = extension(filename)
-  const styles = defaultStyles[ext] || {}
-  return (
-    <Box>
-      <Box margin={{bottom: 'small'}}>
-        <TextMessage {...props} />
-      </Box>
-      <a href={props.attachment} download style={{color: 'inherit', textDecoration: 'none'}}>
-        <Box
-          onMouseEnter={() => setHover(true)}
-          onMouseLeave={() => setHover(false)}
-          border
-          elevation={hover ? 'small' : 'xsmall'}
-          background={hover ? null : '#fff'}
-          round='xsmall'
-          align="center"
-          direction='row'
-          pad='xsmall'
-          gap='small'>
-          <FileIcon extension={ext} size={40} {...styles} />
-          <Box>
-            <Text size='small'>{filename.split("/").pop()}</Text>
-          </Box>
-        </Box>
-      </a>
-    </Box>
-  )
-}
 
 function MsgMarkdown(props) {
   return (
@@ -147,9 +114,6 @@ function MessageSwitch(props) {
   if (props.embed) {
     return <MessageEmbed {...props.embed} />
   }
-  if (props.attachment) {
-    return <AttachmentMessage {...props} />
-  }
   if (props.structuredMessage && props.structuredMessage._type === 'root') {
     return <StructuredMessage {...props.structuredMessage} />
   }
@@ -221,6 +185,7 @@ function MessageBody(props) {
               <MessageEdit message={props.message} setEditing={props.setEditing} /> :
               <MessageSwitch {...props.message} />
             }
+            {props.message.file && (<File file={props.message.file} />)}
             {props.message.reactions && props.message.reactions.length > 0 && (
               <MessageReactions {...props} />
             )}

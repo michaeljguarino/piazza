@@ -8,13 +8,12 @@ defmodule Core.Models.Message do
     MessageReaction,
     Embed,
     PinnedMessage,
-    StructuredMessage
+    StructuredMessage,
+    File
   }
 
   schema "messages" do
     field :text,               :string
-    field :attachment,         Core.Storage.Type
-    field :attachment_id,      :binary_id
     field :pinned_at,          :utc_datetime_usec
     field :structured_message, StructuredMessage.Type
     field :flattened_text,     :string
@@ -26,6 +25,7 @@ defmodule Core.Models.Message do
     has_many   :entities,     MessageEntity
     has_many   :reactions,    MessageReaction
     has_one    :pin,          PinnedMessage
+    has_one    :file,         File
 
     embeds_one :embed, Embed, on_replace: :update
 
@@ -93,8 +93,6 @@ defmodule Core.Models.Message do
         {:fail, message} -> [structured_message: message]
       end
     end)
-    |> generate_uuid(:attachment_id)
-    |> cast_attachments(attrs, [:attachment], allow_urls: true)
     |> flatten_text()
   end
 

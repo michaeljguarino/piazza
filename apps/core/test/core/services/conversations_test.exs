@@ -168,6 +168,21 @@ defmodule Core.Services.ConversationsTest do
       ]} = message.structured_message
     end
 
+    test "It can handle uploads" do
+      user = insert(:user)
+      conversation = insert(:conversation, public: false)
+      insert(:participant, user: user, conversation: conversation)
+
+      {:ok, message} = Conversations.create_message(
+        conversation.id,
+        %{text: "new message", attachment: "https://a.slack-edge.com/7f1a0/plugins/giphy/assets/service_192.png"},
+        user
+      )
+
+      assert message.file.filename == "service_192.png"
+      assert message.file.media_type == :image
+    end
+
     test "Participants can create messages in private conversations" do
       user = insert(:user)
       conversation = insert(:conversation, public: false)

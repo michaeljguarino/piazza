@@ -60,12 +60,13 @@ defmodule Core.Services.Brand do
   def create_theme(attrs, name, user) do
     start_transaction()
     |> add_operation(:theme, fn _ ->
-      %Theme{creator_id: user.id, name: name}
+      Core.Repo.get_by(Theme, name: name)
+      |> case do
+        %Theme{} = theme -> theme
+        nil ->  %Theme{creator_id: user.id, name: name}
+      end
       |> Theme.changeset(attrs)
-      |> Core.Repo.insert(
-        on_conflict: :replace_all_except_primary_key,
-        conflict_target: [:name]
-      )
+      |> Core.Repo.insert_or_update()
     end)
     |> add_operation(:user_theme, fn %{theme: %{id: id}} ->
       set_theme(id, user)

@@ -10,7 +10,8 @@ defmodule Core.Services.Conversations do
     User,
     MessageReaction,
     PinnedMessage,
-    Dialog
+    Dialog,
+    File
   }
   import Core.Policies.Conversation
 
@@ -292,13 +293,16 @@ defmodule Core.Services.Conversations do
       |> allow(user, :create)
       |> when_ok(:insert)
     end)
-    |> add_operation(:inflated, fn %{message: %{text: text} = msg} ->
+    |> add_operation(:file, fn %{message: message} ->
+      maybe_create_file(attrs, message)
+    end)
+    |> add_operation(:inflated, fn %{message: %{text: text} = msg, file: file} ->
       with [_ | _] = entities <- Messages.PostProcessor.extract_entities(text, user) do
         entities = Enum.map(entities, &Map.put(&1, :message_id, msg.id))
         {_, entities} = Core.Repo.insert_all(MessageEntity, entities, returning: true)
-        {:ok, %{msg | entities: entities}}
+        {:ok, %{msg | entities: entities, file: file}}
       else
-        _ -> {:ok, %{msg | entities: []}}
+        _ -> {:ok, %{msg | entities: [], file: file}}
       end
     end)
     |> add_operation(:parent, fn %{message: msg} ->
@@ -312,6 +316,22 @@ defmodule Core.Services.Conversations do
     |> execute(extract: :inflated)
     |> notify(:create, user)
   end
+
+  @doc """
+  Creates a new file for a message
+  """
+  @spec create_file(binary | Plug.Upload.t, Message.t) :: {:ok, File.t} | error
+  def create_file(attachment, %Message{id: id}) do
+    %File{message_id: id}
+    |> File.changeset(%{object: attachment})
+    |> Core.Repo.insert()
+  end
+
+  defp maybe_create_file(%{attachment: attachment}, message) when is_binary(attachment),
+    do: create_file(attachment, message)
+  defp maybe_create_file(%{attachment: %Plug.Upload{} = attachment}, message),
+    do: create_file(attachment, message)
+  defp maybe_create_file(_, _), do: {:ok, nil}
 
   @doc """
   Adds/removes a given pinned message for `message_id`

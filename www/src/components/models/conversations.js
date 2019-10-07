@@ -53,13 +53,21 @@ export const ReactionFragment = gql`
   }
 `;
 
+export const FileFragment = gql`
+  fragment FileFragment on File {
+    filename
+    filesize
+    mediaType
+    object
+  }
+`;
+
 export const MessageSubFragment = gql`
   fragment MessageSubFragment on Message {
     id
     text
     insertedAt
     pinnedAt
-    attachment
     structuredMessage
     conversationId
     entities {
@@ -88,11 +96,15 @@ export const MessageSubFragment = gql`
         handle
       }
     }
+    file {
+      ...FileFragment
+    }
   }
   ${EmbedFragment}
   ${UserFragment}
   ${ReactionFragment}
   ${EmojiFragment}
+  ${FileFragment}
 `;
 
 export const MessageFragment = gql`
