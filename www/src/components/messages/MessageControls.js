@@ -143,7 +143,14 @@ function MessageControls(props) {
   return (
     <CurrentUserContext.Consumer>
     {me => (
-    <Box elevation='xsmall' background='white' direction='row' height='30px' border round='xsmall' margin={{right: '10px'}}>
+    <Box
+      border
+      elevation='xxsmall'
+      background='white'
+      direction='row'
+      height='30px'
+      round='xsmall'
+      margin={{right: '10px'}}>
       <MessageReaction {...props} />
       <PinMessage {...props} />
       <HoveredBackground>
