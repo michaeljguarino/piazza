@@ -26,6 +26,7 @@ function addParticipant(participant, prev) {
   return Object.assign({}, prev, {
     conversation: {
       ...prev.conversation,
+      participantCount: prev.conversation.participantCount + 1,
       participants: {
         ...prev.conversation.participants,
         edges: [edge, ...participants],
@@ -49,18 +50,39 @@ function updateParticipant(participant, prev) {
 }
 
 function deleteParticipant(participant, prev) {
-  const participants = prev.conversation.participants.edges.filter((e) => e.node.id !== participant.id)
+  const exists = prev.conversation.participants.find((edge) => edge.node.id === participant.id);
+  if (!exists) return prev
 
-  return Object.assign({}, prev, {
+  return {
+    ...prev,
+    conversation: {
+      ...prev.conversation,
+      participantCount: prev.conversation.participantCount - 1,
+      participants: {
+        ...prev.conversation.participants,
+        edges: prev.conversation.participants.edges.filter((e) => e.node.id !== participant.id),
+      }
+    }
+  }
+}
+
+const doFetchMore = (prev, {fetchMoreResult}) => {
+  const edges = fetchMoreResult.conversation.participants.edges
+  const pageInfo = fetchMoreResult.conversation.participants.pageInfo
+
+  return edges.length ? {
+    ...prev,
     conversation: {
       ...prev.conversation,
       participants: {
         ...prev.conversation.participants,
-        edges: participants,
+        pageInfo,
+        edges: mergeAppend(edges, prev.conversation.participants.edges, (e) => e.node.id)
       }
     }
-  })
+  } : prev;
 }
+
 
 function Participant(props) {
   return (
@@ -113,10 +135,10 @@ function Participants(props) {
           <Flyout width='30vw' target={
             <HoveredBackground>
               <Box {...BOX_ATTRS} accentable>
-                <Text height='15px' style={{lineHeight: '15px'}} margin={{right: '3px'}}>
-                  <UserNew size='15px' />
+                <Text height='12px' style={{lineHeight: '12px'}} margin={{right: '3px'}}>
+                  <UserNew size='12px' />
                 </Text>
-                <Text size='xsmall'>{data.conversation.participants.edges.length}</Text>
+                <Text size='xsmall'>{data.conversation.participantCount}</Text>
               </Box>
             </HoveredBackground>
           }>
@@ -142,23 +164,7 @@ function Participants(props) {
                     if (!pageInfo.hasNextPage) return
                     fetchMore({
                       variables: {cursor: pageInfo.endCursor},
-                      updateQuery: (prev, {fetchMoreResult}) => {
-                        const edges = fetchMoreResult.conversation.participants.edges
-                        const pageInfo = fetchMoreResult.conversation.participants.pageInfo
-
-                        return edges.length ? {
-                          ...prev,
-                          conversation: {
-                            ...prev.conversation,
-                            participants: {
-                              ...prev.conversation.participants,
-                              pageInfo,
-                              edges: mergeAppend(edges, prev.conversation.participants.edges, (e) => e.node.id)
-                            }
-                          }
-                        } : prev;
-                      }
-                    })
+                      updateQuery: doFetchMore})
                   }} />
               </Box>
               <Text margin={{left: '10px', bottom: 'small'}}>Add more:</Text>

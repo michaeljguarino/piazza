@@ -1,5 +1,5 @@
 import gql from 'graphql-tag'
-import {ConversationFragment, MessageFragment, ParticipantFragment} from '../models/conversations'
+import {ConversationFragment, ParticipantFragment, FileFragment} from '../models/conversations'
 
 export const CREATE_CONVERSATION = gql`
   mutation CreateConversation($attributes: ConversationAttributes!) {
@@ -9,7 +9,6 @@ export const CREATE_CONVERSATION = gql`
   }
   ${ConversationFragment}
 `
-
 
 export const UPDATE_CONVERSATION = gql`
   mutation UpdateConversation($id: ID!, $attributes: ConversationAttributes!) {
@@ -54,6 +53,7 @@ export const PARTICIPANTS_Q = gql`
       id
       name
       topic
+      participantCount
       participants(first: 25, after: $cursor) {
         pageInfo {
           endCursor
@@ -69,6 +69,29 @@ export const PARTICIPANTS_Q = gql`
   }
   ${ParticipantFragment}
 `
+
+export const FILES_Q = gql`
+query Files($conversationId: ID!, $cursor: String) {
+  conversation(id: $conversationId) {
+    id
+    name
+    topic
+    fileCount
+    files(first: 25, after: $cursor) {
+      pageInfo {
+        endCursor
+        hasNextPage
+      }
+      edges {
+        node {
+          ...FileFragment
+        }
+      }
+    }
+  }
+}
+${FileFragment}
+`;
 
 export const DELETE_CONVERSATION = gql`
   mutation DeleteConversation($id: ID!) {
@@ -88,37 +111,6 @@ export const PARTICIPANT_SUB = gql`
     }
   }
   ${ParticipantFragment}
-`;
-
-export const MESSAGES_Q = gql`
-  query ConversationQuery($conversationId: ID!, $cursor: String) {
-    conversation(id: $conversationId) {
-      id
-      messages(first: 100, after: $cursor) {
-        pageInfo {
-          endCursor
-          hasNextPage
-        }
-        edges {
-          node {
-            ...MessageFragment
-          }
-        }
-      }
-    }
-  }
-  ${MessageFragment}
-`
-export const NEW_MESSAGES_SUB = gql`
-  subscription MessageDeltas($conversationId: ID!) {
-    messageDelta(conversationId: $conversationId) {
-      delta
-      payload {
-        ...MessageFragment
-      }
-    }
-  }
-  ${MessageFragment}
 `;
 
 export const CONVERSATIONS_SUB = gql`

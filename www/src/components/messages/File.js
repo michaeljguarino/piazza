@@ -4,8 +4,32 @@ import {Next, Down, Download} from 'grommet-icons'
 import FileIcon, {defaultStyles} from 'react-file-icon'
 import Tooltip from '../utils/Tooltip'
 import HoveredBackground from '../utils/HoveredBackground'
+import filesize from 'filesize'
+import moment from 'moment'
 
 const extension = (file) => file.split('.').pop()
+
+function DownloadAffordance(props) {
+  return (
+    <Tooltip align={{bottom: 'top'}}>
+      <HoveredBackground>
+        <Box accentable animation={{type: "fadeIn", duration: 200}} >
+          <a href={props.object} download>
+            <Box
+              margin={{right: 'xsmall', top: 'xsmall'}}
+              style={{cursor: 'pointer'}}
+              background='#fff'
+              round='xsmall'
+              pad='small'>
+              <Download size='15px' />
+            </Box>
+          </a>
+        </Box>
+      </HoveredBackground>
+      <Text size='small'>download</Text>
+    </Tooltip>
+  )
+}
 
 function Image({object, filename}) {
   const [hover, setHover] = useState(false)
@@ -13,24 +37,7 @@ function Image({object, filename}) {
   return <Box onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}>
     <Stack anchor='top-right'>
       <img style={{maxHeight: 300, maxWidth: 300}} src={object} alt={filename} />
-      {hover && (
-        <Tooltip align={{bottom: 'top'}}>
-          <HoveredBackground>
-            <Box accentable animation={{type: "fadeIn", duration: 200}} >
-              <a href={object} download>
-                <Box
-                  margin={{right: 'xsmall', top: 'xsmall'}}
-                  style={{cursor: 'pointer'}}
-                  background='#fff'
-                  round='xsmall'
-                  pad='small'>
-                  <Download size='15px' />
-                </Box>
-              </a>
-            </Box>
-          </HoveredBackground>
-          <Text size='small'>download</Text>
-        </Tooltip>)}
+      {hover && (<DownloadAffordance object={object} />)}
     </Stack>
   </Box>
 }
@@ -70,9 +77,47 @@ function MediaFile(props) {
   )
 }
 
-function StandardFile(props) {
+export function FileEntry(props) {
   const [hover, setHover] = useState(false)
-  const {filename, object} = props.file
+  const {filename, object, insertedAt, mediaType} = props.file
+  const ext = extension(filename)
+  const styles = defaultStyles[ext] || {}
+  const mediaStyles = {maxWidth: 50, maxHeight: 50}
+  return (
+    <Box onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}>
+      <Stack anchor='top-right'>
+        <Box
+          direction='row'
+          height='80px'
+          border={props.next.node ? 'top' : 'horizontal'}
+          align='center'
+          gap='small'
+          pad={{left: 'small'}}
+          background={hover ? 'light-2' : null}>
+          <Box width='60px' height='60px' align='center' justify='center'>
+            {mediaType === "VIDEO" ?
+              <video src={object} style={mediaStyles} alt={filename} /> :
+              mediaType === "OTHER" ?
+                <FileIcon extension={ext} size={60} {...styles} /> :
+                  <img src={object} style={mediaStyles} alt={filename} />}
+          </Box>
+          <Box width='100%'>
+            <Text size='small'>{filename}</Text>
+            <Box direction='row' gap='small'>
+              <Text size='xsmall' color='dark-5'>{filesize(props.file.filesize || 0)}</Text>
+              <Text size='xsmall'>{moment(insertedAt).fromNow()}</Text>
+            </Box>
+          </Box>
+        </Box>
+        {hover && (<DownloadAffordance object={object} />)}
+      </Stack>
+    </Box>
+  )
+}
+
+export function StandardFile(props) {
+  const [hover, setHover] = useState(false)
+  const {filename, object, insertedAt} = props.file
   const ext = extension(filename)
   const styles = defaultStyles[ext] || {}
   return (
@@ -92,6 +137,10 @@ function StandardFile(props) {
         <FileIcon extension={ext} size={40} {...styles} />
         <Box>
           <Text size='small'>{filename}</Text>
+          <Box direction='row' gap='small'>
+            <Text size='small' color='dark-5'>{filesize(props.file.filesize || 0)}</Text>
+            <Text size='small'>{moment(insertedAt).fromNow()}</Text>
+          </Box>
         </Box>
       </Box>
     </a>

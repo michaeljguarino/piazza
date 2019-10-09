@@ -34,6 +34,22 @@ const _subscribeToNewPins = (conversationId, subscribeToMore) => {
   })
 }
 
+const onLoadMore = (prev, {fetchMoreResult}) => {
+  const edges = fetchMoreResult.conversation.pinnedMessages.edges
+  const pageInfo = fetchMoreResult.conversation.pinnedMessages.pageInfo
+  return edges.length ? {
+    ...prev,
+    conversation: {
+      ...prev.conversation,
+      pinnedMessages: {
+        __typename: prev.conversation.pinnedMessages.__typename,
+        edges: mergeAppend(edges, prev.conversation.pinnedMessages.edges, (e) => e.node.id),
+        pageInfo
+      }
+    }
+  } : prev;
+}
+
 function PinnedMessages(props) {
   return (
     <Query
@@ -50,11 +66,9 @@ function PinnedMessages(props) {
         }}>
           <Flyout  target={
             <HoveredBackground>
-              <Box
-                accentable
-                {...BOX_ATTRS}>
-                <Text height='15px' style={{lineHeight: '15px'}} margin={{right: '3px'}}>
-                  <Pin size='15px'/>
+              <Box accentable {...BOX_ATTRS}>
+                <Text height='12px' style={{lineHeight: '12px'}} margin={{right: '3px'}}>
+                  <Pin size='12px'/>
                 </Text>
                 <Text size='xsmall'>{conv.pinnedMessageCount}</Text>
               </Box>
@@ -81,7 +95,7 @@ function PinnedMessages(props) {
                   justifyContent: 'flex-start',
                   flexDirection: 'column',
                 }}
-                mapper={(edge, next) => (
+                mapper={(edge) => (
                   <Message
                     key={edge.node.message.id}
                     nopin
@@ -94,20 +108,7 @@ function PinnedMessages(props) {
 
                   fetchMore({
                     variables: {conversationId: props.conversation.id, cursor: pageInfo.endCursor},
-                    updateQuery: (prev, {fetchMoreResult}) => {
-                      const edges = fetchMoreResult.conversation.pinnedMessages.edges
-                      const pageInfo = fetchMoreResult.conversation.pinnedMessages.pageInfo
-                      return edges.length ? {
-                        conversation: {
-                          ...conv,
-                          pinnedMessages: {
-                            __typename: prev.conversation.pinnedMessages.__typename,
-                            edges: mergeAppend(edges, prev.conversation.pinnedMessages.edges, (e) => e.node.id),
-                            pageInfo
-                          }
-                        }
-                      } : prev;
-                    }
+                    updateQuery: onLoadMore
                   })
                 }} />
             </FlyoutContainer>

@@ -10,6 +10,7 @@ import NotificationIcon from '../notifications/NotificationIcon'
 import {CurrentUserContext} from '../login/EnsureLogin'
 import Participants from './Participants'
 import PinnedMessages from './PinnedMessages'
+import Files from './Files'
 import Commands from '../commands/Commands'
 import {UserIcon} from '../users/Users'
 import MessageSearch from './MessageSearch'
@@ -198,6 +199,7 @@ function ConversationHeader(props) {
         <Box height='25px' direction='row' align='end' justify='start' pad={{top: '5px', bottom: '5px'}}>
           <Participants {...props} />
           <PinnedMessages {...props}  />
+          <Files {...props} />
           <Box {...BOX_ATTRS} align='center' justify='center' border={null}>
             <ConversationUpdate {...props} />
           </Box>
