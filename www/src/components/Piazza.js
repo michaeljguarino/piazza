@@ -72,12 +72,16 @@ const Piazza = () => {
                         conversation={currentConversation}
                         setCurrentConversation={setCurrentConversation}
                         setAnchor={setAnchor} />
-                      <DividerText visible={visible} />
                     </Box>
                     <ReplyProvider>
                     {(reply, setReply) => (
-                      <Box style={{height: '100%', maxHeight: 'calc(100vh - 60px)'}}>
-                        <Box id='msg-view' height='100%' direction='row'>
+                      <Box
+                        direction='row'
+                        style={{height: '100%', width: '100%', maxHeight: 'calc(100vh - 60px)'}}
+                        border='top'>
+                        <Box width='100%' height='100%' align='center'>
+                          <DividerText visible={visible} />
+                          <Box id='msg-view' width='100%'>
                           {anchor ? <AnchoredMessageList
                                       anchor={anchor}
                                       conversation={currentConversation}
@@ -87,13 +91,14 @@ const Piazza = () => {
                                       setReply={setReply}
                                       waterline={waterline}
                                       conversation={currentConversation} />}
-                          {flyoutContent}
+                          </Box>
+                          <MessageInput
+                            reply={reply}
+                            setReply={setReply}
+                            setWaterline={setWaterline}
+                            conversation={currentConversation} />
                         </Box>
-                        <MessageInput
-                          reply={reply}
-                          setReply={setReply}
-                          setWaterline={setWaterline}
-                          conversation={currentConversation} />
+                        {flyoutContent}
                       </Box>
                     )}
                     </ReplyProvider>
