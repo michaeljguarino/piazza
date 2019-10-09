@@ -18,6 +18,17 @@ defmodule Core.Models.File do
     timestamps()
   end
 
+  def for_conversation(query \\ __MODULE__, conversation_id) do
+    from(f in query,
+      join: m in assoc(f, :message),
+      where: m.conversation_id == ^conversation_id
+    )
+  end
+
+  def ordered(query \\ __MODULE__, order \\ [desc: :inserted_at]) do
+    from(f in query, order_by: ^order)
+  end
+
   @valid ~w(message_id)a
 
   def changeset(model, attrs \\ %{}) do

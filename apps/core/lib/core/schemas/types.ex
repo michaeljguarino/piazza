@@ -1,6 +1,7 @@
 defmodule Core.Schemas.Types do
   use Core.Schemas.Base
   alias Core.Resolvers.{Conversation, User, Platform, Emoji, Brand}
+  import Core.Schemas.Helpers, only: [manual_dataloader: 4]
 
   object :user do
     field :id,         :id
@@ -55,45 +56,36 @@ defmodule Core.Schemas.Types do
 
     field :pinned_message_count, :integer do
       resolve fn conversation, _, %{context: %{loader: loader}} ->
-        queryable = {:one, Core.Models.Conversation}
-        loader
-        |> Dataloader.load(Conversation, queryable, pinned_message_count: conversation)
-        |> on_load(fn loader ->
-          {:ok, Dataloader.get(loader, Conversation, queryable, pinned_message_count: conversation)}
-        end)
+        manual_dataloader(
+          loader, Conversation, {:one, Core.Models.Conversation}, pinned_message_count: conversation)
       end
     end
 
     field :unread_messages, :integer do
       resolve fn conversation, _, %{context: %{loader: loader, current_user: user}} ->
-        queryable = {:one, Core.Models.Conversation}
-        loader
-        |> Dataloader.load(Conversation, queryable, unread_messages: {user, conversation})
-        |> on_load(fn loader ->
-          {:ok, Dataloader.get(loader, Conversation, queryable, unread_messages: {user, conversation})}
-        end)
+        manual_dataloader(
+          loader, Conversation, {:one, Core.Models.Conversation}, unread_messages: {user, conversation})
       end
     end
 
     field :unread_notifications, :integer do
       resolve fn conversation, _, %{context: %{loader: loader, current_user: user}} ->
-        queryable = {:one, Core.Models.Conversation}
-        loader
-        |> Dataloader.load(Conversation, queryable, unread_notifications: {user, conversation})
-        |> on_load(fn loader ->
-          {:ok, Dataloader.get(loader, Conversation, queryable, unread_notifications: {user, conversation})}
-        end)
+        manual_dataloader(
+          loader, Conversation, {:one, Core.Models.Conversation}, unread_notifications: {user, conversation})
       end
     end
 
     field :participant_count, :integer do
       resolve fn conversation, _, %{context: %{loader: loader}} ->
-        queryable = {:one, Core.Models.Conversation}
-        loader
-        |> Dataloader.load(Conversation, queryable, participant_count: conversation)
-        |> on_load(fn loader ->
-          {:ok, Dataloader.get(loader, Conversation, queryable, participant_count: conversation)}
-        end)
+        manual_dataloader(
+          loader, Conversation, {:one, Core.Models.Conversation}, participant_count: conversation)
+      end
+    end
+
+    field :file_count, :integer do
+      resolve fn conversation, _, %{context: %{loader: loader}} ->
+        manual_dataloader(
+          loader, Conversation, {:one, Core.Models.Conversation}, file_count: conversation)
       end
     end
 
@@ -125,6 +117,10 @@ defmodule Core.Schemas.Types do
 
     connection field :pinned_messages, node_type: :pinned_message do
       resolve &Conversation.list_pinned_messages/2
+    end
+
+    connection field :files, node_type: :file do
+      resolve &Conversation.list_files/2
     end
 
     timestamps()
@@ -305,6 +301,7 @@ defmodule Core.Schemas.Types do
   connection node_type: :conversation
   connection node_type: :user
   connection node_type: :message
+  connection node_type: :file
   connection node_type: :participant
   connection node_type: :notification
   connection node_type: :pinned_message

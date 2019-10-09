@@ -42,47 +42,25 @@ defmodule Core.Resolvers.Conversation do
     |> Conversation.for_user(user.id)
   end
 
-  def run_batch(_, _, :unread_notifications, args, repo_opts) do
-    [{%{id: user_id}, _} | _] = args
-    conversation_ids = Enum.map(args, fn {_, %{id: id}} -> id end)
-    result =
-      Conversation.for_ids(conversation_ids)
-      |> Conversation.unread_notification_count(user_id)
-      |> Core.Repo.all(repo_opts)
-      |> Map.new()
-
-    Enum.map(conversation_ids, & [Map.get(result, &1, 0)])
+  def run_batch(_, _, :unread_notifications, [{%{id: user_id}, _} | _] = args, repo_opts) do
+    Conversation.unread_notification_count(user_id)
+    |> aggregated_count(args, repo_opts)
   end
-  def run_batch(_, _, :unread_messages, args, repo_opts) do
-    [{%{id: user_id}, _} | _] = args
-    conversation_ids = Enum.map(args, fn {_, %{id: id}} -> id end)
-    result =
-      Conversation.for_ids(conversation_ids)
-      |> Conversation.unread_message_count(user_id)
-      |> Core.Repo.all(repo_opts)
-      |> Map.new()
-
-    Enum.map(conversation_ids, & [Map.get(result, &1, 0)])
+  def run_batch(_, _, :unread_messages, [{%{id: user_id}, _} | _] = args, repo_opts) do
+    Conversation.unread_message_count(user_id)
+    |> aggregated_count(args, repo_opts)
   end
   def run_batch(_, _, :pinned_message_count, args, repo_opts) do
-    conversation_ids = Enum.map(args, fn %{id: id} -> id end)
-    result =
-      Conversation.for_ids(conversation_ids)
-      |> Conversation.pinned_message_count()
-      |> Core.Repo.all(repo_opts)
-      |> Map.new()
-
-    Enum.map(conversation_ids, & [Map.get(result, &1, 0)])
+    Conversation.pinned_message_count()
+    |> aggregated_count(args, repo_opts)
   end
   def run_batch(_, _, :participant_count, args, repo_opts) do
-    conversation_ids = Enum.map(args, fn %{id: id} -> id end)
-    result =
-      Conversation.for_ids(conversation_ids)
-      |> Conversation.participant_count()
-      |> Core.Repo.all(repo_opts)
-      |> Map.new()
-
-    Enum.map(conversation_ids, & [Map.get(result, &1, 0)])
+    Conversation.participant_count()
+    |> aggregated_count(args, repo_opts)
+  end
+  def run_batch(_, _, :file_count, args, repo_opts) do
+    Conversation.file_count()
+    |> aggregated_count(args, repo_opts)
   end
   def run_batch(_, _, :chat_participants, args, repo_opts) do
     # we can't use a standard ecto association here because it
@@ -102,6 +80,21 @@ defmodule Core.Resolvers.Conversation do
   end
   def run_batch(queryable, query, col, inputs, repo_opts) do
     Dataloader.Ecto.run_batch(Core.Repo, queryable, query, col, inputs, repo_opts)
+  end
+
+  defp aggregated_count(query, args, repo_opts) do
+    conv_ids = Enum.map(args, fn
+      %{id: id} -> id
+      {_, %{id: id}} -> id
+    end)
+
+    result =
+      query
+      |> Conversation.for_ids(conv_ids)
+      |> Core.Repo.all(repo_opts)
+      |> Map.new()
+
+    Enum.map(conv_ids, & [Map.get(result, &1, 0)])
   end
 
   def resolve_conversation(_parent, %{id: id}, %{context: %{current_user: user}}),
@@ -134,6 +127,12 @@ defmodule Core.Resolvers.Conversation do
     Message.for_conversation(conversation.id)
     |> with_anchor(args)
     |> order(args)
+    |> paginate(args)
+  end
+
+  def list_files(args, %{source: conversation}) do
+    File.for_conversation(conversation.id)
+    |> File.ordered()
     |> paginate(args)
   end
 

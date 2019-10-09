@@ -98,6 +98,15 @@ defmodule Core.Models.Conversation do
     )
   end
 
+  def file_count(query \\ __MODULE__) do
+    from(c in query,
+      join: m in assoc(c, :messages),
+      join: f in assoc(m, :file),
+      group_by: c.id,
+      select: {c.id, count(f.id)}
+    )
+  end
+
   def increment_pinned_messages(query \\ __MODULE__, inc) do
     from(c in query,
       update: [inc: [pinned_messages: ^inc]]

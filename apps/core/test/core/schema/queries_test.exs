@@ -277,6 +277,36 @@ defmodule Core.Schema.QueriesTest do
     end
   end
 
+  describe "files" do
+    test "a participant can list files for a conversation" do
+      user = insert(:user)
+      conv = insert(:conversation)
+      files = for _ <- 1..3,
+        do: insert(:file, message: build(:message, conversation: conv))
+
+      {:ok, %{data: %{"conversation" => found}}} = run_query("""
+          query Conversation($id: ID) {
+            conversation(id: $id) {
+              id
+              fileCount
+              files(first: 5) {
+                edges {
+                  node {
+                    id
+                  }
+                }
+              }
+            }
+          }
+      """, %{"id" => conv.id}, %{current_user: user})
+
+      assert found["fileCount"] == 3
+      found_files = from_connection(found["files"])
+
+      assert ids_equal(found_files, files)
+    end
+  end
+
   describe "Conversations" do
     test "It will list conversations you'are a participant of" do
       user = insert(:user)

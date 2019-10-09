@@ -152,4 +152,12 @@ defmodule Core.Factory do
       message: build(:message)
     }
   end
+
+  def file_factory do
+    %Models.File{
+      message: build(:message),
+      filename: "filename.jpg",
+      media_type: :image
+    }
+  end
 end
