@@ -1,5 +1,5 @@
 import React, {useState, useRef} from 'react'
-import {Mutation} from 'react-apollo'
+import {useMutation, useApolloClient, ApolloProvider} from 'react-apollo'
 import {Box, Drop, Text} from 'grommet'
 import {More, Emoji, Pin, Trash, BlockQuote, Edit} from 'grommet-icons'
 import HoveredBackground from '../utils/HoveredBackground'
@@ -20,32 +20,41 @@ const CONTROL_ATTRS = {
 }
 
 function DeleteMessage(props) {
+  const [mutation] = useMutation(DELETE_MESSAGE, {
+    variables: {messageId: props.message.id},
+    update: (cache, {data: {deleteMessage}}) => {
+      const data = cache.readQuery({query: MESSAGES_Q, variables: {conversationId: props.conversation.id}})
+      cache.writeQuery({
+        query: MESSAGES_Q,
+        variables: {conversationId: props.conversation.id},
+        data: removeMessage(data, deleteMessage)
+      })
+    }
+  })
+
   return (
-    <Mutation
-      mutation={DELETE_MESSAGE}
-      variables={{messageId: props.message.id}}
-      update={(cache, {data: {deleteMessage}}) => {
-        const data = cache.readQuery({query: MESSAGES_Q, variables: {conversationId: props.conversation.id}})
-        cache.writeQuery({
-          query: MESSAGES_Q,
-          variables: {conversationId: props.conversation.id},
-          data: removeMessage(data, deleteMessage)
-        })
-      }}>
-      {mutation => (
-        <MenuItem>
-          <Box direction='row' align='center' gap='small'>
-            <Trash size='12px' />
-            <Text size='small' onClick={mutation}>delete message</Text>
-          </Box>
-        </MenuItem>
-      )}
-    </Mutation>
+    <MenuItem>
+      <Box direction='row' align='center' gap='small'>
+        <Trash size='12px' />
+        <Text size='small' onClick={mutation}>delete message</Text>
+      </Box>
+    </MenuItem>
   )
 }
 
 export function MessageReaction(props) {
+  const client = useApolloClient()
   const [open, setOpen] = useState(false)
+  const [mutation] = useMutation(CREATE_REACTION, {
+    update: (cache, {data: {createReaction}}) => {
+      const data = cache.readQuery({query: MESSAGES_Q, variables: {conversationId: props.conversation.id}})
+      cache.writeQuery({
+        query: MESSAGES_Q,
+        variables: {conversationId: props.conversation.id},
+        data: updateMessage(data, createReaction)
+      })
+    }
+  })
 
   function toggleOpen(value) {
     props.setPinnedHover && props.setPinnedHover(value)
@@ -56,79 +65,65 @@ export function MessageReaction(props) {
   const position = props.position || ['left', 'top', 'bottom']
 
   return (
-    <Mutation
-      mutation={CREATE_REACTION}
-      update={(cache, {data: {createReaction}}) => {
-        const data = cache.readQuery({query: MESSAGES_Q, variables: {conversationId: props.conversation.id}})
-        cache.writeQuery({
-          query: MESSAGES_Q,
-          variables: {conversationId: props.conversation.id},
-          data: updateMessage(data, createReaction)
-        })
-      }}>
-    {mutation => (
-      <Popover
-        isOpen={open}
-        position={position}
-        onClickOutside={() => toggleOpen(false)}
-        containerStyle={{zIndex: '100'}}
-        content={
+    <Popover
+      isOpen={open}
+      position={position}
+      onClickOutside={() => toggleOpen(false)}
+      containerStyle={{zIndex: '100'}}
+      content={
+        <ApolloProvider client={client}>
           <EmojiPicker onSelect={(emoji) => {
               mutation({variables: {messageId: props.message.id, name: emoji.id}})
               props.onSelect && props.onSelect()
             }} />
-        }>
-        <HoveredBackground>
-          <Box
-            accentable
-            onClick={() => toggleOpen(!open)}
-            {...boxAttrs}>
-            <Emoji size='15px'  />
-            {props.label && (<Text size='xsmall' margin={{left: '2px'}}>{props.label}</Text>)}
-          </Box>
-        </HoveredBackground>
-      </Popover>
-    )}
-    </Mutation>
+        </ApolloProvider>
+      }>
+      <HoveredBackground>
+        <Box
+          accentable
+          onClick={() => toggleOpen(!open)}
+          {...boxAttrs}>
+          <Emoji size='15px'  />
+          {props.label && (<Text size='xsmall' margin={{left: '2px'}}>{props.label}</Text>)}
+        </Box>
+      </HoveredBackground>
+    </Popover>
   )
 }
 
 function PinMessage(props) {
   const pinned = !!props.message.pinnedAt
-  return (
-    <Mutation
-      mutation={PIN_MESSAGE}
-      variables={{messageId: props.message.id, pinned: !pinned}}
-      update={(cache, {data: {pinMessage}}) => {
-        const data = cache.readQuery({query: MESSAGES_Q, variables: {conversationId: props.conversation.id}})
-        cache.writeQuery({
-          query: MESSAGES_Q,
-          variables: {conversationId: props.conversation.id},
-          data: updateMessage(data, pinMessage)
-        })
+  const [mutation] = useMutation(PIN_MESSAGE, {
+    variables: {messageId: props.message.id, pinned: !pinned},
+    update: (cache, {data: {pinMessage}}) => {
+      const data = cache.readQuery({query: MESSAGES_Q, variables: {conversationId: props.conversation.id}})
+      cache.writeQuery({
+        query: MESSAGES_Q,
+        variables: {conversationId: props.conversation.id},
+        data: updateMessage(data, pinMessage)
+      })
 
-        const pinnedData = cache.readQuery({
-          query: PINNED_MESSAGES,
-          variables: {conversationId: props.conversation.id}
-        })
-        cache.writeQuery({
-          query: PINNED_MESSAGES,
-          variables: {conversationId: props.conversation.id},
-          data: !pinned ? addPinnedMessage(pinnedData, pinMessage) : removePinnedMessage(pinnedData, pinMessage)
-        })
-      }}
-    >
-    {mutation => (
-      <HoveredBackground>
-        <Box
-          accentable
-          onClick={mutation}
-          {...CONTROL_ATTRS}>
-          <Pin size='15px' />
-        </Box>
-      </HoveredBackground>
-    )}
-    </Mutation>
+      const pinnedData = cache.readQuery({
+        query: PINNED_MESSAGES,
+        variables: {conversationId: props.conversation.id}
+      })
+      cache.writeQuery({
+        query: PINNED_MESSAGES,
+        variables: {conversationId: props.conversation.id},
+        data: !pinned ? addPinnedMessage(pinnedData, pinMessage) : removePinnedMessage(pinnedData, pinMessage)
+      })
+    }
+  })
+
+  return (
+    <HoveredBackground>
+      <Box
+        accentable
+        onClick={mutation}
+        {...CONTROL_ATTRS}>
+        <Pin size='15px' />
+      </Box>
+    </HoveredBackground>
   )
 }
 

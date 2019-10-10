@@ -1,7 +1,7 @@
 import React from 'react'
 import {Box} from 'grommet'
 import {User} from 'grommet-icons'
-import { Query } from 'react-apollo'
+import { useQuery } from 'react-apollo'
 import Scroller from '../utils/Scroller'
 import Flyout, {FlyoutHeader, FlyoutContainer} from '../utils/Flyout'
 import HoveredBackground from '../utils/HoveredBackground'
@@ -23,7 +23,7 @@ export function UserIcon(props) {
         justify='center'>
         <Flyout target={<User size={ICON_HEIGHT} />}>
         {setOpen => (
-          <FlyoutContainer>
+          <FlyoutContainer width='30vw'>
             <FlyoutHeader text='Users' setOpen={setOpen} />
             <Users width='30vw' pad={{horizontal: 'small', vertical: 'xsmall'}} ignore={new Set()} />
           </FlyoutContainer>
@@ -53,61 +53,58 @@ function _subscribeToMore(subscribeToMore) {
   })
 }
 
+const onFetchMore = (prev, {fetchMoreResult}) => {
+  const edges = fetchMoreResult.users.edges
+  const pageInfo = fetchMoreResult.users.pageInfo
+
+  return edges.length ? {
+    ...prev,
+    users: {
+      ...prev.users,
+      edges: mergeAppend(prev.users.edges, ...edges, (e) => e.node.id),
+      pageInfo
+    }
+  } : prev;
+}
+
 function Users(props) {
+  const {loading, data, fetchMore, subscribeToMore} = useQuery(USERS_Q)
+  if (loading) return '...'
+  let userEdges = data.users.edges
+  let pageInfo = data.users.pageInfo
+
   return (
     <Box width={props.width}>
-      <Query query={USERS_Q}>
-        {({loading, data, fetchMore, subscribeToMore}) => {
-          if (loading) return '...'
-          let userEdges = data.users.edges
-          let pageInfo = data.users.pageInfo
-          return (
-            <SubscriptionWrapper
-              id="users"
-              startSubscription={() => _subscribeToMore(subscribeToMore)}>
-            <Scroller
-              id='message-viewport'
-              edges={userEdges.filter(({node}) => !props.ignore.has(node.id))}
-              style={{
-                overflow: 'auto',
-                height: '100%'
-              }}
-              mapper={({node}) => (
-                <UserListEntry
-                  noFlyout={props.noFlyout}
-                  pad={props.pad}
-                  onChat={props.onChat}
-                  key={node.id}
-                  user={node}
-                  color={props.color}
-                  onClick={props.onClick} />
-              )}
-              onLoadMore={() => {
-                if (!pageInfo.hasNextPage) {
-                  return
-                }
-                fetchMore({
-                  variables: {cursor: pageInfo.endCursor},
-                  updateQuery: (prev, {fetchMoreResult}) => {
-                    const edges = fetchMoreResult.users.edges
-                    const pageInfo = fetchMoreResult.users.pageInfo
+      <SubscriptionWrapper
+        id="users"
+        startSubscription={() => _subscribeToMore(subscribeToMore)}>
+        <Scroller
+          id='message-viewport'
+          edges={userEdges.filter(({node}) => !props.ignore.has(node.id))}
+          style={{
+            overflow: 'auto',
+            height: '100%'
+          }}
+          mapper={({node}) => (
+            <UserListEntry
+              noFlyout={props.noFlyout}
+              pad={props.pad}
+              onChat={props.onChat}
+              key={node.id}
+              user={node}
+              color={props.color}
+              onClick={props.onClick} />
+          )}
+          onLoadMore={() => {
+            if (!pageInfo.hasNextPage) return
 
-                    return edges.length ? {
-                      ...prev,
-                      users: {
-                        ...prev.users,
-                        edges: mergeAppend(prev.users.edges, ...edges, (e) => e.node.id),
-                        pageInfo
-                      }
-                    } : prev;
-                  }
-                })
-              }}
-            />
-            </SubscriptionWrapper>
-          )
-        }}
-      </Query>
+            fetchMore({
+              variables: {cursor: pageInfo.endCursor},
+              updateQuery: onFetchMore
+            })
+          }}
+        />
+      </SubscriptionWrapper>
     </Box>
   )
 }

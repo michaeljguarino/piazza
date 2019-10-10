@@ -1,7 +1,7 @@
 import React, {useState} from 'react'
 import {Box, Text} from 'grommet'
 import {Terminal} from 'grommet-icons'
-import { Query } from 'react-apollo'
+import { useQuery } from 'react-apollo'
 import CommandListEntry from './CommandListEntry'
 import CommandCreator from './CommandCreator'
 import InstallableCommands from './InstallableCommands'
@@ -15,14 +15,30 @@ import {SecondaryButton} from '../utils/Button'
 import {mergeAppend} from '../../utils/array'
 import {ICON_HEIGHT, ICON_SPREAD} from '../Piazza'
 
+const onFetchMore = (prev, {fetchMoreResult}) => {
+  const {edges, pageInfo} = fetchMoreResult.commands
+
+  return edges.length ? {
+    ...prev,
+    commands: {
+      ...prev.commands,
+      pageInfo,
+      edges: mergeAppend(edges, prev.commands.edges, ({node}) => node.id)
+    }
+  } : prev
+}
+
 function FlyoutContent(props) {
   const [expanded, setExpanded] = useState(false)
+  const {loading, data, fetchMore} = useQuery(COMMANDS_Q)
+  if (loading) return null
+  const {edges, pageInfo} = data.commands
+
   return (
-    <FlyoutContainer>
-      <FlyoutHeader text='Commands' setOpen={props.setOpen} />
+    <>
       {!expanded && (
         <>
-        <Box pad='small' style={{maxWidth: '30vw'}}>
+        <Box pad='small'>
           <Text size='small'>
             <i>
               Commands can automate basic tasks.  They support a message webhook, and
@@ -30,42 +46,24 @@ function FlyoutContent(props) {
             </i>
           </Text>
         </Box>
-        <Query query={COMMANDS_Q}>
-        {({loading, data, fetchMore}) => {
-          if (loading) return null
-          const {edges, pageInfo} = data.commands
-          return (
-            <Box>
-              <Scroller
-                id='commands-viewport'
-                edges={edges}
-                style={{overflow: 'auto', maxHeight: '80%'}}
-                mapper={({node}) => (
-                  <CommandListEntry
-                    key={node.id} pad={{vertical: 'xsmall', horizontal: 'small'}} command={node} />
-                )}
-                onLoadMore={() => {
-                  if (!pageInfo.hasNextPage)  return
-                  fetchMore({
-                    variables: {cursor: pageInfo.endCursor},
-                    updateQuery: (prev, {fetchMoreResult}) => {
-                      const {edges, pageInfo} = fetchMoreResult.commands
-
-                      return edges.length ? {
-                        ...prev,
-                        commands: {
-                          ...prev.commands,
-                          pageInfo,
-                          edges: mergeAppend(edges, prev.commands.edges, ({node}) => node.id)
-                        }
-                      } : prev
-                    }
-                  })
-                }}
-              />
-            </Box>
-          )}}
-        </Query>
+        <Box>
+          <Scroller
+            id='commands-viewport'
+            edges={edges}
+            style={{overflow: 'auto', maxHeight: '80%'}}
+            mapper={({node}) => (
+              <CommandListEntry
+                key={node.id} pad={{vertical: 'xsmall', horizontal: 'small'}} command={node} />
+            )}
+            onLoadMore={() => {
+              if (!pageInfo.hasNextPage)  return
+              fetchMore({
+                variables: {cursor: pageInfo.endCursor},
+                updateQuery: onFetchMore
+              })
+            }}
+          />
+        </Box>
         <Box margin={{top: 'xsmall'}} pad='small' border='top'>
           <Modal target={<SecondaryButton round='xsmall' label='Create more' />}>
           {setOpen => (<CommandCreator setOpen={setOpen} />)}
@@ -79,7 +77,7 @@ function FlyoutContent(props) {
         </Box>
         {expanded && (<InstallableCommands />)}
       </Box>
-    </FlyoutContainer>
+    </>
   )
 }
 
@@ -93,7 +91,12 @@ function Commands(props) {
         align='center'
         justify='center'>
         <Flyout target={<Terminal size={ICON_HEIGHT} />}>
-        {setOpen => (<FlyoutContent setOpen={setOpen} {...props} />)}
+        {setOpen => (
+          <FlyoutContainer width='30vw'>
+            <FlyoutHeader text='Commands' setOpen={setOpen} />
+            <FlyoutContent setOpen={setOpen} {...props} />
+          </FlyoutContainer>
+        )}
         </Flyout>
       </Box>
     </HoveredBackground>

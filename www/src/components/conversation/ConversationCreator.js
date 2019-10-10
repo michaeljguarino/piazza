@@ -1,7 +1,7 @@
 import React, {useState} from 'react'
 import {Box, Text} from 'grommet'
 import {Add} from 'grommet-icons'
-import { Mutation } from 'react-apollo'
+import { useMutation } from 'react-apollo'
 import Modal, {ModalHeader} from '../utils/Modal'
 import HoveredBackground from '../utils/HoveredBackground'
 import {CREATE_CONVERSATION, CONVERSATIONS_Q} from './queries'
@@ -9,8 +9,37 @@ import ConversationEditForm from './ConversationEditForm'
 import {addConversation} from './utils'
 import ConversationSearch from '../search/ConversationSearch'
 
-function ConversationCreator(props) {
+function ConversationForm(props) {
   const [state, setState] = useState({public: true})
+  const [mutation] = useMutation(CREATE_CONVERSATION, {
+    variables: {attributes: state},
+    update: (cache, { data: { createConversation } }) => {
+      props.setCurrentConversation(createConversation)
+      const prev = cache.readQuery({ query: CONVERSATIONS_Q });
+      cache.writeQuery({
+        query: CONVERSATIONS_Q,
+        data: addConversation(prev, createConversation)
+      });
+      props.setOpen(false)
+    }
+  })
+
+  return (
+    <Box>
+      <ModalHeader setOpen={props.setOpen} text='Start a new conversation' />
+      <Box align='center' justify='center' pad='medium'>
+        <ConversationEditForm
+          cancel={() => props.setOpen(false)}
+          state={state}
+          mutation={mutation}
+          onStateChange={(update) => setState({...props.state, ...update})}
+          />
+      </Box>
+    </Box>
+  )
+}
+
+function ConversationCreator(props) {
   const [searching, setSearching] = useState(false)
   return (
     <Box fill='horizontal' pad={{right: '10px'}} margin={{top: 'medium'}}>
@@ -49,33 +78,7 @@ function ConversationCreator(props) {
             </Box>
           </HoveredBackground>}>
           {setOpen => (
-            <Mutation
-              mutation={CREATE_CONVERSATION}
-              variables={{attributes: state}}
-              update={(cache, { data: { createConversation } }) => {
-                props.setCurrentConversation(createConversation)
-                const prev = cache.readQuery({ query: CONVERSATIONS_Q });
-                cache.writeQuery({
-                  query: CONVERSATIONS_Q,
-                  data: addConversation(prev, createConversation)
-                });
-                setOpen(false)
-              }}
-            >
-            {mutation => (
-              <Box>
-                <ModalHeader setOpen={setOpen} text='Start a new conversation' />
-                <Box align='center' justify='center' pad='medium'>
-                  <ConversationEditForm
-                    cancel={() => setOpen(false)}
-                    state={state}
-                    mutation={mutation}
-                    onStateChange={(update) => setState({...state, ...update})}
-                    />
-                </Box>
-              </Box>
-            )}
-            </Mutation>
+            <ConversationForm setOpen={setOpen} {...props} />
           )}
         </Modal>
       </Box>

@@ -1,5 +1,5 @@
 import React, {useState} from 'react'
-import {Query} from 'react-apollo'
+import {useQuery} from 'react-apollo'
 import {Box, Text} from 'grommet'
 import {INSTALLABLE_COMMANDS, CREATE_COMMAND} from './queries'
 import Modal, {ModalHeader} from '../utils/Modal'
@@ -76,8 +76,8 @@ function WrappedInstallableCommand(props) {
     <Modal
       target={<InstallableCommand {...props} />}>
     {(setOpen) => (
-      <InstallableCommandCreator 
-        setOpen={setOpen} 
+      <InstallableCommandCreator
+        setOpen={setOpen}
         command={toCommand(props.installable)}
         additionalVars={{bot: {avatar: props.installable.avatar}}}
       />)}
@@ -85,7 +85,23 @@ function WrappedInstallableCommand(props) {
   )
 }
 
+const onFetchMore = (prev, {fetchMoreResult}) => {
+  const {edges, pageInfo} = fetchMoreResult.installableCommands
+  return edges.length ? {
+    ...prev,
+    installableCommands: {
+      ...prev.installableCommands,
+      pageInfo,
+      edges: mergeAppend(edges, prev.installableCommands.edges, ({node}) => node.id)
+    }
+  } : prev;
+}
+
 function InstallableCommands(props) {
+  const {data, loading, fetchMore} = useQuery(INSTALLABLE_COMMANDS)
+  if (loading) return null
+  const {edges, pageInfo} = data.installableCommands
+
   return (
     <Box>
       <Box pad='small'>
@@ -93,38 +109,20 @@ function InstallableCommands(props) {
           <i>We ship with a few commands you can choose to install as-is</i>
         </Text>
       </Box>
-      <Query query={INSTALLABLE_COMMANDS}>
-      {({data, loading, fetchMore}) => {
-        if (loading) return null
-        const {edges, pageInfo} = data.installableCommands
-        return (
-          <Box>
-            <Scroller
-              id='installable-commands-viewport'
-              edges={edges}
-              style={{overflow: 'auto', maxHeight: '80%'}}
-              mapper={({node}) => (<WrappedInstallableCommand key={node.id} installable={node} />)}
-              onLoadMore={() => {
-                if (!pageInfo.hasNextPage) return
-                fetchMore({
-                  variables: {cursor: pageInfo.endCursor},
-                  updateQuery: (prev, {fetchMoreResult}) => {
-                    const {edges, pageInfo} = fetchMoreResult.installableCommands
-                    return edges.length ? {
-                      ...prev,
-                      installableCommands: {
-                        ...prev.installableCommands,
-                        pageInfo,
-                        edges: mergeAppend(edges, prev.installableCommands.edges, ({node}) => node.id)
-                      }
-                    } : prev;
-                  }
-                })
-              }}/>
-          </Box>
-        )
-      }}
-      </Query>
+      <Box>
+        <Scroller
+          id='installable-commands-viewport'
+          edges={edges}
+          style={{overflow: 'auto', maxHeight: '80%'}}
+          mapper={({node}) => (<WrappedInstallableCommand key={node.id} installable={node} />)}
+          onLoadMore={() => {
+            if (!pageInfo.hasNextPage) return
+            fetchMore({
+              variables: {cursor: pageInfo.endCursor},
+              updateQuery: onFetchMore
+            })
+          }}/>
+      </Box>
     </Box>
   )
 }

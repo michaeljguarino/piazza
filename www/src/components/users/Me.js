@@ -2,7 +2,7 @@ import React from 'react'
 import {Box, Text, ThemeContext} from 'grommet'
 import {User, Lock, Logout} from 'grommet-icons'
 import Avatar from './Avatar'
-import { Mutation } from 'react-apollo'
+import { useMutation } from 'react-apollo'
 import CloseableDropdown from '../utils/CloseableDropdown'
 import Modal, {ModalHeader} from '../utils/Modal'
 import {AUTH_TOKEN} from '../../constants'
@@ -34,6 +34,13 @@ const _logout = () => {
 }
 
 function Me(props) {
+  const [mutation] = useMutation(UPDATE_USER, {
+    update: (cache, { data: { updateUser } }) => {
+      const {me} = cache.readQuery({ query: ME_Q });
+      cache.writeQuery({query: ME_Q, data: {me: {...me, ...updateUser}}});
+    }
+  })
+
   return (
     <ThemeContext.Extend value={{layer: {zIndex: 25}}}>
       <CurrentUserContext.Consumer>
@@ -48,22 +55,13 @@ function Me(props) {
             align='center'
             direction='row'>
             <Box direction='row' align='center' margin={{bottom: '5px'}}>
-              <Mutation
-                mutation={UPDATE_USER}
-                update={(cache, { data: { updateUser } }) => {
-                  const {me} = cache.readQuery({ query: ME_Q });
-                  cache.writeQuery({query: ME_Q, data: {me: {...me, ...updateUser}}});
-                }} >
-                {mutate => (
-                  <FilePicker
-                    extensions={['jpg', 'jpeg', 'png']}
-                    dims={{minWidth: 100, maxWidth: 500, minHeight: 100, maxHeight: 500}}
-                    onChange={ (file) => mutate({variables: {id: me.id, attributes: {avatar: file}}})}
-                  >
-                    <span><Avatar user={me} rightMargin='10px' /></span>
-                  </FilePicker>
-                )}
-              </Mutation>
+              <FilePicker
+                extensions={['jpg', 'jpeg', 'png']}
+                dims={{minWidth: 100, maxWidth: 500, minHeight: 100, maxHeight: 500}}
+                onChange={ (file) => mutation({variables: {id: me.id, attributes: {avatar: file}}})}
+              >
+                <span><Avatar user={me} rightMargin='10px' /></span>
+              </FilePicker>
               <CloseableDropdown target={
                 <Box>
                   <Text size='small' weight='bold'>{"@" + me.handle}</Text>

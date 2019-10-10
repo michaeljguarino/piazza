@@ -1,5 +1,5 @@
 import React, {useState, useRef, useEffect} from 'react'
-import {ApolloConsumer} from 'react-apollo'
+import {useApolloClient} from 'react-apollo'
 import {TextInput, Box, Text} from 'grommet'
 import {Search} from 'grommet-icons'
 import {SEARCH_Q} from './queries'
@@ -41,6 +41,7 @@ function ConversationResult(props) {
 
 
 function ConversationSearch(props) {
+  const client = useApolloClient()
   const searchRef = useRef()
   const [value, setValue] = useState('')
   const [suggestions, setSuggestions] = useState([])
@@ -60,7 +61,7 @@ function ConversationSearch(props) {
 
   const wrappedSetCurrentConv = (e) => {
     const conv = e.suggestion.value
-    _addConversation(props.client, conv)
+    _addConversation(client, conv)
     props.setCurrentConversation(conv)
   }
 
@@ -89,7 +90,7 @@ function ConversationSearch(props) {
           onChange={(event) => {
             const q = event.target.value
             setValue(q)
-            searchConversations(props.client, q, setSuggestions)
+            searchConversations(client, q, setSuggestions)
           }}
         />
       </Box>
@@ -97,12 +98,4 @@ function ConversationSearch(props) {
   )
 }
 
-function WrappedConvSearch(props) {
-  return (
-    <ApolloConsumer>
-      {client => (<ConversationSearch client={client} {...props} />)}
-    </ApolloConsumer>
-  )
-}
-
-export default WrappedConvSearch
+export default ConversationSearch

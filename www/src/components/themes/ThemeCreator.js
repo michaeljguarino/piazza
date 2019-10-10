@@ -1,5 +1,5 @@
 import React, {useState} from 'react'
-import {Mutation} from 'react-apollo'
+import {useMutation} from 'react-apollo'
 import {Box, Text, TextInput} from 'grommet'
 import {THEME_FIELDS} from './constants'
 import Button, {SecondaryButton} from '../utils/Button'
@@ -57,6 +57,17 @@ function ThemeForm(props) {
   const [theme, setTheme] = useState(cleanTheme(props.theme))
   const [active, setActive] = useState('brand')
   const [name, setName] = useState(props.theme.name || '')
+  const [mutation] = useMutation(CREATE_THEME, {
+    variables: {name, attributes: theme},
+    update: (cache, {data}) => {
+      const prev = cache.readQuery({query: THEME_Q})
+      cache.writeQuery({
+        query: THEME_Q,
+        data: addTheme(prev, data.createTheme)
+      })
+      props.cancel()
+    }
+  })
 
   function wrappedSetTheme(fieldName, value) {
     let newTheme = {...theme}
@@ -65,60 +76,46 @@ function ThemeForm(props) {
   }
 
   return (
-    <Mutation
-      mutation={CREATE_THEME}
-      variables={{name, attributes: theme}}
-      update={(cache, {data}) => {
-        const prev = cache.readQuery({query: THEME_Q})
-        cache.writeQuery({
-          query: THEME_Q,
-          data: addTheme(prev, data.createTheme)
-        })
-        props.cancel()
-      }}>
-    {mutate => (
-      <>
-      <Box direction='row' gap='small'>
-        <Box gap='small' width='100%' pad={{right: 'small'}}>
-          <InputField
-            label='name'
-            value={name}
-            placehoder='my-theme-name'
-            onChange={(e) => setName(e.target.value)} />
-          {Array.from(chunk(THEME_FIELDS, 3)).map((fieldChunk, ind) => (
-            <Box key={ind} direction='row' gap='small'>
-              {fieldChunk.map((field) => (
-                <ThemePicker
-                  key={field}
-                  color={theme[field]}
-                  field={field}
-                  active={field === active}
-                  onChange={(value) => setActive(value)} />
-              ))}
-            </Box>
-          ))}
-          <Box margin={{top: 'small'}}>
-            <TextInput
-              value={serializeTheme(theme)}
-              onChange={(e) => {
-                const deserialized = deserializeTheme(e.target.value, theme)
-                setTheme(deserialized)
-              }} />
+    <>
+    <Box direction='row' gap='small'>
+      <Box gap='small' width='100%' pad={{right: 'small'}}>
+        <InputField
+          label='name'
+          value={name}
+          placehoder='my-theme-name'
+          onChange={(e) => setName(e.target.value)} />
+        {Array.from(chunk(THEME_FIELDS, 3)).map((fieldChunk, ind) => (
+          <Box key={ind} direction='row' gap='small'>
+            {fieldChunk.map((field) => (
+              <ThemePicker
+                key={field}
+                color={theme[field]}
+                field={field}
+                active={field === active}
+                onChange={(value) => setActive(value)} />
+            ))}
           </Box>
+        ))}
+        <Box margin={{top: 'small'}}>
+          <TextInput
+            value={serializeTheme(theme)}
+            onChange={(e) => {
+              const deserialized = deserializeTheme(e.target.value, theme)
+              setTheme(deserialized)
+            }} />
         </Box>
-        <ChromePicker
-          disableAlpha
-          color={theme[active]}
-          onChangeComplete={(color) => wrappedSetTheme(active, color.hex)}
-        />
       </Box>
-      <Box direction='row' margin={{top: 'small'}} gap='xsmall' justify='end'>
-        <SecondaryButton round='xsmall' label='Cancel' onClick={() => props.cancel()} />
-        <Button round='xsmall' label='Create' onClick={mutate} />
-      </Box>
-      </>
-    )}
-    </Mutation>
+      <ChromePicker
+        disableAlpha
+        color={theme[active]}
+        onChangeComplete={(color) => wrappedSetTheme(active, color.hex)}
+      />
+    </Box>
+    <Box direction='row' margin={{top: 'small'}} gap='xsmall' justify='end'>
+      <SecondaryButton round='xsmall' label='Cancel' onClick={() => props.cancel()} />
+      <Button round='xsmall' label='Create' onClick={mutation} />
+    </Box>
+    </>
   )
 }
 

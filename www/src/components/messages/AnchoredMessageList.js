@@ -2,7 +2,7 @@ import React from 'react'
 import {Box, Text, Stack} from 'grommet'
 import {Down} from 'grommet-icons'
 import Message from './Message'
-import { Query } from 'react-apollo'
+import { useQuery } from 'react-apollo'
 import DualScroller from '../utils/DualScroller'
 import Loading from '../utils/Loading'
 import {reverse, mergeAppend} from '../../utils/array'
@@ -25,82 +25,82 @@ function RecentItemsOverlay(props) {
   )
 }
 
+const onFetchMore = (direction, prev, {fetchMoreResult}) => {
+  const edges = fetchMoreResult.conversation[direction].edges
+  const pageInfo = fetchMoreResult.conversation[direction].pageInfo
+  if (!edges) return prev
+
+  if (direction === 'before') {
+    const merged = mergeAppend(edges, prev.conversation.before.edges, (e) => e.node.id)
+    return {
+      ...prev,
+      conversation: {...prev.conversation, before: {
+        ...prev.conversation.before, pageInfo, edges: merged
+      }}
+    }
+  } else {
+    const merged = mergeAppend(edges, prev.conversation.after.edges, (e) => e.node.id)
+    return {
+      ...prev,
+      conversation: {...prev.conversation, after: {
+        ...prev.conversation.after, pageInfo, edges: merged
+      }}
+    }
+  }
+}
+
 function AnchoredMessageList(props) {
   const defaultVars = {conversationId: props.conversation.id, anchor: props.anchor.timestamp}
+  const {loading, error, data, fetchMore} = useQuery(ANCHORED_MESSAGES, {
+    variables: defaultVars,
+    fetchPolicy: 'cache-and-network'
+  })
+  if (loading) return <Loading height='calc(100vh - 135px)' width='100%' />
+  if (error) return <div>wtf</div>
+  let results = data.conversation
+  let allEdges = [...Array.from(reverse(results.before.edges)), ...results.after.edges]
+  const scrollTo = props.anchor.id ? props.anchor.id : (results.after.edges[0] && results.after.edges[0].node.id)
+
   return (
-    <Query query={ANCHORED_MESSAGES} variables={defaultVars} fetchPolicy='cache-and-network'>
-      {({loading, error, data, fetchMore}) => {
-        if (loading && !data.conversation) return <Loading height='calc(100vh - 135px)' width='100%' />
-        if (error) return <div>wtf</div>
+    <Stack anchor="bottom" fill>
+      <DualScroller
+        id='message-viewport'
+        edges={Array.from(reverse(allEdges))}
+        scrollTo={scrollTo}
+        overlay={<RecentItemsOverlay {...props} />}
+        style={{
+          overflow: 'auto',
+          height: '100%',
+          width: '100%',
+          display: 'flex',
+          justifyContent: 'flex-start',
+          flexDirection: 'column-reverse',
+        }}
+        mapper={(edge, next, ref, pos) => (
+          <Message
+            parentRef={ref}
+            pos={pos}
+            selected={edge.node.id === props.anchor.id}
+            key={edge.node.id}
+            conversation={props.conversation}
+            message={edge.node}
+            setReply={props.setReply}
+            next={next.node} />
+        )}
+        onLoadMore={(direction) => {
+          const pageInfo = results[direction].pageInfo
+          if (!pageInfo.hasNextPage) return
+          let vars = direction === 'before' ?
+            {beforeCursor: pageInfo.endCursor} : {afterCursor: pageInfo.endCursor}
 
-        let results = data.conversation
-        let allEdges = [...Array.from(reverse(results.before.edges)), ...results.after.edges]
-        const scrollTo = props.anchor.id ? props.anchor.id : (results.after.edges[0] && results.after.edges[0].node.id)
-        return (
-          <Stack anchor="bottom" fill>
-            <DualScroller
-              id='message-viewport'
-              edges={Array.from(reverse(allEdges))}
-              scrollTo={scrollTo}
-              overlay={<RecentItemsOverlay {...props} />}
-              style={{
-                overflow: 'auto',
-                height: '100%',
-                width: '100%',
-                display: 'flex',
-                justifyContent: 'flex-start',
-                flexDirection: 'column-reverse',
-              }}
-              mapper={(edge, next, ref, pos) => (
-                <Message
-                  parentRef={ref}
-                  pos={pos}
-                  selected={edge.node.id === props.anchor.id}
-                  key={edge.node.id}
-                  conversation={props.conversation}
-                  message={edge.node}
-                  setReply={props.setReply}
-                  next={next.node} />
-              )}
-              onLoadMore={(direction) => {
-                const pageInfo = results[direction].pageInfo
-                if (!pageInfo.hasNextPage) return
-                let vars = direction === 'before' ?
-                  {beforeCursor: pageInfo.endCursor} : {afterCursor: pageInfo.endCursor}
-
-                fetchMore({
-                  variables: {...defaultVars, ...vars},
-                  updateQuery: (prev, {fetchMoreResult}) => {
-                    const edges = fetchMoreResult.conversation[direction].edges
-                    const pageInfo = fetchMoreResult.conversation[direction].pageInfo
-                    if (!edges) return prev
-
-                    if (direction === 'before') {
-                      const merged = mergeAppend(edges, prev.conversation.before.edges, (e) => e.node.id)
-                      return {
-                        ...prev,
-                        conversation: {...prev.conversation, before: {
-                          ...prev.conversation.before, pageInfo, edges: merged
-                        }}
-                      }
-                    } else {
-                      const merged = mergeAppend(edges, prev.conversation.after.edges, (e) => e.node.id)
-                      return {
-                        ...prev,
-                        conversation: {...prev.conversation, after: {
-                          ...prev.conversation.after, pageInfo, edges: merged
-                        }}
-                      }
-                    }
-                  }
-                })
-              }}
-            />
-            <RecentItemsOverlay {...props} />
-          </Stack>
-        )
-      }}
-    </Query>
+          fetchMore({
+            variables: {...defaultVars, ...vars},
+            updateQuery: (prev, result) => onFetchMore(direction, prev, result)
+          })
+        }}
+      />
+      <RecentItemsOverlay {...props} />
+    </Stack>
   )
 
 }

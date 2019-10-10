@@ -1,5 +1,5 @@
 import React from 'react'
-import {Query} from 'react-apollo'
+import {useQuery} from 'react-apollo'
 import {SearchInput} from './utils/SelectSearchInput'
 import Loading from './utils/Loading'
 import {BRAND_Q} from './themes/queries'
@@ -91,20 +91,17 @@ function buildTheme(theme) {
 export const ThemeContext = React.createContext({theme: {}, name: null, id: null, brand: null})
 
 function Theme(props) {
+  const {loading, data} = useQuery(BRAND_Q)
+  if (loading) return <Loading height='100vh' width='100vw' />
+  
+  const brand = data.brand
+  const {id, name, ...themeAttrs} = brand.theme
+  const theme = buildTheme(themeAttrs)
+
   return (
-    <Query query={BRAND_Q}>
-    {({loading, data}) => {
-      if (loading) return <Loading height='100vh' width='100vw' />
-      const brand = data.brand
-      const {id, name, ...themeAttrs} = brand.theme
-      const theme = buildTheme(themeAttrs)
-      return (
-        <ThemeContext.Provider value={{theme, name, id, brand}}>
-          {props.children(theme)}
-        </ThemeContext.Provider>
-      )
-    }}
-    </Query>
+    <ThemeContext.Provider value={{theme, name, id, brand}}>
+      {props.children(theme)}
+    </ThemeContext.Provider>
   )
 }
 

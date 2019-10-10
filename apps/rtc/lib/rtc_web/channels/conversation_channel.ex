@@ -34,6 +34,11 @@ defmodule RtcWeb.ConversationChannel do
     {:reply, :ok, socket}
   end
 
+  def terminate(_, %{topic: "conversation:" <> id} = socket) do
+    assign(socket, :conversation_id, id)
+    |> ping()
+  end
+
   defp ping(socket) do
     Rtc.GqlClient.rpc(:ping_participant, %PingParticipant{
       conversation_id: socket.assigns.conversation_id,

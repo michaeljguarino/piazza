@@ -1,8 +1,8 @@
-import React, { Component, createRef, useRef } from 'react'
+import React, { Component, useRef, useState } from 'react'
 import {socket} from '../../helpers/client'
 import TimedCache from '../utils/TimedCache'
 import HoveredBackground from '../utils/HoveredBackground'
-import { Mutation } from 'react-apollo'
+import { useMutation } from 'react-apollo'
 import {Box, Text, Markdown, Layer, Keyboard, Drop} from 'grommet'
 import {Attachment} from 'grommet-icons'
 import {FilePicker} from 'react-file-picker'
@@ -49,16 +49,10 @@ function HelpDoc(props) {
   )
 }
 
-class MessageInput extends Component {
+class MessageInputLifecyclManager extends Component {
   state = {
-    editorState: Plain.deserialize(''),
-    typists: [],
-    uploadProgress: null,
-    useUpload: false,
-    disableSubmit: false
+    typists: []
   }
-
-  boxRef = createRef()
 
   componentWillMount() {
     this.topic = "conversation:" + this.props.conversation.id
@@ -84,114 +78,114 @@ class MessageInput extends Component {
     }
   }
 
-  handleKeyPress = (e) => {
-    if (e.key === 'Enter' && e.shiftKey) return
-  }
-
   notifyTyping = debounce(() => {
     this.channel.push("typing", {who: "cares"})
   }, 500, {leading: true})
 
   render() {
     this.setupChannel()
-    const { editorState, attachment } = this.state
-    const parentId = this.props.reply && this.props.reply.id
-    return (
-      <Box
-        ref={this.props.dropRef}
-        style={{maxHeight: '210px', minHeight: 'auto'}}
-        fill='horizontal'
-        pad={{horizontal: '10px'}}>
-        {this.state.uploadProgress && (
-          <Layer plain modal={false} position='bottom'>
-            <Box width='400px'>
-              <Progress
-                percent={this.state.uploadProgress}
-                status={this.state.uploadProgress === 100 ? 'success' : 'active'} />
-            </Box>
-          </Layer>
-        )}
-        <Mutation
-          mutation={MESSAGE_MUTATION}
-          context= {{
-            fetchOptions: {
-              useUpload: this.state.useUpload,
-              onProgress: (ev) => {
-                this.setState({uploadProgress: Math.round((ev.loaded / ev.total) * 100)});
-              },
-              onAbortPossible: () => null
-            }
-          }}
-          update={(cache, {data: {createMessage}}) => {
-            const data = cache.readQuery({query: MESSAGES_Q, variables: {conversationId: this.props.conversation.id}})
-            cache.writeQuery({
-              query: MESSAGES_Q,
-              variables: {conversationId: this.props.conversation.id},
-              data: applyNewMessage(data, createMessage)
-            })
-            this.setState({uploadProgress: null})
-            this.props.setReply(null)
-            this.props.setWaterline(moment().add(5, 'minutes').toISOString())
-          }}
-        >
-        {postMutation => (
-          <Keyboard onKeyDown={(e) => {
-            if (e.key === 'Enter' && !e.shiftKey && !this.state.disableSubmit) {
-              postMutation({variables: {
-                conversationId: this.props.conversation.id,
-                attributes: {attachment, parentId, text: Plain.serialize(editorState)}
-              }})
-              this.setState({attachment: null, editorState: Plain.deserialize('')})
-            }
-          }}>
-            <Box
-              border
-              fill='horizontal'
-              height='calc(100%-20px)'
-              direction="row"
-              align="center"
-              round='xsmall'>
-              <MentionManager
-                parentRef={this.boxRef}
-                editorState={editorState}
-                setEditorState={(editorState) => this.setState({editorState: editorState})}
-                disableSubmit={(disable) => this.setState({disableSubmit: disable})}
-                clearable={!this.state.disableSubmit}
-                onChange={() => this.notifyTyping()} />
-              <HoveredBackground>
-                <Box
-                  accentable
-                  style={{cursor: "pointer"}}>
-                  <FilePicker
-                    onChange={(file) => this.setState({useUpload: true, attachment: file})}
-                    maxSize={2000}
-                    onError={(msg) => console.log(msg)}
-                  >
-                    <Box
-                      align='center'
-                      justify='center'
-                      height='40px'
-                      width="30px">
-                      <Attachment color={this.state.attachment ? SEND_COLOR : null} size='15px' />
-                    </Box>
-                  </FilePicker>
-                </Box>
-              </HoveredBackground>
-            </Box>
-          </Keyboard>
-        )}
-        </Mutation>
-        <Box style={{height: '20px'}} pad={{top: '2px', bottom: '2px'}} align='center' direction='row' fill='horizontal'>
-          <div style={{width: 'calc(100% - 600px)'}}>
-            <CurrentUserContext.Consumer>
-              {me => (<Typing typists={this.state.typists} ignore={me.handle} />)}
-            </CurrentUserContext.Consumer>
-          </div>
-          <HelpDoc/>
-        </Box>
-      </Box>
-    )
+    return this.props.children({notifyTyping: this.notifyTyping, typists: this.state.typists})
   }
+}
+
+function MessageInput(props) {
+  const [attachment, setAttachment] = useState(null)
+  const [editorState, setEditorState] = useState(Plain.deserialize(''))
+  const [uploadProgress, setUploadProgress] = useState(null)
+  const [disableSubmit, setDisableSubmit] = useState(false)
+
+  const [mutation] = useMutation(MESSAGE_MUTATION, {
+    context: {fetchOptions: {
+      useUpload: !!attachment,
+      onProgress: (ev) => setUploadProgress(Math.round((ev.loaded / ev.total) * 100)),
+      onAbortPossible: () => null
+    }},
+    update: (cache, {data: {createMessage}}) => {
+      const data = cache.readQuery({query: MESSAGES_Q, variables: {conversationId: props.conversation.id}})
+      cache.writeQuery({
+        query: MESSAGES_Q,
+        variables: {conversationId: props.conversation.id},
+        data: applyNewMessage(data, createMessage)
+      })
+      setUploadProgress(null)
+      props.setReply(null)
+      props.setWaterline(moment().add(5, 'minutes').toISOString())
+    }
+  })
+
+  const boxRef = useRef()
+  const parentId = props.reply && props.reply.id
+
+  return (
+    <Box
+      ref={props.dropRef}
+      style={{maxHeight: '210px', minHeight: 'auto'}}
+      fill='horizontal'
+      pad={{horizontal: '10px'}}>
+      {uploadProgress && (
+        <Layer plain modal={false} position='bottom'>
+          <Box width='400px'>
+            <Progress
+              percent={uploadProgress}
+              status={uploadProgress === 100 ? 'success' : 'active'} />
+          </Box>
+        </Layer>
+      )}
+      <Keyboard onKeyDown={(e) => {
+        if (e.key === 'Enter' && !e.shiftKey && !disableSubmit) {
+          mutation({variables: {
+            conversationId: props.conversation.id,
+            attributes: {attachment, parentId, text: Plain.serialize(editorState)}
+          }})
+          setEditorState(Plain.deserialize(''))
+          setAttachment(null)
+        }
+      }}>
+        <Box
+          border
+          fill='horizontal'
+          height='calc(100%-20px)'
+          direction="row"
+          align="center"
+          round='xsmall'>
+          <MentionManager
+            parentRef={boxRef}
+            editorState={editorState}
+            setEditorState={(editorState) => setEditorState(editorState)}
+            disableSubmit={setDisableSubmit}
+            clearable={!disableSubmit}
+            onChange={() => props.notifyTyping()} />
+          <HoveredBackground>
+            <Box
+              accentable
+              style={{cursor: "pointer"}}>
+              <FilePicker
+                onChange={(file) => setAttachment(file)}
+                maxSize={2000}
+                onError={(msg) => console.log(msg)}
+              >
+                <Box
+                  align='center'
+                  justify='center'
+                  height='40px'
+                  width="30px">
+                  <Attachment color={attachment ? SEND_COLOR : null} size='15px' />
+                </Box>
+              </FilePicker>
+            </Box>
+          </HoveredBackground>
+        </Box>
+      </Keyboard>
+      <Box style={{height: '20px'}} pad={{top: '2px', bottom: '2px'}} align='center' direction='row' fill='horizontal'>
+        <div style={{width: 'calc(100% - 600px)'}}>
+          <CurrentUserContext.Consumer>
+            {me => (<Typing typists={props.typists} ignore={me.handle} />)}
+          </CurrentUserContext.Consumer>
+        </div>
+        <HelpDoc/>
+      </Box>
+    </Box>
+  )
 }
 
 function WrappedMessageInput(props) {
@@ -204,7 +198,15 @@ function WrappedMessageInput(props) {
           <ReplyGutter {...props}/>
         </Drop>
       )}
-      <MessageInput dropRef={dropRef} {...props} />
+      <MessageInputLifecyclManager {...props}>
+      {({typists, notifyTyping}) => (
+        <MessageInput
+          dropRef={dropRef}
+          typists={typists}
+          notifyTyping={notifyTyping}
+          {...props} />
+        )}
+      </MessageInputLifecyclManager>
     </>
   )
 }

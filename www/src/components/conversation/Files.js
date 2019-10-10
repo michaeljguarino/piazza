@@ -1,5 +1,5 @@
 import React from 'react'
-import {Query} from 'react-apollo'
+import {useQuery} from 'react-apollo'
 import {Box, Text} from 'grommet'
 import {Document} from 'grommet-icons'
 import Scroller from '../utils/Scroller'
@@ -39,53 +39,52 @@ const NoFiles = () => {
 }
 
 function Files(props) {
+  const {loading, data, fetchMore} = useQuery(FILES_Q, {
+    variables: {conversationId: props.conversation.id}
+  })
+  if (loading) return <Loader />
+  let pageInfo = data.conversation.files.pageInfo
+  let edges = data.conversation.files.edges
+
   return (
-    <Query query={FILES_Q} variables={{conversationId: props.conversation.id}}>
-    {({loading, data, fetchMore}) => {
-      if (loading) return <Loader />
-      let pageInfo = data.conversation.files.pageInfo
-      let edges = data.conversation.files.edges
-      return (
-        <Flyout width='30vw' target={
-          <HoveredBackground>
-            <Box {...BOX_ATTRS} accentable>
-              <Text height='12px' style={{lineHeight: '12px'}} margin={{right: '3px'}}>
-                <Document size='12px' />
-              </Text>
-              <Text size='xsmall'>{data.conversation.fileCount}</Text>
-            </Box>
-          </HoveredBackground>
-        }>
-        {setOpen => (
-          <FlyoutContainer width='40vw'>
-            <FlyoutHeader text='Files' setOpen={setOpen} />
-            <Box
-              pad={{bottom: 'small'}}
-              margin={{bottom: 'small'}}>
-              <Scroller
-                style={{
-                  overflow: 'auto',
-                  maxHeight: '70%',
-                  display: 'flex',
-                  justifyContent: 'flex-start',
-                  flexDirection: 'column'
-                }}
-                edges={edges}
-                emptyState={<NoFiles />}
-                mapper={({node}, next) => (<FileEntry key={node.id} file={node} next={next} />)}
-                onLoadMore={() => {
-                  if (!pageInfo.hasNextPage) return
-                  fetchMore({
-                    variables: {cursor: pageInfo.endCursor},
-                    updateQuery: doFetchMore
-                  })
-                }} />
-            </Box>
-          </FlyoutContainer>
-        )}
-        </Flyout>
-      )}}
-    </Query>
+    <Flyout width='30vw' target={
+      <HoveredBackground>
+        <Box {...BOX_ATTRS} accentable>
+          <Text height='12px' style={{lineHeight: '12px'}} margin={{right: '3px'}}>
+            <Document size='12px' />
+          </Text>
+          <Text size='xsmall'>{data.conversation.fileCount}</Text>
+        </Box>
+      </HoveredBackground>
+    }>
+    {setOpen => (
+      <FlyoutContainer width='40vw'>
+        <FlyoutHeader text='Files' setOpen={setOpen} />
+        <Box
+          pad={{bottom: 'small'}}
+          margin={{bottom: 'small'}}>
+          <Scroller
+            style={{
+              overflow: 'auto',
+              maxHeight: '70%',
+              display: 'flex',
+              justifyContent: 'flex-start',
+              flexDirection: 'column'
+            }}
+            edges={edges}
+            emptyState={<NoFiles />}
+            mapper={({node}, next) => (<FileEntry key={node.id} file={node} next={next} />)}
+            onLoadMore={() => {
+              if (!pageInfo.hasNextPage) return
+              fetchMore({
+                variables: {cursor: pageInfo.endCursor},
+                updateQuery: doFetchMore
+              })
+            }} />
+        </Box>
+      </FlyoutContainer>
+    )}
+    </Flyout>
   )
 }
 

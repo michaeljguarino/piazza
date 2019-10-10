@@ -1,5 +1,5 @@
 import React, {useState} from 'react'
-import {Query, Mutation} from 'react-apollo'
+import {useMutation, useQuery} from 'react-apollo'
 import {Box, Text} from 'grommet'
 import {THEME_Q, SET_THEME} from './queries'
 import Scroller from '../utils/Scroller'
@@ -16,6 +16,21 @@ function ThemeColors(props) {
     </Box>
   )
 }
+
+const onFetchMore = (prev, {fetchMoreResult}) => {
+  const edges = fetchMoreResult.themes.edges
+  const pageInfo = fetchMoreResult.themes.pageInfo
+
+  return edges.length ? {
+    ...prev,
+    themes: {
+      ...prev.themes,
+      pageInfo,
+      edges: mergeAppend(edges, prev.themes.edges, (e) => e.node.id)
+    }
+  } : prev;
+}
+
 
 function ThemeChoice(props) {
   const [hover, setHover] = useState(false)
@@ -37,58 +52,41 @@ function ThemeChoice(props) {
 }
 
 function ThemeSelector(props) {
+  const {loading, data, fetchMore} = useQuery(THEME_Q)
+  const [mutation] = useMutation(SET_THEME, {
+    update: () => window.location.reload(false)
+  })
+
+  if (loading) return (<Box direction='row'>...</Box>)
+  let pageInfo = data.themes.pageInfo
+  let edges = data.themes.edges
   return (
     <ThemeContext.Consumer>
     {({id}) => (
-      <Mutation mutation={SET_THEME} update={() => window.location.reload(false)}>
-      {mutate => (
-        <Query query={THEME_Q}>
-        {({loading, data, fetchMore}) => {
-          if (loading) return (<Box direction='row'>...</Box>)
-          let pageInfo = data.themes.pageInfo
-          let edges = data.themes.edges
-
-          return (
-            <Scroller
-              style={{
-                overflow: 'auto',
-                maxHeight: '70vh',
-                display: 'flex',
-                justifyContent: 'flex-start',
-                flexDirection: 'column',
-              }}
-              edges={edges}
-              mapper={(e) => (
-                <ThemeChoice
-                  current={id}
-                  key={e.node.id}
-                  theme={e.node}
-                  onClick={() => mutate({variables: {id: e.node.id}})}
-                />)}
-              onLoadMore={() => {
-                if (!pageInfo.hasNextPage) return
-                fetchMore({
-                  variables: {cursor: pageInfo.endCursor},
-                  updateQuery: (prev, {fetchMoreResult}) => {
-                    const edges = fetchMoreResult.themes.edges
-                    const pageInfo = fetchMoreResult.themes.pageInfo
-
-                    return edges.length ? {
-                      ...prev,
-                      themes: {
-                        ...prev.themes,
-                        pageInfo,
-                        edges: mergeAppend(edges, prev.themes.edges, (e) => e.node.id)
-                      }
-                    } : prev;
-                  }
-                })
-              }}
-            />)
+      <Scroller
+        style={{
+          overflow: 'auto',
+          maxHeight: '70vh',
+          display: 'flex',
+          justifyContent: 'flex-start',
+          flexDirection: 'column',
         }}
-        </Query>
-      )}
-      </Mutation>
+        edges={edges}
+        mapper={(e) => (
+          <ThemeChoice
+            current={id}
+            key={e.node.id}
+            theme={e.node}
+            onClick={() => mutation({variables: {id: e.node.id}})}
+          />)}
+        onLoadMore={() => {
+          if (!pageInfo.hasNextPage) return
+          fetchMore({
+            variables: {cursor: pageInfo.endCursor},
+            updateQuery: onFetchMore
+          })
+        }}
+      />
     )}
     </ThemeContext.Consumer>
   )

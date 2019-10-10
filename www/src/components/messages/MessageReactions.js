@@ -1,5 +1,5 @@
 import React from 'react'
-import { Mutation } from 'react-apollo'
+import { useMutation } from 'react-apollo'
 import { Box, Text } from 'grommet'
 import Tooltip from '../utils/Tooltip'
 import 'emoji-mart/css/emoji-mart.css'
@@ -26,34 +26,32 @@ function Reaction(props) {
                   prolog.length === 2 ? `${prolog[0]} and ${prolog[1]}` : prolog[0]
   const mutationQuery = props.reactions.find((r) => r.user.id === props.me.id) ?
                           DELETE_REACTION : CREATE_REACTION
+  const [mutation] = useMutation(mutationQuery, {
+    update: (cache, {data}) => {
+      let message = data.deleteReaction || data.createReaction
+      const prev = cache.readQuery({query: MESSAGES_Q, variables: {conversationId: props.conversation.id}})
+      cache.writeQuery({
+        query: MESSAGES_Q,
+        variables: {conversationId: props.conversation.id},
+        data: updateMessage(prev, message)
+      })
+    }
+  })
+
   return (
-    <Mutation
-      mutation={mutationQuery}
-      update={(cache, {data}) => {
-        let message = data.deleteReaction || data.createReaction
-        const prev = cache.readQuery({query: MESSAGES_Q, variables: {conversationId: props.conversation.id}})
-        cache.writeQuery({
-          query: MESSAGES_Q,
-          variables: {conversationId: props.conversation.id},
-          data: updateMessage(prev, message)
-        })
-      }}>
-    {mutation => (
-      <Tooltip>
-        <Box
-          {...BOX_ATTRS}
-          onClick={() => mutation({variables: {messageId: props.messageId, name: props.name}})}
-          background='highlight'
-          border={{color: 'highlightDark'}}>
-          <Text size='10px'>
-            <Emoji forceSize emoji={props.name} size={15} style={{lineHeight: 0}} />
-          </Text>
-          <Text size='10px' margin={{left: '3px'}} color='brand'>{props.reactions.length}</Text>
-        </Box>
-        <Text size='xsmall'>{text} reacted with :{props.name}:</Text>
-      </Tooltip>
-    )}
-    </Mutation>
+    <Tooltip>
+      <Box
+        {...BOX_ATTRS}
+        onClick={() => mutation({variables: {messageId: props.messageId, name: props.name}})}
+        background='highlight'
+        border={{color: 'highlightDark'}}>
+        <Text size='10px'>
+          <Emoji forceSize emoji={props.name} size={15} style={{lineHeight: 0}} />
+        </Text>
+        <Text size='10px' margin={{left: '3px'}} color='brand'>{props.reactions.length}</Text>
+      </Box>
+      <Text size='xsmall'>{text} reacted with :{props.name}:</Text>
+    </Tooltip>
   )
 }
 

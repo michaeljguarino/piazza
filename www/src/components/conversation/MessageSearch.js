@@ -1,6 +1,6 @@
 import React, {useState} from 'react'
 import onClickOutside from "react-onclickoutside";
-import {ApolloConsumer} from 'react-apollo'
+import {useApolloClient} from 'react-apollo'
 import {Box, TextInput} from 'grommet'
 import {Search} from 'grommet-icons'
 import {SEARCH_MESSAGES} from '../messages/queries'
@@ -32,11 +32,10 @@ function MessageSearch(props) {
     setValue('')
     setSuggestions([])
   }
+  const client = useApolloClient()
 
   return (
-    <ApolloConsumer>
-    {client => (
-      <Box
+    <Box
       onClick={() => setExpanded(true)}
       direction='row'
       height='35px'
@@ -44,22 +43,20 @@ function MessageSearch(props) {
       width={expanded ? '90%' : '300px'}
       margin={{horizontal: '10px'}}
       border='all' align='center' justify='center' round='xsmall' pad='xsmall'>
-        <Search size='20px' />
-        <TextInput
-          plain
-          size='small'
-          style={animation}
-          value={value}
-          suggestions={suggestions}
-          onChange={(e) => {
-            const text = e.target.value
-            setValue(text)
-            performSearch(client, text, props.conversation.id, setSuggestions, props.setAnchor)
-          }}
-          placeholder='this is for searching' />
-    </Box>
-    )}
-    </ApolloConsumer>
+      <Search size='20px' />
+      <TextInput
+        plain
+        size='small'
+        style={animation}
+        value={value}
+        suggestions={suggestions}
+        onChange={(e) => {
+          const text = e.target.value
+          setValue(text)
+          performSearch(client, text, props.conversation.id, setSuggestions, props.setAnchor)
+        }}
+        placeholder='this is for searching' />
+  </Box>
   )
 }
 

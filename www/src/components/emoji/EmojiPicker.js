@@ -1,5 +1,5 @@
 import React from 'react'
-import {Query} from 'react-apollo'
+import {useQuery} from 'react-apollo'
 import 'emoji-mart/css/emoji-mart.css'
 import emojiData from 'emoji-mart/data/messenger.json'
 import { NimblePicker } from 'emoji-mart'
@@ -23,15 +23,11 @@ function SafeNimblePicker(props) {
 }
 
 function EmojiPicker(props) {
-  return (
-    <Query query={EMOJI_Q}>
-    {({loading, data}) => {
-      if (loading) return <SafeNimblePicker {...props} />
-      const emoji = data.emoji.edges
-      return (<SafeNimblePicker emoji={emoji} {...props} />)
-    }}
-    </Query>
-  )
+  const {loading, data} = useQuery(EMOJI_Q)
+
+  if (loading) return <SafeNimblePicker {...props} />
+  const emoji = data.emoji.edges
+  return (<SafeNimblePicker emoji={emoji} {...props} />)
 }
 
 export default EmojiPicker

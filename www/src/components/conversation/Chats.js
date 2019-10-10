@@ -5,6 +5,20 @@ import Scroller from '../utils/Scroller'
 import ChatCreator from './ChatCreator'
 import {mergeAppend} from '../../utils/array'
 
+const onLoadMore = (prev, {fetchMoreResult}) => {
+  const edges = fetchMoreResult.chats.edges
+  const pageInfo = fetchMoreResult.chats.pageInfo
+
+  return edges.length ? {
+    ...prev,
+    chats: {
+      ...prev.chats,
+      pageInfo,
+      edges: mergeAppend(edges, prev.chats.edges, (e) => e.node.id),
+    }
+  } : prev;
+}
+
 function Chats(props) {
   return (<Box>
     <ChatCreator padding={props.pad} setCurrentConversation={props.setCurrentConversation} />
@@ -20,19 +34,7 @@ function Chats(props) {
 
         props.loadMore({
           variables: {chatCursor: props.chats.pageInfo.endCursor},
-          updateQuery: (prev, {fetchMoreResult}) => {
-            const edges = fetchMoreResult.chats.edges
-            const pageInfo = fetchMoreResult.chats.pageInfo
-
-            return edges.length ? {
-              ...prev,
-              chats: {
-                ...prev.chats,
-                pageInfo,
-                edges: mergeAppend(edges, prev.chats.edges, (e) => e.node.id),
-              }
-            } : prev;
-          }
+          updateQuery: onLoadMore
         })}}
       mapper={(edge) => <Conversation
         pad={props.pad}

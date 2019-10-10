@@ -1,7 +1,7 @@
 import React, {useState} from 'react'
 import {Box, Text} from 'grommet'
 import {Add} from 'grommet-icons'
-import { Mutation } from 'react-apollo'
+import { useMutation } from 'react-apollo'
 import Modal, {ModalHeader} from '../utils/Modal'
 import HoveredBackground from '../utils/HoveredBackground'
 import {CONVERSATIONS_Q, CREATE_CHAT} from './queries'
@@ -10,6 +10,31 @@ import ParticipantInvite from './ParticipantInvite'
 import Users from '../users/Users'
 import Button from '../utils/Button'
 import {CurrentUserContext} from '../login/EnsureLogin'
+
+function ChatButton(props) {
+  const [mutation] = useMutation(CREATE_CHAT, {
+    variables: {userIds: props.participants},
+    update: (cache, { data: { createChat } }) => {
+      props.setCurrentConversation(createChat)
+      const prev = cache.readQuery({ query: CONVERSATIONS_Q });
+      cache.writeQuery({
+        query: CONVERSATIONS_Q,
+        data: addConversation(prev, createChat)
+      });
+      props.setOpen(false)
+    }
+  })
+
+  return (
+    <Button
+      size='small'
+      onClick={mutation}
+      margin={{left: 'xsmall'}}
+      label='Go'
+      height='100%'
+      width='50px' />
+  )
+}
 
 function ChatCreator(props) {
   const [participants, setParticipants] = useState([])
@@ -66,29 +91,7 @@ function ChatCreator(props) {
                 pad='small'
                 mapper={(u) => u.id}>
               {(participants) => (
-                <Mutation
-                  mutation={CREATE_CHAT}
-                  variables={{userIds: participants}}
-                  update={(cache, { data: { createChat } }) => {
-                    props.setCurrentConversation(createChat)
-                    const prev = cache.readQuery({ query: CONVERSATIONS_Q });
-                    cache.writeQuery({
-                      query: CONVERSATIONS_Q,
-                      data: addConversation(prev, createChat)
-                    });
-                    setOpen(false)
-                  }}
-                  >
-                  {mutation => (
-                    <Button
-                      size='small'
-                      onClick={mutation}
-                      margin={{left: 'xsmall'}}
-                      label='Go'
-                      height='100%'
-                      width='50px' />
-                  )}
-                </Mutation>
+                <ChatButton setOpen={setOpen} participants={participants} {...props} />
               )}
               </ParticipantInvite>
             </Box>

@@ -1,5 +1,5 @@
 import React, {useState} from 'react'
-import {Mutation} from 'react-apollo'
+import {useMutation} from 'react-apollo'
 import {Box, Text, Markdown, Anchor, Calendar} from 'grommet'
 import {Down} from 'grommet-icons'
 import CloseableDropdown from '../utils/CloseableDropdown'
@@ -60,32 +60,30 @@ function ConversationUpdateForm(props) {
     archived: !!props.conversation.archivedAt
   })
 
+  const [mutation] = useMutation(UPDATE_CONVERSATION, {
+    variables: {id: props.conversation.id, attributes: attributes},
+    update: (cache, {data}) => {
+      const prev = cache.readQuery({ query: CONVERSATIONS_Q });
+      cache.writeQuery({
+        query: CONVERSATIONS_Q,
+        data: updateConversation(prev, data.updateConversation)
+      });
+      props.setOpen(false)
+    }
+  })
+
   return (
-    <Mutation
-      mutation={UPDATE_CONVERSATION}
-      variables={{id: props.conversation.id, attributes: attributes}}
-      update={(cache, {data}) => {
-        const prev = cache.readQuery({ query: CONVERSATIONS_Q });
-        cache.writeQuery({
-          query: CONVERSATIONS_Q,
-          data: updateConversation(prev, data.updateConversation)
-        });
-        props.setOpen(false)
-      }} >
-    {(mutation) => (
-      <Box>
-        <ModalHeader setOpen={props.setOpen} text={`Update #${props.conversation.name}`}/>
-        <Box align='center' justify='center' pad='medium'>
-          <ConversationEditForm
-            cancel={() => props.setOpen(false)}
-            state={attributes}
-            mutation={mutation}
-            onStateChange={(update) => setAttributes({...attributes, ...update})}
-            action='Update' />
-        </Box>
+    <Box>
+      <ModalHeader setOpen={props.setOpen} text={`Update #${props.conversation.name}`}/>
+      <Box align='center' justify='center' pad='medium'>
+        <ConversationEditForm
+          cancel={() => props.setOpen(false)}
+          state={attributes}
+          mutation={mutation}
+          onStateChange={(update) => setAttributes({...attributes, ...update})}
+          action='Update' />
       </Box>
-    )}
-    </Mutation>
+    </Box>
   )
 }
 
@@ -96,9 +94,7 @@ function ConversationUpdate(props) {
         <Markdown>{props.conversation.topic || "Add a description"}</Markdown>
       </Anchor>
     }>
-    {setOpen => (
-      <ConversationUpdateForm conversation={props.conversation} setOpen={setOpen} />
-    )}
+    {setOpen => (<ConversationUpdateForm conversation={props.conversation} setOpen={setOpen} />)}
     </Modal>
   )
 }
@@ -116,7 +112,12 @@ function ConversationName(props) {
         weight='bold'
         margin={{bottom: '5px'}}
         color={color}>
-        <Icon textProps={{color: color}} emptyColor={emptyColor} me={props.me} conversation={props.conversation} /> {conversationNameString(props.conversation, props.me)} <Down color={color} size='12px'/>
+        <Icon
+          textProps={{color: color}}
+          emptyColor={emptyColor}
+          me={props.me}
+          conversation={props.conversation} />
+        {conversationNameString(props.conversation, props.me)} <Down margin={{left: 'xsmall'}} color={color} size='12px'/>
       </Text>
     </HoveredBackground>
   )
@@ -124,7 +125,20 @@ function ConversationName(props) {
 
 const DROP_WIDTH = '240px'
 
+function LeaveConversation(props) {
+  const [mutation] = useMutation(DELETE_PARTICIPANT, {
+    variables: {conversationId: props.conversation.id, userId: props.me.id},
+    update: (cache, {data: {deleteParticipant}}) => {
+      props.setOpen(false)
+      removeConversation(cache, deleteParticipant.conversationId, props.setCurrentConversation)
+    }
+  })
+
+  return (<Text onClick={mutation} size='small'>Leave conversation</Text>)
+}
+
 function ConversationDropdown(props) {
+  const [notifMutation] = useMutation(UPDATE_PARTICIPANT)
   const currentParticipant = props.conversation.currentParticipant || {}
   const variables = {
     conversationId: props.conversation.id,
@@ -145,16 +159,12 @@ function ConversationDropdown(props) {
           <SubMenu
             text='Notification Preferences'
             setAlternate={setAlternate}>
-            <Mutation mutation={UPDATE_PARTICIPANT}>
-            {mutation => (
-              <Box width={DROP_WIDTH} pad='small'>
-                <NotificationsPreferences
-                  vars={variables}
-                  preferences={pick(preferences, ['mention', 'message', 'participant'])}
-                  mutation={mutation} />
-              </Box>
-            )}
-            </Mutation>
+            <Box width={DROP_WIDTH} pad='small'>
+              <NotificationsPreferences
+                vars={variables}
+                preferences={pick(preferences, ['mention', 'message', 'participant'])}
+                mutation={notifMutation} />
+            </Box>
           </SubMenu>
           <SubMenu
             text='Jump to date'
@@ -171,15 +181,7 @@ function ConversationDropdown(props) {
             </Box>
           </SubMenu>
           <MenuItem>
-            <Mutation
-              mutation={DELETE_PARTICIPANT}
-              variables={{conversationId: props.conversation.id, userId: props.me.id}}
-              update={(cache, {data: {deleteParticipant}}) => {
-                setOpen(false)
-                removeConversation(cache, deleteParticipant.conversationId, props.setCurrentConversation)
-              }}>
-            {mutation => (<Text onClick={mutation} size='small'>Leave conversation</Text>)}
-            </Mutation>
+            <LeaveConversation setOpen={setOpen} {...props} />
           </MenuItem>
           </>
         )}
