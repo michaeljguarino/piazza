@@ -7,7 +7,7 @@ import HoveredBackground from '../utils/HoveredBackground'
 import {CREATE_CONVERSATION, CONVERSATIONS_Q} from './queries'
 import ConversationEditForm from './ConversationEditForm'
 import {addConversation} from './utils'
-import ConversationSearch from '../search/ConversationSearch'
+import ConversationSearch from './ConversationSearch'
 
 function ConversationForm(props) {
   const [state, setState] = useState({public: true})
@@ -40,19 +40,14 @@ function ConversationForm(props) {
 }
 
 function ConversationCreator(props) {
-  const [searching, setSearching] = useState(false)
   return (
     <Box fill='horizontal' pad={{right: '10px'}} margin={{top: 'medium'}}>
       <Box pad={props.padding} fill='horizontal' direction="row" align="center" margin={{bottom: '5px'}}>
-        {searching ?
-          <ConversationSearch
-            setCurrentConversation={props.setCurrentConversation}
-            onSearchClose={() => setSearching(false)} /> :
-          <Box width='100%'>
+        <Box width='100%'>
+          <Modal target={
             <HoveredBackground>
               <Text
                 style={{cursor: 'pointer'}}
-                onClick={() => setSearching(true)}
                 highlight
                 size='small'
                 width='100%'
@@ -61,8 +56,17 @@ function ConversationCreator(props) {
                   Conversations
               </Text>
             </HoveredBackground>
-          </Box>
-        }
+          }>
+          {setOpen => (
+            <Box width='30vw'>
+              <ModalHeader text='Find a conversation to join' setOpen={setOpen} />
+              <ConversationSearch
+                setCurrentConversation={props.setCurrentConversation}
+                onSearchClose={() => setOpen(false)} />
+            </Box>
+          )}
+          </Modal>
+        </Box>
         <Modal target={
           <HoveredBackground>
             <Box

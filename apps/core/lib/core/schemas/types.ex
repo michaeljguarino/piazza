@@ -14,7 +14,7 @@ defmodule Core.Schemas.Types do
     field :title,      :string
     field :roles,      :roles
     field :deleted_at, :datetime
-
+    field :creator,    :user, resolve: dataloader(Conversation)
     field :notification_preferences, :notification_preferences
 
     field :jwt, :string, resolve: fn

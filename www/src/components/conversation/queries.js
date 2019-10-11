@@ -174,3 +174,38 @@ export const CREATE_INVITE = gql`
     }
   }
 `;
+
+
+export const SEARCH_Q=gql`
+query SearchQuery($q : String!) {
+  searchConversations(name: $q, first: 10) {
+    edges {
+      node {
+        ...ConversationFragment
+      }
+    }
+  }
+}
+${ConversationFragment}
+`;
+
+export const PUBLIC_CONVERSATIONS=gql`
+query PublicConversations($cursor: String) {
+  conversations(after: $cursor, first: 15, public: true) {
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+    edges {
+      node {
+        ...ConversationFragment
+        insertedAt
+        creator {
+          name
+        }
+      }
+    }
+  }
+}
+${ConversationFragment}
+`;

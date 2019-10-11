@@ -7,7 +7,7 @@ import InputField from '../utils/InputField'
 import Button, {SecondaryButton} from '../utils/Button'
 import {CREATE_COMMAND, COMMANDS_Q} from './queries'
 import {addCommand} from './utils'
-import {searchConversations} from '../search/ConversationSearch'
+import {searchConversations} from '../conversation/ConversationSearch'
 import { Editor } from 'slate-react'
 import Plain from 'slate-plain-serializer'
 

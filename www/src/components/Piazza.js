@@ -81,7 +81,7 @@ const Piazza = () => {
                         border='top'>
                         <Box width='100%' height='100%' align='center'>
                           <DividerText visible={visible} />
-                          <Box id='msg-view' width='100%'>
+                          <Box id='msg-view' width='100%' height='100%'>
                           {anchor ? <AnchoredMessageList
                                       anchor={anchor}
                                       conversation={currentConversation}
