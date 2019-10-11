@@ -27,10 +27,9 @@ defmodule Core.Resolvers.Conversation do
     Conversation.chat()
     |> Conversation.for_user(user.id)
   end
-  def query(_, %{public: true, current_user: user}) do
+  def query(_, %{public: true}) do
     Conversation.public()
     |> Conversation.nonchat()
-    |> Conversation.for_user(user.id)
   end
   def query(_, %{public: false, current_user: user}) do
     Conversation.for_user(user.id)

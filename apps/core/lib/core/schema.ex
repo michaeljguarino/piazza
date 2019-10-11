@@ -57,6 +57,7 @@ defmodule Core.Schema do
     @desc "Fetches a list of public or private conversations, don't attempt to preload participants or messages plz"
     connection field :conversations, node_type: :conversation do
       middleware Core.Schemas.Authenticated
+      arg :public, :boolean
 
       resolve &Conversation.list_conversations/2
     end

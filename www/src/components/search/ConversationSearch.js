@@ -66,10 +66,7 @@ function ConversationSearch(props) {
   }
 
   return (
-    <Box
-      ref={searchRef}
-      fill='horizontal'
-    >
+    <Box ref={searchRef} fill='horizontal'>
       <Box
         direction='row'
         align='center'
