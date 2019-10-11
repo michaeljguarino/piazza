@@ -26,7 +26,7 @@ export const BOX_ATTRS = {
   direction: "row",
   align: "center",
   style: {cursor: 'pointer', lineHeight: '15px'},
-  pad: {right: '5px', left: '5px'},
+  pad: {horizontal: '8px'},
   border: 'right'
 }
 

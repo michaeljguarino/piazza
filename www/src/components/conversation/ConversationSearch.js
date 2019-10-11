@@ -93,8 +93,8 @@ function ConversationSearch(props) {
 
   const wrappedSetCurrentConv = (conv) => {
     _addConversation(client, conv)
-    props.setCurrentConversation(conv)
     props.onSearchClose()
+    props.setCurrentConversation(conv)
   }
 
   return (

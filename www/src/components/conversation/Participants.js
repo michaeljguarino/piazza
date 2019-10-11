@@ -135,7 +135,7 @@ function Participants(props) {
     }}>
       <Flyout width='30vw' target={
         <HoveredBackground>
-          <Box {...BOX_ATTRS} accentable>
+          <Box {...BOX_ATTRS} pad={{right: '8px'}} accentable>
             <Text height='12px' style={{lineHeight: '12px'}} margin={{right: '3px'}}>
               <UserNew size='12px' />
             </Text>
