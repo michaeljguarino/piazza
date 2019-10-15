@@ -32,30 +32,21 @@ gql:
   port: 4000
   image: gcr.io/piazza-247002/gql
   gcsBucket: piazzaapp-uploads
-  resources:
-    requests:
-      cpu: .3
-      memory: 256Mi
+  resources: {}
   replicas: 2
 
 rtc:
   port: 4000
   image: gcr.io/piazza-247002/rtc
   replicas: 2
-  resources:
-    requests:
-      cpu: .3
-      memory: .5Gi
+  resources: {}
 
 www:
   dns: chat.piazzaapp.com
   port: 80
   image: gcr.io/piazza-247002/www
   replicas: 1
-  resources:
-    requests:
-      cpu: .1
-      memory: 256Mi
+  resources: {}
 
 cron:
   image: gcr.io/piazza-247002/cron

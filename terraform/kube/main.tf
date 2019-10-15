@@ -76,6 +76,11 @@ resource "google_storage_bucket_iam_member" "piazza" {
   bucket = "${google_storage_bucket.piazza_bucket.name}"
   role = "roles/storage.admin"
   member = "serviceAccount:${google_service_account.piazza.email}"
+
+  depends_on = [
+    "google_storage_bucket.piazza_bucket",
+    "google_service-account.piazza"
+  ]
 }
 
 ##
