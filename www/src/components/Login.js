@@ -41,7 +41,7 @@ function Login(props) {
   })
   const {email, login, name, password, handle} = state
   const inviteToken = props.match.params.inviteToken
-  
+
   const [mutation, {loading, error}] = useMutation(login ? LOGIN_MUTATION : SIGNUP_MUTATION, {
     variables: { email, password, name, handle, inviteToken },
     onCompleted: data => {
@@ -51,9 +51,8 @@ function Login(props) {
     }
   })
 
-
   if (localStorage.getItem(AUTH_TOKEN)) {
-    this.props.history.push('/')
+    props.history.push('/')
   }
   return (
     <Box background='brand' direction="column" align="center" justify="center" height="100vh">

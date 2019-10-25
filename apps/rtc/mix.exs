@@ -52,7 +52,8 @@ defmodule Rtc.MixProject do
       {:cors_plug, "~> 2.0"},
 
       {:core, in_umbrella: true},
-      {:aquaduct, in_umbrella: true}
+      {:aquaduct, in_umbrella: true},
+      {:graphql, in_umbrella: true}
     ]
   end
 

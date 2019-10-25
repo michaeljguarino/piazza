@@ -19,7 +19,7 @@ defmodule RtcWeb.ChannelCase do
     quote do
       # Import conveniences for testing with channels
       use Phoenix.ChannelTest
-      use Absinthe.Phoenix.SubscriptionTest, schema: Core.Schema
+      use Absinthe.Phoenix.SubscriptionTest, schema: GraphQl
       import Core.Factory
       import RtcWeb.ChannelCase
       import Rtc.TestUtils

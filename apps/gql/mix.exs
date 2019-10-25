@@ -51,6 +51,7 @@ defmodule Gql.MixProject do
       {:libcluster, "~> 3.1.1"},
 
       {:core, in_umbrella: true},
+      {:graphql, in_umbrella: true}
     ]
   end
 

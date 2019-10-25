@@ -67,6 +67,10 @@ class MessageInputLifecyclManager extends Component {
     this.cache.clear()
   }
 
+  componentDidUpdate() {
+    this.setupChannel()
+  }
+
   setupChannel() {
     const newTopic = "conversation:" + this.props.conversation.id
     if (newTopic !== this.topic) {
@@ -83,7 +87,6 @@ class MessageInputLifecyclManager extends Component {
   }, 500, {leading: true})
 
   render() {
-    this.setupChannel()
     return this.props.children({notifyTyping: this.notifyTyping, typists: this.state.typists})
   }
 }

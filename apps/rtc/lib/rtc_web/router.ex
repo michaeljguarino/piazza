@@ -14,7 +14,7 @@ defmodule RtcWeb.Router do
   get "/cluster", RtcWeb.ClusterController, :show
 
   forward "/graphiql", Absinthe.Plug.GraphiQL,
-    schema: Core.Schema,
+    schema: GraphQl,
     socket: Rtc.UserSocket
 
   # Other scopes may use custom stacks.

@@ -1,7 +1,7 @@
 defmodule RtcWeb.UserSocket do
   use Phoenix.Socket
   use Absinthe.Phoenix.Socket,
-    schema: Core.Schema
+    schema: GraphQl
 
   channel "lobby", RtcWeb.LobbyChannel
   channel "conversation:*", RtcWeb.ConversationChannel

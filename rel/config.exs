@@ -51,7 +51,8 @@ release :gql do
     :runtime_tools,
     aquaduct: :permanent,
     core: :permanent,
-    gql: :permanent
+    gql: :permanent,
+    graphql: :permanent
   ]
   set commands: [
     migrate: "rel/commands/migrate.sh",
@@ -66,7 +67,8 @@ release :rtc do
     aquaduct: :permanent,
     core: :permanent,
     rtc: :permanent,
-    runtime_tools: :temporary
+    runtime_tools: :temporary,
+    graphql: :permanent
   ]
 end
 

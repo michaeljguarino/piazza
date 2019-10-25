@@ -11,14 +11,14 @@ defmodule GqlWeb.Router do
   end
 
   forward "/graphiql", Absinthe.Plug.GraphiQL,
-      schema: Core.Schema,
+      schema: GraphQl,
       interface: :advanced
 
   scope "/gql" do
     pipe_through [:api, :auth]
 
     forward "/", Absinthe.Plug,
-      schema: Core.Schema
+      schema: GraphQl
   end
 
   scope "/auth", GqlWeb do
