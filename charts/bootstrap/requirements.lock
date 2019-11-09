@@ -1,6 +1,0 @@
-dependencies:
-- name: external-dns
-  repository: https://kubernetes-charts.storage.googleapis.com/
-  version: 2.6.4
-digest: sha256:b5dda2999df0b22395faf4c023a4b43683d7da0ee59de86d0e8e426e9b29f681
-generated: "2019-09-23T22:41:55.174883-04:00"

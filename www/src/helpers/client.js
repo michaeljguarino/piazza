@@ -1,5 +1,6 @@
 import { ApolloClient } from 'apollo-client'
 import { setContext } from 'apollo-link-context'
+import { onError } from 'apollo-link-error'
 import { createLink } from "apollo-absinthe-upload-link";
 import { InMemoryCache } from 'apollo-cache-inmemory'
 import { AUTH_TOKEN } from '../constants'
@@ -10,6 +11,7 @@ import * as AbsintheSocket from "@absinthe/socket";
 import {Socket as PhoenixSocket} from "phoenix";
 import customFetch from './uploadLink'
 import {apiHost, secure} from './hostname'
+import {wipeToken} from './authentication'
 
 const API_HOST = apiHost()
 const GQL_URL=`${secure() ? 'https' : 'http'}://${API_HOST}/gql`
@@ -27,6 +29,14 @@ const authLink = setContext((_, { headers }) => {
     headers: Object.assign(headers || {}, authHeaders)
   }
 })
+
+const resetToken = onError(({ response, networkError }) => {
+  if (networkError && networkError.statusCode === 401) {
+    // remove cached token on 401 from the server
+    wipeToken()
+    window.location = '/login'
+  }
+});
 
 const socket = new PhoenixSocket(WS_URI, {
   params: () => {
@@ -51,7 +61,7 @@ const splitLink = split(
 );
 
 const client = new ApolloClient({
-  link: authLink.concat(splitLink),
+  link: authLink.concat(resetToken).concat(splitLink),
   cache: new InMemoryCache()
 })
 
