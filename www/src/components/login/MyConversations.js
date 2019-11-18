@@ -35,8 +35,9 @@ function MyConversations(props) {
         sideEffect()
       }
     }
-
-    setWaterline(conv.currentParticipant && conv.currentParticipant.lastSeenAt)
+    if (conv) {
+      setWaterline(conv.currentParticipant && conv.currentParticipant.lastSeenAt)
+    }
     setCurrentConversation(conv)
   }
 

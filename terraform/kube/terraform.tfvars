@@ -1,3 +1,3 @@
-gcp_project_id = "piazza-247002"
+gcp_project_id = {{ .Values.gcpProjectId | quote }}
 
-piazza_bucket = "piazzaapp-uploads"
+piazza_bucket = {{ .Values.piazzaBucket | quote }}

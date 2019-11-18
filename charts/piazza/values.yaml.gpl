@@ -1,0 +1,22 @@
+postgresql:
+  postgresqlPassword: {{ randAlphaNum 26 }}
+
+rabbitmq:
+  rabbitmq:
+    password: {{ randAlphaNum 26 }}
+    erlangCookie: {{ randAlphaNum 26 }}
+
+secrets:
+  jwt: {{ randAlphaNum 26 }}
+  giphy: {{ .Values.giphySecret }}
+  erlang: {{ randAlphaNum 26 }}
+  invite_secret: {{ randAlphaNum 26 }}
+
+gql:
+  gcsBucket: {{ .Values.piazzaBucket }}
+
+admin:
+  email: {{ .Values.adminEmail }}
+  handle: {{ .Values.adminHandle }}
+  name: {{ .Values.adminName }}
+  password: {{ randAlphaNum 26 }}

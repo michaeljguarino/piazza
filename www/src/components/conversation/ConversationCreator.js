@@ -11,6 +11,7 @@ import ConversationSearch from './ConversationSearch'
 
 function ConversationForm(props) {
   const [state, setState] = useState({public: true})
+  console.log(state)
   const [mutation] = useMutation(CREATE_CONVERSATION, {
     variables: {attributes: state},
     update: (cache, { data: { createConversation } }) => {
@@ -32,7 +33,7 @@ function ConversationForm(props) {
           cancel={() => props.setOpen(false)}
           state={state}
           mutation={mutation}
-          onStateChange={(update) => setState({...props.state, ...update})}
+          onStateChange={(update) => setState({...state, ...update})}
           />
       </Box>
     </Box>

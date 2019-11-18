@@ -16,31 +16,18 @@ provider "google" {
   region  = "${local.gcp_region}"
 }
 
-data "google_container_cluster" "piazza_cluster" {
+data "google_client_config" "current" {}
+
+data "google_container_cluster" "cluster" {
   name = "${var.cluster_name}"
   location = "${var.gcp_location}"
 }
 
 provider "kubernetes" {
-  host = "${data.google_container_cluster.piazza_cluster.endpoint}"
-}
-
-###
-# Service accounts.  We create one for externaldns, one for cnrm, and one for piazza itself
-###
-
-resource "google_service_account" "externaldns" {
-  account_id   = "externaldns"
-  display_name = "ExternalDns"
-}
-
-resource "google_service_account_key" "externaldns" {
-  service_account_id = "${google_service_account.externaldns.name}"
-  public_key_type = "TYPE_X509_PEM_FILE"
-
-  depends_on = [
-    "google_service_account.externaldns"
-  ]
+  load_config_file = false
+  host = "${data.google_container_cluster.cluster.endpoint}"
+  cluster_ca_certificate = "${base64decode(data.google_container_cluster.cluster.master_auth.0.cluster_ca_certificate)}"
+  token = "${data.google_client_config.current.access_token}"
 }
 
 resource "google_service_account" "piazza" {
@@ -78,26 +65,11 @@ resource "google_storage_bucket_iam_member" "piazza" {
   member = "serviceAccount:${google_service_account.piazza.email}"
 
   depends_on = [
-    "google_storage_bucket.piazza_bucket",
-    "google_service-account.piazza"
+    google_storage_bucket.piazza_bucket,
+    google_service_account.piazza,
+    google_storage_bucket_acl.piazza_bucket_acl
   ]
 }
-
-##
-# Iam bindings for the various service accounts.
-##
-
-resource "google_project_iam_member" "externaldns_dns_admin" {
-  project = "${var.gcp_project_id}"
-  role    = "roles/dns.admin"
-
-  member = "serviceAccount:${google_service_account.externaldns.email}"
-
-  depends_on = [
-    "google_service_account.externaldns"
-  ]
-}
-
 
 ##
 # Finally tie everything back into our cluster
@@ -112,20 +84,6 @@ resource "kubernetes_namespace" "piazza" {
   }
 }
 
-resource "kubernetes_secret" "externaldns" {
-  metadata {
-    name = "externaldns"
-    namespace = "piazza"
-  }
-  data = {
-    "credentials.json" = "${base64decode(google_service_account_key.externaldns.private_key)}"
-  }
-
-  depends_on = [
-    "kubernetes_namespace.piazza"
-  ]
-}
-
 resource "kubernetes_secret" "piazza" {
   metadata {
     name = "piazza-serviceaccount"
@@ -138,27 +96,4 @@ resource "kubernetes_secret" "piazza" {
   depends_on = [
     "kubernetes_namespace.piazza"
   ]
-}
-
-resource "kubernetes_service_account" "tiller" {
-  metadata {
-    name = "tiller"
-    namespace = "kube-system"
-  }
-}
-
-resource "kubernetes_cluster_role_binding" "tiller" {
-  metadata {
-    name = "tiller"
-  }
-  role_ref {
-    api_group = "rbac.authorization.k8s.io"
-    kind      = "ClusterRole"
-    name      = "cluster-admin"
-  }
-  subject {
-    kind      = "ServiceAccount"
-    name      = "tiller"
-    namespace = "kube-system"
-  }
 }
