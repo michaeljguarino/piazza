@@ -1,5 +1,3 @@
-# Piazza
-
 A slack/IRC-like messaging system designed to be cheap, modern and distributable via kubernetes.
 
 An example deployment is available at https://chat.piazzaapp.com.
@@ -54,3 +52,18 @@ admin:
 gql:
   gcsBucket: piazza-uploads
 ```
+
+## More configuration
+
+| Parameter | Description | Default |
+| --------- | ----------- | ------- |
+| gql.replicaCount | number of api replicas | 2 |
+| rtc.replicaCount | number of rtc replicas | 2 |
+| www.replicaCount | number of www replicas | 1 |
+| {gql,rtc,www}.resources | resource configuration for the 3 underlying deployments | {} |
+| retentionPolicy.value | the number of days to keep messages by default | 5 |
+| notificationRetentionPolicy.value | the number of days to keep notifications | 5 |
+| ingress.dns | the dns name to register under | chat.piazzaapp.com |
+| ingress.enabled | whether to provision an ingress | true |
+
+In addition, it depends on the stable postgres and rabbitmq helm charts, consult them for further documentation

@@ -20,3 +20,6 @@ admin:
   handle: {{ .Values.adminHandle }}
   name: {{ .Values.adminName }}
   password: {{ randAlphaNum 26 }}
+
+ingress:
+  dns: {{ .Values.piazzaDns }}
