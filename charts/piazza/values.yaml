@@ -30,26 +30,26 @@ imagePullSecrets: []
 
 gql:
   port: 4000
-  image: gcr.io/piazza-247002/gql
+  image: gcr.io/piazzaapp/gql
   gcsBucket: piazzaapp-uploads
   resources: {}
   replicas: 2
 
 rtc:
   port: 4000
-  image: gcr.io/piazza-247002/rtc
+  image: gcr.io/piazzaapp/rtc
   replicas: 2
   resources: {}
 
 www:
   dns: chat.piazzaapp.com
   port: 80
-  image: gcr.io/piazza-247002/www
+  image: gcr.io/piazzaapp/www
   replicas: 1
   resources: {}
 
 cron:
-  image: gcr.io/piazza-247002/cron
+  image: gcr.io/piazzaapp/cron
   resources:
     requests:
       cpu: .1
