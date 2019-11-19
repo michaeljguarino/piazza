@@ -95,7 +95,7 @@ config :core, :start_broker, true
 
 config :arc,
   storage: Arc.Storage.GCS,
-  bucket: "piazzaapp-uploads"
+  bucket: "piazzaapp-uploads-test"
 
 config :goth,
   json: {:system, "GOOGLE_APPLICATION_CREDENTIALS"}

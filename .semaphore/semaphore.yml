@@ -9,13 +9,12 @@ blocks:
   dependencies: []
   task:
     secrets:
-    - name: gcp-test
+    - name: GCP
     jobs:
     - name: Test
       commands:
       - checkout
-      - echo $GOOGLE_APPLICATION_CREDENTIALS > key.json
-      - export GOOGLE_APPLICATION_CREDENTIALS="$(pwd)/key.json"
+      - export GOOGLE_APPLICATION_CREDENTIALS="/home/semaphore/.secrets/gcp-piazzaapp.json"
       - sem-version elixir 1.9.2
       - make testup
       - mix local.hex --force
