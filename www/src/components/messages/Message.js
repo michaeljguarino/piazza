@@ -248,6 +248,19 @@ function Waterline(props) {
   )
 }
 
+export const MessagePlaceholder = ({index}) => {
+  return (
+    <Box margin='small' direction='row' align='center' height='70px' width='100%' gap='small' pad='small'>
+      <Box round='small' height='30px' width='30px' background='light-3' />
+      <Box width='100%' gap='xsmall'>
+        <Box height='12px' width='10%' />
+        <Box height='12px' width={`${index % 2 === 0 ? 30 : 70}%`} background='light-3' />
+        <Box height='12px' width={`${index % 2 === 0 ? 60 : 20}%`} background='light-3' />
+      </Box>
+    </Box>
+  )
+}
+
 function Message(props) {
   const msgRef = useRef()
   const [hover, setHover] = useState(false)

@@ -1,5 +1,5 @@
 import React, {useState} from 'react'
-import Message from './Message'
+import Message, {MessagePlaceholder} from './Message'
 import { Subscription, useQuery } from 'react-apollo'
 import Scroller from '../utils/Scroller'
 import Loading from '../utils/Loading'
@@ -32,7 +32,6 @@ function MessageList(props) {
 
   let messageEdges = data.conversation.messages.edges
   let pageInfo = data.conversation.messages.pageInfo
-
   return (
     <DialogProvider>
     {(dialog, setDialog) => (
@@ -41,9 +40,12 @@ function MessageList(props) {
         setDialog(subscriptionData.data.dialog)
       }}>
       {() => (
+        <>
         <Scroller
           id='message-viewport'
           edges={messageEdges}
+          placeholder={(i) => <MessagePlaceholder index={i} />}
+          loading={loading}
           direction='up'
           style={{
             overflow: 'auto',
@@ -87,6 +89,7 @@ function MessageList(props) {
             })
           }}
         />
+        </>
     )}
     </Subscription>
     )}

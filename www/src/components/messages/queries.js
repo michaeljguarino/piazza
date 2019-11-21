@@ -6,7 +6,7 @@ export const MESSAGES_Q = gql`
   query ConversationQuery($conversationId: ID!, $cursor: String) {
     conversation(id: $conversationId) {
       id
-      messages(first: 25, after: $cursor) {
+      messages(first: 20, after: $cursor) {
         pageInfo {
           endCursor
           hasNextPage

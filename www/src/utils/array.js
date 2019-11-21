@@ -39,5 +39,11 @@ export function* chunk(array, chunkSize) {
   let i, j;
   for (i=0, j=array.length ; i<j; i += chunkSize) {
     yield array.slice(i,i + chunkSize);
+  }
 }
+
+export function* dupe(count, func) {
+  for (let i = 0; i < count; i++) {
+    yield func(i)
+  }
 }
