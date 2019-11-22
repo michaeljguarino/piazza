@@ -1,40 +1,49 @@
 import React, {useState, useRef, useCallback, useEffect} from 'react'
+import {Box} from 'grommet'
 import InfiniteLoader from 'react-window-infinite-loader'
-import {VariableSizeList} from 'react-window'
+import {VariableSizeList} from 'react-window-reversed'
 import Autosizer from 'react-virtualized-auto-sizer'
+import OnMediaLoaded from './OnMediaLoaded'
 
 const Item = ({ index, style, mapper, parentRef, isItemLoaded, placeholder, items }) => {
   if (!isItemLoaded(index)) {
-    return placeholder
+    return placeholder(index)
   }
 
-  return mapper(items[index], items[index + 1] || {}, style, parentRef);
+  return mapper(items[index], items[index + 1] || {}, parentRef, style);
 };
 
 const ItemWrapper = ({setSize, style, index, parentWidth, ...props}) => {
   const ref = useRef()
   useEffect(() => {
-    setSize(index, ref.current.getBoundingClientRect().height);
-  }, [parentWidth]);
+    if (!ref.current) return
 
-  return <div style={style} ref={ref}>
-    <Item style={style} index={index} {...props} />
-  </div>
+    setSize(index, ref.current.getBoundingClientRect().height);
+  }, [ref, parentWidth]);
+
+  return (
+    <OnMediaLoaded onLoaded={() => setSize(index, ref.current.getBoundingClientRect().height)}>
+      <div style={style}>
+        <Box ref={ref}>
+          <Item index={index} {...props} />
+        </Box>
+      </div>
+    </OnMediaLoaded>
+  )
 }
 
-export default function SmoothScroller({hasNextPage, parentRef, loading, items, loadNextPage, mapper, placeholder, ...props}) {
+export default function SmoothScroller({hasNextPage, scrollTo, loading, items, loadNextPage, mapper, onItemsRendered, ...props}) {
   const [listRef, setListRef] = useState(null)
   const sizeMap = useRef({});
   const setSize = useCallback((index, size) => {
     sizeMap.current = { ...sizeMap.current, [index]: size };
-    listRef && listRef.current.resetAfterIndex(index)
-  }, []);
+    listRef && listRef.resetAfterIndex(index)
+  }, [listRef]);
   const getSize = useCallback(index => sizeMap.current[index] || 50, []);
   const itemCount = hasNextPage ? items.length + 1 : items.length;
   const loadMoreItems = loading ? () => {} : loadNextPage;
   const isItemLoaded = index => !hasNextPage || index < items.length;
-
-  const ListItem = (props) => ItemWrapper({setSize, parentRef, mapper, isItemLoaded, items, ...props})
+  const ListItem = (props) => ItemWrapper({setSize, mapper, isItemLoaded, items, parentRef: listRef, ...props})
 
   return (
     <InfiniteLoader
@@ -46,18 +55,23 @@ export default function SmoothScroller({hasNextPage, parentRef, loading, items, 
       <Autosizer>
       {({height, width}) => (
         <VariableSizeList
+          reversed
           height={height}
           width={width}
           itemCount={itemCount}
           itemSize={getSize}
-          onItemsRendered={onItemsRendered}
+          scrollToAlignment={scrollTo}
+          onItemsRendered={(ctx) => {
+            onItemsRendered && onItemsRendered(ctx)
+            onItemsRendered(ctx)
+          }}
           ref={(listRef) => {
             setListRef(listRef)
             ref(ref)
           }}
           {...props}
         >
-          {(props) => <ListItem parentWidth={width} {...props} />}
+          {(props) => <ListItem setSize={setSize} parentWidth={width} {...props} />}
         </VariableSizeList>
       )}
       </Autosizer>

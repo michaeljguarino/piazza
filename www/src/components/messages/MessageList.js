@@ -4,6 +4,7 @@ import { Wifi, Close } from 'grommet-icons'
 import Message, { MessagePlaceholder } from './Message'
 import { Subscription, useQuery } from 'react-apollo'
 import Scroller from '../utils/Scroller'
+import SmoothScroller from '../utils/SmoothScroller'
 import Loading from '../utils/Loading'
 import { MESSAGES_Q, DIALOG_SUB } from './queries'
 import { Conversations } from '../login/MyConversations'
@@ -62,8 +63,9 @@ export default function MessageList() {
   const {scrollTo} = useContext(MessageScrollContext)
   const {loading, error, data, fetchMore, refetch} = useQuery(MESSAGES_Q, {
     variables: {conversationId: currentConversation.id},
-    fetchPolicy: 'cache-and-network'
   })
+  const parentRef = useRef()
+  const {setLastMessage} = useContext(VisibleMessagesContext)
 
   useEffect(() => {
     const timeout = ignore ? setTimeout(() => setIgnore(false), 15000) : null
@@ -89,7 +91,52 @@ export default function MessageList() {
         <AvailabilityDetector>
         {online => online ? <BackOnline refetch={refetch} /> : <Offline />}
         </AvailabilityDetector>
-        <Scroller
+        <Box width='100%' height='100%' ref={parentRef}>
+          <SmoothScroller
+            hasNextPage={pageInfo.hasNextPage}
+            loading={loading}
+            items={messageEdges}
+            scrollTo='start'
+            placeholder={(i) => <MessagePlaceholder index={i} />}
+            onItemsRendered={({visibleEndIndex}) => {
+              console.log(visibleEndIndex)
+              setLastMessage(messageEdges[visibleEndIndex].node)
+            }}
+            mapper={({node}, next, _ref, pos) => (
+              <Message
+                waterline={props.waterline}
+                key={node.id}
+                parentRef={parentRef}
+                pos={pos}
+                conversation={props.conversation}
+                message={node}
+                setReply={props.setReply}
+                dialog={dialog}
+                next={next.node} />
+            )}
+            loadNextPage={() => {
+              fetchMore({
+                variables: {conversationId: props.conversation.id, cursor: pageInfo.endCursor},
+                updateQuery: (prev, {fetchMoreResult}) => {
+                  const {edges, pageInfo} = fetchMoreResult.conversation.messages
+                  return edges.length ? {
+                    ...prev,
+                    conversation: {
+                      ...prev.conversation,
+                      messages: {
+                        ...prev.conversation.messages,
+                        edges: mergeAppend(edges, prev.conversation.messages.edges, (e) => e.node.id),
+                        pageInfo
+                      }
+                    }
+                  } : prev;
+                }
+              })
+            }}
+          />
+
+      </Box>
+        {/* <Scroller
           id='message-viewport'
           edges={edges}
           placeholder={(i) => <MessagePlaceholder key={i} index={i} />}
@@ -140,11 +187,12 @@ export default function MessageList() {
                 } : prev;
               }
             })
-          }} />
-        </>
+          }}
+        /> */}
+      </>
     )}
     </Subscription>
-    )}
+  )}
   </DialogProvider>
   )
 }

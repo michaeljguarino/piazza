@@ -18,8 +18,8 @@ import AppContext from './login/AppContext'
 export const ICON_HEIGHT = '20px'
 export const ICON_SPREAD = '9px'
 
-function DividerText({visible}) {
-  const last = lastMessage(visible)
+function DividerText(props) {
+  const last = props.lastMessage //|| lastMessage(props.visible)
   if (!last) return null
 
   return (

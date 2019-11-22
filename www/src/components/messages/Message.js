@@ -298,6 +298,8 @@ export default function Message({noHover, selected, scrollTo, ignoreScrollTo, me
 
   return (
     <>
+    <Waterline message={props.message} next={props.next} waterline={props.waterline} />
+    <DateDivider message={props.message} next={props.next} />
     <Box
       ref={msgRef}
       id={message.id}
@@ -318,8 +320,6 @@ export default function Message({noHover, selected, scrollTo, ignoreScrollTo, me
           {...props} />
       </Stack>
     </Box>
-    <Waterline message={message} next={props.next} waterline={props.waterline} />
-    <DateDivider message={message} next={props.next} />
     </>
   )
 }

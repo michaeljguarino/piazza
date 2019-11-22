@@ -5,7 +5,8 @@ export const VisibleMessagesContext = React.createContext({
   visible: {},
   addMessage: null,
   removeMessage: null,
-  clear: null
+  clear: null,
+  lastMessage: null
 })
 
 export const EditingMessageContext = React.createContext({
@@ -29,6 +30,7 @@ export function lastMessage(visible) {
 export default function VisibleMessages({children}) {
   const [visible, setVisible] = useState({})
   const [edited, setEdited] = useState(null)
+  const [lastMessage, setLastMessage] = useState(null)
 
   function addMessage(message) {
     if (visible[message.id]) return
@@ -47,8 +49,8 @@ export default function VisibleMessages({children}) {
   return (
     <EditingMessageContext.Provider value={{edited, setEdited}}>
       <VisibleMessagesContext.Provider
-        value={{visible, addMessage, removeMessage, clear}}>
-        {children(visible, clear)}
+        value={{visible, addMessage, removeMessage, clear, lastMessage, setLastMessage}}>
+        {props.children(visible, clear)}
       </VisibleMessagesContext.Provider>
     </EditingMessageContext.Provider>
   )
