@@ -20,3 +20,5 @@ config :goth, json: {:system, "GCP_CREDENTIALS"}
 
 # Do not print debug messages in production
 config :logger, level: :info
+
+config :core, public_key: {:core, "public_key.pem"}

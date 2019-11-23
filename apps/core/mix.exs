@@ -64,7 +64,7 @@ defmodule Core.MixProject do
       {:mojito, "~> 0.3.0"},
       {:ecto_enum, "~> 1.3.2"},
       {:guardian, "~> 1.2.1"},
-      {:piazza_core, "~> 0.1.2"},
+      {:piazza_core, "~> 0.1.5"},
       {:cachex, "~> 3.2"},
       {:libring, "~> 1.0"},
       {:botanist, "~> 0.1.0", git: "https://github.com/michaeljguarino/botanist.git", branch: "ecto3"},
