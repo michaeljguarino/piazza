@@ -261,7 +261,6 @@ function MentionManager(props) {
             onChange={state => {
               props.onChange(state)
               props.setEditorState(state.value)
-              editorRef.current.focus()
             }}
             placeholder='this is for talking'
           />

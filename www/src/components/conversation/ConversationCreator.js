@@ -11,7 +11,6 @@ import ConversationSearch from './ConversationSearch'
 
 function ConversationForm(props) {
   const [state, setState] = useState({public: true})
-  console.log(state)
   const [mutation] = useMutation(CREATE_CONVERSATION, {
     variables: {attributes: state},
     update: (cache, { data: { createConversation } }) => {
