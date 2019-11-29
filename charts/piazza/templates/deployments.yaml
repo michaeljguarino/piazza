@@ -17,6 +17,10 @@ spec:
         app.kubernetes.io/instance: {{ .Release.Name }}
     spec:
       serviceAccountName: piazza
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 6 }}
+      {{- end }}
       containers:
       - name: gql
         image: "{{ .Values.gql.image }}:{{ .Values.image.tag }}"
@@ -106,6 +110,10 @@ spec:
         app.kubernetes.io/instance: {{ .Release.Name }}
     spec:
       serviceAccountName: piazza
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 6 }}
+      {{- end }}
       containers:
       - name: rtc
         image: "{{ .Values.rtc.image }}:{{ .Values.image.tag }}"
@@ -195,6 +203,10 @@ spec:
         app.kubernetes.io/instance: {{ .Release.Name }}
     spec:
       serviceAccountName: piazza
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 6 }}
+      {{- end }}
       containers:
       - name: www
         image: "{{ .Values.www.image }}:{{ .Values.image.tag }}"

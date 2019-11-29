@@ -16,17 +16,20 @@ build: ## Build the Docker image
 ifeq ($(APP_NAME), www)
 	cd www && docker build -t $(APP_NAME):`cat ../VERSION` \
 							-t $(APP_NAME):latest \
-							-t gcr.io/$(GCP_PROJECT)/$(APP_NAME):`cat ../VERSION` .
+							-t gcr.io/$(GCP_PROJECT)/$(APP_NAME):`cat ../VERSION` \
+							-t dkr.piazzaapp.com/piazza/${APP_NAME}:`cat ../VERSION` .
 else
 	docker build --build-arg APP_NAME=$(APP_NAME) \
 		--build-arg APP_VSN=$(APP_VSN) \
 		-t $(APP_NAME):$(APP_VSN) \
 		-t $(APP_NAME):latest \
-		-t gcr.io/$(GCP_PROJECT)/$(APP_NAME):$(APP_VSN) .
+		-t gcr.io/$(GCP_PROJECT)/$(APP_NAME):$(APP_VSN) \
+		-t dkr.piazzaapp.com/piazza/${APP_NAME}:$(APP_VSN) .
 endif
 
 push: ## push to gcr
 	docker push gcr.io/$(GCP_PROJECT)/$(APP_NAME):$(APP_VSN)
+	docker push dkr.piazzaapp.com/piazza/${APP_NAME}:${APP_VSN}
 
 uninstall: ## purge the current helm installation
 	helm del --purge piazza

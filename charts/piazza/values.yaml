@@ -26,30 +26,31 @@ image:
   tag: "0.5.0"
   pullPolicy: Always
 
-imagePullSecrets: []
+imagePullSecrets:
+- name: chartmartcreds
 
 gql:
   port: 4000
-  image: gcr.io/piazzaapp/gql
+  image: dkr.piazzaapp.com/piazza/gql
   gcsBucket: piazzaapp-uploads
   resources: {}
   replicas: 2
 
 rtc:
   port: 4000
-  image: gcr.io/piazzaapp/rtc
+  image: dkr.piazzaapp.com/piazza/rtc
   replicas: 2
   resources: {}
 
 www:
   dns: chat.piazzaapp.com
   port: 80
-  image: gcr.io/piazzaapp/www
+  image: dkr.piazzaapp.com/piazza/www
   replicas: 1
   resources: {}
 
 cron:
-  image: gcr.io/piazzaapp/cron
+  image: dkr.piazzaapp.com/piazza/cron
   resources:
     requests:
       cpu: .1

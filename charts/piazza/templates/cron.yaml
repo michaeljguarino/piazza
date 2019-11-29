@@ -18,6 +18,10 @@ spec:
         spec:
           restartPolicy: Never
           serviceAccountName: piazza
+          {{- with .Values.imagePullSecrets }}
+          imagePullSecrets:
+          {{- toYaml . | nindent 10 }}
+          {{- end }}
           containers:
           - name: cron
             image: "{{ .Values.cron.image }}:{{ .Values.image.tag }}"
