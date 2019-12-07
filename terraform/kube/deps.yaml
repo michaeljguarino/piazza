@@ -1,0 +1,4 @@
+dependencies:
+- type: terraform
+  name: gcp-bootstrap
+  repo: chartmart
