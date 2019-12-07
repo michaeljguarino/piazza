@@ -413,7 +413,7 @@ defmodule GraphQl do
           error -> error
         end
       rescue
-        error -> {:error, Exception.message(error)}
+        error -> {:error, GraphQl.Errors.message(error)}
       end
     end
   end
