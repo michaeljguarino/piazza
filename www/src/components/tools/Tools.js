@@ -1,24 +1,17 @@
-
 import React from 'react'
 import {Box} from 'grommet'
+import {useHistory} from 'react-router-dom'
 import {Emoji, Iteration, Keyboard} from 'grommet-icons'
 import {DropdownItem} from '../users/Me'
 import Themes from '../themes/Themes'
 import Modal, {ModalHeader} from '../utils/Modal'
-import StructuredMessageTester from './StructuredMessageTester'
 import {EmojiForm} from '../emoji/EmojiCreator'
 
 function Tools(props) {
+  let history = useHistory()
   return (
     <Box pad={{bottom: 'xxsmall'}}>
-      <Modal target={<DropdownItem icon={Keyboard} text='structured message creator' />}>
-      {setOpen => (
-        <Box>
-          <ModalHeader text='Structured Message Developer' setOpen={setOpen} />
-          <StructuredMessageTester callback={() => setOpen(false)} />
-        </Box>
-      )}
-      </Modal>
+      <DropdownItem icon={Keyboard} text='structured message creator' onClick={() => history.push("/messageeditor")} />
       <Modal target={<DropdownItem icon={Iteration} text='theme selector' />}>
         {setOpen => (<Themes setOpen={setOpen} />)}
       </Modal>

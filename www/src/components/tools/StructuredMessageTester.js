@@ -1,8 +1,9 @@
-import React, {useState, useRef} from 'react'
+import React, {useState} from 'react'
 import {Box} from 'grommet'
-import { Editor } from 'slate-react'
-import Plain from 'slate-plain-serializer'
+import {useHistory} from 'react-router-dom'
+import CodeEditor from '../utils/CodeEditor'
 import StructuredMessage from '../messages/StructuredMessage'
+import {ModalHeader} from '../utils/Modal'
 const parseXml = require('@rgrove/parse-xml')
 
 function parseMessage(msg) {
@@ -39,26 +40,26 @@ const DUMMY_MESSAGE = `<root>
 `
 
 function StructuredMessageTester(props) {
-  const editorRef = useRef()
-  const [message, setMessage] = useState(parseMessage(DUMMY_MESSAGE))
-
+  const [message, setMessage] = useState(DUMMY_MESSAGE)
+  const [parsed, setParsed] = useState(parseMessage(message))
+  let history = useHistory()
   return (
-    <Box style={{maxHeight: '80vh', minWidth: '40vw'}} pad='medium' gap='medium'>
-      <Box direction='row' gap='medium' fill='horizontal'>
-        <Box border round='small' pad='small' style={{minWidth: '60%'}}>
-          <Editor
-            ref={editorRef}
-            defaultValue={Plain.deserialize(DUMMY_MESSAGE)}
-            onChange={state => {
-              const text = Plain.serialize(state.value)
-              const parsed = parseMessage(text)
-              if (parsed) {
-                setMessage(parsed)
-              }
-            }} />
-        </Box>
-        <Box pad='xsmall' border round='small' fill='horizontal'>
-          {message}
+    <Box>
+      <ModalHeader big text='Structured Message Developer' setOpen={() => history.push("/")} />
+      <Box style={{maxHeight: '80vh', minWidth: '60vw'}} pad='medium' gap='medium'>
+        <Box direction='row' gap='medium' fill='horizontal'>
+          <Box width='60%' border>
+            <CodeEditor value={message} onChange={(text) =>  {
+                setMessage(message)
+                const parsed = parseMessage(text)
+                if (parsed) {
+                  setParsed(parsed)
+                }
+            }} lang='xml' />
+          </Box>
+          <Box pad='xsmall' border fill='horizontal'>
+            {parsed}
+          </Box>
         </Box>
       </Box>
     </Box>

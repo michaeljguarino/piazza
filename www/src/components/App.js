@@ -7,6 +7,7 @@ import Theme from './Theme'
 // import logo from './logo.svg';
 import '../styles/App.css';
 import Login from './Login'
+import StructuredMessageTester from './tools/StructuredMessageTester'
 
 
 function App() {
@@ -18,6 +19,7 @@ function App() {
           <Route exact path="/" component={Piazza} />
           <Route exact path="/login" component={Login} />
           <Route path="/invite/:inviteToken" component={Login} />
+          <Route path="/messageeditor" component={StructuredMessageTester} />
         </Switch>
       </Grommet>
     )}
