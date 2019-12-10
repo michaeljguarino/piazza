@@ -10,7 +10,7 @@ defmodule Core.Application do
     children = [
       Core.Repo,
       Core.PubSub.Broadcaster,
-      worker(Piazza.Crypto.License, [conf(:license), conf(:public_key), &License.invalid/1]),
+      worker(Piazza.Crypto.License, [conf(:license), conf(:public_key), &License.invalid/1, &License.validate/2]),
       worker(Cachex, [:participants, [expiration: expiration(default: :timer.minutes(20))]])
     ] ++ conf(:consumers, [])
       ++ broker()

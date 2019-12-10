@@ -92,6 +92,7 @@ config :rtc, :start_broker, true
 config :libcluster, :topologies, []
 
 config :core, :start_broker, true
+config :core, :chartmart_url, "https://mart.piazzaapp.com/auth/license"
 
 config :arc,
   storage: Arc.Storage.GCS,

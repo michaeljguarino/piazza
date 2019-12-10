@@ -29,7 +29,8 @@ config :core, Core.Repo,
   database: "piazza",
   username: "piazza",
   password: get_env("POSTGRES_PASSWORD"),
-  hostname: "piazza-postgresql"
+  hostname: "piazza-postgresql",
+  pool_size: 10
 
 config :gql, :giphy_secret, get_env("GIPHY_SECRET")
 config :core, :rtc_host, "piazza-rtc"
