@@ -1,5 +1,5 @@
-gcp_project_id = {{ .Values.gcpProjectId | quote }}
+gcp_project_id = {{ .Values.gcp_project_id | quote }}
 
-piazza_bucket = {{ .Values.piazzaBucket | quote }}
+piazza_bucket = {{ .Values.piazza_bucket | quote }}
 
 cluster_name = {{ .Cluster | quote }}

@@ -1,0 +1,61 @@
+name: piazza-gcp
+description: Constructs a gke cluster and installs the bootstrap chart
+provider: GCP
+sections:
+- name: chartmart
+  items:
+  - type: TERRAFORM
+    name: gcp-bootstrap
+    configuration:
+    - name: gcp_project_id
+      documentation: gcp project to use
+      type: STRING
+    - name: dns_zone_name
+      documentation: managed zone name (must be globally unique)
+      type: STRING
+  - type: TERRAFORM
+    name: kube
+    configuration: []
+  - type: HELM
+    name: bootstrap
+    configuration:
+    - name: provider
+      documentation: externaldns provider name (choose google for google cloud dns)
+      type: STRING
+      default: google
+    - name: txt_owner
+      documentation: arbitrary name for externaldns to use to track ownership of dns records
+      type: STRING
+      default: chartmart
+    - name: dns_domain
+      documentation: top level domain to use
+      type: STRING
+- name: piazza
+  items:
+  - type: TERRAFORM
+    name: kube
+    configuration:
+    - name: gcpProjectId
+      documentation: The project id to use
+      type: STRING
+    - name: piazzaBucket
+      documentation: globally unique gcp storage bucket for files/images/etc
+      type: STRING
+  - type: HELM
+    name: piazza
+    configuration:
+    - name: giphySecret
+      documentation: giphy api key to use for the /giphy command
+      type: STRING
+    - name: adminEmail
+      documentation: email of the seed admin user
+      type: STRING
+    - name: adminName
+      documentation: full name of the seed admin user
+      type: STRING
+    - name: adminHandle
+      documentation: handle for the admin user
+      type: STRING
+    - name: piazzaDns
+      documentation: FQDN for your installation (eg chat.piazzaapp.com)
+      type: STRING
