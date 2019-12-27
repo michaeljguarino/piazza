@@ -1,0 +1,11 @@
+name: piazza/integration
+spec:
+- type: STRING
+  name: description
+  required: true
+- type: STRING
+  name: webhook
+  required: true
+- type: STRING
+  name: documentation
+
