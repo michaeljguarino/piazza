@@ -3,6 +3,7 @@ defmodule GraphQl.EmojiMutationTest do
   @url "https://storage.googleapis.com/piazzaapp-assets/fb_profile.jpg"
 
   describe "createEmoji" do
+    @tag :skip
     test "users can create new emoji" do
       {:ok, %{data: %{"createEmoji" => result}}} = run_q("""
         mutation CreateEmoji($attributes: EmojiAttributes!) {

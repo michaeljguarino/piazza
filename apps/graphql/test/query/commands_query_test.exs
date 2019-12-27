@@ -1,5 +1,25 @@
 defmodule GraphQl.CommandsQueryTest do
   use GraphQl.SchemaCase, async: true
+  import Mock
+
+  @url "#{Application.get_env(:core, :chartmart_url)}/gql"
+  @body Jason.encode!(%{data: %{integrations: %{
+    pageInfo: %{hasNextPage: true, endCursor: "cursor"},
+    edges: [
+      %{
+        node: %{
+          id: "some-id",
+          name: "github",
+          description: "description",
+          icon: "icon",
+          spec: %{
+            documentation: "docs",
+            webhook: "webhook"
+          }
+        }
+      },
+    ]
+  }}})
 
   describe "Commands" do
     test "It will list available commands" do
@@ -51,9 +71,9 @@ defmodule GraphQl.CommandsQueryTest do
   end
 
   describe "#installableCommands" do
-    test "It will list installable commands in the system" do
-      [first | installables] = insert_list(3, :installable_command)
-      insert(:command, name: first.name)
+    test_with_mock "It will list installable commands in the system", Mojito, [
+      post: fn @url, _, _ -> {:ok, %Mojito.Response{body: @body}} end
+    ] do
 
       {:ok, %{data: %{"installableCommands" => found}}} = run_q("""
         query {
@@ -68,8 +88,11 @@ defmodule GraphQl.CommandsQueryTest do
         }
       """, %{}, %{current_user: insert(:user)})
 
-      found_installables = from_connection(found)
-      assert ids_equal(installables, found_installables)
+      assert length(found["edges"]) == 1
+      assert from_connection(found) |> Enum.all?(fn
+        %{"id" => _, "name" => _} -> true
+        _ -> false
+      end)
     end
   end
 end

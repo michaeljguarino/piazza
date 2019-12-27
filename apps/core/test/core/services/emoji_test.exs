@@ -5,6 +5,7 @@ defmodule Core.Models.EmojiTest do
   @url "https://storage.googleapis.com/piazzaapp-assets/fb_profile.jpg"
 
   describe "#create_emoji" do
+    @tag :skip
     test "Users can create custom emoji" do
       user = insert(:user)
       {:ok, emoji} = EmojiService.create_emoji(%{name: "michael", image: @url}, user)

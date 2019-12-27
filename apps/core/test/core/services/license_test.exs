@@ -1,5 +1,5 @@
 defmodule Core.Services.LicenseTest do
-  use Core.DataCase, async: true
+  use Core.DataCase
   alias Core.Services.License
   alias Piazza.Crypto.License.State
   alias Piazza.Crypto.RSA
@@ -17,7 +17,7 @@ defmodule Core.Services.LicenseTest do
     end
 
     test "For expired licenses it will request a refreshed license" do
-      url = conf(:chartmart_url)
+      url = "#{conf(:chartmart_url)}/auth/license"
       refreshed_license = conf(:license)
 
       with_mock Mojito, [post: fn ^url, _, body ->

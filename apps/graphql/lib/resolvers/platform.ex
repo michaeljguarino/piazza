@@ -13,10 +13,8 @@ defmodule GraphQl.Resolvers.Platform do
     |> paginate(args)
   end
 
-  def list_installable_commands(args, _) do
-    InstallableCommand.uninstalled()
-    |> InstallableCommand.ordered()
-    |> paginate(args)
+  def list_installable_commands(%{first: first} = args, _) do
+    GraphQl.Proxy.Chartmart.list_integrations(first, args[:after])
   end
 
   def search_commands(%{name: name} = args, _) do
