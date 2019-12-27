@@ -15,11 +15,12 @@ function InstallableCommand(props) {
     <Box
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
+      style={{cursor: 'pointer'}}
       fill='horizontal'
       direction='row'
       align='center'
       pad='small'
-      gap='xsmall'
+      gap='small'
       background={hover ? 'lightHover' : null}>
       <Box width='45px' align='center' justify='center'>
         <img alt='' src={props.installable.avatar} width='45px' height='45px' />

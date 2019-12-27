@@ -24,11 +24,10 @@ function CommandDisplay(props) {
       fill='horizontal'
       direction='row'
       align='center'
+      gap='small'
       pad={props.pad}
       background={showHover ? 'lightHover' : null}>
-      <Box width='45px' align='center' justify='center'>
-        <Avatar user={props.command.bot} />
-      </Box>
+      <Avatar user={props.command.bot} rightMargin='0px' />
       <Box>
         <Box ref={dropRef} direction='row' align='center'>
           <Anchor onClick={() => setDropOpen(true)}>
@@ -87,15 +86,14 @@ function BotDisplay(props) {
       style={{cursor: 'pointer'}}
       direction='row'
       align='center'
+      gap='xsmall'
       pad={props.pad || 'xxsmall'}
       onClick={() => props.onClick && props.onClick(props.user)}
       fill='horizontal'>
       {props.disableEdit ? <Avatar {...props} /> : <EditableAvatar {...props} />}
       <Box>
-        <Box>
-          <Text size='small' weight='bold'>{"@" + props.user.handle}</Text>
-          <Text size='small' color='dark-6'>{props.user.name}</Text>
-        </Box>
+        <Text size='small' weight='bold'>{"@" + props.user.handle}</Text>
+        <Text size='small' color='dark-6'>{props.user.name}</Text>
       </Box>
     </Box>
   )
