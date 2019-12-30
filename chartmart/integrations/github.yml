@@ -1,6 +1,10 @@
 description: Notifies you of things going on in your repos
 icon: https://image.flaticon.com/icons/png/512/25/25231.png
 name: github
+sourceUrl: https://github.com/michaeljguarino/piazza
+tags:
+- tag: git
+- tag: github
 spec:
   description: Notifies you of things going on in your repos
   documentation: "* /github **subscribe** _repo_ - Configures the github-side webhook and allows github events to be routed to different channels"
