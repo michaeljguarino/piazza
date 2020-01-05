@@ -161,7 +161,7 @@ function MessageBody(props) {
   return (
     <Box fill='horizontal' background={background}>
       <PinHeader {...props.message} />
-      <Box direction='row' pad={{vertical: 'xsmall', left: 'small'}}>
+      <Box direction='row' pad={{vertical: 'xsmall', horizontal: 'small'}}>
         {!consecutive && <Avatar user={props.message.creator} /> }
         {consecutive && <Box width='45px'></Box>}
         <Box fill={props.editing ? 'horizontal' : false}>

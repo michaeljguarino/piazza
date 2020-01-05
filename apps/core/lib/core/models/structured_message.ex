@@ -3,7 +3,7 @@ defmodule Core.Models.StructuredMessage do
 
   schema do
     component "box" do
-      attributes ~w(direction width height pad margin align justify gap)
+      attributes ~w(direction width height pad margin align justify gap fill color)
       parents ~w(root box attachment)
     end
 

@@ -1,6 +1,6 @@
 import React, {useState} from 'react'
 import {Box, Text} from 'grommet'
-import {Copy} from 'grommet-icons'
+import {Copy, Close} from 'grommet-icons'
 import {CopyToClipboard} from 'react-copy-to-clipboard'
 import Pill from './Pill'
 
@@ -13,22 +13,21 @@ function trimmed(link) {
   return link
 }
 
-function Copyable(props) {
+function Copyable({text, pillText, displayText}) {
   const [display, setDisplay] = useState(false)
   const [hover, setHover] = useState(false)
   return (
     <>
-    <CopyToClipboard text={props.text} onCopy={() =>  setDisplay(true)}>
+    <CopyToClipboard text={text} onCopy={() =>  setDisplay(true)}>
       <Box
         onMouseEnter={() => setHover(true)}
         onMouseLeave={() => setHover(false)}
         style={{cursor: 'pointer'}}
         direction='row'
         align='center'
-        border={hover ? 'full' : null}
         round='xsmall'
-        pad={hover ? {horizontal: 'xsmall'} : null}>
-        <Text size='small'>{trimmed(props.text)}</Text>
+        gap='xsmall'>
+        <Text size='small'>{trimmed(displayText || text)}</Text>
         {hover && (
           <Box animation={{type: 'fadeIn', duration: 200}}>
             <Copy size='12px' />
@@ -38,7 +37,10 @@ function Copyable(props) {
     </CopyToClipboard>
     {display && (
       <Pill background='status-ok' onClose={() => setDisplay(false)}>
-        <Text>{props.pillText}</Text>
+        <Box direction='row' align='center' gap='small'>
+          <Text>{pillText}</Text>
+          <Close style={{cursor: 'pointer'}} size='15px' onClick={() => setDisplay(false)} />
+        </Box>
       </Pill>
     )}
     </>

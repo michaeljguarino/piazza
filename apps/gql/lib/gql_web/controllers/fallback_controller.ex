@@ -11,4 +11,5 @@ defmodule GqlWeb.FallbackController do
 
   def error(:invalid_password), do: {401, "Invalid Password"}
   def error(:not_found), do: {404, "Not Found"}
+  def error(:invalid_argument), do: {402, "Invalid argument"}
 end

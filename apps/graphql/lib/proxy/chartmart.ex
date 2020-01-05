@@ -29,7 +29,6 @@ defmodule GraphQl.Proxy.Chartmart do
       query: @intg_doc,
       variables: prune(limit: limit, cursor: cursor)
     }))
-    |> IO.inspect()
     |> decode("integrations")
     |> as_connection(fn %{"node" => node} ->
       %{

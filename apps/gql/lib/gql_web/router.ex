@@ -39,7 +39,8 @@ defmodule GqlWeb.Router do
   scope "/external", GqlWeb do
     pipe_through [:api]
 
-    post  "/incoming_webhooks/:secure_id", IncomingWebhookController, :dispatch
+    post "/incoming_webhooks/:secure_id", IncomingWebhookController, :dispatch
+    post "/slack/incoming_webhooks/:secure_id", IncomingWebhookController, :slack_dispatch
     post "/webhooks/github", ExternalWebhookController, :github
   end
 

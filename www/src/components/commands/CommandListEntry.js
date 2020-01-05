@@ -101,7 +101,7 @@ function BotDisplay(props) {
 
 function CommandDetail(props) {
   return (
-    <Box pad='small' style={{minWidth: '400px'}}>
+    <Box pad='small' style={{minWidth: '450px'}}>
       <Box direction='row' align='center'>
         <Box width='100%' direction='row'>
           <Text weight="bold" size='small' margin='5px'>/{props.command.name}</Text>
@@ -128,9 +128,9 @@ function CommandDetail(props) {
             <TableRow>
               <TableCell><strong>Incoming Webhook</strong></TableCell>
               <TableCell>
-                <Box direction='row' align='center'>
+                <Box direction='row' align='center' gap='xsmall'>
                   <Copyable text={props.command.incomingWebhook.url} pillText='incoming webhook copied!' />
-                  <Text margin={{left: '5px'}} size='small'>({props.command.incomingWebhook.conversation.name})</Text>
+                  <Text size='small'>({props.command.incomingWebhook.conversation.name})</Text>
                 </Box>
               </TableCell>
             </TableRow>
