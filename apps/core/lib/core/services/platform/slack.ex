@@ -53,7 +53,7 @@ defmodule Core.Services.Platform.Slack do
   defp attachment(%{"color" => color, "text" => text}) do
     %{
       _type: "attachment",
-      attributes: %{accent: color, pad: "small"},
+      attributes: %{accent: color, pad: "small", margin: %{top: "xsmall"}},
       children: [
         %{_type: "markdown", attributes: %{value: to_markdown(text)}}
       ]

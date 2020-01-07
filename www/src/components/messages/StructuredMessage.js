@@ -35,9 +35,9 @@ function box(props) {
 
 function attachment(props, i) {
   const {children, attributes} = props
-  const {accent, ...rest} = attributes || {}
+  const {accent, margin, ...rest} = attributes || {}
   return (
-    <Box key={props.key} border background='white'>
+    <Box key={props.key} margin={margin} border background='white'>
       <Box {...rest} style={{
         borderLeftStyle: 'solid',
         borderLeftWidth: '2px',
