@@ -5,10 +5,11 @@ defmodule Core.PubSub.Consumers.Fanout.ConversationsTest do
 
   describe "MessageCreated" do
     test "It will fan out to all participants" do
-      %{conversation: conv} = message = insert(:message)
-      participants = insert_list(3, :participant, conversation: conv)
+      conv = insert(:conversation)
+      [%{user: user} | _] = participants = insert_list(3, :participant, conversation: conv)
+      message = insert(:message, conversation: conv, creator: user)
 
-      event = %PubSub.MessageCreated{item: message}
+      event = %PubSub.MessageCreated{item: message, actor: message.creator}
       :ok = Fanout.handle_event(event)
 
       for %{user_id: id} <- participants,
@@ -22,10 +23,11 @@ defmodule Core.PubSub.Consumers.Fanout.ConversationsTest do
 
   describe "MessageUpdated" do
     test "It will fan out to all participants" do
-      %{conversation: conv} = message = insert(:message)
-      participants = insert_list(3, :participant, conversation: conv)
+      conv = insert(:conversation)
+      [%{user: user} | _] = participants = insert_list(3, :participant, conversation: conv)
+      message = insert(:message, conversation: conv, creator: user)
 
-      event = %PubSub.MessageUpdated{item: message}
+      event = %PubSub.MessageUpdated{item: message, actor: message.creator}
       :ok = Fanout.handle_event(event)
 
       for %{user_id: id} <- participants,
@@ -39,10 +41,11 @@ defmodule Core.PubSub.Consumers.Fanout.ConversationsTest do
 
   describe "MessageDeleted" do
     test "It will fan out to all participants" do
-      %{conversation: conv} = message = insert(:message)
-      participants = insert_list(3, :participant, conversation: conv)
+      conv = insert(:conversation)
+      [%{user: user} | _] = participants = insert_list(3, :participant, conversation: conv)
+      message = insert(:message, conversation: conv, creator: user)
 
-      event = %PubSub.MessageDeleted{item: message}
+      event = %PubSub.MessageDeleted{item: message, actor: message.creator}
       :ok = Fanout.handle_event(event)
 
       for %{user_id: id} <- participants,
