@@ -1,22 +1,37 @@
 defmodule Core.Services.License do
-  def validate(license, state) do
-    %{"expires_at" => expiry, "refresh_token" => token} =
-      Jason.decode!(license)
+  alias Core.Models.User
+  alias Core.License
+  alias Core.License.{Policy, Limits, FailureHandler}
 
-    expiry
-    |> Timex.parse!("{ISO:Extended}")
-    |> Timex.before?(Timex.now())
-    |> case do
-      true -> %{state | license: refetch_license(token)}
-      false -> state
+  def validate(license, state) do
+    %License{policy: policy} = decoded = License.from_json!(license)
+
+    with {:ok, license} <- check_expiration(decoded),
+         true <- check_limits(policy) do
+      update_state(state, license)
+    else
+      _ ->
+        FailureHandler.failed()
+        state
     end
   end
+
+  def update_state(state, :pass), do: state
+  def update_state(state, license), do: %{state | license: license}
 
   @doc """
   Force kill the app if the license is invalid
   """
-  def invalid(_) do
-    :init.stop()
+  def invalid(_), do: FailureHandler.failed()
+
+  def check_expiration(%License{expires_at: expiry, refresh_token: token}) do
+    expiry
+    |> Timex.parse!("{ISO:Extended}")
+    |> Timex.before?(Timex.now())
+    |> case do
+      true -> refetch_license(token)
+      false -> {:ok, :pass}
+    end
   end
 
   @headers [
@@ -28,9 +43,17 @@ defmodule Core.Services.License do
     payload = Jason.encode!(%{refresh_token: token})
     with {:ok, %{body: body}} <- Mojito.post(chartmart_url(), @headers, payload),
         %{"license" => license} <- Jason.decode!(body) do
-      license
+      {:ok, license}
     else
-      _ -> :init.stop()
+      _ -> :error
+    end
+  end
+
+  def check_limits(%Policy{free: true}), do: true
+  def check_limits(%Policy{limits: %Limits{user: user_limit}}) do
+    case Core.Repo.aggregate(User, :count, :id) do
+      count when count > user_limit -> false
+      _ -> true
     end
   end
 

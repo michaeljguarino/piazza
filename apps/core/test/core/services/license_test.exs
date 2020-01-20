@@ -32,7 +32,31 @@ defmodule Core.Services.LicenseTest do
         assert state.license == refreshed_license
       end
     end
+
+    test "If limits are within boundaries, it will pass" do
+      license = mk_license()
+      insert_list(3, :user)
+      %{license: "passed"} = License.validate(license, %State{license: "passed"})
+    end
+
+    test "If limits exceed boundaries, it will fail" do
+      pid = self()
+      insert_list(6, :user)
+      with_mock Core.License.FailureHandler, [failed: fn -> send pid, :failed end] do
+        License.validate(mk_license(), %State{license: :failed})
+
+        assert_receive :failed
+      end
+    end
   end
 
+  defp mk_license() do
+    Jason.encode!(%{
+      expires_at: Timex.now() |> Timex.shift(days: 5),
+      policy: %{
+        limits: %{user: 5}
+      }
+    })
+  end
   defp conf(key), do: Application.get_env(:core, key)
 end
