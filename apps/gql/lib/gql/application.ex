@@ -2,15 +2,16 @@ defmodule Gql.Application do
   # See https://hexdocs.pm/elixir/Application.html
   # for more information on OTP Applications
   @moduledoc false
-  alias Thrift.Generated.GqlService.Binary.Framed.Server
   use Application
+  import Supervisor.Spec
 
   def start(_type, _args) do
     topologies = Application.get_env(:libcluster, :topologies)
     children = [
       GqlWeb.Endpoint,
-      {Cluster.Supervisor, [topologies, [name: Gql.ClusterSupervisor]]}
-    ] ++ start_server()
+      {Cluster.Supervisor, [topologies, [name: Gql.ClusterSupervisor]]},
+      supervisor(GRPC.Server.Supervisor, [{Core.Piazza.Endpoint, 9090}])
+    ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
@@ -18,12 +19,12 @@ defmodule Gql.Application do
     Supervisor.start_link(children, opts)
   end
 
-  def start_server() do
-    case Application.get_env(:gql, :start_thrift_server) do
-      true -> [server_child_spec(9090)]
-      _ -> []
-    end
-  end
+  # def start_server() do
+  #   case Application.get_env(:gql, :start_thrift_server) do
+  #     true -> [server_child_spec(9090)]
+  #     _ -> []
+  #   end
+  # end
 
   # Tell Phoenix to update the endpoint configuration
   # whenever the application is updated.
@@ -32,11 +33,7 @@ defmodule Gql.Application do
     :ok
   end
 
-  defp server_child_spec(port) do
-    %{
-      id: Server,
-      start: {Server, :start_link, [Core.ServiceHandler, port]},
-      type: :supervisor
-    }
-  end
+  # defp server_child_spec(port) do
+  #   supervisor(GRPC.Server.Supervisor, [{Core.Piazza.Endpoint, port}])
+  # end
 end

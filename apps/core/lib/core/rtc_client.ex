@@ -1,16 +1,26 @@
 defmodule Core.RtcClient do
-  alias Thrift.Generated.RtcService.Binary.Framed.Client
-  require Logger
+  use GenServer
 
-  def rpc(method, args) when is_list(args) do
-    with {:ok, client} <- Client.start_link(host(), 9090) do
-      apply(Client, method, [client | args])
-    else
-      error ->
-        Logger.error("Failed to bootstrap client: #{inspect(error)}")
+  def start_link(), do: GenServer.start_link(__MODULE__, :ok, name: __MODULE__)
+
+  def init(:ok) do
+    send self(), :init
+    {:ok, nil}
+  end
+
+  def handle_info(:init, _) do
+    case Application.get_env(:grpc, :start_server) do
+      true -> {:noreply, GRPC.Stub.connect("#{host()}:9090")}
+      false -> {:noreply, {:ok, :dummy}}
     end
   end
-  def rpc(method, arg), do: rpc(method, [arg])
+  def handle_info(_, state), do: {:noreply, state}
+
+  def handle_call(:chan, _, chan) do
+    {:reply, chan, chan}
+  end
+
+  def chan(), do: GenServer.call(__MODULE__, :chan)
 
   defp host(), do: Application.get_env(:core, :rtc_host)
 end

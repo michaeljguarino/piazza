@@ -1,7 +1,7 @@
 defmodule RtcWeb.ConversationChannel do
   use RtcWeb, :channel
   alias Core.Services.Conversations
-  alias Thrift.Generated.PingParticipant
+  alias Core.{PingConversationRequest, LeaveConversationRequest}
 
   @ping_interval 120_000
 
@@ -34,15 +34,21 @@ defmodule RtcWeb.ConversationChannel do
     {:reply, :ok, socket}
   end
 
-  # def terminate(_, %{topic: "conversation:" <> id} = socket) do
-  #   assign(socket, :conversation_id, id)
-  #   |> ping()
-  # end
+def terminate(_, %{topic: "conversation:" <> id} = socket) do
+  with {:ok, chan} <- Rtc.GqlClient.chan() do
+    Core.Piazza.Stub.leave_conversation(chan, LeaveConversationRequest.new(
+      conversation_id: id,
+      user_id: socket.assigns.user_id
+    ))
+  end
+end
 
   defp ping(socket) do
-    Rtc.GqlClient.rpc(:ping_participant, %PingParticipant{
-      conversation_id: socket.assigns.conversation_id,
-      user_id: socket.assigns.user.id
-    })
+    with {:ok, chan} <- Rtc.GqlClient.chan() do
+      Core.Piazza.Stub.ping_conversation(chan, PingConversationRequest.new(
+        conversation_id: socket.assigns.conversation_id,
+        user_id: socket.assigns.user.id
+      ))
+    end
   end
 end

@@ -112,6 +112,7 @@ config :joken, invite_secret: "super_secret"
 config :gql,   github_secret: "super super secret"
 config :gql,   github_incoming_webhook: "https://dummy.webhook"
 
+config :grpc, start_server: true
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.

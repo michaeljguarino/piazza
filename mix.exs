@@ -24,6 +24,8 @@ defmodule Piazza.MixProject do
       {:ecto, "~> 3.2", override: true},
       {:distillery, "~> 2.1"},
       {:plug_cowboy, "~> 2.0", override: true},
+      {:grpc, github: "elixir-grpc/grpc"},
+      {:cowlib, "~> 2.8.0", hex: :grpc_cowlib, override: true},
       {:hackney, "~> 1.15.1", git: "https://github.com/benoitc/hackney.git", override: true}
     ]
   end

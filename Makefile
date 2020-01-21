@@ -100,3 +100,6 @@ bootstrap: ## initialize your helm/kubernetes environment
 
 	# initialize helm
 	helm init --service-account=tiller
+
+grpc:
+	protoc --elixir_out=plugins=grpc:./apps/core/lib/core proto/piazza.proto

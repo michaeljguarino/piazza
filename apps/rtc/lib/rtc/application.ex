@@ -1,8 +1,7 @@
 defmodule Rtc.Application do
   @moduledoc false
-
   use Application
-  alias Thrift.Generated.RtcService.Binary.Framed.Server
+  import Supervisor.Spec
 
   def start(_type, _args) do
     topologies = Application.get_env(:libcluster, :topologies)
@@ -10,8 +9,10 @@ defmodule Rtc.Application do
       RtcWeb.Endpoint,
       Rtc.Presence,
       {Absinthe.Subscription, [RtcWeb.Endpoint]},
-      {Cluster.Supervisor, [topologies, [name: Rtc.ClusterSupervisor]]}
-    ] ++ broker() ++ thrift_server()
+      {Cluster.Supervisor, [topologies, [name: Rtc.ClusterSupervisor]]},
+      supervisor(GRPC.Server.Supervisor, [{Rtc.Piazza.Endpoint, 9090}]),
+      worker(Rtc.GqlClient, []),
+    ] ++ broker()
 
     opts = [strategy: :one_for_one, name: Rtc.Supervisor]
     Supervisor.start_link(children, opts)
@@ -29,21 +30,5 @@ defmodule Rtc.Application do
       true -> [{Rtc.Aquaduct.Broker, []}]
       _ -> []
     end
-  end
-
-  def thrift_server() do
-    if Application.get_env(:rtc, :start_thrift_server) do
-      [server_child_spec(9090)]
-    else
-      []
-    end
-  end
-
-  defp server_child_spec(port) do
-    %{
-      id: Server,
-      start: {Server, :start_link, [Rtc.ServiceHandler, port]},
-      type: :supervisor
-    }
   end
 end

@@ -1,7 +1,7 @@
 defmodule Core.PubSub.Consumers.Notifications.ConversationsTest do
   use Core.DataCase, async: true
   import Mock
-  alias Thrift.Generated.{ActiveUsers, ActiveUser}
+  alias Core.{ActiveUsers, ActiveUser}
   alias Core.PubSub
   alias Core.PubSub.Consumers.Notifications
 
@@ -44,11 +44,9 @@ defmodule Core.PubSub.Consumers.Notifications.ConversationsTest do
 
     test "It will notify online participants if @here is used" do
       user = insert(:user)
-      with_mock Core.RtcClient, [
-        rpc: fn :list_active, %{scope: "lobby"} -> 
-          {:ok, %ActiveUsers{active_users: [%ActiveUser{user_id: user.id}]}}
-        end
-      ] do
+      with_mock Core.PiazzaRtc.Stub, [list_active: fn :dummy, %{scope: "lobby"} ->
+        {:ok, %ActiveUsers{active_users: [%ActiveUser{user_id: user.id}]}}
+      end] do
         msg = insert(:message)
         insert(:message_entity, message: msg, type: :channel_mention, text: "here")
         insert(:participant, conversation: msg.conversation, user: user)
@@ -56,7 +54,7 @@ defmodule Core.PubSub.Consumers.Notifications.ConversationsTest do
 
         event = %PubSub.MessageCreated{item: msg}
         {:ok, [notif]} = Notifications.handle_event(event)
-        
+
         assert notif.type == :mention
         assert notif.user_id == user.id
       end

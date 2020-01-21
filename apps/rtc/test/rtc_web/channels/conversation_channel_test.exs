@@ -1,53 +1,46 @@
 defmodule RtcWeb.ConversationChannelTest do
   use RtcWeb.ChannelCase, async: false
   alias Core.Services.Conversations
-  alias Thrift.Generated.GqlService.Binary.Framed.Client
   import Mock
+
+  setup_with_mocks [
+    {Core.Piazza.Stub, [], [
+      leave_conversation: fn :dummy, %{user_id: _, conversation_id: _} -> {:ok, %{}} end,
+      ping_conversation: fn :dummy, %{user_id: _, conversation_id: _} -> {:ok, %{}} end
+    ]}
+  ] do
+    {:ok, []}
+  end
 
   describe "presence" do
     test "participants can join a conversation channel" do
-      with_mock Client, [
-        start_link: fn _, _ -> {:ok, :dummy} end,
-        ping_participant: fn _, _ -> :ok end
-      ] do
-        user = insert(:user)
-        conv = insert(:conversation)
-        insert(:participant, conversation: conv, user: user)
-        {:ok, socket} = mk_socket(user)
-        {:ok, _, _} = subscribe_and_join(socket, "conversation:#{conv.id}", %{})
-      end
+      user = insert(:user)
+      conv = insert(:conversation)
+      insert(:participant, conversation: conv, user: user)
+      {:ok, socket} = mk_socket(user)
+      {:ok, _, _} = subscribe_and_join(socket, "conversation:#{conv.id}", %{})
     end
 
     test "nonparticipants cannot join" do
-      with_mock Client, [
-        start_link: fn _, _ -> {:ok, :dummy} end,
-        ping_participant: fn _, _ -> :ok end
-      ] do
-        user = insert(:user)
-        conv = insert(:conversation, public: false)
-        {:ok, socket} = mk_socket(user)
-        {:error, _} = subscribe_and_join(socket, "conversation:#{conv.id}", %{})
-      end
+      user = insert(:user)
+      conv = insert(:conversation, public: false)
+      {:ok, socket} = mk_socket(user)
+      {:error, _} = subscribe_and_join(socket, "conversation:#{conv.id}", %{})
     end
   end
 
   describe "typing" do
     test "it will broadcast the handle to all clients" do
-      with_mock Client, [
-        start_link: fn _, _ -> {:ok, :dummy} end,
-        ping_participant: fn _, _ -> :ok end
-      ] do
-        user = insert(:user)
-        conv = insert(:conversation)
-        insert(:participant, conversation: conv, user: user)
-        {:ok, socket} = mk_socket(user)
-        {:ok, _, socket} = subscribe_and_join(socket, "conversation:#{conv.id}", %{})
+      user = insert(:user)
+      conv = insert(:conversation)
+      insert(:participant, conversation: conv, user: user)
+      {:ok, socket} = mk_socket(user)
+      {:ok, _, socket} = subscribe_and_join(socket, "conversation:#{conv.id}", %{})
 
-        push(socket, "typing", %{"who" => "cares"})
-        assert_broadcast "typing", %{handle: handle}
+      push(socket, "typing", %{"who" => "cares"})
+      assert_broadcast "typing", %{handle: handle}
 
-        assert handle == user.handle
-      end
+      assert handle == user.handle
     end
   end
 

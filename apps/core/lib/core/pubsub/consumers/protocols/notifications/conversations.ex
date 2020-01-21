@@ -1,6 +1,6 @@
 defmodule Core.Notifications.ChannelMention do
   alias Core.RtcClient
-  alias Thrift.Generated.{ActiveUserRequest, ActiveUsers}
+  alias Core.{ActiveUsers, ActiveUsersRequest}
 
   defstruct [
     :here,
@@ -20,7 +20,11 @@ defmodule Core.Notifications.ChannelMention do
   end
 
   def hydrate(%{here: true} = channel_mention) do
-    {:ok, %ActiveUsers{active_users: actives}} = RtcClient.rpc(:list_active, %ActiveUserRequest{scope: "lobby"})
+    {:ok, channel} = RtcClient.chan()
+    {:ok, %ActiveUsers{active_users: actives}} = Core.PiazzaRtc.Stub.list_active(
+      channel,
+      ActiveUsersRequest.new(scope: "lobby")
+    )
 
     %{channel_mention | user_ids: Enum.map(actives, & &1.user_id) |> MapSet.new()}
   end
