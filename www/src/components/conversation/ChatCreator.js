@@ -102,6 +102,7 @@ function ChatCreator(props) {
                 noFlyout
                 ignore={new Set([me.id, ...participants.map((u) => u.id)])}
                 pad={{horizontal: 'small', vertical: 'xxsmall'}}
+                margin={{bottom: 'xxsmall'}}
                 onChat={() => setOpen(false)} />
             )}
             </CurrentUserContext.Consumer>

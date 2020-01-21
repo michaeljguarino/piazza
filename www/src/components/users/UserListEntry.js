@@ -3,7 +3,7 @@ import {Box, Text} from 'grommet'
 import UserHandle from './UserHandle'
 import Avatar from './Avatar'
 
-function UserListEntry(props) {
+export default function UserListEntry({pad, margin, onClick, user, ...props}) {
   const [hover, setHover] = useState(false)
   return (
     <Box
@@ -13,16 +13,15 @@ function UserListEntry(props) {
       onMouseLeave={() => setHover(false)}
       direction='row'
       align='center'
-      pad={props.pad || 'xxsmall'}
-      onClick={() => props.onClick && props.onClick(props.user)}
+      pad={pad || 'xxsmall'}
+      margin={margin}
+      onClick={() => onClick && onClick(user)}
       fill='horizontal'>
-      <Avatar {...props} />
+      <Avatar user={user} {...props} />
       <Box>
-        <UserHandle includePresence={true} {...props} />
-        <Text size='small'>{props.user.name}</Text>
+        <UserHandle includePresence={true} user={user} {...props} />
+        <Text size='small'>{user.name}</Text>
       </Box>
     </Box>
   )
 }
-
-export default UserListEntry

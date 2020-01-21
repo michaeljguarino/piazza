@@ -17,13 +17,13 @@ function WithFlyout(props) {
   )
 }
 
-function UserHandle(props) {
+export default function UserHandle({user: {handle, id}, color, weight, size, margin, includePresence, ...props}) {
   return (
     <WithFlyout {...props}>
       <Anchor>
-        <Text size={props.size || 'small'} weight={props.weight} color={props.color} margin={props.margin || {right: '5px'}}>@{props.user.handle}</Text>
-        {props.includePresence && (
-          <WithPresence id={props.user.id} >
+        <Text size={size || 'small'} weight={weight} color={color} margin={margin || {right: '5px'}}>@{handle}</Text>
+        {includePresence && (
+          <WithPresence id={id} >
             {present => <PresenceIndicator present={present} />}
           </WithPresence>
         )}
@@ -31,5 +31,3 @@ function UserHandle(props) {
     </WithFlyout>
   )
 }
-
-export default UserHandle

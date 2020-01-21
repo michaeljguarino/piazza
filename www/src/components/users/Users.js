@@ -67,33 +67,34 @@ const onFetchMore = (prev, {fetchMoreResult}) => {
   } : prev;
 }
 
-function Users(props) {
+export default function Users({width, ignore, noFlyout, pad, margin, onChat, color, onClick}) {
   const {loading, data, fetchMore, subscribeToMore} = useQuery(USERS_Q)
   if (loading) return '...'
   let userEdges = data.users.edges
   let pageInfo = data.users.pageInfo
 
   return (
-    <Box width={props.width}>
+    <Box width={width}>
       <SubscriptionWrapper
         id="users"
         startSubscription={() => _subscribeToMore(subscribeToMore)}>
         <Scroller
           id='message-viewport'
-          edges={userEdges.filter(({node}) => !props.ignore.has(node.id))}
+          edges={userEdges.filter(({node}) => !ignore.has(node.id))}
           style={{
             overflow: 'auto',
             height: '100%'
           }}
           mapper={({node}) => (
             <UserListEntry
-              noFlyout={props.noFlyout}
-              pad={props.pad}
-              onChat={props.onChat}
+              noFlyout={noFlyout}
+              pad={pad}
+              margin={margin}
+              onChat={onChat}
               key={node.id}
               user={node}
-              color={props.color}
-              onClick={props.onClick} />
+              color={color}
+              onClick={onClick} />
           )}
           onLoadMore={() => {
             if (!pageInfo.hasNextPage) return
@@ -108,5 +109,3 @@ function Users(props) {
     </Box>
   )
 }
-
-export default Users
