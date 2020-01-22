@@ -1,5 +1,5 @@
 defmodule GqlWeb.IncomingWebhookControllerTest do
-  use GqlWeb.ConnCase
+  use GqlWeb.ConnCase, async: true
 
   describe "#dispatch/2" do
     test "It will dispatch the given incoming webhook", %{conn: conn} do

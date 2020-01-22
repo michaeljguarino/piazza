@@ -1,5 +1,5 @@
 defmodule GqlWeb.PingControllerTest do
-  use GqlWeb.ConnCase
+  use GqlWeb.ConnCase, async: true
 
   test "GET /ping", %{conn: conn} do
     conn = get(conn, "/ping")

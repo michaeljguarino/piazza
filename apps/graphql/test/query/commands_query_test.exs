@@ -1,6 +1,6 @@
 defmodule GraphQl.CommandsQueryTest do
   use GraphQl.SchemaCase, async: true
-  import Mock
+  use Mimic
 
   @url "#{Application.get_env(:core, :chartmart_url)}/gql"
   @body Jason.encode!(%{data: %{integrations: %{
@@ -71,9 +71,8 @@ defmodule GraphQl.CommandsQueryTest do
   end
 
   describe "#installableCommands" do
-    test_with_mock "It will list installable commands in the system", Mojito, [
-      post: fn @url, _, _ -> {:ok, %Mojito.Response{body: @body}} end
-    ] do
+    test "It will list installable commands in the system" do
+      expect(Mojito,  :post, fn @url, _, _ -> {:ok, %Mojito.Response{body: @body}} end)
 
       {:ok, %{data: %{"installableCommands" => found}}} = run_q("""
         query {

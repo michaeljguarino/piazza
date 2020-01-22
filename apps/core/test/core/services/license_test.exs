@@ -1,10 +1,10 @@
 defmodule Core.Services.LicenseTest do
-  use Core.DataCase
+  use Core.DataCase, async: true
   alias Core.Services.License
   alias Piazza.Crypto.License.State
   alias Piazza.Crypto.RSA
 
-  import Mock
+  use Mimic
 
   describe "#validate/2" do
     test "For nonexpired licenses it just passes state through" do
@@ -20,17 +20,17 @@ defmodule Core.Services.LicenseTest do
       url = "#{conf(:chartmart_url)}/auth/license"
       refreshed_license = conf(:license)
 
-      with_mock Mojito, [post: fn ^url, _, body ->
+      expect(Mojito, :post, fn ^url, _, body ->
         %{"refresh_token" => _} = Jason.decode!(body)
         {:ok, %{body: Jason.encode!(%{license: refreshed_license})}}
-      end] do
-        expired_license = conf(:expired_license)
-        expired_pk = conf(:expired_pk)
-        {:ok, decrypted} = RSA.decrypt(expired_license, ExPublicKey.loads!(expired_pk))
+      end)
 
-        state = License.validate(decrypted, %State{license: expired_license})
-        assert state.license == refreshed_license
-      end
+      expired_license = conf(:expired_license)
+      expired_pk = conf(:expired_pk)
+      {:ok, decrypted} = RSA.decrypt(expired_license, ExPublicKey.loads!(expired_pk))
+
+      state = License.validate(decrypted, %State{license: expired_license})
+      assert state.license == refreshed_license
     end
 
     test "If limits are within boundaries, it will pass" do
@@ -42,11 +42,11 @@ defmodule Core.Services.LicenseTest do
     test "If limits exceed boundaries, it will fail" do
       pid = self()
       insert_list(6, :user)
-      with_mock Core.License.FailureHandler, [failed: fn -> send pid, :failed end] do
-        License.validate(mk_license(), %State{license: :failed})
+      expect(Core.License.FailureHandler, :failed, fn -> send pid, :failed end)
 
-        assert_receive :failed
-      end
+      License.validate(mk_license(), %State{license: :failed})
+
+      assert_receive :failed
     end
   end
 

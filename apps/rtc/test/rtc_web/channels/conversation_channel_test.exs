@@ -1,14 +1,14 @@
 defmodule RtcWeb.ConversationChannelTest do
-  use RtcWeb.ChannelCase, async: false
+  use RtcWeb.ChannelCase
+  use Mimic
   alias Core.Services.Conversations
-  import Mock
 
-  setup_with_mocks [
-    {Core.Piazza.Stub, [], [
-      leave_conversation: fn :dummy, %{user_id: _, conversation_id: _} -> {:ok, %{}} end,
-      ping_conversation: fn :dummy, %{user_id: _, conversation_id: _} -> {:ok, %{}} end
-    ]}
-  ] do
+  setup :set_mimic_global
+  setup do
+    stub(Core.Piazza.Stub, :leave_conversation, fn :dummy, %{user_id: _, conversation_id: _} ->
+      {:ok, %{}}
+    end)
+    |> stub(:ping_conversation, fn :dummy, %{user_id: _, conversation_id: _} -> {:ok, %{}} end)
     {:ok, []}
   end
 

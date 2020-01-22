@@ -1,5 +1,5 @@
 defmodule Core.PubSub.Consumers.CacheTest do
-  use Core.DataCase
+  use Core.DataCase, async: true
   alias Core.PubSub
   alias PubSub.Consumers.Cache
 

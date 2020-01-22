@@ -1,5 +1,5 @@
 defmodule RtcWeb.PingControllerTest do
-  use RtcWeb.ConnCase
+  use RtcWeb.ConnCase, async: true
 
   test "GET /ping", %{conn: conn} do
     conn = get(conn, "/ping")

@@ -1,111 +1,105 @@
 defmodule GqlWeb.WebhookControllerTest do
-  use GqlWeb.ConnCase
+  use GqlWeb.ConnCase, async: true
+  use Mimic
   alias Core.Models.StructuredMessage
-  import Mock
 
   describe "#giphy/2" do
     test "It will return a gif if found", %{conn: conn} do
       gif_url = "https://media.giphy.com/some.gif"
-      with_mock Mojito, [
-        get: fn "https://api.giphy.com/v1/gifs/search" <> _, _ ->
-          json = Jason.encode!(%{data: [%{images: %{original: %{mp4: gif_url}}}]})
-          {:ok, %Mojito.Response{body: json, status_code: 200}}
-        end
-      ] do
-        path = Routes.webhook_path(conn, :giphy)
+      expect(Mojito, :get, fn "https://api.giphy.com/v1/gifs/search" <> _, _ ->
+        json = Jason.encode!(%{data: [%{images: %{original: %{mp4: gif_url}}}]})
+        {:ok, %Mojito.Response{body: json, status_code: 200}}
+      end)
 
-        result =
-          conn
-          |> post(path, %{"text" => "/giphy doggos"})
-          |> json_response(200)
+      path = Routes.webhook_path(conn, :giphy)
 
-        {:ok, %{"_type" => "root", "children" => [
+      result =
+        conn
+        |> post(path, %{"text" => "/giphy doggos"})
+        |> json_response(200)
+
+      {:ok, %{"_type" => "root", "children" => [
+        %{"_type" => "box", "children" => [
           %{"_type" => "box", "children" => [
-            %{"_type" => "box", "children" => [
-              %{"_type" => "link", "children" => [
-                %{"_type" => "video", "attributes" => %{"url" => url}}
-              ]}
-            ]},
-            %{"_type" => "box", "children" => [
-              %{"_type" => "button", "attributes" => %{"label" => "shuffle", "payload" => shuffle}},
-              %{"_type" => "button", "attributes" => %{"label" => "select", "payload" => select}}
+            %{"_type" => "link", "children" => [
+              %{"_type" => "video", "attributes" => %{"url" => url}}
             ]}
+          ]},
+          %{"_type" => "box", "children" => [
+            %{"_type" => "button", "attributes" => %{"label" => "shuffle", "payload" => shuffle}},
+            %{"_type" => "button", "attributes" => %{"label" => "select", "payload" => select}}
           ]}
-        ]} = result} = StructuredMessage.Xml.from_xml(result["dialog"])
+        ]}
+      ]} = result} = StructuredMessage.Xml.from_xml(result["dialog"])
 
-        assert StructuredMessage.validate(result) == :pass
-        assert url == gif_url
+      assert StructuredMessage.validate(result) == :pass
+      assert url == gif_url
 
-        %{"shuffle" => "doggos"} = Jason.decode!(shuffle)
-        %{"search" => "doggos", "select" => ^gif_url} = Jason.decode!(select)
-      end
+      %{"shuffle" => "doggos"} = Jason.decode!(shuffle)
+      %{"search" => "doggos", "select" => ^gif_url} = Jason.decode!(select)
     end
   end
 
   describe "#giphy_interaction/2" do
     test "It can reshuffle the gif", %{conn: conn} do
       gif_url = "https://media.giphy.com/some.gif"
-      with_mock Mojito, [
-        get: fn "https://api.giphy.com/v1/gifs/search" <> _, _ ->
-          json = Jason.encode!(%{data: [%{images: %{original: %{mp4: gif_url}}}]})
-          {:ok, %Mojito.Response{body: json, status_code: 200}}
-        end
-      ] do
-        path = Routes.webhook_path(conn, :giphy_interaction)
+      expect(Mojito, :get, fn "https://api.giphy.com/v1/gifs/search" <> _, _ ->
+        json = Jason.encode!(%{data: [%{images: %{original: %{mp4: gif_url}}}]})
+        {:ok, %Mojito.Response{body: json, status_code: 200}}
+      end)
 
-        result =
-          conn
-          |> post(path, %{"shuffle" => "doggos"})
-          |> json_response(200)
+      path = Routes.webhook_path(conn, :giphy_interaction)
 
-        {:ok, %{"_type" => "root", "children" => [
-          %{"_type" => "box", "children" => [
-            %{"_type" => "box", "children" => [
-              %{"_type" => "link", "children" => [
-                %{"_type" => "video", "attributes" => %{"url" => url}}
-              ]}
-            ]},
-            %{"_type" => "box", "children" => [
-              %{"_type" => "button", "attributes" => %{"label" => "shuffle", "payload" => shuffle}},
-              %{"_type" => "button", "attributes" => %{"label" => "select", "payload" => select}}
-            ]}
-          ]}
-        ]} = result} = StructuredMessage.Xml.from_xml(result["dialog"])
+      result =
+        conn
+        |> post(path, %{"shuffle" => "doggos"})
+        |> json_response(200)
 
-        assert StructuredMessage.validate(result) == :pass
-        assert url == gif_url
-
-        %{"shuffle" => "doggos"} = Jason.decode!(shuffle)
-        %{"search" => "doggos", "select" => ^gif_url} = Jason.decode!(select)
-      end
-    end
-
-    test "It creates a gif message on select", %{conn: conn} do
-      gif_url = "https://media.giphy.com/some.gif"
-      with_mock Mojito, [
-        get: fn "https://api.giphy.com/v1/gifs/search" <> _, _ ->
-          json = Jason.encode!(%{data: [%{images: %{original: %{mp4: gif_url}}}]})
-          {:ok, %Mojito.Response{body: json, status_code: 200}}
-        end
-      ] do
-        path = Routes.webhook_path(conn, :giphy_interaction)
-
-        result =
-          conn
-          |> post(path, %{"select" => gif_url, "search" => "doggos"})
-          |> json_response(200)
-
-        {:ok, %{"_type" => "root", "children" => [
+      {:ok, %{"_type" => "root", "children" => [
+        %{"_type" => "box", "children" => [
           %{"_type" => "box", "children" => [
             %{"_type" => "link", "children" => [
               %{"_type" => "video", "attributes" => %{"url" => url}}
             ]}
+          ]},
+          %{"_type" => "box", "children" => [
+            %{"_type" => "button", "attributes" => %{"label" => "shuffle", "payload" => shuffle}},
+            %{"_type" => "button", "attributes" => %{"label" => "select", "payload" => select}}
           ]}
-        ]} = result} = StructuredMessage.Xml.from_xml(result["structured_message"])
+        ]}
+      ]} = result} = StructuredMessage.Xml.from_xml(result["dialog"])
 
-        assert StructuredMessage.validate(result) == :pass
-        assert url == gif_url
-      end
+      assert StructuredMessage.validate(result) == :pass
+      assert url == gif_url
+
+      %{"shuffle" => "doggos"} = Jason.decode!(shuffle)
+      %{"search" => "doggos", "select" => ^gif_url} = Jason.decode!(select)
+    end
+
+    test "It creates a gif message on select", %{conn: conn} do
+      gif_url = "https://media.giphy.com/some.gif"
+      # expect(Mojito, :get, fn "https://api.giphy.com/v1/gifs/search" <> _, _ ->
+      #   json = Jason.encode!(%{data: [%{images: %{original: %{mp4: gif_url}}}]})
+      #   {:ok, %Mojito.Response{body: json, status_code: 200}}
+      # end)
+
+      path = Routes.webhook_path(conn, :giphy_interaction)
+
+      result =
+        conn
+        |> post(path, %{"select" => gif_url, "search" => "doggos"})
+        |> json_response(200)
+
+      {:ok, %{"_type" => "root", "children" => [
+        %{"_type" => "box", "children" => [
+          %{"_type" => "link", "children" => [
+            %{"_type" => "video", "attributes" => %{"url" => url}}
+          ]}
+        ]}
+      ]} = result} = StructuredMessage.Xml.from_xml(result["structured_message"])
+
+      assert StructuredMessage.validate(result) == :pass
+      assert url == gif_url
     end
   end
 

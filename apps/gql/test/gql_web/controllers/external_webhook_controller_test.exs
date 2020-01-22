@@ -1,7 +1,7 @@
 defmodule GqlWeb.ExternalWebhookControllerTest do
-  use GqlWeb.ConnCase
+  use GqlWeb.ConnCase, async: true
   alias Core.Models.StructuredMessage
-  import Mock
+  use Mimic
 
   describe "#github/2" do
     test "It will 200", %{conn: conn} do
@@ -16,19 +16,17 @@ defmodule GqlWeb.ExternalWebhookControllerTest do
       })
 
       signature = "sha1=#{:crypto.hmac(:sha, secret, raw_body) |> Base.encode16(case: :lower)}"
-      with_mock Mojito, [
-        post: fn "https://dummy.webhook", _, _ -> {:ok, %Mojito.Response{}} end
-      ] do
-        %{"text" => _, "structured_message" => structured_msg, "route_key" => route_key} =
-          conn
-          |> put_req_header("x-hub-signature", signature)
-          |> put_req_header("content-type", "application/json")
-          |> post(path, raw_body)
-          |> json_response(200)
+      expect(Mojito, :post, fn "https://dummy.webhook", _, _ -> {:ok, %Mojito.Response{}} end)
 
-        assert route_key == "piazza"
-        {:ok, _} = StructuredMessage.Xml.from_xml(structured_msg)
-      end
+      %{"text" => _, "structured_message" => structured_msg, "route_key" => route_key} =
+        conn
+        |> put_req_header("x-hub-signature", signature)
+        |> put_req_header("content-type", "application/json")
+        |> post(path, raw_body)
+        |> json_response(200)
+
+      assert route_key == "piazza"
+      {:ok, _} = StructuredMessage.Xml.from_xml(structured_msg)
     end
   end
 end

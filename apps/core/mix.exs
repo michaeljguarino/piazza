@@ -74,7 +74,7 @@ defmodule Core.MixProject do
       {:botanist, "~> 0.1.0", git: "https://github.com/michaeljguarino/botanist.git", branch: "ecto3"},
       {:hackney, "~> 1.15.1", git: "https://github.com/benoitc/hackney.git", override: true},
 
-      {:mock, "~> 0.3.3", only: :test},
+      {:mimic, "~> 1.1", only: :test},
 
       {:aquaduct, in_umbrella: true}
     ]

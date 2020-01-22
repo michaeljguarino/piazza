@@ -1,6 +1,6 @@
 defmodule Core.PubSub.Consumers.Notifications.ConversationsTest do
   use Core.DataCase, async: true
-  import Mock
+  use Mimic
   alias Core.{ActiveUsers, ActiveUser}
   alias Core.PubSub
   alias Core.PubSub.Consumers.Notifications
@@ -44,20 +44,20 @@ defmodule Core.PubSub.Consumers.Notifications.ConversationsTest do
 
     test "It will notify online participants if @here is used" do
       user = insert(:user)
-      with_mock Core.PiazzaRtc.Stub, [list_active: fn :dummy, %{scope: "lobby"} ->
+      expect(Core.PiazzaRtc.Stub, :list_active, fn :dummy, %{scope: "lobby"} ->
         {:ok, %ActiveUsers{active_users: [%ActiveUser{user_id: user.id}]}}
-      end] do
-        msg = insert(:message)
-        insert(:message_entity, message: msg, type: :channel_mention, text: "here")
-        insert(:participant, conversation: msg.conversation, user: user)
-        insert(:participant, conversation: msg.conversation)
+      end)
 
-        event = %PubSub.MessageCreated{item: msg}
-        {:ok, [notif]} = Notifications.handle_event(event)
+      msg = insert(:message)
+      insert(:message_entity, message: msg, type: :channel_mention, text: "here")
+      insert(:participant, conversation: msg.conversation, user: user)
+      insert(:participant, conversation: msg.conversation)
 
-        assert notif.type == :mention
-        assert notif.user_id == user.id
-      end
+      event = %PubSub.MessageCreated{item: msg}
+      {:ok, [notif]} = Notifications.handle_event(event)
+
+      assert notif.type == :mention
+      assert notif.user_id == user.id
     end
 
     test "It will notify participants with message enabled" do

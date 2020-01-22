@@ -1,30 +1,29 @@
 defmodule Core.PubSub.Consumers.Webhook.ConversationsTest do
   use Core.DataCase
-  import Mock
+  use Mimic
   alias Core.PubSub
   alias Core.PubSub.Consumers.Webhook
+
+  setup :set_mimic_global
 
   describe "MessageCreated" do
     test "It will dispatch commands when present" do
       cmd = insert(:command, name: "giffy", webhook: build(:webhook, url: "https://my.giffy.com/webhook"))
       message = insert(:message, text: "/giffy doggos")
-      with_mock Mojito, [
-        post: fn "https://my.giffy.com/webhook", _, _ ->
-          {:ok, %Mojito.Response{body: Jason.encode!(%{text: "here's a gif"}), status_code: 200}}
-        end
-      ] do
+      expect(Mojito, :post, fn "https://my.giffy.com/webhook", _, _ ->
+        {:ok, %Mojito.Response{body: Jason.encode!(%{text: "here's a gif"}), status_code: 200}}
+      end)
 
-        with_mailbox fn ->
-          event = %PubSub.MessageCreated{item: message}
-          Webhook.handle_event(event)
+      with_mailbox fn ->
+        event = %PubSub.MessageCreated{item: message}
+        Webhook.handle_event(event)
 
-          conversation_id = message.conversation_id
-          assert_receive {:event, %PubSub.MessageCreated{item: %{conversation_id: ^conversation_id} = response_message}}
+        conversation_id = message.conversation_id
+        assert_receive {:event, %PubSub.MessageCreated{item: %{conversation_id: ^conversation_id} = response_message}}
 
-          assert response_message.conversation_id == message.conversation_id
-          assert response_message.creator_id == cmd.bot_id
-          assert response_message.text == "here's a gif"
-        end
+        assert response_message.conversation_id == message.conversation_id
+        assert response_message.creator_id == cmd.bot_id
+        assert response_message.text == "here's a gif"
       end
     end
 
@@ -32,25 +31,22 @@ defmodule Core.PubSub.Consumers.Webhook.ConversationsTest do
       cmd = insert(:command, name: "giffy", webhook: build(:webhook, url: "https://my.giffy.com/webhook"))
       incoming = insert(:incoming_webhook, command: cmd)
       message = insert(:message, text: "/giffy doggos")
-      with_mock Mojito, [
-        post: fn "https://my.giffy.com/webhook", _, _ ->
-          {:ok, %Mojito.Response{body: Jason.encode!(%{subscribe: "doggos"}), status_code: 200}}
-        end
-      ] do
+      expect(Mojito, :post, fn "https://my.giffy.com/webhook", _, _ ->
+        {:ok, %Mojito.Response{body: Jason.encode!(%{subscribe: "doggos"}), status_code: 200}}
+      end)
 
-        with_mailbox fn ->
-          event = %PubSub.MessageCreated{item: message}
-          Webhook.handle_event(event)
+      with_mailbox fn ->
+        event = %PubSub.MessageCreated{item: message}
+        Webhook.handle_event(event)
 
-          conversation_id = message.conversation_id
-          assert_receive {:event, %PubSub.MessageCreated{item: %{conversation_id: ^conversation_id} = response_message}}
+        conversation_id = message.conversation_id
+        assert_receive {:event, %PubSub.MessageCreated{item: %{conversation_id: ^conversation_id} = response_message}}
 
-          assert response_message.conversation_id == message.conversation_id
-          assert response_message.creator_id == cmd.bot_id
-          assert response_message.text == "Subscribed this conversation to doggos"
+        assert response_message.conversation_id == message.conversation_id
+        assert response_message.creator_id == cmd.bot_id
+        assert response_message.text == "Subscribed this conversation to doggos"
 
-          assert Core.Repo.get_by(Core.Models.WebhookRoute, incoming_webhook_id: incoming.id, route_key: "doggos")
-        end
+        assert Core.Repo.get_by(Core.Models.WebhookRoute, incoming_webhook_id: incoming.id, route_key: "doggos")
       end
     end
 
@@ -81,22 +77,20 @@ defmodule Core.PubSub.Consumers.Webhook.ConversationsTest do
       msg = insert(:message)
       interaction = insert(:interaction, command: cmd, message: msg)
       payload = Jason.encode!(%{some: :payload})
-      with_mock Mojito, [
-        post: fn "https://my.giffy.com/webhook/interaction", _, ^payload ->
-          {:ok, %Mojito.Response{body: Jason.encode!(%{text: "here's a gif"}), status_code: 200}}
-        end
-      ] do
-        with_mailbox fn ->
-          event = %PubSub.InteractionDispatched{item: %{interaction | payload: payload}}
-          Webhook.handle_event(event)
+      expect(Mojito, :post, fn "https://my.giffy.com/webhook/interaction", _, ^payload ->
+        {:ok, %Mojito.Response{body: Jason.encode!(%{text: "here's a gif"}), status_code: 200}}
+      end)
 
-          conversation_id = msg.conversation_id
-          assert_receive {:event, %PubSub.MessageCreated{item: %{conversation_id: ^conversation_id} = response_message}}
+      with_mailbox fn ->
+        event = %PubSub.InteractionDispatched{item: %{interaction | payload: payload}}
+        Webhook.handle_event(event)
 
-          assert response_message.conversation_id == msg.conversation_id
-          assert response_message.creator_id == cmd.bot_id
-          assert response_message.text == "here's a gif"
-        end
+        conversation_id = msg.conversation_id
+        assert_receive {:event, %PubSub.MessageCreated{item: %{conversation_id: ^conversation_id} = response_message}}
+
+        assert response_message.conversation_id == msg.conversation_id
+        assert response_message.creator_id == cmd.bot_id
+        assert response_message.text == "here's a gif"
       end
     end
   end
