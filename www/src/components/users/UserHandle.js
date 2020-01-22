@@ -17,9 +17,11 @@ function WithFlyout(props) {
   )
 }
 
-export default function UserHandle({user: {handle, id}, color, weight, size, margin, includePresence, ...props}) {
+export default function UserHandle({user, color, weight, size, margin, includePresence, ...props}) {
+  const {id, handle} = user
+
   return (
-    <WithFlyout {...props}>
+    <WithFlyout user={user} {...props}>
       <Anchor>
         <Text size={size || 'small'} weight={weight} color={color || 'black'} margin={margin || {right: '5px'}}>@{handle}</Text>
         {includePresence && (
