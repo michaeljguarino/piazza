@@ -23,6 +23,25 @@ const hoverStyle = css`
   }}
 `;
 
+const focusBackground = css`
+  ${props => {
+    let color = normalizeColor('focus', props.theme)
+    let isDark = colorIsDark(color)
+    return `
+      &:hover {
+        background: ${color};
+        ${isDark && 'color: white;'}
+      }
+      &:hover svg {
+        ${isDark && `
+        fill: white !important;
+        stroke: white !important;
+      `}
+      }
+    `
+  }}
+`;
+
 const accentHover = css`
   &:hover {
     color: ${props => normalizeColor('focus', props.theme)};
@@ -89,6 +108,7 @@ function determineHover(props) {
   if (props.accentable) return accentHover
   if (props.sidebarHover) return sidebarHover
   if (props.highlight) return highlightHover
+  if (props.focused) return focusBackground
   return {}
 }
 

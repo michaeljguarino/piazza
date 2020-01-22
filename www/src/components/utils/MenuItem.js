@@ -26,7 +26,7 @@ export function MenuItem(props) {
     <Box pad={{horizontal: 'xxsmall'}}>
       <HoveredBackground>
         <Box
-          hoverable
+          focused
           round='xsmall'
           style={{cursor: 'pointer'}}
           pad={ITEM_PADDING}

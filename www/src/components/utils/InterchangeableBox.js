@@ -10,7 +10,7 @@ function ContentWrapper(props) {
       <Box pad='xxsmall' border='top'>
         <HoveredBackground>
           <Box
-            hoverable
+            focused
             style={{cursor: 'pointer'}}
             onClick={() => props.setAlternate(null)}
             pad={{vertical: 'xsmall', horizontal: 'small'}}

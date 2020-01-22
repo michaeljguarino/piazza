@@ -1,7 +1,7 @@
 import React, {useState} from 'react'
 import {useMutation} from 'react-apollo'
 import {Box, Text, TextInput} from 'grommet'
-import {THEME_FIELDS} from './constants'
+import {THEME_FIELDS, SLACK_THEME_FIELDS, LINK_DEFAULT, BUTTON_DEFAULT} from './constants'
 import Button, {SecondaryButton} from '../utils/Button'
 import InputField from '../utils/InputField'
 import {chunk} from '../../utils/array'
@@ -46,11 +46,29 @@ function serializeTheme(theme) {
   return THEME_FIELDS.map((field) => theme[field]).join(",")
 }
 
+function serializeSlack(theme) {
+  return SLACK_THEME_FIELDS.map((field) => theme[field]).join(",")
+}
+
 function deserializeTheme(serialized, theme) {
   return serialized.split(",").reduce((theme, val, i) => {
     theme[THEME_FIELDS[i]] = val
     return theme
   }, {...theme})
+}
+
+function deserializeSlack(serialized, theme) {
+  let newTheme = serialized.split(",").reduce((theme, val, i) => {
+    theme[SLACK_THEME_FIELDS[i]] = val
+    return theme
+  }, {...theme})
+  const {sidebar, sidebarHover} = newTheme
+
+  return {
+    ...newTheme,
+    brand: sidebar, action: BUTTON_DEFAULT, actionHover: BUTTON_DEFAULT,
+    tagLight: sidebarHover, tagMedium: sidebar, link: LINK_DEFAULT
+  }
 }
 
 function ThemeForm(props) {
@@ -101,6 +119,15 @@ function ThemeForm(props) {
             value={serializeTheme(theme)}
             onChange={(e) => {
               const deserialized = deserializeTheme(e.target.value, theme)
+              setTheme(deserialized)
+            }} />
+        </Box>
+        <Box margin={{top: 'small'}} gap='small' direction='row'>
+          <Text size='small' weight='bold'>Import from slack</Text>
+          <TextInput
+            value={serializeSlack(theme)}
+            onChange={(e) => {
+              const deserialized = deserializeSlack(e.target.value, theme)
               setTheme(deserialized)
             }} />
         </Box>

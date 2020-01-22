@@ -31,7 +31,7 @@ function CommandDisplay(props) {
       <Box>
         <Box ref={dropRef} direction='row' align='center'>
           <Anchor onClick={() => setDropOpen(true)}>
-            <Text size='small' margin={{right: 'xsmall'}} color={props.color}>/{props.command.name}</Text>
+            <Text size='small' margin={{right: 'xsmall'}} color={props.color || 'black'}>/{props.command.name}</Text>
           </Anchor>
           {showHover && (
             <Box direction='row' animation={{type: 'fadeIn', duration: 200}} >

@@ -38,6 +38,9 @@ export const DEFAULT_THEME = {
       vertical: '2px'
     }
   },
+  checkBox: {
+    color: 'action'
+  },
   select: {
     searchInput: SearchInput
   },
@@ -93,7 +96,7 @@ export const ThemeContext = React.createContext({theme: {}, name: null, id: null
 function Theme(props) {
   const {loading, data} = useQuery(BRAND_Q)
   if (loading) return <Loading height='100vh' width='100vw' />
-  
+
   const brand = data.brand
   const {id, name, ...themeAttrs} = brand.theme
   const theme = buildTheme(themeAttrs)

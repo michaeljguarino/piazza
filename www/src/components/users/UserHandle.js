@@ -21,7 +21,7 @@ export default function UserHandle({user: {handle, id}, color, weight, size, mar
   return (
     <WithFlyout {...props}>
       <Anchor>
-        <Text size={size || 'small'} weight={weight} color={color} margin={margin || {right: '5px'}}>@{handle}</Text>
+        <Text size={size || 'small'} weight={weight} color={color || 'black'} margin={margin || {right: '5px'}}>@{handle}</Text>
         {includePresence && (
           <WithPresence id={id} >
             {present => <PresenceIndicator present={present} />}
