@@ -91,8 +91,7 @@ class MessageInputLifecyclManager extends Component {
   }
 }
 
-function MessageInput(props) {
-  const [attachment, setAttachment] = useState(null)
+function MessageInput({attachment, setAttachment, ...props}) {
   const [editorState, setEditorState] = useState(Plain.deserialize(''))
   const [uploadProgress, setUploadProgress] = useState(null)
   const [disableSubmit, setDisableSubmit] = useState(false)

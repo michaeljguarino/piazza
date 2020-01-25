@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, { useState, useCallback } from 'react'
 import MessageList from './messages/MessageList'
 import AnchoredMessageList from './messages/AnchoredMessageList'
 import MessageInput from './messages/MessageInput'
@@ -14,6 +14,8 @@ import {Box, Grid, Text} from 'grommet'
 import {FlyoutProvider} from './utils/Flyout'
 import {lastMessage} from './messages/VisibleMessages'
 import {formatDate} from './messages/Message'
+import {useDropzone} from 'react-dropzone'
+
 
 export const ICON_HEIGHT = '20px'
 export const ICON_SPREAD = '9px'
@@ -36,8 +38,32 @@ function DividerText(props) {
   )
 }
 
+function DropOverlay() {
+  return (
+    <Box style={{
+      position: 'absolute',
+      top: 0,
+      left: '200px',
+      zIndex: 100
+    }}
+    border={{color: 'focus', style: 'dashed', size: '2px'}}
+    background='rgba(255, 255, 255, 0.2)'
+    width='calc(100% - 200px)'
+    height='100%'
+    align='center'
+    justify='center'>
+      <Text color='focus' weight='bold'>Drop file here</Text>
+    </Box>
+  )
+}
+
 const Piazza = () => {
   const [anchor, setAnchor] = useState(null)
+  const [attachment, setAttachment] = useState(null)
+  const onDrop = useCallback((files) => {
+    setAttachment(files[0])
+  }, [setAttachment])
+  const {getRootProps, isDragActive} = useDropzone({onDrop})
   return (
     <CurrentUser>
     {me => (
@@ -66,7 +92,8 @@ const Piazza = () => {
                       pageInfo={conversations.pageInfo}
                       />
                   </Box>
-                  <Box gridArea='msgs'>
+                  <Box gridArea='msgs' {...getRootProps()}>
+                    {isDragActive && <DropOverlay />}
                     <Box height='60px' align='center'>
                       <ConversationHeader
                         conversation={currentConversation}
@@ -96,6 +123,8 @@ const Piazza = () => {
                             reply={reply}
                             setReply={setReply}
                             setWaterline={setWaterline}
+                            attachment={attachment}
+                            setAttachment={setAttachment}
                             conversation={currentConversation} />
                         </Box>
                         {flyoutContent}
