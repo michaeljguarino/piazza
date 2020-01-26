@@ -14,7 +14,7 @@ import {Box, Grid, Text} from 'grommet'
 import {FlyoutProvider} from './utils/Flyout'
 import {lastMessage} from './messages/VisibleMessages'
 import {formatDate} from './messages/Message'
-import {useDropzone} from 'react-dropzone'
+import { fromEvent } from 'file-selector'
 
 
 export const ICON_HEIGHT = '20px'
@@ -38,7 +38,13 @@ function DividerText(props) {
   )
 }
 
-function DropOverlay() {
+const DROP_BACKGROUND = 'rgba(255, 255, 255, 0.2)'
+const FILE_DROP_PROPS = {
+  border: {color: 'focus', style: 'dashed', size: '2px'},
+  background: DROP_BACKGROUND
+}
+
+function DropOverlay(props) {
   return (
     <Box style={{
       position: 'absolute',
@@ -46,8 +52,9 @@ function DropOverlay() {
       left: '200px',
       zIndex: 100
     }}
+    {...props}
     border={{color: 'focus', style: 'dashed', size: '2px'}}
-    background='rgba(255, 255, 255, 0.2)'
+    background={DROP_BACKGROUND}
     width='calc(100% - 200px)'
     height='100%'
     align='center'
@@ -57,13 +64,29 @@ function DropOverlay() {
   )
 }
 
+const cancel = (event) => { event.stopPropagation(); event.persist(); event.preventDefault() }
+
 const Piazza = () => {
   const [anchor, setAnchor] = useState(null)
   const [attachment, setAttachment] = useState(null)
+  const [dragActive, setDragActive] = useState(false)
   const onDrop = useCallback((files) => {
     setAttachment(files[0])
   }, [setAttachment])
-  const {getRootProps, isDragActive} = useDropzone({onDrop})
+
+  const dropProps = {
+    onDragEnter: (e) => { cancel(e); setDragActive(true) },
+    onDragOver: (e) => { cancel(e); setDragActive(true) },
+    onDragLeave: (e) => { cancel(e); setDragActive(false) },
+    onDrop: (event) => {
+      cancel(event)
+      Promise.resolve(fromEvent(event).then((files) => {
+        onDrop(files)
+      }));
+      setDragActive(false)
+    }
+  }
+
   return (
     <CurrentUser>
     {me => (
@@ -92,8 +115,7 @@ const Piazza = () => {
                       pageInfo={conversations.pageInfo}
                       />
                   </Box>
-                  <Box gridArea='msgs' {...getRootProps()}>
-                    {isDragActive && <DropOverlay />}
+                  <Box gridArea='msgs' {...(dragActive ? FILE_DROP_PROPS : {})} {...dropProps}>
                     <Box height='60px' align='center'>
                       <ConversationHeader
                         conversation={currentConversation}
