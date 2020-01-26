@@ -131,11 +131,11 @@ export function StandardFile(props) {
         round='xsmall'
         align="center"
         direction='row'
-        pad='xsmall'
+        pad='small'
         gap='small'
         margin={{vertical: 'xsmall'}}>
         <FileIcon extension={ext} size={40} {...styles} />
-        <Box>
+        <Box gap='xsmall'>
           <Text size='small'>{filename}</Text>
           <Box direction='row' gap='small'>
             <Text size='small' color='dark-5'>{filesize(props.file.filesize || 0)}</Text>
