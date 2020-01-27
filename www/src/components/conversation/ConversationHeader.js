@@ -30,8 +30,7 @@ export const BOX_ATTRS = {
   border: 'right'
 }
 
-function removeConversation(cache, conversationId, setCurrentConversation) {
-  setCurrentConversation(null)
+export function removeConversation(cache, conversationId) {
   const prev = cache.readQuery({ query: CONVERSATIONS_Q });
   const convs = prev.conversations.edges.filter(({node}) => node.id !== conversationId)
   const chats = prev.chats.edges.filter(({node}) => node.id !== conversationId)
@@ -130,7 +129,8 @@ function LeaveConversation(props) {
     variables: {conversationId: props.conversation.id, userId: props.me.id},
     update: (cache, {data: {deleteParticipant}}) => {
       props.setOpen(false)
-      removeConversation(cache, deleteParticipant.conversationId, props.setCurrentConversation)
+      props.setCurrentConversation(null)
+      removeConversation(cache, deleteParticipant.conversationId)
     }
   })
 

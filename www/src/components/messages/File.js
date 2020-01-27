@@ -125,7 +125,7 @@ export function StandardFile(props) {
       <Box
         onMouseEnter={() => setHover(true)}
         onMouseLeave={() => setHover(false)}
-        border
+        border={hover ? {color: 'focus'} : true}
         elevation={hover ? 'small' : 'xsmall'}
         background={hover ? null : '#fff'}
         round='xsmall'

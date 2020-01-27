@@ -1,10 +1,13 @@
-import React from 'react'
-import {Box, Text} from 'grommet'
-import {Lock} from 'grommet-icons'
+import React, { useState, useContext } from 'react'
+import { Box, Text } from 'grommet'
+import { Lock, Close } from 'grommet-icons'
 import {WithAnyPresent} from '../utils/presence'
 import HoveredBackground from '../utils/HoveredBackground'
-import PresenceIndicator, {EmptyPresenceIndicator} from '../users/PresenceIndicator'
+import PresenceIndicator, { EmptyPresenceIndicator } from '../users/PresenceIndicator'
 import {CurrentUserContext} from '../login/EnsureLogin'
+import { useMutation } from 'react-apollo'
+import { DELETE_PARTICIPANT } from './queries'
+import { removeConversation } from './ConversationHeader'
 
 const NOTIF_COLOR='notif'
 
@@ -15,7 +18,9 @@ export function Icon(props) {
                   .map(({user}) => user.id)
     return (
       <WithAnyPresent ids={ids}>
-      {present => (present ? <PresenceIndicator present /> : <EmptyPresenceIndicator emptyColor={props.emptyColor} />)}
+      {present => (present ?
+        <PresenceIndicator present /> :
+        <EmptyPresenceIndicator emptyColor={props.emptyColor} />)}
       </WithAnyPresent>
     )
   }
@@ -28,7 +33,13 @@ export function Icon(props) {
 function NotificationBadge(props) {
   if (props.conversation.unreadNotifications > 0) {
     return (
-      <Box width='30px' margin={{top: '2px', bottom: '2px', right: '5px'}} align='center' justify='center' background={NOTIF_COLOR} round='xsmall'>
+      <Box
+        width='30px'
+        margin={{vertical: '2px', right: '5px'}}
+        align='center'
+        justify='center'
+        background={NOTIF_COLOR}
+        round='xsmall'>
         <Text size='xsmall' color='white'>{props.conversation.unreadNotifications}</Text>
       </Box>
     )
@@ -43,21 +54,62 @@ export function conversationNameString(conversation, me) {
       .map(({user}) => user.handle).join(", ") : conversation.name)
 }
 
-function ConversationName(props) {
+function CloseChat({conversation, me, currentConversation, setCurrentConversation, textSize}) {
+  const [hover, setHover] = useState(false)
+  const [mutation] = useMutation(DELETE_PARTICIPANT, {
+    variables: {conversationId: conversation.id, userId: me.id},
+    update: (cache, {data}) => {
+      removeConversation(cache, conversation.id)
+      if (currentConversation.id === conversation.id) setCurrentConversation(null)
+    }
+  })
+
   return (
-    <Text size={props.textSize || 'small'} {...props.textProps} >
-      {conversationNameString(props.conversation, props.me)}
-    </Text>)
+    <Box
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      style={{zIndex: 5}}
+      onClick={(e) => { e.stopPropagation(); mutation() }}
+      width='30px'
+      pad='1px'
+      margin={{vertical: '2px', right: '5px'}}
+      align='center'
+      justify='center'>
+      <Close color={hover ? 'focusText' : 'sidebarText'} size={textSize || 'small'} />
+    </Box>
+  )
 }
 
-function Conversation(props) {
-  let selected = props.conversation.id === props.currentConversation.id
-  let unread = (props.conversation.unreadMessages > 0 && !selected)
+function ConversationName({conversation, me, textProps, textSize}) {
+  return (
+    <Text size={textSize || 'small'} {...textProps} >
+      {conversationNameString(conversation, me)}
+    </Text>
+  )
+}
+
+function ConversationModifier({conversation, hover, ...props}) {
+  if (conversation.unreadNotifications > 0)
+    return <NotificationBadge conversation={conversation} {...props} />
+
+  if (conversation.chat && hover)
+    return <CloseChat conversation={conversation} {...props} />
+
+  return null
+}
+
+function Conversation({conversation, ...props}) {
+  const [hover, setHover] = useState(false)
+  const me = useContext(CurrentUserContext)
+  let selected = conversation.id === props.currentConversation.id
+  let unread = (conversation.unreadMessages > 0 && !selected)
   let textProps = {color: (unread ? 'focusText' : (selected ? 'activeText' : 'sidebarText'))}
 
   return (
     <HoveredBackground>
       <Box
+        onMouseEnter={() => setHover(true)}
+        onMouseLeave={() => setHover(false)}
         sidebarHover={!selected}
         fill='horizontal'
         direction='row'
@@ -65,21 +117,14 @@ function Conversation(props) {
         justify='end'
         height='24px'
         style={{cursor: 'pointer'}}
-        onClick={() => props.setCurrentConversation(props.conversation)}
+        onClick={() => props.setCurrentConversation(conversation)}
         pad={props.pad}
-        background={selected ? 'focus' : null}
-        >
+        background={selected ? 'focus' : null}>
         <Box direction='row' width='100%' align='center'>
-          <CurrentUserContext.Consumer>
-          {me => (
-            <>
-              <Icon me={me} textProps={textProps} {...props} />
-              <ConversationName me={me} textProps={textProps} conversation={props.conversation} />
-            </>
-          )}
-          </CurrentUserContext.Consumer>
+          <Icon me={me} textProps={textProps} conversation={conversation} {...props} />
+          <ConversationName me={me} textProps={textProps} conversation={conversation} />
         </Box>
-        <NotificationBadge {...props} />
+        <ConversationModifier hover={hover} me={me} conversation={conversation} {...props} />
       </Box>
     </HoveredBackground>
   )
