@@ -47,7 +47,7 @@ function Login(props) {
     onCompleted: data => {
       const { jwt } = state.login ? data.login : data.signup
       localStorage.setItem(AUTH_TOKEN, jwt)
-      props.history.push(`/`)
+      window.location = '/'
     }
   })
 
