@@ -53,6 +53,11 @@ defmodule GraphQl.Resolvers.User do
   end
   def with_jwt(error), do: error
 
+  def token(type) do
+    with {:ok,token, _} <- Core.Exporter.Token.generate_and_sign(%{"type" => type}),
+      do: {:ok, token}
+  end
+
   @colors ~w(#6b5b95 #feb236 #d64161 #ff7b25 #103A50 #CDCCC2 #FDC401 #8E5B3C #020001 #2F415B)
 
   def background_color(%{id: id}) do

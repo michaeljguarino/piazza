@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { AUTH_TOKEN } from '../constants'
 import { useMutation } from 'react-apollo'
 import gql from 'graphql-tag'
-import {Box, Form, Keyboard, FormField, Text, Anchor} from 'grommet'
+import { Box, Form, Keyboard, FormField, Text, Anchor } from 'grommet'
 import Error from './utils/Error'
 import Button from './utils/Button'
 

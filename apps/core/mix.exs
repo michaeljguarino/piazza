@@ -62,6 +62,7 @@ defmodule Core.MixProject do
       {:flow, "~> 0.14.3"},
       {:ex_machina, "~> 2.3", only: :test},
       {:mojito, "~> 0.3.0"},
+      {:zstream, "~> 0.5.0"},
       {:ecto_enum, "~> 1.3.2"},
       {:guardian, "~> 1.2.1"},
       {:piazza_core, "~> 0.1.8"},

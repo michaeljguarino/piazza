@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import {Box, Text, ThemeContext} from 'grommet'
 import {User, Lock, Logout} from 'grommet-icons'
 import Avatar from './Avatar'
@@ -15,6 +15,7 @@ import {CurrentUserContext} from '../login/EnsureLogin'
 import UpdatePassword from './UpdatePassword'
 import UpdateProfile from './UpdateProfile'
 import Tools from '../tools/Tools'
+import AdminTools from '../tools/AdminTools'
 
 export function DropdownItem(props) {
   const {onClick, ...rest} = props
@@ -40,89 +41,90 @@ function Me(props) {
       cache.writeQuery({query: ME_Q, data: {me: {...me, ...updateUser}}});
     }
   })
+  const me = useContext(CurrentUserContext)
 
   return (
     <ThemeContext.Extend value={{layer: {zIndex: 25}}}>
-      <CurrentUserContext.Consumer>
-      {me =>
-        (
-        <HoveredBackground>
-          <Box
-            sidebarHover
-            accentText
-            style={{cursor: 'pointer'}}
-            pad={{...props.pad, top: 'small', bottom: '7px'}}
-            align='center'
-            direction='row'>
-            <Box direction='row' align='center' margin={{bottom: '5px'}}>
-              <FilePicker
-                extensions={['jpg', 'jpeg', 'png']}
-                dims={{minWidth: 100, maxWidth: 500, minHeight: 100, maxHeight: 500}}
-                onChange={ (file) => mutation({variables: {id: me.id, attributes: {avatar: file}}})}
-              >
-                <span><Avatar user={me} rightMargin='10px' /></span>
-              </FilePicker>
-              <CloseableDropdown target={
-                <Box>
-                  <Text size='small' weight='bold'>{"@" + me.handle}</Text>
-                  <Text size='small' color='dark-6'>{me.name}</Text>
+      <HoveredBackground>
+        <Box
+          sidebarHover
+          accentText
+          style={{cursor: 'pointer'}}
+          pad={{...props.pad, top: 'small', bottom: '7px'}}
+          align='center'
+          direction='row'>
+          <Box direction='row' align='center' margin={{bottom: '5px'}}>
+            <FilePicker
+              extensions={['jpg', 'jpeg', 'png']}
+              dims={{minWidth: 100, maxWidth: 500, minHeight: 100, maxHeight: 500}}
+              onChange={ (file) => mutation({variables: {id: me.id, attributes: {avatar: file}}})}
+            >
+              <span><Avatar user={me} rightMargin='10px' /></span>
+            </FilePicker>
+            <CloseableDropdown target={
+              <Box>
+                <Text size='small' weight='bold'>{"@" + me.handle}</Text>
+                <Text size='small' color='dark-6'>{me.name}</Text>
+              </Box>
+            }>
+            {setDropdownOpen => (
+              <Box width="225px">
+                <Box pad='small' direction="row" align="center">
+                  <Avatar user={me} rightMargin='10px' />
+                  <Text size="small" weight='bold'>{me.name}</Text>
                 </Box>
-              }>
-              {setDropdownOpen => (
-                <Box width="225px">
-                  <Box pad='small' direction="row" align="center">
-                    <Avatar user={me} rightMargin='10px' />
-                    <Text size="small" weight='bold'>{me.name}</Text>
-                  </Box>
-                  <InterchangeableBox>
-                  {setAlternate => (
-                    <>
-                    <Box pad={{bottom: 'xxsmall'}}>
-                      <Modal target={<DropdownItem icon={User} text='update profile' />}>
+                <InterchangeableBox>
+                {setAlternate => (
+                  <>
+                  <Box pad={{bottom: 'xxsmall'}}>
+                    <Modal target={<DropdownItem icon={User} text='update profile' />}>
+                    {setOpen => (
+                      <Box>
+                        <ModalHeader text='Update Profile' setOpen={setOpen} />
+                        <Box gap='small' pad="medium" style={{minWidth: '400px'}}>
+                          <UpdateProfile callback={() => setOpen(false)} me={me} />
+                        </Box>
+                      </Box>
+                    )}
+                    </Modal>
+                    <Modal target={<DropdownItem icon={Lock} text='change password' />}>
                       {setOpen => (
-                        <Box>
-                          <ModalHeader text='Update Profile' setOpen={setOpen} />
-                          <Box gap='small' pad="medium" style={{minWidth: '400px'}}>
-                            <UpdateProfile callback={() => setOpen(false)} me={me} />
+                        <Box width='400px'>
+                          <ModalHeader text='Update Password' setOpen={setOpen} />
+                          <Box gap='small' pad="medium">
+                            <UpdatePassword callback={() => setOpen(false)} me={me} />
                           </Box>
                         </Box>
                       )}
-                      </Modal>
-                      <Modal target={<DropdownItem icon={Lock} text='change password' />}>
-                        {setOpen => (
-                          <Box width='400px'>
-                            <ModalHeader text='Update Password' setOpen={setOpen} />
-                            <Box gap='small' pad="medium">
-                              <UpdatePassword callback={() => setOpen(false)} me={me} />
-                            </Box>
-                          </Box>
-                        )}
-                      </Modal>
-                      <SubMenu text='developer tools' setAlternate={setAlternate}>
-                        <Tools />
+                    </Modal>
+                    <SubMenu text='developer tools' setAlternate={setAlternate}>
+                      <Tools />
+                    </SubMenu>
+                    {me.roles && me.roles.admin && (
+                      <SubMenu text='admin tools' setAlternate={setAlternate}>
+                        <AdminTools me={me} />
                       </SubMenu>
-                    </Box>
-                    <Box border='top' pad={{vertical: 'xxsmall'}}>
-                      <MenuItem onClick={_logout}>
-                        <Box direction='row' align='center'>
-                          <Box width='100%'>
-                            <Text size='small'>logout</Text>
-                          </Box>
-                          <Logout size='12px' />
+                    )}
+                  </Box>
+                  <Box border='top' pad={{vertical: 'xxsmall'}}>
+                    <MenuItem onClick={_logout}>
+                      <Box direction='row' align='center'>
+                        <Box width='100%'>
+                          <Text size='small'>logout</Text>
                         </Box>
-                      </MenuItem>
-                    </Box>
-                    </>
-                  )}
-                  </InterchangeableBox>
-                </Box>
-              )}
-              </CloseableDropdown>
-            </Box>
+                        <Logout size='12px' />
+                      </Box>
+                    </MenuItem>
+                  </Box>
+                  </>
+                )}
+                </InterchangeableBox>
+              </Box>
+            )}
+            </CloseableDropdown>
           </Box>
-        </HoveredBackground>
-      )}
-      </CurrentUserContext.Consumer>
+        </Box>
+      </HoveredBackground>
     </ThemeContext.Extend>
   )
 }

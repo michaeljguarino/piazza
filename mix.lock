@@ -100,4 +100,5 @@
   "tzdata": {:hex, :tzdata, "1.0.1", "f6027a331af7d837471248e62733c6ebee86a72e57c613aa071ebb1f750fc71a", [:mix], [{:hackney, "~> 1.0", [hex: :hackney, repo: "hexpm", optional: false]}], "hexpm"},
   "unicode_util_compat": {:git, "https://github.com/benoitc/unicode_util_compat.git", "38d7bc105f51159e8ea3279c40121db9db1e652f", [tag: "0.3.1"]},
   "unsafe": {:hex, :unsafe, "1.0.1", "a27e1874f72ee49312e0a9ec2e0b27924214a05e3ddac90e91727bc76f8613d8", [:mix], [], "hexpm"},
+  "zstream": {:hex, :zstream, "0.5.0", "422a55cf6839f3ffa24515966828fe4eb7e6847dadfbc3bfd836c54d400e21f9", [:mix], [], "hexpm"},
 }

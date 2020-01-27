@@ -28,6 +28,12 @@ defmodule GraphQl.Schema.Types do
       user, _, _ -> {:ok, Core.Storage.url({user.avatar, user}, :original)}
     end
 
+    field :export_token, :string, resolve: fn
+      %{id: id}, _, %{context: %{current_user: %{id: id, roles: %{admin: true}}}} ->
+        User.token("export")
+      _, _, _ -> {:ok, nil}
+    end
+
     field :background_color, :string, resolve: fn user, _, _ ->
       {:ok, User.background_color(user)}
     end

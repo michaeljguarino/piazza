@@ -66,6 +66,9 @@ defmodule Core.Models.Message do
     )
   end
 
+  def preload(query \\ __MODULE__, preloads \\ [:creator]),
+    do: from(m in query, preload: ^preloads)
+
   @seconds_in_day 60 * 60 * 24
 
   def older_than(query \\ __MODULE__, date) do

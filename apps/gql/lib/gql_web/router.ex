@@ -42,6 +42,10 @@ defmodule GqlWeb.Router do
     post "/incoming_webhooks/:secure_id", IncomingWebhookController, :dispatch
     post "/slack/incoming_webhooks/:secure_id", IncomingWebhookController, :slack_dispatch
     post "/webhooks/github", ExternalWebhookController, :github
+
+    scope "/export" do
+      get "/json", ExportController, :json
+    end
   end
 
   scope "/", GqlWeb do

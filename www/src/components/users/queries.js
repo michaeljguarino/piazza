@@ -20,6 +20,10 @@ export const ME_Q=gql`
         participant
       }
       unseenNotifications
+      roles {
+        admin
+      }
+      exportToken
     }
   }
   ${UserFragment}

@@ -1,4 +1,4 @@
-defmodule Core.Invites.Token do
+defmodule Core.Exporter.Token do
   use Joken.Config, default_signer: :invite_secret
 
   @impl true
