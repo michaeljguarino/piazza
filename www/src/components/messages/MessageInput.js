@@ -1,8 +1,8 @@
-import React, { Component, useRef, useState } from 'react'
+import React, { Component, useRef, useState, useContext } from 'react'
 import {socket} from '../../helpers/client'
 import TimedCache from '../utils/TimedCache'
 import HoveredBackground from '../utils/HoveredBackground'
-import { useMutation } from 'react-apollo'
+import { useMutation, useApolloClient } from 'react-apollo'
 import {Box, Text, Markdown, Layer, Keyboard, Drop} from 'grommet'
 import {Attachment} from 'grommet-icons'
 import {FilePicker} from 'react-file-picker'
@@ -16,6 +16,7 @@ import { Progress } from 'react-sweet-progress';
 import "react-sweet-progress/lib/style.css";
 import moment from 'moment'
 import Plain from 'slate-plain-serializer'
+import { EditingMessageContext } from './VisibleMessages'
 
 
 const TEXT_SIZE='xsmall'
@@ -91,10 +92,22 @@ class MessageInputLifecyclManager extends Component {
   }
 }
 
+function fetchRecentMessage(cache, setEdited, me, conversation) {
+  cache.query({query: MESSAGES_Q, variables: {conversationId: conversation.id}})
+    .then(({data: {conversation: {messages: {edges}}}}) => {
+      if (edges.length === 0) return
+      const {node} = edges[0]
+      if (node.creator.id === me.id) setEdited(node.id)
+    })
+}
+
 function MessageInput({attachment, setAttachment, ...props}) {
   const [editorState, setEditorState] = useState(Plain.deserialize(''))
   const [uploadProgress, setUploadProgress] = useState(null)
   const [disableSubmit, setDisableSubmit] = useState(false)
+  const {setEdited} = useContext(EditingMessageContext)
+  const me = useContext(CurrentUserContext)
+  const cache = useApolloClient()
 
   const [mutation] = useMutation(MESSAGE_MUTATION, {
     context: {fetchOptions: {
@@ -142,6 +155,9 @@ function MessageInput({attachment, setAttachment, ...props}) {
           setEditorState(Plain.deserialize(''))
           setAttachment(null)
         }
+      }} onUp={() => {
+        if (Plain.serialize(editorState) !== '') return
+        fetchRecentMessage(cache, setEdited, me, props.conversation)
       }}>
         <Box
           border

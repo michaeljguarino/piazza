@@ -44,26 +44,6 @@ const FILE_DROP_PROPS = {
   background: DROP_BACKGROUND
 }
 
-function DropOverlay(props) {
-  return (
-    <Box style={{
-      position: 'absolute',
-      top: 0,
-      left: '200px',
-      zIndex: 100
-    }}
-    {...props}
-    border={{color: 'focus', style: 'dashed', size: '2px'}}
-    background={DROP_BACKGROUND}
-    width='calc(100% - 200px)'
-    height='100%'
-    align='center'
-    justify='center'>
-      <Text color='focus' weight='bold'>Drop file here</Text>
-    </Box>
-  )
-}
-
 const cancel = (event) => { event.stopPropagation(); event.persist(); event.preventDefault() }
 
 const Piazza = () => {

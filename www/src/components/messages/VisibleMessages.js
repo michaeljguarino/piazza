@@ -8,6 +8,11 @@ export const VisibleMessagesContext = React.createContext({
   clear: null
 })
 
+export const EditingMessageContext = React.createContext({
+  edited: null,
+  setEdited: null
+})
+
 export function lastMessage(visible) {
   let min = null
   let minTime = null
@@ -23,6 +28,7 @@ export function lastMessage(visible) {
 
 function VisibleMessages(props) {
   const [visible, setVisible] = useState({})
+  const [edited, setEdited] = useState(null)
 
   function addMessage(message) {
     if (visible[message.id]) return
@@ -39,10 +45,12 @@ function VisibleMessages(props) {
   const clear = () => setVisible({})
 
   return (
-    <VisibleMessagesContext.Provider
-      value={{visible, addMessage, removeMessage, clear}}>
-      {props.children(visible, clear)}
-    </VisibleMessagesContext.Provider>
+    <EditingMessageContext.Provider value={{edited, setEdited}}>
+      <VisibleMessagesContext.Provider
+        value={{visible, addMessage, removeMessage, clear}}>
+        {props.children(visible, clear)}
+      </VisibleMessagesContext.Provider>
+    </EditingMessageContext.Provider>
   )
 }
 

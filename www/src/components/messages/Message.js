@@ -1,10 +1,10 @@
-import React, {useState, useRef, useEffect} from 'react'
+import React, {useState, useRef, useEffect, useContext} from 'react'
 import {Box, Text, Markdown, Stack} from 'grommet'
 import {Pin} from 'grommet-icons'
 import Avatar from '../users/Avatar'
 import moment from 'moment'
 import MessageEmbed from './MessageEmbed'
-import {VisibleMessagesContext} from './VisibleMessages'
+import {VisibleMessagesContext, EditingMessageContext} from './VisibleMessages'
 import UserHandle from '../users/UserHandle'
 import MessageControls from './MessageControls'
 import MessageReactions from './MessageReactions'
@@ -266,12 +266,15 @@ function Message(props) {
   const [hover, setHover] = useState(false)
   const [pinnedHover, setPinnedHover] = useState(false)
   const [editing, setEditing] = useState(false)
+  const {edited, setEdited} = useContext(EditingMessageContext)
+  const isEditing = editing || (edited === props.message.id)
   const isHovered = (pinnedHover || hover) && !props.noHover && !editing
   const background = props.selected ? SELECTED_BACKGROUND : (isHovered && !props.message.pin) ? 'light-2' : null
 
   function wrappedSetEditing(editing) {
     setPinnedHover(false)
     setEditing(editing)
+    if (!editing) setEdited(null)
   }
 
   const {addMessage, removeMessage} = props
@@ -299,7 +302,7 @@ function Message(props) {
       flex={false}>
       <Stack fill anchor='top-right'>
         <MessageBody
-          editing={editing}
+          editing={isEditing}
           setEditing={wrappedSetEditing}
           hover={isHovered}
           setPinnedHover={setPinnedHover}

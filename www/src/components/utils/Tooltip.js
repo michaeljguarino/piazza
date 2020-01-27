@@ -4,7 +4,7 @@ import {Box, Drop} from 'grommet'
 export function TooltipContent(props) {
   return (
     <Drop align={props.align || {bottom: 'top'}} target={props.targetRef.current} plain>
-      <Box round='small' background={props.background || 'dark-1'} pad='xsmall'>
+      <Box round='xsmall' background={props.background || 'dark-1'} pad='xsmall'>
         {props.children}
       </Box>
     </Drop>
