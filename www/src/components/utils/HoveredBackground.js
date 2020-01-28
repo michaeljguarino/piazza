@@ -77,7 +77,6 @@ const sidebarHover = css`
   }}
   &:hover {
     background: ${props => normalizeColor('sidebarHover', props.theme)}
-    color:
   }
 `;
 

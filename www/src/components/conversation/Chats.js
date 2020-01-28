@@ -21,7 +21,7 @@ const onLoadMore = (prev, {fetchMoreResult}) => {
 
 function Chats(props) {
   return (<Box>
-    <ChatCreator padding={props.pad} setCurrentConversation={props.setCurrentConversation} />
+    <ChatCreator padding={{left: props.pad.left}} setCurrentConversation={props.setCurrentConversation} />
     <Scroller
       id='chats-list'
       style={{

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import {socket} from '../../helpers/client'
 import {Presence} from 'phoenix'
 
@@ -51,56 +51,34 @@ function unsubscribe(id, subscriptionId) {
   }
 }
 
-class WithPresence extends React.Component {
-  state = {
-    present: false,
-  }
+export default function WithPresence({id, children}) {
+  const [present, setPresent] = useState(false)
 
-  componentWillMount() {
-    this.subscriptionId = subscribe(this.props.id, (status) => this.setState({present: status}))
-    this.setState({present: PRESENCE_CACHE[this.props.id]})
-  }
+  useEffect(() => {
+    const sub = subscribe(id, setPresent)
+    setPresent(PRESENCE_CACHE[id])
 
-  componentWillUnmount() {
-    unsubscribe(this.props.id, this.subscriptionId)
-  }
+    return () => unsubscribe(id, sub)
+  }, [id])
 
-  render() {
-    return this.props.children(this.state.present)
-  }
+  return children(present)
 }
 
-export class WithAnyPresent extends React.Component {
-  state = {
-    present: {},
-    subscriptions: []
-  }
+export function WithAnyPresent({ids, children}) {
+  const [present, setPresent] = useState({})
 
-  setPresent(id, status) {
-    let present = this.state.present
-    present[id] = status
-    this.setState({present: present})
-  }
 
-  componentWillMount() {
-    this.setState({subscriptions: this.props.ids.map((id) => subscribe(id, (status) => this.setPresent(id, status)))})
+  useEffect(() => {
+    const subs = ids.map((id) => subscribe(id, (status) => setPresent({...present, [id]: status})))
     let present = {}
-    for (const id of this.props.ids) {
+    for (const id of ids) {
       present[id] = PRESENCE_CACHE[id]
     }
 
-    this.setState({present: present})
-  }
+    setPresent(present)
 
-  componentWillUnmount() {
-    for (const sub of this.state.subscriptions) {
-      unsubscribe(sub)
-    }
-  }
+    return () => ids.map((id, ind) => unsubscribe(id, subs[ind]))
+  }, [ids])
 
-  render() {
-    return this.props.children(Object.values(this.state.present).some((present) => !!present))
-  }
+  return children(Object.values(present).some((present) => !!present))
 }
-
-export default WithPresence

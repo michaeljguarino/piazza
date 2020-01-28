@@ -11,27 +11,29 @@ import { removeConversation } from './ConversationHeader'
 
 const NOTIF_COLOR='notif'
 
-export function Icon(props) {
-  if (props.conversation.chat) {
-    const ids = props.conversation.chatParticipants
-                  .filter(({user}) => user.id !== props.me.id)
-                  .map(({user}) => user.id)
+export function Icon({me, conversation, emptyColor, textProps}) {
+  if (conversation.chat) {
+    const {chatParticipants} = conversation
+    const len = chatParticipants.length
+    const ids = chatParticipants
+                  .filter(({user: {id}}) => len <= 1 || id !== me.id)
+                  .map(({user: {id}}) => id)
     return (
       <WithAnyPresent ids={ids}>
       {present => (present ?
         <PresenceIndicator present /> :
-        <EmptyPresenceIndicator emptyColor={props.emptyColor} />)}
+        <EmptyPresenceIndicator emptyColor={emptyColor} />)}
       </WithAnyPresent>
     )
   }
-  if (props.conversation.public)
-    return (<Text margin={{right: '5px'}} {...props.textProps}>#</Text>)
+  if (conversation.public)
+    return (<Text margin={{right: '5px'}} {...textProps}>#</Text>)
 
-  return <Lock style={{marginRight: '5px'}} size='14px' {...props.textProps} />
+  return <Lock style={{marginRight: '5px'}} size='14px' {...textProps} />
 }
 
-function NotificationBadge(props) {
-  if (props.conversation.unreadNotifications > 0) {
+function NotificationBadge({conversation}) {
+  if (conversation.unreadNotifications > 0) {
     return (
       <Box
         width='30px'
@@ -40,7 +42,7 @@ function NotificationBadge(props) {
         justify='center'
         background={NOTIF_COLOR}
         round='xsmall'>
-        <Text size='xsmall' color='white'>{props.conversation.unreadNotifications}</Text>
+        <Text size='xsmall' color='white'>{conversation.unreadNotifications}</Text>
       </Box>
     )
   }
@@ -48,9 +50,11 @@ function NotificationBadge(props) {
 }
 
 export function conversationNameString(conversation, me) {
+  const {chatParticipants} = conversation
+  const len  = chatParticipants.length
   return (conversation.chat ?
-    conversation.chatParticipants
-      .filter(({user}) => user.id !== me.id)
+    chatParticipants
+      .filter(({user}) => len <= 1 || user.id !== me.id)
       .map(({user}) => user.handle).join(", ") : conversation.name)
 }
 

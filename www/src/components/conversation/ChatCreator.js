@@ -54,10 +54,9 @@ function ChatCreator(props) {
           <HoveredBackground>
             <Box highlight width='100%'>
               <Text
-                style={{cursor: 'pointer'}}
+                style={{cursor: 'pointer', fontWeight: 500}}
                 size='small'
                 width='100%'
-                weight='bold'
                 color='sidebarText'>
                   Chats
               </Text>

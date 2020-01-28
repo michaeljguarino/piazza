@@ -47,11 +47,10 @@ function ConversationCreator(props) {
           <Modal target={
             <HoveredBackground>
               <Text
-                style={{cursor: 'pointer'}}
+                style={{cursor: 'pointer', fontWeight: 500}}
                 highlight
                 size='small'
                 width='100%'
-                weight='bold'
                 color='sidebarText'>
                   Conversations
               </Text>

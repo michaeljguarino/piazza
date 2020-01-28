@@ -43,7 +43,7 @@ function ConversationPanel(props) {
               }
             })}}
           mapper={(edge) => <Conversation
-            pad={padding}
+            pad={{...padding, vertical: 'small'}}
             key={edge.node.id}
             currentConversation={props.currentConversation}
             setCurrentConversation={props.setCurrentConversation}
@@ -51,7 +51,7 @@ function ConversationPanel(props) {
           } />
       </Box>
       <Chats
-        pad={padding}
+        pad={{...padding, vertical: 'small'}}
         currentConversation={props.currentConversation}
         setCurrentConversation={props.setCurrentConversation}
         chats={props.chats}
