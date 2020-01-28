@@ -70,6 +70,7 @@ defmodule Core.MixProject do
       {:poison, "~> 3.1"},
       {:cachex, "~> 3.2"},
       {:libring, "~> 1.0"},
+      {:csv, "~> 2.3"},
       {:grpc, github: "elixir-grpc/grpc"},
       {:cowlib, "~> 2.8.0", hex: :grpc_cowlib, override: true},
       {:botanist, "~> 0.1.0", git: "https://github.com/michaeljguarino/botanist.git", branch: "ecto3"},

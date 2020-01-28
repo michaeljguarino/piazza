@@ -1,7 +1,7 @@
 defmodule Core.Piazza.Server do
   use GRPC.Server, service: Core.Piazza.Service
   alias Core.Services
-  alias Core.Models.{Conversation, User}
+  alias Core.Models.{Conversation, User, Participant}
   alias Core.{
     PingConversationRequest,
     LeaveConversationRequest,
@@ -21,12 +21,12 @@ defmodule Core.Piazza.Server do
 
   @spec leave_conversation(LeaveConversationRequest.t, GRPC.Server.Stream.t) :: PingResponse.t
   def leave_conversation(%LeaveConversationRequest{user_id: uid, conversation_id: cid}, _) do
-    with %Conversation{chat: false} <- Services.Conversations.get_conversation(cid),
+    with %Conversation{} <- Services.Conversations.get_conversation(cid),
          %User{} = user <- Services.Users.get_user(uid),
+         %Participant{} <- Services.Conversations.get_participant(uid, cid),
          {:ok, _} <- Services.Conversations.bump_last_seen(cid, user) do
       PingResponse.new(fulfilled: true)
     else
-      %Conversation{} -> PingResponse.new(fulfilled: true)
       _ -> PingResponse.new(fulfilled: false)
     end
   end

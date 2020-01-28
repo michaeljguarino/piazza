@@ -34,15 +34,14 @@ defmodule Core.Services.Exporter do
 
   def export_participants() do
     workspace_exporter("csv", fn conv ->
-      Stream.concat([~w(conversation email handle notification_preferences)],
-        stream_participants(conv)
-        |> Stream.map(& [
-          &1.conversation_id,
-          &1.user.email,
-          &1.user.handle,
-          Jason.encode!(&1.notification_preferences)
-        ])
-      )
+      stream_participants(conv)
+      |> Stream.map(& %{
+        conversation: &1.conversation_id,
+        email: &1.user.email,
+        handle: &1.user.handle,
+        notification_preferences: Jason.encode!(&1.notification_preferences)
+      })
+      |> CSV.encode(headers: ~w(conversation email handle notification_preferences)a)
     end)
   end
 
