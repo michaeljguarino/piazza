@@ -9,4 +9,12 @@ defmodule Core.Services.ExporterTest do
       Exporter.export_json() |> Stream.run()
     end
   end
+
+  describe "#export_participants" do
+    test "It won't explode" do
+      insert_list(5, :participant)
+
+      Exporter.export_participants() |> Stream.run()
+    end
+  end
 end

@@ -45,6 +45,7 @@ defmodule GqlWeb.Router do
 
     scope "/export" do
       get "/json", ExportController, :json
+      get "/participants", ExportController, :participants
     end
   end
 

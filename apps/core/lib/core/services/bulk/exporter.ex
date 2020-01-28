@@ -1,5 +1,9 @@
 defmodule Core.Services.Exporter do
-  alias Core.Models.{Conversation, Message}
+  alias Core.Models.{
+    Conversation,
+    Message,
+    Participant
+  }
 
   def stream_conversations() do
     Conversation.nonchat()
@@ -14,10 +18,38 @@ defmodule Core.Services.Exporter do
     |> Core.Repo.stream(method: :keyset)
   end
 
+  def stream_participants(%Conversation{id: id}) do
+    Participant.for_conversation(id)
+    |> Participant.ordered()
+    |> Participant.preload([:user])
+    |> Core.Repo.stream(method: :keyset)
+  end
+
   def export_json() do
+    workspace_exporter("json", fn conv ->
+      stream_messages(conv)
+      |> Stream.map(& "#{Jason.encode!(&1)}\n")
+    end)
+  end
+
+  def export_participants() do
+    workspace_exporter("csv", fn conv ->
+      Stream.concat([~w(conversation email handle notification_preferences)],
+        stream_participants(conv)
+        |> Stream.map(& [
+          &1.conversation_id,
+          &1.user.email,
+          &1.user.handle,
+          Jason.encode!(&1.notification_preferences)
+        ])
+      )
+    end)
+  end
+
+  defp workspace_exporter(ext, entry_func) do
     stream_conversations()
-    |> Stream.map(fn %{name: name} = conv ->
-      Zstream.entry("#{name}.json", stream_messages(conv) |> Stream.map(& "#{Jason.encode!(&1)}\n"))
+    |> Stream.map(fn %Conversation{name: name} = conv ->
+      Zstream.entry("#{name}.#{ext}", entry_func.(conv))
     end)
     |> Zstream.zip(zip64: true)
   end

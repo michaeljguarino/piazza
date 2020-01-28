@@ -13,6 +13,14 @@ defmodule GqlWeb.ExportController do
     |> send_stream(Exporter.export_json())
   end
 
+  def participants(conn, _) do
+    conn
+    |> put_resp_header("content-disposition", "attachment; filename=participants.csv.gz")
+    |> put_resp_content_type("application/gzip")
+    |> send_chunked(200)
+    |> send_stream(Exporter.export_participants())
+  end
+
   defp validate_jwt(%{params: %{"token" => token}} = conn, opts) do
     expected = Keyword.get(opts, :type)
     case Token.verify_and_validate(token) do
