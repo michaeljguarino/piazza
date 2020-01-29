@@ -1,19 +1,20 @@
 import React, {useState} from 'react'
-import {Box, Text} from 'grommet'
+import {Box, Text, Anchor} from 'grommet'
 import {Copy, Close} from 'grommet-icons'
 import {CopyToClipboard} from 'react-copy-to-clipboard'
 import Pill from './Pill'
 
 const MAX_LINK_LENGTH = 40
 
-function trimmed(link) {
-  if (link.length > MAX_LINK_LENGTH) {
-    return `${link.substring(0, MAX_LINK_LENGTH)}...`
+function trimmed(link, trimTo) {
+  const len = trimTo || MAX_LINK_LENGTH
+  if (link.length > len) {
+    return `${link.substring(0, len)}...`
   }
   return link
 }
 
-function Copyable({text, pillText, displayText}) {
+function Copyable({text, pillText, displayText, trimSize}) {
   const [display, setDisplay] = useState(false)
   const [hover, setHover] = useState(false)
   return (
@@ -27,7 +28,7 @@ function Copyable({text, pillText, displayText}) {
         align='center'
         round='xsmall'
         gap='xsmall'>
-        <Text size='small'>{trimmed(displayText || text)}</Text>
+        <Anchor size='small'>{trimmed(displayText || text, trimSize)}</Anchor>
         {hover && (
           <Box animation={{type: 'fadeIn', duration: 200}}>
             <Copy size='12px' />

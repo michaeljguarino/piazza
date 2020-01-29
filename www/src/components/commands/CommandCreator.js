@@ -13,7 +13,7 @@ import Plain from 'slate-plain-serializer'
 
 const LABEL_WIDTH = '100px'
 
-function ConversationSelector(props) {
+export function ConversationSelector(props) {
   const [options, setOptions] = useState([])
   const [value, setValue] = useState(null)
   const client = useApolloClient()

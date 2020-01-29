@@ -10,7 +10,7 @@ import Login from './Login'
 import StructuredMessageTester from './tools/StructuredMessageTester'
 
 
-function App() {
+export default function App() {
   return (
     <Theme>
     {theme => (
@@ -26,5 +26,3 @@ function App() {
     </Theme>
   );
 }
-
-export default App;

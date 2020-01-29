@@ -11,6 +11,7 @@ import HoveredBackground from '../utils/HoveredBackground'
 import { Terminal, Group } from 'grommet-icons'
 import { UserFlyout } from '../users/Users'
 import { CommandFlyout } from '../commands/Commands'
+import { ExternalInvite } from './MagicLinkInvite'
 
 const PADDING = {left: '15px'}
 
@@ -93,6 +94,19 @@ export default function ConversationPanel({me, setCurrentConversation, conversat
         setCurrentConversation={setCurrentConversation}
         chats={chats}
       />
+      <ExternalInvite>
+        <HoveredBackground>
+          <Box direction='row' margin={{vertical: 'small'}} pad={PADDING}>
+            <Text
+              highlight
+              style={{cursor: 'pointer'}}
+              size='small'
+              color='sidebarText'>
+              + Invite someone else
+            </Text>
+          </Box>
+        </HoveredBackground>
+      </ExternalInvite>
     </Box>
   )
 }
