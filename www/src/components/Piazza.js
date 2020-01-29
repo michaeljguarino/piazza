@@ -79,7 +79,7 @@ const Piazza = () => {
             {(currentConversation, conversations, chats, setCurrentConversation, loadMore, waterline, setWaterline) => (
               <Grid
                 rows={['100vh']}
-                columns={['200px', 'auto']}
+                columns={['220px', 'auto']}
                 areas={[
                   {name: 'convs', start: [0, 0], end: [0, 0]},
                   {name: 'msgs', start: [1, 0], end: [1, 0]},

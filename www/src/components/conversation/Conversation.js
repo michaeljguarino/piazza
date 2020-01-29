@@ -37,7 +37,7 @@ function NotificationBadge({conversation}) {
     return (
       <Box
         width='30px'
-        margin={{vertical: '2px', right: '5px'}}
+        margin={{vertical: '2px', right: '7px'}}
         align='center'
         justify='center'
         background={NOTIF_COLOR}
@@ -74,9 +74,7 @@ function CloseChat({conversation, me, currentConversation, setCurrentConversatio
       onMouseLeave={() => setHover(false)}
       style={{zIndex: 5}}
       onClick={(e) => { e.stopPropagation(); mutation() }}
-      width='30px'
-      pad='1px'
-      margin={{vertical: '2px', right: '5px'}}
+      margin={{right: '16px'}}
       align='center'
       justify='center'>
       <Close color={hover ? 'focusText' : 'sidebarText'} size={textSize || 'small'} />

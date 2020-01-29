@@ -1,33 +1,67 @@
 import React from 'react'
 import Conversation from './Conversation'
 import Me from '../users/Me'
-import {Box} from 'grommet'
-import ConversationCreator from './ConversationCreator'
+import { Box, Text } from 'grommet'
+import ConversationCreator, { CreateConversation } from './ConversationCreator'
 import Chats from './Chats'
 import Scroller from '../utils/Scroller'
 import {mergeAppend} from '../../utils/array'
+import Flyout from '../utils/Flyout'
+import HoveredBackground from '../utils/HoveredBackground'
+import { Terminal, Group } from 'grommet-icons'
+import { UserFlyout } from '../users/Users'
+import { CommandFlyout } from '../commands/Commands'
 
-function ConversationPanel(props) {
-  let padding = {left: '10px'}
+const PADDING = {left: '15px'}
+
+function SidebarFlyout({icon, text, children}) {
+  return (
+    <Flyout target={
+      <HoveredBackground>
+        <Box
+          highlight
+          direction='row'
+          style={{cursor: 'pointer'}}
+          align='center'
+          gap='xsmall'
+          pad={PADDING}>
+          {React.createElement(icon, {color: 'sidebarText', size: '12px'})}
+          <Text color='sidebarText' size='small'>{text}</Text>
+        </Box>
+      </HoveredBackground>}>
+    {setOpen => children(setOpen)}
+    </ Flyout>
+  )
+}
+
+export default function ConversationPanel({me, setCurrentConversation, conversations, chats, currentConversation, pageInfo, loadMore}) {
   return (
     <Box>
-      <Me me={props.me} pad={padding} />
-      <Box margin={{bottom: 'medium'}}>
+      <Me me={me} pad={PADDING} />
+      <Box margin={{vertical: 'medium'}} gap='xsmall'>
+        <SidebarFlyout icon={Group} text='Directory'>
+        {setOpen => <UserFlyout setOpen={setOpen} />}
+        </SidebarFlyout>
+        <SidebarFlyout icon={Terminal} text='Apps'>
+        {setOpen => <CommandFlyout setOpen={setOpen} />}
+        </SidebarFlyout>
+      </Box>
+      <Box margin={{bottom: 'small'}}>
         <ConversationCreator
-          padding={padding}
-          setCurrentConversation={props.setCurrentConversation} />
+          padding={PADDING}
+          setCurrentConversation={setCurrentConversation} />
         <Scroller
           id='conversations-list'
           style={{
             overflow: 'auto',
             maxHeight: '40vh'
           }}
-          edges={props.conversations}
+          edges={conversations}
           onLoadMore={() => {
-            if (!props.pageInfo.hasNextPage) return
+            if (!pageInfo.hasNextPage) return
 
-            props.loadMore({
-              variables: {cursor: props.pageInfo.endCursor},
+            loadMore({
+              variables: {cursor: pageInfo.endCursor},
               updateQuery: (prev, {fetchMoreResult}) => {
                 const edges = fetchMoreResult.conversations.edges
                 const pageInfo = fetchMoreResult.conversations.pageInfo
@@ -43,21 +77,22 @@ function ConversationPanel(props) {
               }
             })}}
           mapper={(edge) => <Conversation
-            pad={{...padding, vertical: 'small'}}
+            pad={{...PADDING, vertical: 'small'}}
             key={edge.node.id}
-            currentConversation={props.currentConversation}
-            setCurrentConversation={props.setCurrentConversation}
+            currentConversation={currentConversation}
+            setCurrentConversation={setCurrentConversation}
             conversation={edge.node} />
           } />
       </Box>
+      <Box margin={{bottom: 'medium'}}>
+        <CreateConversation pad={PADDING} />
+      </Box>
       <Chats
-        pad={{...padding, vertical: 'small'}}
-        currentConversation={props.currentConversation}
-        setCurrentConversation={props.setCurrentConversation}
-        chats={props.chats}
+        pad={{...PADDING, vertical: 'small'}}
+        currentConversation={currentConversation}
+        setCurrentConversation={setCurrentConversation}
+        chats={chats}
       />
     </Box>
   )
 }
-
-export default ConversationPanel

@@ -48,7 +48,7 @@ function ChatCreator(props) {
   }
 
   return (
-    <Box fill='horizontal' pad={{right: '10px'}}>
+    <Box fill='horizontal' pad={{right: '12px'}}>
       <Modal round='small' target={
         <Box pad={props.padding} fill='horizontal' direction="row" align="center" margin={{bottom: '5px'}}>
           <HoveredBackground>

@@ -39,9 +39,26 @@ function ConversationForm(props) {
   )
 }
 
+export function CreateConversation(props) {
+  return (
+    <Modal target={
+      <HoveredBackground>
+        <Box highlight style={{cursor: 'pointer'}} {...props}>
+          <Text color='sidebarText' size="small">
+            + Add another
+          </Text>
+        </Box>
+      </HoveredBackground>}>
+      {setOpen => (
+        <ConversationForm setOpen={setOpen} />
+      )}
+    </Modal>
+  )
+}
+
 function ConversationCreator(props) {
   return (
-    <Box fill='horizontal' pad={{right: '10px'}} margin={{top: 'medium'}}>
+    <Box fill='horizontal' pad={{right: '12px'}}>
       <Box pad={props.padding} fill='horizontal' direction="row" align="center" margin={{bottom: '5px'}}>
         <Box width='100%'>
           <Modal target={
@@ -69,9 +86,9 @@ function ConversationCreator(props) {
         <Modal target={
           <HoveredBackground>
             <Box
+              border
               highlight
               style={{cursor: 'pointer'}}
-              border
               round='full'
               width="20px"
               height='20px'

@@ -67,16 +67,13 @@ export default function WithPresence({id, children}) {
 export function WithAnyPresent({ids, children}) {
   const [present, setPresent] = useState({})
 
-
   useEffect(() => {
     const subs = ids.map((id) => subscribe(id, (status) => setPresent({...present, [id]: status})))
     let present = {}
     for (const id of ids) {
       present[id] = PRESENCE_CACHE[id]
     }
-
     setPresent(present)
-
     return () => ids.map((id, ind) => unsubscribe(id, subs[ind]))
   }, [ids])
 

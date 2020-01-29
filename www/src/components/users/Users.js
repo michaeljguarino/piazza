@@ -12,7 +12,16 @@ import {updateUser, addUser} from './utils'
 import SubscriptionWrapper from '../utils/SubscriptionWrapper'
 import {ICON_HEIGHT, ICON_SPREAD} from '../Piazza'
 
-export function UserIcon(props) {
+export function UserFlyout({setOpen}) {
+  return (
+    <FlyoutContainer width='30vw'>
+      <FlyoutHeader text='Users' setOpen={setOpen} />
+      <Users width='30vw' pad={{horizontal: 'small', vertical: 'xsmall'}} ignore={new Set()} />
+    </FlyoutContainer>
+  )
+}
+
+export function UserIcon() {
   return (
     <HoveredBackground>
       <Box
@@ -22,12 +31,7 @@ export function UserIcon(props) {
         align='center'
         justify='center'>
         <Flyout target={<User size={ICON_HEIGHT} />}>
-        {setOpen => (
-          <FlyoutContainer width='30vw'>
-            <FlyoutHeader text='Users' setOpen={setOpen} />
-            <Users width='30vw' pad={{horizontal: 'small', vertical: 'xsmall'}} ignore={new Set()} />
-          </FlyoutContainer>
-        )}
+        {setOpen => (<UserFlyout setOpen={setOpen} />)}
         </Flyout>
       </Box>
     </HoveredBackground>

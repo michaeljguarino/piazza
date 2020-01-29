@@ -81,6 +81,15 @@ function FlyoutContent(props) {
   )
 }
 
+export function CommandFlyout({setOpen, ...props}) {
+  return (
+    <FlyoutContainer width='30vw'>
+      <FlyoutHeader text='Commands' setOpen={setOpen} />
+      <FlyoutContent setOpen={setOpen} {...props} />
+    </FlyoutContainer>
+  )
+}
+
 function Commands(props) {
   return (
     <HoveredBackground>
@@ -91,12 +100,7 @@ function Commands(props) {
         align='center'
         justify='center'>
         <Flyout target={<Terminal size={ICON_HEIGHT} />}>
-        {setOpen => (
-          <FlyoutContainer width='30vw'>
-            <FlyoutHeader text='Commands' setOpen={setOpen} />
-            <FlyoutContent setOpen={setOpen} {...props} />
-          </FlyoutContainer>
-        )}
+        {setOpen => (<CommandFlyout setOpen={setOpen} {...props} />)}
         </Flyout>
       </Box>
     </HoveredBackground>
