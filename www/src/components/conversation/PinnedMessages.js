@@ -1,5 +1,4 @@
 import React from 'react'
-import { useQuery } from 'react-apollo'
 import {Box, Text} from 'grommet'
 import {Pin} from 'grommet-icons'
 import Scroller from '../utils/Scroller'

@@ -1,6 +1,6 @@
 import React, { useContext } from 'react'
 import {Box, Text, ThemeContext} from 'grommet'
-import {User, Lock, Logout} from 'grommet-icons'
+import {User, Lock, Logout, Iteration} from 'grommet-icons'
 import Avatar from './Avatar'
 import { useMutation } from 'react-apollo'
 import CloseableDropdown from '../utils/CloseableDropdown'
@@ -16,6 +16,7 @@ import UpdatePassword from './UpdatePassword'
 import UpdateProfile from './UpdateProfile'
 import Tools from '../tools/Tools'
 import AdminTools from '../tools/AdminTools'
+import Themes from '../themes/Themes'
 
 export function DropdownItem(props) {
   const {onClick, ...rest} = props
@@ -96,6 +97,9 @@ function Me(props) {
                           </Box>
                         </Box>
                       )}
+                    </Modal>
+                    <Modal target={<DropdownItem icon={Iteration} text='theme selector' />}>
+                      {setOpen => (<Themes setOpen={setOpen} />)}
                     </Modal>
                     <SubMenu text='developer tools' setAlternate={setAlternate}>
                       <Tools />
