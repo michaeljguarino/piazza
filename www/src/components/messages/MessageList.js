@@ -1,10 +1,12 @@
-import React, {useState} from 'react'
-import Message, {MessagePlaceholder} from './Message'
+import React, { useState, useContext } from 'react'
+import Message, { MessagePlaceholder } from './Message'
 import { Subscription, useQuery } from 'react-apollo'
 import Scroller from '../utils/Scroller'
 import Loading from '../utils/Loading'
-import {mergeAppend} from '../../utils/array'
-import {MESSAGES_Q, DIALOG_SUB} from './queries'
+import { mergeAppend } from '../../utils/array'
+import { MESSAGES_Q, DIALOG_SUB } from './queries'
+import { Conversations } from '../login/MyConversations'
+import { ReplyContext } from './ReplyProvider'
 
 export const DialogContext = React.createContext({
   dialog: null,
@@ -21,17 +23,19 @@ export function DialogProvider(props) {
   )
 }
 
-function MessageList(props) {
+function MessageList() {
+  const {currentConversation, waterline} = useContext(Conversations)
+  const {setReply} = useContext(ReplyContext)
   const {loading, error, data, fetchMore} = useQuery(MESSAGES_Q, {
-    variables: {conversationId: props.conversation.id},
+    variables: {conversationId: currentConversation.id},
     fetchPolicy: 'cache-and-network'
   })
 
   if (loading && !data) return <Loading height='calc(100vh - 135px)' width='100%' />
   if (error) return <div>wtf</div>
 
-  let messageEdges = data.conversation.messages.edges
-  let pageInfo = data.conversation.messages.pageInfo
+  let {edges, pageInfo} = data.conversation.messages
+
   return (
     <DialogProvider>
     {(dialog, setDialog) => (
@@ -43,7 +47,7 @@ function MessageList(props) {
         <>
         <Scroller
           id='message-viewport'
-          edges={messageEdges}
+          edges={edges}
           placeholder={(i) => <MessagePlaceholder index={i} />}
           loading={loading}
           direction='up'
@@ -57,13 +61,13 @@ function MessageList(props) {
           }}
           mapper={(edge, next, ref, pos) => (
             <Message
-              waterline={props.waterline}
+              waterline={waterline}
               key={edge.node.id}
               parentRef={ref}
               pos={pos}
-              conversation={props.conversation}
+              conversation={currentConversation}
               message={edge.node}
-              setReply={props.setReply}
+              setReply={setReply}
               dialog={dialog}
               next={next.node} />
           )}
@@ -71,7 +75,7 @@ function MessageList(props) {
             if (!pageInfo.hasNextPage) return
 
             fetchMore({
-              variables: {conversationId: props.conversation.id, cursor: pageInfo.endCursor},
+              variables: {conversationId: currentConversation.id, cursor: pageInfo.endCursor},
               updateQuery: (prev, {fetchMoreResult}) => {
                 const {edges, pageInfo} = fetchMoreResult.conversation.messages
                 return edges.length ? {

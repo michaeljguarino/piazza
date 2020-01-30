@@ -1,18 +1,19 @@
 import React, {useState} from 'react'
 import {Chat} from 'grommet-icons'
 import {useMutation} from 'react-apollo'
-import {CREATE_CHAT, CONVERSATIONS_Q} from './queries'
+import { CREATE_CHAT } from './queries'
 import {addConversation} from './utils'
 import {Conversations} from '../login/MyConversations'
+import { CONTEXT_Q } from '../login/queries'
 
 function CreateChat(props) {
   const [hover, setHover] = useState(false)
   const [mutation] = useMutation(CREATE_CHAT, {
     variables: {userIds: [props.user.id]},
     update: (cache, {data: {createChat}}) => {
-      const data = cache.readQuery({ query: CONVERSATIONS_Q });
+      const data = cache.readQuery({ query: CONTEXT_Q });
       cache.writeQuery({
-        query: CONVERSATIONS_Q,
+        query: CONTEXT_Q,
         data: addConversation(data, createChat)
       });
       props.setCurrentConversation(createChat)

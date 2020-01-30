@@ -1,12 +1,13 @@
-import React, {useState} from 'react'
-import {useMutation} from 'react-apollo'
-import {Box, Text, ThemeContext, TextInput} from 'grommet'
-import {DocumentImage} from 'grommet-icons'
-import Modal, {ModalHeader} from '../utils/Modal'
-import Button, {SecondaryButton} from '../utils/Button'
+import React, { useState } from 'react'
+import { useMutation } from 'react-apollo'
+import { Box, Text, ThemeContext, TextInput } from 'grommet'
+import { DocumentImage } from 'grommet-icons'
+import Modal, { ModalHeader } from '../utils/Modal'
+import Button, { SecondaryButton } from '../utils/Button'
 import {FilePicker} from 'react-file-picker'
-import {CREATE_EMOJI, EMOJI_Q} from './queries'
+import { CREATE_EMOJI } from './queries'
 import {addEmoji} from './utils'
+import { CONTEXT_Q } from '../login/queries'
 
 function generatePreview(file, callback) {
   let reader = new FileReader();
@@ -23,12 +24,15 @@ const MODAL_WIDTH = '400px'
 export function EmojiForm(props) {
   const [image, setImage] = useState(null)
   const [name, setName] = useState('')
-  const mutation = useMutation(CREATE_EMOJI, {
+  const [mutation] = useMutation(CREATE_EMOJI, {
     variables: {name, image: image && image.file},
     update: (cache, {data}) => {
-      const prev = cache.readQuery({ query: EMOJI_Q })
-      if (prev) {
-        cache.writeQuery({query: EMOJI_Q, data: addEmoji(prev, data.createEmoji)})
+      const prev = cache.readQuery({ query: CONTEXT_Q })
+      if (prev.emoji) {
+        cache.writeQuery({
+          query: CONTEXT_Q,
+          data: {...prev, emoji: addEmoji(prev.emoji, data.createEmoji)}
+        })
       }
       props.setOpen(false)
     }

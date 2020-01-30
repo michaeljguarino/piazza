@@ -2,16 +2,17 @@ import React, {useState, useRef} from 'react'
 import {useApolloClient, useQuery} from 'react-apollo'
 import {TextInput, Box, Text} from 'grommet'
 import {Return, Search} from 'grommet-icons'
-import {CONVERSATIONS_Q, SEARCH_Q, PUBLIC_CONVERSATIONS} from './queries'
+import { SEARCH_Q, PUBLIC_CONVERSATIONS } from './queries'
 import {addConversation} from './utils'
 import Scroller from '../utils/Scroller'
 import {mergeAppend} from '../../utils/array'
 import moment from 'moment'
+import { CONTEXT_Q } from '../login/queries'
 
 function _addConversation(client, conversation) {
-  const prev = client.readQuery({ query: CONVERSATIONS_Q });
+  const prev = client.readQuery({ query: CONTEXT_Q });
   client.writeQuery({
-    query: CONVERSATIONS_Q,
+    query: CONTEXT_Q,
     data: addConversation(prev, conversation)
   });
 }

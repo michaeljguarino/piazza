@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import Conversation from './Conversation'
 import Me from '../users/Me'
 import { Box, Text } from 'grommet'
@@ -12,6 +12,8 @@ import { Terminal, Group } from 'grommet-icons'
 import { UserFlyout } from '../users/Users'
 import { CommandFlyout } from '../commands/Commands'
 import { ExternalInvite } from './MagicLinkInvite'
+import { CurrentUserContext } from '../login/EnsureLogin'
+import { Conversations } from '../login/MyConversations'
 
 const PADDING = {left: '15px'}
 
@@ -35,7 +37,11 @@ function SidebarFlyout({icon, text, children}) {
   )
 }
 
-export default function ConversationPanel({me, setCurrentConversation, conversations, chats, currentConversation, pageInfo, loadMore}) {
+export default function ConversationPanel() {
+  const me = useContext(CurrentUserContext)
+  const {conversations, chats, setCurrentConversation, currentConversation, loadMore} = useContext(Conversations)
+  const {pageInfo} = conversations
+
   return (
     <Box>
       <Me me={me} pad={PADDING} />
@@ -57,7 +63,7 @@ export default function ConversationPanel({me, setCurrentConversation, conversat
             overflow: 'auto',
             maxHeight: '40vh'
           }}
-          edges={conversations}
+          edges={conversations.edges}
           onLoadMore={() => {
             if (!pageInfo.hasNextPage) return
 

@@ -4,10 +4,11 @@ import {Add} from 'grommet-icons'
 import { useMutation } from 'react-apollo'
 import Modal, {ModalHeader} from '../utils/Modal'
 import HoveredBackground from '../utils/HoveredBackground'
-import {CREATE_CONVERSATION, CONVERSATIONS_Q} from './queries'
+import { CREATE_CONVERSATION } from './queries'
 import ConversationEditForm from './ConversationEditForm'
 import {addConversation} from './utils'
 import ConversationSearch from './ConversationSearch'
+import { CONTEXT_Q } from '../login/queries'
 
 function ConversationForm(props) {
   const [state, setState] = useState({public: true})
@@ -15,9 +16,9 @@ function ConversationForm(props) {
     variables: {attributes: state},
     update: (cache, { data: { createConversation } }) => {
       props.setCurrentConversation(createConversation)
-      const prev = cache.readQuery({ query: CONVERSATIONS_Q });
+      const prev = cache.readQuery({ query: CONTEXT_Q });
       cache.writeQuery({
-        query: CONVERSATIONS_Q,
+        query: CONTEXT_Q,
         data: addConversation(prev, createConversation)
       });
       props.setOpen(false)

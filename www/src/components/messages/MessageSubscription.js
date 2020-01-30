@@ -1,8 +1,10 @@
-import React from 'react'
-import {Subscription} from 'react-apollo'
-import {MESSAGES_SUB, MESSAGES_Q} from './queries'
-import {updateConversations} from '../conversation/utils'
-import {applyNewMessage, updateMessage, removeMessage} from './utils'
+import React, { useContext } from 'react'
+import { Subscription } from 'react-apollo'
+import { MESSAGES_SUB, MESSAGES_Q } from './queries'
+import { updateConversations } from '../conversation/utils'
+import { applyNewMessage, updateMessage, removeMessage } from './utils'
+import { CurrentUserContext } from '../login/EnsureLogin'
+import { Conversations } from '../login/MyConversations'
 
 function applyDelta({client, subscriptionData}, currentConversation, me) {
   if (!subscriptionData.data) return
@@ -42,9 +44,12 @@ function applyDelta({client, subscriptionData}, currentConversation, me) {
 }
 
 function MessageSubscription(props) {
+  const me = useContext(CurrentUserContext)
+  const {currentConversation} = useContext(Conversations)
+
   return (
     <Subscription subscription={MESSAGES_SUB} onSubscriptionData={(data) =>
-      applyDelta(data, props.currentConversation, props.me)
+      applyDelta(data, currentConversation, me)
     }>
     {() => props.children}
     </Subscription>

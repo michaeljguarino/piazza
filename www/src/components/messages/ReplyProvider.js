@@ -8,22 +8,22 @@ export const ReplyContext = React.createContext({
   setReply: null
 })
 
-export function ReplyGutter(props) {
+export function ReplyGutter({reply, setReply, ...props}) {
   const [hover, setHover] = useState(false)
-  if (!props.reply) return null
+  if (!reply) return null
 
   return (
     <Box pad='small' border='top'>
       <Box style={{borderLeft: "2px solid gray"}}>
         <Stack anchor='top-right'>
-          <Message noHover message={props.reply} {...props} />
+          <Message noHover message={reply} {...props} />
           <Box
             width='25px'
             height='25px'
             align='center'
             justify='center'
             style={{cursor: 'pointer'}}
-            onClick={() => props.setReply(null)}
+            onClick={() => setReply(null)}
             onMouseEnter={() => setHover(true)}
             onMouseLeave={() => setHover(false)}
             background={hover ? 'light-3' : null}>
@@ -36,11 +36,11 @@ export function ReplyGutter(props) {
 }
 
 
-function ReplyProvider(props) {
+function ReplyProvider({children}) {
   const [reply, setReply] = useState(null)
   return (
     <ReplyContext.Provider value={{reply, setReply}}>
-    {props.children(reply, setReply)}
+    {children}
     </ReplyContext.Provider>
   )
 }

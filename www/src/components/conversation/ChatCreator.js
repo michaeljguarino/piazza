@@ -4,21 +4,22 @@ import {Add} from 'grommet-icons'
 import { useMutation } from 'react-apollo'
 import Modal, {ModalHeader} from '../utils/Modal'
 import HoveredBackground from '../utils/HoveredBackground'
-import {CONVERSATIONS_Q, CREATE_CHAT} from './queries'
+import {CREATE_CHAT} from './queries'
 import {addConversation} from './utils'
 import ParticipantInvite from './ParticipantInvite'
 import Users from '../users/Users'
 import Button from '../utils/Button'
 import {CurrentUserContext} from '../login/EnsureLogin'
+import { CONTEXT_Q } from '../login/queries'
 
 function ChatButton(props) {
   const [mutation] = useMutation(CREATE_CHAT, {
     variables: {userIds: props.participants},
     update: (cache, { data: { createChat } }) => {
       props.setCurrentConversation(createChat)
-      const prev = cache.readQuery({ query: CONVERSATIONS_Q });
+      const prev = cache.readQuery({ query: CONTEXT_Q });
       cache.writeQuery({
-        query: CONVERSATIONS_Q,
+        query: CONTEXT_Q,
         data: addConversation(prev, createChat)
       });
       props.setOpen(false)

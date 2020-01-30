@@ -11,12 +11,13 @@ import {CurrentUserContext} from '../login/EnsureLogin'
 import {MESSAGE_MUTATION, MESSAGES_Q} from './queries'
 import {applyNewMessage} from './utils'
 import MentionManager from './MentionManager'
-import {ReplyGutter} from './ReplyProvider'
+import {ReplyGutter, ReplyContext} from './ReplyProvider'
 import { Progress } from 'react-sweet-progress';
 import "react-sweet-progress/lib/style.css";
 import moment from 'moment'
 import Plain from 'slate-plain-serializer'
 import { EditingMessageContext } from './VisibleMessages'
+import { Conversations } from '../login/MyConversations'
 
 
 const TEXT_SIZE='xsmall'
@@ -50,7 +51,7 @@ function HelpDoc(props) {
   )
 }
 
-class MessageInputLifecyclManager extends Component {
+class MessageInputLifecycleManager extends Component {
   state = {
     typists: []
   }
@@ -101,7 +102,7 @@ function fetchRecentMessage(cache, setEdited, me, conversation) {
     })
 }
 
-function MessageInput({attachment, setAttachment, ...props}) {
+function MessageInput({attachment, setAttachment, reply, setReply, conversation, setWaterline, ...props}) {
   const [editorState, setEditorState] = useState(Plain.deserialize(''))
   const [uploadProgress, setUploadProgress] = useState(null)
   const [disableSubmit, setDisableSubmit] = useState(false)
@@ -116,20 +117,20 @@ function MessageInput({attachment, setAttachment, ...props}) {
       onAbortPossible: () => null
     }},
     update: (cache, {data: {createMessage}}) => {
-      const data = cache.readQuery({query: MESSAGES_Q, variables: {conversationId: props.conversation.id}})
+      const data = cache.readQuery({query: MESSAGES_Q, variables: {conversationId: conversation.id}})
       cache.writeQuery({
         query: MESSAGES_Q,
-        variables: {conversationId: props.conversation.id},
+        variables: {conversationId: conversation.id},
         data: applyNewMessage(data, createMessage)
       })
       setUploadProgress(null)
-      props.setReply(null)
-      props.setWaterline(moment().add(5, 'minutes').toISOString())
+      setReply(null)
+      setWaterline(moment().add(5, 'minutes').toISOString())
     }
   })
 
   const boxRef = useRef()
-  const parentId = props.reply && props.reply.id
+  const parentId = reply && reply.id
 
   return (
     <Box
@@ -149,7 +150,7 @@ function MessageInput({attachment, setAttachment, ...props}) {
       <Keyboard onKeyDown={(e) => {
         if (e.key === 'Enter' && !e.shiftKey && !disableSubmit) {
           mutation({variables: {
-            conversationId: props.conversation.id,
+            conversationId: conversation.id,
             attributes: {attachment, parentId, text: Plain.serialize(editorState)}
           }})
           setEditorState(Plain.deserialize(''))
@@ -157,7 +158,7 @@ function MessageInput({attachment, setAttachment, ...props}) {
         }
       }} onUp={() => {
         if (Plain.serialize(editorState) !== '') return
-        fetchRecentMessage(cache, setEdited, me, props.conversation)
+        fetchRecentMessage(cache, setEdited, me, conversation)
       }}>
         <Box
           border
@@ -208,23 +209,27 @@ function MessageInput({attachment, setAttachment, ...props}) {
 
 function WrappedMessageInput(props) {
   const dropRef = useRef()
+  const {reply, setReply} = useContext(ReplyContext)
+  const {currentConversation, setWaterline} = useContext(Conversations)
 
   return (
     <>
-      {props.reply && (
-        <Drop target={dropRef.current} align={{bottom: 'top'}}>
-          <ReplyGutter {...props}/>
-        </Drop>
+    {reply && (
+      <Drop target={dropRef.current} align={{bottom: 'top'}}>
+        <ReplyGutter reply={reply} setReply={setReply} {...props} />
+      </Drop>
+    )}
+    <MessageInputLifecycleManager conversation={currentConversation} {...props}>
+    {({typists, notifyTyping}) => (
+      <MessageInput
+        conversation={currentConversation}
+        setWaterline={setWaterline}
+        dropRef={dropRef}
+        typists={typists}
+        notifyTyping={notifyTyping}
+        {...props} />
       )}
-      <MessageInputLifecyclManager {...props}>
-      {({typists, notifyTyping}) => (
-        <MessageInput
-          dropRef={dropRef}
-          typists={typists}
-          notifyTyping={notifyTyping}
-          {...props} />
-        )}
-      </MessageInputLifecyclManager>
+    </MessageInputLifecycleManager>
     </>
   )
 }

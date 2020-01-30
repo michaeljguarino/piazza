@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import {Box, Text, Stack} from 'grommet'
 import {Down} from 'grommet-icons'
 import Message from './Message'
@@ -7,6 +7,8 @@ import DualScroller from '../utils/DualScroller'
 import Loading from '../utils/Loading'
 import {reverse, mergeAppend} from '../../utils/array'
 import {ANCHORED_MESSAGES} from './queries'
+import { Conversations } from '../login/MyConversations'
+import { ReplyContext } from './ReplyProvider'
 
 function RecentItemsOverlay(props) {
   return (
@@ -50,7 +52,9 @@ const onFetchMore = (direction, prev, {fetchMoreResult}) => {
 }
 
 function AnchoredMessageList(props) {
-  const defaultVars = {conversationId: props.conversation.id, anchor: props.anchor.timestamp}
+  const { currentConversation } = useContext(Conversations)
+  const { setReply } = useContext(ReplyContext)
+  const defaultVars = {conversationId: currentConversation.id, anchor: props.anchor.timestamp}
   const {loading, error, data, fetchMore} = useQuery(ANCHORED_MESSAGES, {
     variables: defaultVars,
     fetchPolicy: 'cache-and-network'
@@ -82,9 +86,9 @@ function AnchoredMessageList(props) {
             pos={pos}
             selected={edge.node.id === props.anchor.id}
             key={edge.node.id}
-            conversation={props.conversation}
+            conversation={currentConversation}
             message={edge.node}
-            setReply={props.setReply}
+            setReply={setReply}
             next={next.node} />
         )}
         onLoadMore={(direction) => {

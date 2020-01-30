@@ -1,10 +1,10 @@
-import React, {useState} from 'react'
+import React, { useState, useContext } from 'react'
 import {useMutation} from 'react-apollo'
 import {Box, Text, Markdown, Anchor, Calendar} from 'grommet'
 import {Down} from 'grommet-icons'
 import CloseableDropdown from '../utils/CloseableDropdown'
 import Modal, {ModalHeader} from '../utils/Modal'
-import {UPDATE_CONVERSATION, CONVERSATIONS_Q, UPDATE_PARTICIPANT, DELETE_PARTICIPANT} from './queries'
+import {UPDATE_CONVERSATION, UPDATE_PARTICIPANT, DELETE_PARTICIPANT} from './queries'
 import ConversationEditForm from './ConversationEditForm'
 import NotificationIcon from '../notifications/NotificationIcon'
 import {CurrentUserContext} from '../login/EnsureLogin'
@@ -21,6 +21,8 @@ import pick from 'lodash/pick'
 import InterchangeableBox from '../utils/InterchangeableBox'
 import MenuItem, {SubMenu} from '../utils/MenuItem'
 import HoveredBackground from '../utils/HoveredBackground'
+import { Conversations } from '../login/MyConversations'
+import { CONTEXT_Q } from '../login/queries'
 
 export const BOX_ATTRS = {
   direction: "row",
@@ -31,12 +33,12 @@ export const BOX_ATTRS = {
 }
 
 export function removeConversation(cache, conversationId) {
-  const prev = cache.readQuery({ query: CONVERSATIONS_Q });
+  const prev = cache.readQuery({ query: CONTEXT_Q });
   const convs = prev.conversations.edges.filter(({node}) => node.id !== conversationId)
   const chats = prev.chats.edges.filter(({node}) => node.id !== conversationId)
 
   cache.writeQuery({
-    query: CONVERSATIONS_Q,
+    query: CONTEXT_Q,
     data: {
       ...prev,
       conversations: {
@@ -62,9 +64,9 @@ function ConversationUpdateForm(props) {
   const [mutation] = useMutation(UPDATE_CONVERSATION, {
     variables: {id: props.conversation.id, attributes: attributes},
     update: (cache, {data}) => {
-      const prev = cache.readQuery({ query: CONVERSATIONS_Q });
+      const prev = cache.readQuery({ query: CONTEXT_Q });
       cache.writeQuery({
-        query: CONVERSATIONS_Q,
+        query: CONTEXT_Q,
         data: updateConversation(prev, data.updateConversation)
       });
       props.setOpen(false)
@@ -191,30 +193,26 @@ function ConversationDropdown(props) {
   )
 }
 
-function ConversationHeader(props) {
+export default function ConversationHeader({setAnchor}) {
+  const {currentConversation} = useContext(Conversations)
+  const me = useContext(CurrentUserContext)
   return (
     <Box fill='horizontal' direction='row' align='center' pad={{left: '20px', top: '7px', bottom: '7px'}}>
       <Box fill='horizontal' direction='column'>
-        <CurrentUserContext.Consumer>
-        {me => (<ConversationDropdown me={me} {...props} />)}
-        </CurrentUserContext.Consumer>
+        <ConversationDropdown me={me} conversation={currentConversation} />
         <Box height='25px' direction='row' align='end' justify='start' pad={{top: '5px', bottom: '5px'}}>
-          <Participants {...props} />
-          <PinnedMessages {...props}  />
-          <Files {...props} />
+          <Participants conversation={currentConversation} />
+          <PinnedMessages conversation={currentConversation}  />
+          <Files conversation={currentConversation} />
           <Box {...BOX_ATTRS} align='center' justify='center' border={null}>
-            <ConversationUpdate {...props} />
+            <ConversationUpdate conversation={currentConversation} />
           </Box>
         </Box>
       </Box>
-      <MessageSearch conversation={props.conversation} setAnchor={props.setAnchor} />
+      <MessageSearch conversation={currentConversation} setAnchor={setAnchor} />
       <UserIcon />
       <Commands />
-      <CurrentUserContext.Consumer>
-      {me => (<NotificationIcon me={me} {...props} />)}
-      </CurrentUserContext.Consumer>
+      <NotificationIcon me={me} conversation={currentConversation} />
     </Box>
   )
 }
-
-export default ConversationHeader

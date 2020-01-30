@@ -1,10 +1,11 @@
 import React from 'react'
 import {Box} from 'grommet'
-import {CONVERSATIONS_Q, CONVERSATIONS_SUB} from './queries'
+import { CONVERSATIONS_SUB } from './queries'
 import sortBy from 'lodash/sortBy'
 import {BarLoader} from 'react-spinners'
+import { CONTEXT_Q } from '../login/queries'
 
-export function Loader(props) {
+export function Loader() {
   return (
     <Box height='100%' align='center' justify='center' border='right' pad={{horizontal: 'xsmall'}}>
       <BarLoader height={4} width={15} />
@@ -21,7 +22,7 @@ export function updateUnreadMessages(client, conversationId, update) {
 }
 
 export function updateConversations(client, conversationSelector, update) {
-  const {conversations, chats} = client.readQuery({ query: CONVERSATIONS_Q })
+  const {conversations, chats} = client.readQuery({ query: CONTEXT_Q })
   const edges = conversations.edges.map((e) => {
     if (conversationSelector(e)) return update(e)
     return e
@@ -32,7 +33,7 @@ export function updateConversations(client, conversationSelector, update) {
   })
 
   client.writeQuery({
-    query: CONVERSATIONS_Q,
+    query: CONTEXT_Q,
     data: {
       conversations: {
         ...conversations,
