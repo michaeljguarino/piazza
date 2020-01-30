@@ -12,17 +12,17 @@ import Button from '../utils/Button'
 import { CurrentUserContext } from '../login/EnsureLogin'
 import { CONTEXT_Q } from '../login/queries'
 
-function ChatButton(props) {
+function ChatButton({setCurrentConversation, setOpen, participants}) {
   const [mutation] = useMutation(CREATE_CHAT, {
-    variables: {userIds: props.participants},
+    variables: {userIds: participants},
     update: (cache, { data: { createChat } }) => {
-      props.setCurrentConversation(createChat)
+      setCurrentConversation(createChat)
       const prev = cache.readQuery({ query: CONTEXT_Q });
       cache.writeQuery({
         query: CONTEXT_Q,
         data: addConversation(prev, createChat)
       });
-      props.setOpen(false)
+      setOpen(false)
     }
   })
 
@@ -37,7 +37,36 @@ function ChatButton(props) {
   )
 }
 
-function ChatCreator(props) {
+function Header({padding}) {
+  return (
+    <Box pad={padding} fill='horizontal' direction="row" align="center" margin={{bottom: '5px'}}>
+      <HoveredBackground>
+        <Box highlight width='100%'>
+          <Text
+            style={{cursor: 'pointer', fontWeight: 500}}
+            size='15px'
+            width='100%'
+            color='sidebarText'>
+              Chats
+          </Text>
+        </Box>
+        <Box
+          highlight
+          style={{cursor: 'pointer'}}
+          border
+          round='full'
+          width="20px"
+          height='20px'
+          justify='center'
+          align='center'>
+          <Add color='sidebarText' size="small" />
+        </Box>
+      </HoveredBackground>
+    </Box>
+  )
+}
+
+function ChatCreator({padding, setCurrentConversation}) {
   const me = useContext(CurrentUserContext)
   const [participants, setParticipants] = useState([])
 
@@ -51,31 +80,7 @@ function ChatCreator(props) {
 
   return (
     <Box fill='horizontal' pad={{right: '12px'}}>
-      <Modal round='small' target={
-        <Box pad={props.padding} fill='horizontal' direction="row" align="center" margin={{bottom: '5px'}}>
-          <HoveredBackground>
-            <Box highlight width='100%'>
-              <Text
-                style={{cursor: 'pointer', fontWeight: 500}}
-                size='15px'
-                width='100%'
-                color='sidebarText'>
-                  Chats
-              </Text>
-            </Box>
-            <Box
-              highlight
-              style={{cursor: 'pointer'}}
-              border
-              round='full'
-              width="20px"
-              height='20px'
-              justify='center'
-              align='center'>
-              <Add color='sidebarText' size="small" />
-            </Box>
-          </HoveredBackground>
-        </Box>}>
+      <Modal round='small' target={<Header padding={padding} />}>
         {setOpen => (
           <Box
             width="400px"
@@ -92,7 +97,10 @@ function ChatCreator(props) {
                 pad='small'
                 mapper={(u) => u.id}>
               {(participants) => (
-                <ChatButton setOpen={setOpen} participants={participants} {...props} />
+                <ChatButton
+                  setOpen={setOpen}
+                  participants={participants}
+                  setCurrentConversation={setCurrentConversation} />
               )}
               </ParticipantInvite>
             </Box>

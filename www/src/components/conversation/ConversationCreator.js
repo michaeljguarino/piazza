@@ -10,27 +10,27 @@ import {addConversation} from './utils'
 import ConversationSearch from './ConversationSearch'
 import { CONTEXT_Q } from '../login/queries'
 
-function ConversationForm(props) {
+function ConversationForm({setOpen, setCurrentConversation}) {
   const [state, setState] = useState({public: true})
   const [mutation, {loading}] = useMutation(CREATE_CONVERSATION, {
     variables: {attributes: state},
     update: (cache, { data: { createConversation } }) => {
-      props.setCurrentConversation(createConversation)
+      setCurrentConversation(createConversation)
       const prev = cache.readQuery({ query: CONTEXT_Q });
       cache.writeQuery({
         query: CONTEXT_Q,
         data: addConversation(prev, createConversation)
       });
-      props.setOpen(false)
+      setOpen(false)
     }
   })
 
   return (
     <Box>
-      <ModalHeader setOpen={props.setOpen} text='Start a new conversation' />
+      <ModalHeader setOpen={setOpen} text='Start a new conversation' />
       <Box align='center' justify='center' pad='medium'>
         <ConversationEditForm
-          cancel={() => props.setOpen(false)}
+          cancel={() => setOpen(false)}
           state={state}
           mutation={mutation}
           loading={loading}
@@ -58,49 +58,58 @@ export function CreateConversation(props) {
   )
 }
 
-function ConversationCreator(props) {
+function HeaderLabel() {
+  return (
+    <HoveredBackground>
+      <Text
+        style={{cursor: 'pointer', fontWeight: 500}}
+        highlight
+        size='15px'
+        width='100%'
+        color='sidebarText'>
+          Conversations
+      </Text>
+    </HoveredBackground>
+  )
+}
+
+function HeaderAdd() {
+  return (
+    <HoveredBackground>
+      <Box
+        border
+        highlight
+        style={{cursor: 'pointer'}}
+        round='full'
+        width="20px"
+        height='20px'
+        justify='center'
+        align='center'>
+        <Add color='sidebarText' size="small" />
+      </Box>
+    </HoveredBackground>
+  )
+}
+
+function ConversationCreator({setCurrentConversation, padding}) {
   return (
     <Box fill='horizontal' pad={{right: '12px'}}>
-      <Box pad={props.padding} fill='horizontal' direction="row" align="center" margin={{bottom: '5px'}}>
+      <Box pad={padding} fill='horizontal' direction="row" align="center" margin={{bottom: '5px'}}>
         <Box width='100%'>
-          <Modal target={
-            <HoveredBackground>
-              <Text
-                style={{cursor: 'pointer', fontWeight: 500}}
-                highlight
-                size='15px'
-                width='100%'
-                color='sidebarText'>
-                  Conversations
-              </Text>
-            </HoveredBackground>
-          }>
+          <Modal target={<HeaderLabel />}>
           {setOpen => (
             <Box width='30vw'>
               <ModalHeader text='Find a conversation to join' setOpen={setOpen} />
               <ConversationSearch
-                setCurrentConversation={props.setCurrentConversation}
+                setCurrentConversation={setCurrentConversation}
                 onSearchClose={() => setOpen(false)} />
             </Box>
           )}
           </Modal>
         </Box>
-        <Modal target={
-          <HoveredBackground>
-            <Box
-              border
-              highlight
-              style={{cursor: 'pointer'}}
-              round='full'
-              width="20px"
-              height='20px'
-              justify='center'
-              align='center'>
-              <Add color='sidebarText' size="small" />
-            </Box>
-          </HoveredBackground>}>
+        <Modal target={<HeaderAdd />}>
           {setOpen => (
-            <ConversationForm setOpen={setOpen} {...props} />
+            <ConversationForm setOpen={setOpen} setCurrentConversation={setCurrentConversation} />
           )}
         </Modal>
       </Box>
