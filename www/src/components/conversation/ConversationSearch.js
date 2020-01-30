@@ -8,6 +8,7 @@ import Scroller from '../utils/Scroller'
 import {mergeAppend} from '../../utils/array'
 import moment from 'moment'
 import { CONTEXT_Q } from '../login/queries'
+import Loading from '../utils/Loading'
 
 function _addConversation(client, conversation) {
   const prev = client.readQuery({ query: CONTEXT_Q });
@@ -127,12 +128,12 @@ function ConversationSearch(props) {
         />
       </Box>
       <Box>
-      {!loading && (
+      {loading ? <Box height='40vh'><Loading /></Box> : (
         <Scroller
           id='conversations-selector'
           style={{
             overflow: 'auto',
-            maxHeight: '40vh'
+            height: '40vh'
           }}
           edges={data.conversations.edges}
           onLoadMore={() => {

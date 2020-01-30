@@ -11,6 +11,7 @@ import {USERS_Q, USER_SUB} from './queries'
 import {updateUser, addUser} from './utils'
 import {ICON_HEIGHT, ICON_SPREAD} from '../Piazza'
 import { useSubscription } from '../utils/hooks'
+import Loading from '../utils/Loading'
 
 export function UserFlyout({setOpen}) {
   return (
@@ -71,9 +72,10 @@ const onFetchMore = (prev, {fetchMoreResult}) => {
   } : prev;
 }
 
-export default function Users({width, ignore, noFlyout, pad, margin, onChat, color, onClick}) {
+export default function Users({width, ignore, noFlyout, pad, margin, onChat, color, onClick, showLoading}) {
   const {loading, data, fetchMore, subscribeToMore} = useQuery(USERS_Q)
   useSubscription(() => _subscribeToMore(subscribeToMore), "users")
+  if (loading && showLoading) return <Box height='100%'><Loading /></Box>
   if (loading) return '...'
   let userEdges = data.users.edges
   let pageInfo = data.users.pageInfo

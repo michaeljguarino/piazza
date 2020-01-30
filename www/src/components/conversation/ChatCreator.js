@@ -1,15 +1,15 @@
-import React, {useState} from 'react'
-import {Box, Text} from 'grommet'
-import {Add} from 'grommet-icons'
+import React, { useState, useContext } from 'react'
+import { Box, Text } from 'grommet'
+import { Add } from 'grommet-icons'
 import { useMutation } from 'react-apollo'
-import Modal, {ModalHeader} from '../utils/Modal'
+import Modal, { ModalHeader } from '../utils/Modal'
 import HoveredBackground from '../utils/HoveredBackground'
-import {CREATE_CHAT} from './queries'
-import {addConversation} from './utils'
+import { CREATE_CHAT } from './queries'
+import { addConversation } from './utils'
 import ParticipantInvite from './ParticipantInvite'
 import Users from '../users/Users'
 import Button from '../utils/Button'
-import {CurrentUserContext} from '../login/EnsureLogin'
+import { CurrentUserContext } from '../login/EnsureLogin'
 import { CONTEXT_Q } from '../login/queries'
 
 function ChatButton(props) {
@@ -38,6 +38,7 @@ function ChatButton(props) {
 }
 
 function ChatCreator(props) {
+  const me = useContext(CurrentUserContext)
   const [participants, setParticipants] = useState([])
 
   const addParticipant = (user) => {
@@ -95,17 +96,14 @@ function ChatCreator(props) {
               )}
               </ParticipantInvite>
             </Box>
-            <CurrentUserContext.Consumer>
-            {me => (
-              <Users
-                onClick={addParticipant}
-                noFlyout
-                ignore={new Set([me.id, ...participants.map((u) => u.id)])}
-                pad={{horizontal: 'small', vertical: 'xxsmall'}}
-                margin={{bottom: 'xxsmall'}}
-                onChat={() => setOpen(false)} />
-            )}
-            </CurrentUserContext.Consumer>
+            <Users
+              onClick={addParticipant}
+              showLoading
+              noFlyout
+              ignore={new Set([me.id, ...participants.map((u) => u.id)])}
+              pad={{horizontal: 'small', vertical: 'xxsmall'}}
+              margin={{bottom: 'xxsmall'}}
+              onChat={() => setOpen(false)} />
           </Box>
         )}
       </Modal>
