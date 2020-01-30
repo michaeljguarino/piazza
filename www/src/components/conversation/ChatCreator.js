@@ -56,7 +56,7 @@ function ChatCreator(props) {
             <Box highlight width='100%'>
               <Text
                 style={{cursor: 'pointer', fontWeight: 500}}
-                size='small'
+                size='15px'
                 width='100%'
                 color='sidebarText'>
                   Chats

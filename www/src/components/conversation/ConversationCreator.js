@@ -68,7 +68,7 @@ function ConversationCreator(props) {
               <Text
                 style={{cursor: 'pointer', fontWeight: 500}}
                 highlight
-                size='small'
+                size='15px'
                 width='100%'
                 color='sidebarText'>
                   Conversations
