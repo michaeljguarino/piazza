@@ -51,7 +51,7 @@ export default function AppContext({children, sideEffects}) {
     current.currentParticipant.lastSeenAt
   )
   const {conversations, chats} = data
-  console.log(data.emoji)
+
   return (
     <CurrentUserContext.Provider value={data.me}>
       <EmojiContext.Provider value={data.emoji.edges}>

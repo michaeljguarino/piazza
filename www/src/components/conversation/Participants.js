@@ -9,13 +9,13 @@ import UserHandle from '../users/UserHandle'
 import {PARTICIPANTS_Q, PARTICIPANT_SUB} from './queries'
 import {mergeAppend} from '../../utils/array'
 import {BOX_ATTRS} from './ConversationHeader'
-import SubscriptionWrapper from '../utils/SubscriptionWrapper'
 import HoveredBackground from '../utils/HoveredBackground'
 import WithPresence from '../utils/presence'
 import PresenceIndicator from '../users/PresenceIndicator'
 import ParticipantInvite, {ParticipantInviteButton} from './ParticipantInvite'
 import MagicLinkInvite from './MagicLinkInvite'
 import {Loader} from './utils'
+import { useSubscription } from '../utils/hooks'
 
 function addParticipant(participant, prev) {
   const participants = prev.conversation.participants.edges
@@ -125,65 +125,65 @@ function Participants(props) {
   const {loading, data, fetchMore, subscribeToMore} = useQuery(PARTICIPANTS_Q, {
     variables: {conversationId: props.conversation.id}
   })
+  useSubscription(
+    () => _subscribeToParticipantDeltas(props, subscribeToMore),
+    props.conversation.id
+  )
 
   if (loading) return <Loader />
-  let pageInfo = data.conversation.participants.pageInfo
-  let edges = data.conversation.participants.edges
+  const {edges, pageInfo} = data.conversation.participants
+
   return (
-    <SubscriptionWrapper id={props.conversation.id} startSubscription={() => {
-      return _subscribeToParticipantDeltas(props, subscribeToMore)
-    }}>
-      <Flyout width='30vw' target={
-        <HoveredBackground>
-          <Box {...BOX_ATTRS} pad={{right: '8px'}} accentable>
-            <Text height='12px' style={{lineHeight: '12px'}} margin={{right: '3px'}}>
-              <UserNew size='12px' />
-            </Text>
-            <Text size='xsmall'>{data.conversation.participantCount}</Text>
-          </Box>
-        </HoveredBackground>
-      }>
-      {setOpen => (
-        <FlyoutContainer width='40vw'>
-          <FlyoutHeader text='Participants' setOpen={setOpen} />
-          <Box
-            pad={{left: "small", right: 'small', bottom: 'small'}}
-            gap='small'
-            margin={{bottom: 'small'}}
-            border='bottom'>
-            <Scroller
-              style={{
-                overflow: 'auto',
-                maxHeight: '70%',
-                display: 'flex',
-                justifyContent: 'flex-start',
-                flexDirection: 'column',
-              }}
-              edges={edges}
-              mapper={(p) => (<Participant key={p.node.id} user={p.node.user} />)}
-              onLoadMore={() => {
-                if (!pageInfo.hasNextPage) return
-                fetchMore({
-                  variables: {cursor: pageInfo.endCursor},
-                  updateQuery: doFetchMore})
-              }} />
-          </Box>
-          <Text margin={{left: '10px', bottom: 'small'}}>Add more:</Text>
-          <ParticipantInvite
-            direction='row'
-            conversation={props.conversation}>
-          {(participants, clearInput) => (
-            <ParticipantInviteButton
-              participants={participants}
-              conversation={props.conversation}
-              close={clearInput} />
-          )}
-          </ParticipantInvite>
-          <MagicLinkInvite conversation={props.conversation} />
-        </FlyoutContainer>
-      )}
-      </Flyout>
-    </SubscriptionWrapper>
+    <Flyout width='30vw' target={
+      <HoveredBackground>
+        <Box {...BOX_ATTRS} pad={{right: '8px'}} accentable>
+          <Text height='12px' style={{lineHeight: '12px'}} margin={{right: '3px'}}>
+            <UserNew size='12px' />
+          </Text>
+          <Text size='xsmall'>{data.conversation.participantCount}</Text>
+        </Box>
+      </HoveredBackground>
+    }>
+    {setOpen => (
+      <FlyoutContainer width='40vw'>
+        <FlyoutHeader text='Participants' setOpen={setOpen} />
+        <Box
+          pad={{left: "small", right: 'small', bottom: 'small'}}
+          gap='small'
+          margin={{bottom: 'small'}}
+          border='bottom'>
+          <Scroller
+            style={{
+              overflow: 'auto',
+              maxHeight: '70%',
+              display: 'flex',
+              justifyContent: 'flex-start',
+              flexDirection: 'column',
+            }}
+            edges={edges}
+            mapper={(p) => (<Participant key={p.node.id} user={p.node.user} />)}
+            onLoadMore={() => {
+              if (!pageInfo.hasNextPage) return
+              fetchMore({
+                variables: {cursor: pageInfo.endCursor},
+                updateQuery: doFetchMore})
+            }} />
+        </Box>
+        <Text margin={{left: '10px', bottom: 'small'}}>Add more:</Text>
+        <ParticipantInvite
+          direction='row'
+          conversation={props.conversation}>
+        {(participants, clearInput) => (
+          <ParticipantInviteButton
+            participants={participants}
+            conversation={props.conversation}
+            close={clearInput} />
+        )}
+        </ParticipantInvite>
+        <MagicLinkInvite conversation={props.conversation} />
+      </FlyoutContainer>
+    )}
+    </Flyout>
   )
 }
 

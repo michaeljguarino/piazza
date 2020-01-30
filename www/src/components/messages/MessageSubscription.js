@@ -43,7 +43,7 @@ function applyDelta({client, subscriptionData}, currentConversation, me) {
   }
 }
 
-function MessageSubscription(props) {
+function MessageSubscription({children}) {
   const me = useContext(CurrentUserContext)
   const {currentConversation} = useContext(Conversations)
 
@@ -51,7 +51,7 @@ function MessageSubscription(props) {
     <Subscription subscription={MESSAGES_SUB} onSubscriptionData={(data) =>
       applyDelta(data, currentConversation, me)
     }>
-    {() => props.children}
+    {() => children}
     </Subscription>
   )
 }

@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, { useState, useEffect } from 'react'
 import {Box, Stack, Text} from 'grommet'
 import {useQuery, useMutation, useApolloClient} from 'react-apollo'
 import {Notification} from 'grommet-icons'
@@ -104,12 +104,13 @@ function NotificationIcon(props) {
       setUnseen(0)
     }
   })
+  useEffect(() => {
+    _subscribeToNewNotifications(
+      subscribeToMore, unseen, setUnseen, setCurrentNotification, client, updateConversations)
+  }, [])
 
   if (loading) return (<Notification size='25px' />)
-  let edges = data.notifications.edges
-  let pageInfo = data.notifications.pageInfo
-  _subscribeToNewNotifications(
-    subscribeToMore, unseen, setUnseen, setCurrentNotification, client, updateConversations)
+  const {edges, pageInfo} = data.notifications
 
   return (
     <>

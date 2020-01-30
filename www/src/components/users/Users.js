@@ -9,8 +9,8 @@ import UserListEntry from './UserListEntry'
 import {mergeAppend} from '../../utils/array'
 import {USERS_Q, USER_SUB} from './queries'
 import {updateUser, addUser} from './utils'
-import SubscriptionWrapper from '../utils/SubscriptionWrapper'
 import {ICON_HEIGHT, ICON_SPREAD} from '../Piazza'
+import { useSubscription } from '../utils/hooks'
 
 export function UserFlyout({setOpen}) {
   return (
@@ -73,43 +73,40 @@ const onFetchMore = (prev, {fetchMoreResult}) => {
 
 export default function Users({width, ignore, noFlyout, pad, margin, onChat, color, onClick}) {
   const {loading, data, fetchMore, subscribeToMore} = useQuery(USERS_Q)
+  useSubscription(() => _subscribeToMore(subscribeToMore), "users")
   if (loading) return '...'
   let userEdges = data.users.edges
   let pageInfo = data.users.pageInfo
 
   return (
     <Box width={width}>
-      <SubscriptionWrapper
-        id="users"
-        startSubscription={() => _subscribeToMore(subscribeToMore)}>
-        <Scroller
-          id='message-viewport'
-          edges={userEdges.filter(({node}) => !ignore.has(node.id))}
-          style={{
-            overflow: 'auto',
-            height: '100%'
-          }}
-          mapper={({node}) => (
-            <UserListEntry
-              noFlyout={noFlyout}
-              pad={pad}
-              margin={margin}
-              onChat={onChat}
-              key={node.id}
-              user={node}
-              color={color}
-              onClick={onClick} />
-          )}
-          onLoadMore={() => {
-            if (!pageInfo.hasNextPage) return
+      <Scroller
+        id='message-viewport'
+        edges={userEdges.filter(({node}) => !ignore.has(node.id))}
+        style={{
+          overflow: 'auto',
+          height: '100%'
+        }}
+        mapper={({node}) => (
+          <UserListEntry
+            noFlyout={noFlyout}
+            pad={pad}
+            margin={margin}
+            onChat={onChat}
+            key={node.id}
+            user={node}
+            color={color}
+            onClick={onClick} />
+        )}
+        onLoadMore={() => {
+          if (!pageInfo.hasNextPage) return
 
-            fetchMore({
-              variables: {cursor: pageInfo.endCursor},
-              updateQuery: onFetchMore
-            })
-          }}
-        />
-      </SubscriptionWrapper>
+          fetchMore({
+            variables: {cursor: pageInfo.endCursor},
+            updateQuery: onFetchMore
+          })
+        }}
+      />
     </Box>
   )
 }
