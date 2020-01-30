@@ -1,20 +1,19 @@
 import React from 'react'
-import {useQuery} from 'react-apollo'
-import {Box, Text} from 'grommet'
-import {UserNew} from 'grommet-icons'
+import { Box, Text } from 'grommet'
+import { UserNew } from 'grommet-icons'
 import Scroller from '../utils/Scroller'
-import Flyout, {FlyoutHeader, FlyoutContainer} from '../utils/Flyout'
+import Flyout, { FlyoutHeader, FlyoutContainer } from '../utils/Flyout'
 import Avatar from '../users/Avatar'
 import UserHandle from '../users/UserHandle'
-import {PARTICIPANTS_Q, PARTICIPANT_SUB} from './queries'
-import {mergeAppend} from '../../utils/array'
-import {BOX_ATTRS} from './ConversationHeader'
+import { PARTICIPANT_SUB } from './queries'
+import { mergeAppend } from '../../utils/array'
+import { BOX_ATTRS } from './ConversationHeader'
 import HoveredBackground from '../utils/HoveredBackground'
 import WithPresence from '../utils/presence'
 import PresenceIndicator from '../users/PresenceIndicator'
-import ParticipantInvite, {ParticipantInviteButton} from './ParticipantInvite'
+import ParticipantInvite, { ParticipantInviteButton } from './ParticipantInvite'
 import MagicLinkInvite from './MagicLinkInvite'
-import {Loader} from './utils'
+import { Loader } from './utils'
 import { useSubscription } from '../utils/hooks'
 
 function addParticipant(participant, prev) {
@@ -121,10 +120,7 @@ const _subscribeToParticipantDeltas = (props, subscribeToMore) => {
   })
 }
 
-function Participants(props) {
-  const {loading, data, fetchMore, subscribeToMore} = useQuery(PARTICIPANTS_Q, {
-    variables: {conversationId: props.conversation.id}
-  })
+function Participants({loading, data, fetchMore, subscribeToMore, ...props}) {
   useSubscription(
     () => _subscribeToParticipantDeltas(props, subscribeToMore),
     props.conversation.id
@@ -165,7 +161,7 @@ function Participants(props) {
             onLoadMore={() => {
               if (!pageInfo.hasNextPage) return
               fetchMore({
-                variables: {cursor: pageInfo.endCursor},
+                variables: {partCursor: pageInfo.endCursor},
                 updateQuery: doFetchMore})
             }} />
         </Box>

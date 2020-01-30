@@ -1,10 +1,8 @@
 import React from 'react'
-import {useQuery} from 'react-apollo'
 import {Box, Text} from 'grommet'
 import {Document} from 'grommet-icons'
 import Scroller from '../utils/Scroller'
 import Flyout, {FlyoutHeader, FlyoutContainer} from '../utils/Flyout'
-import {FILES_Q} from './queries'
 import {mergeAppend} from '../../utils/array'
 import {BOX_ATTRS} from './ConversationHeader'
 import HoveredBackground from '../utils/HoveredBackground'
@@ -38,10 +36,7 @@ const NoFiles = () => {
   )
 }
 
-function Files(props) {
-  const {loading, data, fetchMore} = useQuery(FILES_Q, {
-    variables: {conversationId: props.conversation.id}
-  })
+function Files({loading, data, fetchMore}) {
   if (loading) return <Loader />
   let pageInfo = data.conversation.files.pageInfo
   let edges = data.conversation.files.edges
@@ -77,7 +72,7 @@ function Files(props) {
             onLoadMore={() => {
               if (!pageInfo.hasNextPage) return
               fetchMore({
-                variables: {cursor: pageInfo.endCursor},
+                variables: {fileCursor: pageInfo.endCursor},
                 updateQuery: doFetchMore
               })
             }} />

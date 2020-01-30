@@ -1,5 +1,5 @@
 import gql from 'graphql-tag'
-import {ConversationFragment, ParticipantFragment, FileFragment} from '../models/conversations'
+import {ConversationFragment, ParticipantFragment, FileFragment, MessageFragment} from '../models/conversations'
 
 export const CREATE_CONVERSATION = gql`
   mutation CreateConversation($attributes: ConversationAttributes!) {
@@ -46,6 +46,57 @@ export const CONVERSATIONS_Q = gql`
   }
   ${ConversationFragment}
 `
+
+export const CONVERSATION_CONTEXT = gql`
+  query ConversationContext($id: ID!, $partCursor: String, $fileCursor: String, $pinCursor: String) {
+    conversation(id: $id) {
+      id
+      name
+      topic
+      fileCount
+      participantCount
+      pinnedMessageCount
+      pinnedMessages(first: 15, after: $pinCursor) {
+        pageInfo {
+          endCursor
+          hasNextPage
+        }
+        edges {
+          node {
+            message {
+              ...MessageFragment
+            }
+          }
+        }
+      }
+      participants(first: 25, after: $partCursor) {
+        pageInfo {
+          endCursor
+          hasNextPage
+        }
+        edges {
+          node {
+            ...ParticipantFragment
+          }
+        }
+      }
+      files(first: 25, after: $fileCursor) {
+        pageInfo {
+          endCursor
+          hasNextPage
+        }
+        edges {
+          node {
+            ...FileFragment
+          }
+        }
+      }
+    }
+  }
+  ${MessageFragment}
+  ${FileFragment}
+  ${ParticipantFragment}
+`;
 
 export const PARTICIPANTS_Q = gql`
   query ParticipantQ($conversationId: ID!, $cursor: String) {

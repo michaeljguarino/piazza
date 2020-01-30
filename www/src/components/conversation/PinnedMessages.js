@@ -1,16 +1,16 @@
 import React from 'react'
-import {useQuery} from 'react-apollo'
+import { useQuery } from 'react-apollo'
 import {Box, Text} from 'grommet'
 import {Pin} from 'grommet-icons'
 import Scroller from '../utils/Scroller'
-import Flyout, {FlyoutHeader, FlyoutContainer} from '../utils/Flyout'
+import Flyout, { FlyoutHeader, FlyoutContainer } from '../utils/Flyout'
 import HoveredBackground from '../utils/HoveredBackground'
-import {PINNED_MESSAGES, PINNED_MESSAGE_SUB} from '../messages/queries'
-import {addPinnedMessage, removePinnedMessage} from '../messages/utils'
-import {mergeAppend} from '../../utils/array'
-import {BOX_ATTRS} from './ConversationHeader'
+import { PINNED_MESSAGE_SUB } from '../messages/queries'
+import { addPinnedMessage, removePinnedMessage } from '../messages/utils'
+import { mergeAppend } from '../../utils/array'
+import { BOX_ATTRS } from './ConversationHeader'
 import Message from '../messages/Message'
-import {Loader} from './utils'
+import { Loader } from './utils'
 import { useSubscription } from '../utils/hooks'
 
 const _subscribeToNewPins = (conversationId, subscribeToMore) => {
@@ -50,10 +50,7 @@ const onLoadMore = (prev, {fetchMoreResult}) => {
   } : prev;
 }
 
-function PinnedMessages(props) {
-  const {loading, data, fetchMore, subscribeToMore} = useQuery(PINNED_MESSAGES, {
-    variables: {conversationId: props.conversation.id}
-  })
+function PinnedMessages({loading, data, fetchMore, subscribeToMore, ...props}) {
   useSubscription(
     () => _subscribeToNewPins(props.conversation.id, subscribeToMore),
     props.conversation.id
@@ -108,7 +105,7 @@ function PinnedMessages(props) {
             if (!pageInfo.hasNextPage) return
 
             fetchMore({
-              variables: {conversationId: props.conversation.id, cursor: pageInfo.endCursor},
+              variables: {conversationId: props.conversation.id, pinCursor: pageInfo.endCursor},
               updateQuery: onLoadMore
             })
           }} />

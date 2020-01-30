@@ -1,10 +1,10 @@
 import React, { useState, useContext } from 'react'
-import {useMutation} from 'react-apollo'
+import {useMutation, useQuery} from 'react-apollo'
 import {Box, Text, Markdown, Anchor, Calendar} from 'grommet'
 import {Down} from 'grommet-icons'
 import CloseableDropdown from '../utils/CloseableDropdown'
 import Modal, {ModalHeader} from '../utils/Modal'
-import {UPDATE_CONVERSATION, UPDATE_PARTICIPANT, DELETE_PARTICIPANT} from './queries'
+import {UPDATE_CONVERSATION, UPDATE_PARTICIPANT, DELETE_PARTICIPANT, CONVERSATION_CONTEXT} from './queries'
 import ConversationEditForm from './ConversationEditForm'
 import NotificationIcon from '../notifications/NotificationIcon'
 import {CurrentUserContext} from '../login/EnsureLogin'
@@ -196,14 +196,33 @@ function ConversationDropdown(props) {
 export default function ConversationHeader({setAnchor}) {
   const {currentConversation} = useContext(Conversations)
   const me = useContext(CurrentUserContext)
+  const {data, loading, fetchMore, subscribeToMore} = useQuery(CONVERSATION_CONTEXT, {
+    variables: {id: currentConversation.id}
+  })
+
   return (
     <Box fill='horizontal' direction='row' align='center' pad={{left: '20px', top: '7px', bottom: '7px'}}>
       <Box fill='horizontal' direction='column'>
         <ConversationDropdown me={me} conversation={currentConversation} />
         <Box height='25px' direction='row' align='end' justify='start' pad={{top: '5px', bottom: '5px'}}>
-          <Participants conversation={currentConversation} />
-          <PinnedMessages conversation={currentConversation}  />
-          <Files conversation={currentConversation} />
+          <Participants
+            data={data}
+            loading={loading}
+            fetchMore={fetchMore}
+            subscribeToMore={subscribeToMore}
+            conversation={currentConversation} />
+          <PinnedMessages
+            data={data}
+            loading={loading}
+            fetchMore={fetchMore}
+            subscribeToMore={subscribeToMore}
+            conversation={currentConversation}  />
+          <Files
+            data={data}
+            loading={loading}
+            fetchMore={fetchMore}
+            subscribeToMore={subscribeToMore}
+            conversation={currentConversation} />
           <Box {...BOX_ATTRS} align='center' justify='center' border={null}>
             <ConversationUpdate conversation={currentConversation} />
           </Box>
