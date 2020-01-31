@@ -1,8 +1,8 @@
 import React from 'react'
-import {useQuery} from 'react-apollo'
-import {SearchInput} from './utils/SelectSearchInput'
+import { useQuery } from 'react-apollo'
+import { SearchInput } from './utils/SelectSearchInput'
 import Loading from './utils/Loading'
-import {BRAND_Q} from './themes/queries'
+import { BRAND_Q } from './themes/queries'
 
 export const DEFAULT_COLOR_THEME = {
   brand: '#2F415B',

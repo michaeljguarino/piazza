@@ -1,11 +1,12 @@
-import React, {useState} from 'react'
-import {useMutation, useQuery} from 'react-apollo'
-import {Box, Text} from 'grommet'
-import {THEME_Q, SET_THEME} from './queries'
+import React, { useState, useContext } from 'react'
+import { useMutation, useQuery } from 'react-apollo'
+import { Box, Text } from 'grommet'
+import { THEME_Q, SET_THEME, UPDATE_BRAND } from './queries'
 import Scroller from '../utils/Scroller'
-import {ThemeContext} from '../Theme'
-import {mergeAppend, chunk} from '../../utils/array'
-import {THEME_FIELDS} from './constants'
+import { ThemeContext } from '../Theme'
+import { mergeAppend, chunk } from '../../utils/array'
+import { THEME_FIELDS } from './constants'
+import Loading from '../utils/Loading'
 
 function ThemeColors(props) {
   return (
@@ -50,49 +51,43 @@ function ThemeChoice({onClick, theme, current}) {
   )
 }
 
-function ThemeSelector() {
+export default function ThemeSelector({brand}) {
+  const {id, brand: {themeId}} = useContext(ThemeContext)
   const {loading, data, fetchMore} = useQuery(THEME_Q)
-  const [mutation] = useMutation(SET_THEME, {
+  const [mutation] = useMutation(brand ? UPDATE_BRAND : SET_THEME, {
     update: () => window.location.reload(false)
   })
 
-  if (loading) return (<Box direction='row'>...</Box>)
-  let pageInfo = data.themes.pageInfo
-  let edges = data.themes.edges
+  if (loading) return (<Box fill='horizontal' height='40vh'><Loading /></Box>)
+  const {pageInfo, edges} = data.themes
 
   return (
-    <ThemeContext.Consumer>
-    {({id}) => (
-      <Scroller
-        id='themes'
-        style={{
-          overflow: 'auto',
-          maxHeight: '70vh'
-        }}
-        edges={Array.from(chunk(edges, 2))}
-        mapper={(chunk) => (
-          <Box direction='row' pad='small' gap='small' margin={{vertical: 'xsmall'}}>
-            {chunk.map((e) => (
-              <ThemeChoice
-                current={id}
-                key={e.node.id}
-                theme={e.node}
-                onClick={() => mutation({variables: {id: e.node.id}})}
-                />
-            ))}
-          </Box>)}
-        onLoadMore={() => {
-          if (!pageInfo.hasNextPage) return
-          fetchMore({
-            variables: {cursor: pageInfo.endCursor},
-            updateQuery: onFetchMore
-          })
-        }}
-      />
-    )}
-    </ThemeContext.Consumer>
+    <Scroller
+      id='themes'
+      style={{
+        overflow: 'auto',
+        maxHeight: '70vh'
+      }}
+      edges={Array.from(chunk(edges, 2))}
+      mapper={(chunk) => (
+        <Box direction='row' pad='small' gap='small' margin={{vertical: 'xsmall'}}>
+        {chunk.map((e) => (
+          <ThemeChoice
+            current={brand ? themeId : id}
+            key={e.node.id}
+            theme={e.node}
+            onClick={() => mutation({variables: {id: e.node.id}})}
+            />
+        ))}
+        </Box>
+      )}
+      onLoadMore={() => {
+        if (!pageInfo.hasNextPage) return
+        fetchMore({
+          variables: {cursor: pageInfo.endCursor},
+          updateQuery: onFetchMore
+        })
+      }}
+    />
   )
 }
-
-export default ThemeSelector
-

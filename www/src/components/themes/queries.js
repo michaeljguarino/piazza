@@ -4,6 +4,7 @@ import {ThemeFragment} from '../models/brand'
 export const BRAND_Q = gql`
   query {
     brand {
+      themeId
       theme {
         ...ThemeFragment
       }
@@ -36,6 +37,14 @@ export const SET_THEME = gql`
     }
   }
   ${ThemeFragment}
+`;
+
+export const UPDATE_BRAND = gql`
+  mutation UpdateBrand($id: ID!) {
+    updateBrand(attributes: {themeId: $id}) {
+      id
+    }
+  }
 `;
 
 export const CREATE_THEME = gql`
