@@ -1,0 +1,1 @@
+export const NOTIF_SOUND = `${process.env.PUBLIC_URL}/notif.mp3`

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { Box, Stack, Text } from 'grommet'
 import { useQuery, useMutation, useApolloClient } from 'react-apollo'
 import { Notification } from 'grommet-icons'
@@ -10,6 +10,7 @@ import { updateConversations } from '../conversation/utils'
 import WebNotification from 'react-web-notification';
 import { conversationNameString } from '../conversation/Conversation'
 import { ICON_HEIGHT, ICON_SPREAD } from '../Piazza'
+import { NOTIF_SOUND } from './constants'
 
 function _subscribeToNewNotifications(subscribeToMore, unseen, setUnseen, setCurrentNotification, client, updateConversations) {
   return subscribeToMore({
@@ -60,20 +61,23 @@ function getTitle(notif, me) {
   }
 }
 
-function BrowserNotif({me, setCurrentNotification, ...notif}) {
+function BrowserNotif({me, setCurrentNotification, audioRef, ...notif}) {
   const {message, actor} = notif
   const title = getTitle(notif, me)
   if (!title) return null
   return (
+    <>
     <WebNotification
       title={title}
-      onShow={() => setCurrentNotification(null)}
+      onClose={() => setCurrentNotification(null)}
+      onShow={() => audioRef.current && audioRef.current.play()}
       options={{
         body: message.text,
-        icon: actor.avatar
+        icon: actor && actor.avatar
       }}
       timeout={2000}
     />
+    </>
   )
 }
 
@@ -85,6 +89,7 @@ function introduction() {
 }
 
 export default function NotificationIcon({me, setCurrentConversation}) {
+  const audioRef = useRef()
   const client = useApolloClient()
   const [unseen, setUnseen] = useState(me.unseenNotifications || 0)
   const [currentNotification, setCurrentNotification] = useState(introduction())
@@ -105,16 +110,21 @@ export default function NotificationIcon({me, setCurrentConversation}) {
       subscribeToMore, unseen, setUnseen, setCurrentNotification, client, updateConversations)
   }, [])
 
-  if (loading) return (<Notification size='25px' />)
+  if (loading) return (
+    <Box margin={{left: ICON_SPREAD, right: '15px'}}>
+      <Notification size={ICON_HEIGHT} />
+    </Box>
+  )
   const {edges, pageInfo} = data.notifications
 
   return (
     <>
     {currentNotification && (
       <BrowserNotif
-      me={me}
-      setCurrentNotification={setCurrentNotification}
-      {...currentNotification} />
+        audioRef={audioRef}
+        me={me}
+        setCurrentNotification={setCurrentNotification}
+        {...currentNotification} />
     )}
     <HoveredBackground>
       <Box
@@ -148,6 +158,10 @@ export default function NotificationIcon({me, setCurrentConversation}) {
         </Dropdown>
       </Box>
     </HoveredBackground>
+    <audio ref={audioRef} id='sound' preload='auto'>
+      <source src={NOTIF_SOUND} type='audio/mp3' />
+      <embed hidden={true} autostart='false' loop={false} src={NOTIF_SOUND} />
+    </audio>
     </>
   )
 }
