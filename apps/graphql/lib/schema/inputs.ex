@@ -112,4 +112,8 @@ defmodule GraphQl.Schema.Inputs do
     field :notif,         :string
     field :link,          :string
   end
+
+  input_object :brand_attributes do
+    field :theme_id, :id
+  end
 end

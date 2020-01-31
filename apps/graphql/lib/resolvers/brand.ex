@@ -9,6 +9,9 @@ defmodule GraphQl.Resolvers.Brand do
 
   def resolve_brand(_, _), do: {:ok, BrandService.get_brand!()}
 
+  def update_brand(%{attributes: attrs}, %{context: %{current_user: user}}),
+    do: BrandService.update_brand(attrs, user)
+
   def list_themes(args, _) do
     Theme.ordered()
     |> paginate(args)

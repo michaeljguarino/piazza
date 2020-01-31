@@ -1,7 +1,7 @@
 defmodule GraphQl.Resolvers.Platform do
   use GraphQl.Resolvers.Base, model: Core.Models.Command
   alias Core.Services.Platform
-  alias Core.Models.{Webhook, IncomingWebhook, InstallableCommand}
+  alias Core.Models.{Webhook, IncomingWebhook}
 
   def query(Command, _args), do: Command
   def query(Webhook, _args), do: Webhook

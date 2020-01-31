@@ -4,7 +4,7 @@ import {Box, Text} from 'grommet'
 import {THEME_Q, SET_THEME} from './queries'
 import Scroller from '../utils/Scroller'
 import {ThemeContext} from '../Theme'
-import {mergeAppend} from '../../utils/array'
+import {mergeAppend, chunk} from '../../utils/array'
 import {THEME_FIELDS} from './constants'
 
 function ThemeColors(props) {
@@ -32,26 +32,25 @@ const onFetchMore = (prev, {fetchMoreResult}) => {
 }
 
 
-function ThemeChoice(props) {
+function ThemeChoice({onClick, theme, current}) {
   const [hover, setHover] = useState(false)
-  const selected = props.current === props.theme.id
+  const selected = current === theme.id
   return (
     <Box
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
-      style={{cursor: 'pointer'}}
-      border={selected || hover}
-      onClick={props.onClick}
-      margin={{vertical: 'xsmall'}}
+      style={selected ? null : {cursor: 'pointer'}}
+      border={selected ? true : (hover ? {color: 'focus'} : false)}
+      onClick={selected ? null : onClick}
       gap='xsmall'
       pad='small'>
-      <Text size='small'>{props.theme.name}</Text>
-      <ThemeColors theme={props.theme} />
+      <Text size='small'>{theme.name}</Text>
+      <ThemeColors theme={theme} />
     </Box>
   )
 }
 
-function ThemeSelector(props) {
+function ThemeSelector() {
   const {loading, data, fetchMore} = useQuery(THEME_Q)
   const [mutation] = useMutation(SET_THEME, {
     update: () => window.location.reload(false)
@@ -60,25 +59,28 @@ function ThemeSelector(props) {
   if (loading) return (<Box direction='row'>...</Box>)
   let pageInfo = data.themes.pageInfo
   let edges = data.themes.edges
+
   return (
     <ThemeContext.Consumer>
     {({id}) => (
       <Scroller
+        id='themes'
         style={{
           overflow: 'auto',
-          maxHeight: '70vh',
-          display: 'flex',
-          justifyContent: 'flex-start',
-          flexDirection: 'column',
+          maxHeight: '70vh'
         }}
-        edges={edges}
-        mapper={(e) => (
-          <ThemeChoice
-            current={id}
-            key={e.node.id}
-            theme={e.node}
-            onClick={() => mutation({variables: {id: e.node.id}})}
-          />)}
+        edges={Array.from(chunk(edges, 2))}
+        mapper={(chunk) => (
+          <Box direction='row' pad='small' gap='small' margin={{vertical: 'xsmall'}}>
+            {chunk.map((e) => (
+              <ThemeChoice
+                current={id}
+                key={e.node.id}
+                theme={e.node}
+                onClick={() => mutation({variables: {id: e.node.id}})}
+                />
+            ))}
+          </Box>)}
         onLoadMore={() => {
           if (!pageInfo.hasNextPage) return
           fetchMore({

@@ -20,7 +20,7 @@ function Themes(props) {
       <ModalHeader text={header} setOpen={props.setOpen} />
       <InterchangeableBox noWrap>
       {setAlternate => (
-        <Box width='300px' pad='small'>
+        <Box width='500px' pad='small'>
           <Box>
             <Text size='small' weight='bold'>Available themes</Text>
           </Box>

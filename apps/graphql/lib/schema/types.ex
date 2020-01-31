@@ -379,13 +379,14 @@ defmodule GraphQl.Schema.Types do
   delta :emoji
 
   object :brand do
+    field :id,    non_null(:id)
     field :theme, :theme, resolve: fn brand, _, context -> Brand.get_theme(brand, context) end
 
     timestamps()
   end
 
   object :theme do
-    field :id, :id
+    field :id,   :id
     field :name, non_null(:string)
 
     field :brand,         :string

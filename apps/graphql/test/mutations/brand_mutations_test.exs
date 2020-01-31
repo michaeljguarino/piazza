@@ -39,4 +39,25 @@ defmodule GraphQl.BrandMutationsTest do
       assert updated["id"] == theme.id
     end
   end
+
+  describe "updateBrand" do
+    test "An admin can update brand info" do
+      brand = insert(:brand)
+      theme = insert(:theme)
+
+      {:ok, %{data: %{"updateBrand" => updated}}} = run_q("""
+        mutation UpdateBrand($id: ID!) {
+          updateBrand(attributes: {themeId: $id}) {
+            id
+            theme {
+              id
+            }
+          }
+        }
+      """, %{"id" => theme.id}, %{current_user: insert(:user, roles: %{admin: true})})
+
+      assert updated["id"] == brand.id
+      assert updated["theme"]["id"] == theme.id
+    end
+  end
 end

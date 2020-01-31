@@ -341,6 +341,13 @@ defmodule GraphQl do
 
       resolve safe_resolver(&Brand.set_theme/2)
     end
+
+    field :update_brand, :brand do
+      middleware GraphQl.Schema.Authenticated
+      arg :attributes, non_null(:brand_attributes)
+
+      resolve safe_resolver(&Brand.update_brand/2)
+    end
   end
 
   subscription do
