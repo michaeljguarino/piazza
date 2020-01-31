@@ -4,7 +4,7 @@ import {Box, Text} from 'grommet'
 const background='#ff7b25'
 const DEFAULT_SIZE = '40px'
 
-function Avatar({user: {backgroundColor, avatar, handle}, size, rightMargin}) {
+export default function Avatar({user: {backgroundColor, avatar, handle}, size, rightMargin}) {
   const boxSize = size || DEFAULT_SIZE
   return (
     <Box
@@ -24,5 +24,3 @@ function Avatar({user: {backgroundColor, avatar, handle}, size, rightMargin}) {
     </Box>
   )
 }
-
-export default Avatar

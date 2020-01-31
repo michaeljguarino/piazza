@@ -61,6 +61,7 @@ function getTitle(notif, me) {
 }
 
 function BrowserNotif({me, setCurrentNotification, ...notif}) {
+  const {message, actor} = notif
   const title = getTitle(notif, me)
   if (!title) return null
   return (
@@ -68,7 +69,8 @@ function BrowserNotif({me, setCurrentNotification, ...notif}) {
       title={title}
       onShow={() => setCurrentNotification(null)}
       options={{
-        body: notif.message.text
+        body: message.text,
+        icon: actor.avatar
       }}
       timeout={2000}
     />
@@ -135,7 +137,7 @@ export default function NotificationIcon({me, setCurrentConversation}) {
               </Box> : <span></span>
             }
           </Stack>
-          <Box pad='small' align='center' justify='center' width='300px'>
+          <Box style={{minWidth: '300px'}} pad='small' align='center' justify='center'>
             <NotificationList
               setUnseen={setUnseen}
               edges={edges}
