@@ -25,13 +25,12 @@ function Message({notif, setCurrentConversation}) {
   )
 }
 
-function Notification(props) {
-  let notif = props.notification
-  switch(notif.type) {
+function Notification({notification, setCurrentConversation}) {
+  switch(notification.type) {
     case "MENTION":
-      return <Mention notif={notif} setCurrentConversation={props.setCurrentConversation} />
+      return <Mention notif={notification} setCurrentConversation={setCurrentConversation} />
     case "MESSAGE":
-      return <Message notif={notif} setCurrentConversation={props.setCurrentConversation} />
+      return <Message notif={notification} setCurrentConversation={setCurrentConversation} />
     default:
       return (<span></span>)
   }

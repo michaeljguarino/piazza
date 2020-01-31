@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, { useState } from 'react'
 import moment from 'moment'
 
 export const VisibleMessagesContext = React.createContext({
@@ -26,7 +26,7 @@ export function lastMessage(visible) {
   return min
 }
 
-function VisibleMessages(props) {
+export default function VisibleMessages({children}) {
   const [visible, setVisible] = useState({})
   const [edited, setEdited] = useState(null)
 
@@ -48,10 +48,8 @@ function VisibleMessages(props) {
     <EditingMessageContext.Provider value={{edited, setEdited}}>
       <VisibleMessagesContext.Provider
         value={{visible, addMessage, removeMessage, clear}}>
-        {props.children(visible, clear)}
+        {children(visible, clear)}
       </VisibleMessagesContext.Provider>
     </EditingMessageContext.Provider>
   )
 }
-
-export default VisibleMessages

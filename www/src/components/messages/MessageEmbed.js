@@ -1,5 +1,5 @@
 import React from 'react'
-import {Box, Text, Anchor} from 'grommet'
+import { Box, Text, Anchor } from 'grommet'
 
 function dimensions(props) {
   let width = props.width || '100px'
@@ -7,21 +7,21 @@ function dimensions(props) {
   return {width, height}
 }
 
-function VideoEmbed(props) {
+function VideoEmbed({url}) {
   return (
-    <video autoPlay loop controls src={props.url}></video>
+    <video autoPlay loop controls src={url}></video>
   )
 }
 
-function ImageEmbed(props) {
+function ImageEmbed({url}) {
   return (
-    <image style={{maxHeight: '100px', maxWidth: '100px'}} src={props.url} />
+    <image style={{maxHeight: '100px', maxWidth: '100px'}} src={url} />
   )
 }
 
-function SiteEmbed(props) {
-  return (props.image_url ?
-    <img alt='' style={{maxHeight: '100px', maxWidth: '100px'}} src={props.image_url} fit='contain'/> :
+function SiteEmbed({image_url}) {
+  return (image_url ?
+    <img alt='' style={{maxHeight: '100px', maxWidth: '100px'}} src={image_url} fit='contain'/> :
     <span></span>
   )
 }
@@ -40,7 +40,7 @@ function EmbedMedia(props) {
   }
 }
 
-function MessageEmbed(props) {
+export default function MessageEmbed(props) {
   let dims = dimensions(props)
   props = {...props, ...dims}
   return (
@@ -53,5 +53,3 @@ function MessageEmbed(props) {
     </Box>
   )
 }
-
-export default MessageEmbed

@@ -36,7 +36,7 @@ export function ReplyGutter({reply, setReply, ...props}) {
 }
 
 
-function ReplyProvider({children}) {
+export default function ReplyProvider({children}) {
   const [reply, setReply] = useState(null)
   return (
     <ReplyContext.Provider value={{reply, setReply}}>
@@ -44,5 +44,3 @@ function ReplyProvider({children}) {
     </ReplyContext.Provider>
   )
 }
-
-export default ReplyProvider

@@ -10,11 +10,11 @@ import {ANCHORED_MESSAGES} from './queries'
 import { Conversations } from '../login/MyConversations'
 import { ReplyContext } from './ReplyProvider'
 
-function RecentItemsOverlay(props) {
+function RecentItemsOverlay({setAnchor}) {
   return (
     <Box
       style={{cursor: 'pointer'}}
-      onClick={() => props.setAnchor(null)}
+      onClick={() => setAnchor(null)}
       direction='row'
       align='center'
       justify='center'
@@ -51,10 +51,10 @@ const onFetchMore = (direction, prev, {fetchMoreResult}) => {
   }
 }
 
-function AnchoredMessageList(props) {
+function AnchoredMessageList({anchor, setAnchor, ...props}) {
   const { currentConversation } = useContext(Conversations)
   const { setReply } = useContext(ReplyContext)
-  const defaultVars = {conversationId: currentConversation.id, anchor: props.anchor.timestamp}
+  const defaultVars = {conversationId: currentConversation.id, anchor: anchor.timestamp}
   const {loading, error, data, fetchMore} = useQuery(ANCHORED_MESSAGES, {
     variables: defaultVars,
     fetchPolicy: 'cache-and-network'
@@ -63,7 +63,7 @@ function AnchoredMessageList(props) {
   if (error) return <div>wtf</div>
   let results = data.conversation
   let allEdges = [...Array.from(reverse(results.before.edges)), ...results.after.edges]
-  const scrollTo = props.anchor.id ? props.anchor.id : (results.after.edges[0] && results.after.edges[0].node.id)
+  const scrollTo = anchor.id ? anchor.id : (results.after.edges[0] && results.after.edges[0].node.id)
 
   return (
     <Stack anchor="bottom" fill>
@@ -71,7 +71,7 @@ function AnchoredMessageList(props) {
         id='message-viewport'
         edges={Array.from(reverse(allEdges))}
         scrollTo={scrollTo}
-        overlay={<RecentItemsOverlay {...props} />}
+        overlay={<RecentItemsOverlay setAnchor={setAnchor} />}
         style={{
           overflow: 'auto',
           height: '100%',
@@ -80,14 +80,14 @@ function AnchoredMessageList(props) {
           justifyContent: 'flex-start',
           flexDirection: 'column-reverse',
         }}
-        mapper={(edge, next, ref, pos) => (
+        mapper={({node}, next, ref, pos) => (
           <Message
             parentRef={ref}
             pos={pos}
-            selected={edge.node.id === props.anchor.id}
-            key={edge.node.id}
+            selected={node.id === anchor.id}
+            key={node.id}
             conversation={currentConversation}
-            message={edge.node}
+            message={node}
             setReply={setReply}
             next={next.node} />
         )}
@@ -103,7 +103,7 @@ function AnchoredMessageList(props) {
           })
         }}
       />
-      <RecentItemsOverlay {...props} />
+      <RecentItemsOverlay setAnchor={setAnchor} />
     </Stack>
   )
 

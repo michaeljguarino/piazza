@@ -8,11 +8,11 @@ import { mergeAppend, chunk } from '../../utils/array'
 import { THEME_FIELDS } from './constants'
 import Loading from '../utils/Loading'
 
-function ThemeColors(props) {
+function ThemeColors({theme}) {
   return (
     <Box direction='row'>
       {THEME_FIELDS.map((field) => (
-        <Box key={field} background={props.theme[field]} width='20px' height='20px' />
+        <Box key={field} background={theme[field]} width='20px' height='20px' />
       ))}
     </Box>
   )
@@ -71,12 +71,12 @@ export default function ThemeSelector({brand}) {
       edges={Array.from(chunk(edges, 2))}
       mapper={(chunk) => (
         <Box direction='row' pad='small' gap='small' margin={{vertical: 'xsmall'}}>
-        {chunk.map((e) => (
+        {chunk.map(({node}) => (
           <ThemeChoice
             current={brand ? themeId : id}
-            key={e.node.id}
-            theme={e.node}
-            onClick={() => mutation({variables: {id: e.node.id}})}
+            key={node.id}
+            theme={node}
+            onClick={() => mutation({variables: {id: node.id}})}
             />
         ))}
         </Box>

@@ -4,17 +4,17 @@ import {Next, Down, Download} from 'grommet-icons'
 import FileIcon, {defaultStyles} from 'react-file-icon'
 import Tooltip from '../utils/Tooltip'
 import HoveredBackground from '../utils/HoveredBackground'
-import filesize from 'filesize'
 import moment from 'moment'
+import filesize from 'filesize'
 
 const extension = (file) => file.split('.').pop()
 
-function DownloadAffordance(props) {
+function DownloadAffordance({object}) {
   return (
     <Tooltip align={{bottom: 'top'}}>
       <HoveredBackground>
         <Box accentable animation={{type: "fadeIn", duration: 200}} >
-          <a href={props.object} download>
+          <a href={object} download>
             <Box
               margin={{right: 'xsmall', top: 'xsmall'}}
               style={{cursor: 'pointer'}}
@@ -46,10 +46,10 @@ function Video({object, filename}) {
   return <video controls style={{maxHeight: 300, maxWidth: 500}} src={object} alt={filename} />
 }
 
-function MediaFile(props) {
+function MediaFile({file}) {
   const [expanded, setExpanded] = useState(true)
   const [hover, setHover] = useState(false)
-  const {filename, mediaType} = props.file
+  const {filename, mediaType} = file
   const color = hover ? 'dark-2' : 'dark-6'
   return (
     <Box gap='xsmall'>
@@ -69,17 +69,16 @@ function MediaFile(props) {
       {expanded && (
         <Box>
           {mediaType === 'IMAGE' ?
-            <Image {...props.file} /> :
-            <Video {...props.file} />}
+            <Image {...file} /> :
+            <Video {...file} />}
         </Box>
       )}
     </Box>
   )
 }
 
-export function FileEntry(props) {
+export function FileEntry({file: {filename, object, insertedAt, mediaType, ...file}, next}) {
   const [hover, setHover] = useState(false)
-  const {filename, object, insertedAt, mediaType} = props.file
   const ext = extension(filename)
   const styles = defaultStyles[ext] || {}
   const mediaStyles = {maxWidth: 50, maxHeight: 50}
@@ -89,7 +88,7 @@ export function FileEntry(props) {
         <Box
           direction='row'
           height='80px'
-          border={props.next.node ? 'top' : 'horizontal'}
+          border={next.node ? 'top' : 'horizontal'}
           align='center'
           gap='small'
           pad={{left: 'small'}}
@@ -104,7 +103,7 @@ export function FileEntry(props) {
           <Box width='100%'>
             <Text size='small'>{filename}</Text>
             <Box direction='row' gap='small'>
-              <Text size='xsmall' color='dark-5'>{filesize(props.file.filesize || 0)}</Text>
+              <Text size='xsmall' color='dark-5'>{filesize(file.filesize || 0)}</Text>
               <Text size='xsmall'>{moment(insertedAt).fromNow()}</Text>
             </Box>
           </Box>
@@ -115,9 +114,8 @@ export function FileEntry(props) {
   )
 }
 
-export function StandardFile(props) {
+export function StandardFile({file: {filename, object, insertedAt, ...file}}) {
   const [hover, setHover] = useState(false)
-  const {filename, object, insertedAt} = props.file
   const ext = extension(filename)
   const styles = defaultStyles[ext] || {}
   return (
@@ -127,7 +125,7 @@ export function StandardFile(props) {
         onMouseLeave={() => setHover(false)}
         border={hover ? {color: 'focus'} : true}
         elevation={hover ? 'small' : 'xsmall'}
-        background={hover ? null : '#fff'}
+        background='#fff'
         round='xsmall'
         align="center"
         direction='row'
@@ -138,7 +136,7 @@ export function StandardFile(props) {
         <Box gap='xsmall'>
           <Text size='small'>{filename}</Text>
           <Box direction='row' gap='small'>
-            <Text size='small' color='dark-5'>{filesize(props.file.filesize || 0)}</Text>
+            <Text size='small' color='dark-5'>{filesize(file.filesize || 0)}</Text>
             <Text size='small'>{moment(insertedAt).fromNow()}</Text>
           </Box>
         </Box>
@@ -147,7 +145,7 @@ export function StandardFile(props) {
   )
 }
 
-function File({file}) {
+export default function File({file}) {
   switch (file.mediaType) {
     case "OTHER":
       return <StandardFile file={file} />
@@ -155,5 +153,3 @@ function File({file}) {
       return <MediaFile file={file} />
   }
 }
-
-export default File

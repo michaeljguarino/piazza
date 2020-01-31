@@ -1,16 +1,15 @@
 import React, { useState, useEffect } from 'react'
-import {Box, Stack, Text} from 'grommet'
-import {useQuery, useMutation, useApolloClient} from 'react-apollo'
-import {Notification} from 'grommet-icons'
+import { Box, Stack, Text } from 'grommet'
+import { useQuery, useMutation, useApolloClient } from 'react-apollo'
+import { Notification } from 'grommet-icons'
 import Dropdown from '../utils/Dropdown'
 import HoveredBackground from '../utils/HoveredBackground'
 import NotificationList from './NotificationList'
-import {NOTIFICATIONS_Q, NEW_NOTIFICATIONS_SUB, VIEW_NOTIFICATIONS} from './queries'
-import {updateConversations} from '../conversation/utils'
+import { NOTIFICATIONS_Q, NEW_NOTIFICATIONS_SUB, VIEW_NOTIFICATIONS } from './queries'
+import { updateConversations } from '../conversation/utils'
 import WebNotification from 'react-web-notification';
-import {CurrentUserContext} from '../login/EnsureLogin'
-import {conversationNameString} from '../conversation/Conversation'
-import {ICON_HEIGHT, ICON_SPREAD} from '../Piazza'
+import { conversationNameString } from '../conversation/Conversation'
+import { ICON_HEIGHT, ICON_SPREAD } from '../Piazza'
 
 function _subscribeToNewNotifications(subscribeToMore, unseen, setUnseen, setCurrentNotification, client, updateConversations) {
   return subscribeToMore({
@@ -61,23 +60,18 @@ function getTitle(notif, me) {
   }
 }
 
-function BrowserNotif(props) {
+function BrowserNotif({me, setCurrentNotification, ...notif}) {
+  const title = getTitle(notif, me)
+  if (!title) return null
   return (
-    <CurrentUserContext.Consumer>
-    {me => {
-      const title = getTitle(props, me)
-      if (!title) return null
-      return (
-        <WebNotification
-          title={title}
-          onShow={() => props.setCurrentNotification(null)}
-          options={{
-            body: props.message.text
-          }}
-          timeout={2000}
-        />)
-    }}
-    </CurrentUserContext.Consumer>
+    <WebNotification
+      title={title}
+      onShow={() => setCurrentNotification(null)}
+      options={{
+        body: notif.message.text
+      }}
+      timeout={2000}
+    />
   )
 }
 
@@ -88,10 +82,10 @@ function introduction() {
   return {type: 'WELCOME', message: {text: 'Welcome to Piazza!'}}
 }
 
-function NotificationIcon(props) {
-  const [unseen, setUnseen] = useState(props.me.unseenNotifications || 0)
-  const [currentNotification, setCurrentNotification] = useState(introduction())
+export default function NotificationIcon({me, setCurrentConversation}) {
   const client = useApolloClient()
+  const [unseen, setUnseen] = useState(me.unseenNotifications || 0)
+  const [currentNotification, setCurrentNotification] = useState(introduction())
   const {data, loading, fetchMore, subscribeToMore} = useQuery(NOTIFICATIONS_Q)
   const [mutation] = useMutation(VIEW_NOTIFICATIONS, {
     update: (cache, {data: {viewNotifications}}) => {
@@ -116,6 +110,7 @@ function NotificationIcon(props) {
     <>
     {currentNotification && (
       <BrowserNotif
+      me={me}
       setCurrentNotification={setCurrentNotification}
       {...currentNotification} />
     )}
@@ -146,7 +141,7 @@ function NotificationIcon(props) {
               edges={edges}
               fetchMore={fetchMore}
               pageInfo={pageInfo}
-              {...props} />
+              setCurrentConversation={setCurrentConversation} />
           </Box>
         </Dropdown>
       </Box>
@@ -154,5 +149,3 @@ function NotificationIcon(props) {
     </>
   )
 }
-
-export default NotificationIcon

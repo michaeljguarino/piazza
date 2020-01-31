@@ -1,21 +1,20 @@
 import React from 'react'
-import {Mutation} from 'react-apollo'
-import {Box, Text, Markdown, Anchor} from 'grommet'
-import Button, {SecondaryButton} from '../utils/Button'
-import {INTERACTION} from './queries'
-import {DialogContext} from './MessageList'
+import { Mutation} from 'react-apollo'
+import { Box, Text, Markdown, Anchor } from 'grommet'
+import Button, { SecondaryButton } from '../utils/Button'
+import { INTERACTION } from './queries'
+import { DialogContext } from './MessageList'
 
 function recurse(children) {
   if (!children) return null
   return children.map(parse)
 }
 
-function video(props) {
-  const {url, loop, autoPlay, ...rest} = props.attributes
+function video({key, attributes: {url, loop, autoPlay, ...rest}}) {
   return (
     <video
       style={{maxWidth: '250px', maxHeight: '250px'}}
-      key={props.key}
+      key={key}
       loop={!!loop}
       autoPlay={!!autoPlay}
       {...rest}
@@ -24,20 +23,18 @@ function video(props) {
   )
 }
 
-function box(props) {
-  const {children, attributes} = props
+function box({children, attributes, key}) {
   return (
-    <Box key={props.key} {...attributes}>
+    <Box key={key} {...(attributes || {})}>
       {recurse(children)}
     </Box>
   )
 }
 
-function attachment(props, i) {
-  const {children, attributes} = props
+function attachment({children, attributes, key}, i) {
   const {accent, margin, ...rest} = attributes || {}
   return (
-    <Box key={props.key} margin={margin} border background='white'>
+    <Box key={key} margin={margin} border background='white'>
       <Box {...rest} style={{
         borderLeftStyle: 'solid',
         borderLeftWidth: '2px',
@@ -48,20 +45,19 @@ function attachment(props, i) {
   )
 }
 
-function text(props) {
-  const attrs = props.attributes || {}
-  const value = attrs.value || props.value
+function text({attributes, value, key}) {
+  const attrs = attributes || {}
+  const val = attrs.value || value
   const {size, ...rest} = attrs
-  return (<Text key={props.key} size={size || 'small'} {...rest}>{value}</Text>)
+  return (<Text key={key} size={size || 'small'} {...rest}>{val}</Text>)
 }
 
-function markdown(props) {
-  const {value, ...rest} = props.attributes
+function markdown({attributes: {value, ...rest}, key}) {
   if (!value) return null
 
   return (
     <Markdown
-      key={props.key}
+      key={key}
       components={{p: {props: {size: 'small', margin: {top: 'xsmall', bottom: 'xsmall'}}}}}
       {...rest}>
       {value}
@@ -69,31 +65,28 @@ function markdown(props) {
   )
 }
 
-function image(props) {
-  const {url, ...rest} = props.attributes
-  return <img key={props.key} alt={url} {...rest} src={url} />
+function image({key, attributes: {url, ...rest}}) {
+  return <img key={key} alt={url} {...rest} src={url} />
 }
 
-function link(props) {
-  const {attributes, children} = props
-  const value = props.value || attributes.value
-  return <Anchor key={props.key} {...attributes}>{value ? value :  recurse(children)}</Anchor>
+function link({value, attributes, children, key}) {
+  const val = value || attributes.value
+  return <Anchor key={key} {...attributes}>{val ? val :  recurse(children)}</Anchor>
 }
 
-function button(props) {
-  const {interaction, payload, ...rest} = props.attributes
+function button({attributes: {interaction, payload, ...rest}}) {
   if (interaction) {
     return (
       <DialogContext.Consumer>
       {({setDialog}) => (
         <Mutation
-          key={props.key}
+          key={rest.key}
           mutation={INTERACTION}
           variables={{payload, id: interaction}}
           update={() => setDialog(null)}>
-        {mutation => (
-          buttonComponent({...rest, onClick: mutation})
-        )}
+          {mutation => (
+            buttonComponent({...rest, onClick: mutation})
+          )}
         </Mutation>
       )}
       </DialogContext.Consumer>
@@ -102,12 +95,12 @@ function button(props) {
   return buttonComponent(rest)
 }
 
-function buttonComponent(props) {
-  if (props.primary) {
-    return <Button key={props.key} round='xsmall' {...props} />
+function buttonComponent({primary, key, ...props}) {
+  if (primary) {
+    return <Button key={key} round='xsmall' {...props} />
   }
 
-  return <SecondaryButton key={props.key} round='xsmall' {...props} />
+  return <SecondaryButton key={key} round='xsmall' {...props} />
 }
 
 function parse(struct, index) {
@@ -134,13 +127,10 @@ function parse(struct, index) {
   }
 }
 
-function StructuredMessage(props) {
-  const {children} = props
+export default function StructuredMessage({children, attributes}) {
   return (
-    <Box gap='xsmall' {...(props.attributes || {})}>
+    <Box gap='xsmall' {...(attributes || {})}>
       {recurse(children)}
     </Box>
   )
 }
-
-export default StructuredMessage

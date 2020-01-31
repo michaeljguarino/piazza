@@ -1,14 +1,14 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { useMutation } from 'react-apollo'
 import { Box, Text } from 'grommet'
 import Tooltip from '../utils/Tooltip'
 import 'emoji-mart/css/emoji-mart.css'
 import { Emoji } from 'emoji-mart'
-import {DELETE_REACTION, CREATE_REACTION, MESSAGES_Q} from './queries'
-import {updateMessage} from './utils'
-import {groupBy} from '../../utils/array'
+import { DELETE_REACTION, CREATE_REACTION, MESSAGES_Q } from './queries'
+import { updateMessage } from './utils'
+import { groupBy } from '../../utils/array'
 import { CurrentUserContext } from '../login/EnsureLogin'
-import {MessageReaction} from './MessageControls'
+import { MessageReaction } from './MessageControls'
 
 const BOX_ATTRS={
   pad:'3px',
@@ -55,8 +55,9 @@ function Reaction(props) {
   )
 }
 
-function MessageReactions(props) {
-  const grouped = groupBy(props.message.reactions, (reaction) => reaction.name)
+export default function MessageReactions({message, conversation, hover, setPinnedHover}) {
+  const me = useContext(CurrentUserContext)
+  const grouped = groupBy(message.reactions, (reaction) => reaction.name)
   const sorted = Object.entries(grouped).sort(([name, reactions], [other_name, other_reactions]) => {
     const byLength = other_reactions.length - reactions.length
 
@@ -65,34 +66,28 @@ function MessageReactions(props) {
   })
   return (
     <Box direction='row' margin={{top: 'xsmall'}}>
-    <CurrentUserContext.Consumer>
-      {me => (
-        <Box direction='row' gap='xsmall' height='25px' margin={{right: 'xsmall'}}>
-          {sorted.map(([name, reactions]) => (
-            <Reaction
-              key={name}
-              me={me}
-              conversation={props.conversation}
-              name={name}
-              reactions={reactions}
-              messageId={props.message.id} />
-          ))}
+      <Box direction='row' gap='xsmall' height='25px' margin={{right: 'xsmall'}}>
+        {sorted.map(([name, reactions]) => (
+          <Reaction
+            key={name}
+            me={me}
+            conversation={conversation}
+            name={name}
+            reactions={reactions}
+            messageId={message.id} />
+        ))}
+      </Box>
+      {hover && (
+        <Box direction='row' height='25px'>
+          <MessageReaction
+            message={message}
+            conversation={conversation}
+            setPinnedHover={setPinnedHover}
+            position={['top', 'right', 'bottom']}
+            label={'+'}
+            boxAttrs={{...BOX_ATTRS, backgroud: 'white', border: true}} />
         </Box>
       )}
-    </CurrentUserContext.Consumer>
-    {props.hover && (
-      <Box direction='row' height='25px'>
-        <MessageReaction
-          message={props.message}
-          conversation={props.conversation}
-          setPinnedHover={props.setPinnedHover}
-          position={['top', 'right', 'bottom']}
-          label={'+'}
-          boxAttrs={{...BOX_ATTRS, backgroud: 'white', border: true}} />
-      </Box>
-    )}
     </Box>
   )
 }
-
-export default MessageReactions

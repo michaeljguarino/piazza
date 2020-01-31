@@ -69,7 +69,7 @@ function* splitText(text, entities) {
   }
 }
 
-function CustomEmoji(props) {
+function CustomEmoji({emoji: {imageUrl, name}, size}) {
   const targetRef = useRef()
   const [open, setOpen] = useState(false)
   return (
@@ -79,63 +79,63 @@ function CustomEmoji(props) {
       onMouseEnter={() => setOpen(true)}
       onMouseLeave={() => setOpen(false)}
       style={{
-      backgroundImage: `url("${props.emoji.imageUrl}")`,
-      width: `${props.size}px`,
-      height: `${props.size}px`,
+      backgroundImage: `url("${imageUrl}")`,
+      width: `${size}px`,
+      height: `${size}px`,
       backgroundSize: 'contain'
     }} />
     {open && (
       <TooltipContent targetRef={targetRef}>
-        <Text size='xsmall'>:{props.emoji.name}:</Text>
+        <Text size='xsmall'>:{name}:</Text>
       </TooltipContent>
     )}
     </>
   )
 }
 
-function MessageEntity(props) {
-  switch(props.entity.type) {
+function MessageEntity({entity}) {
+  switch(entity.type) {
     case "MENTION":
-      return <UserHandle size='xsmall' weight='bold' margin={{right: '0px'}} user={props.entity.user} />
+      return <UserHandle size='xsmall' weight='bold' margin={{right: '0px'}} user={entity.user} />
     case "EMOJI":
-      const emoji = props.entity.emoji
+      const emoji = entity.emoji
       return (emoji.imageUrl ?
         <CustomEmoji emoji={emoji} size={17} /> :
         <Emoji tooltip emoji={emoji.name} size={17} />
       )
     case "CHANNEL_MENTION":
-      return <Text style={{background: PINNED_BACKGROUND}} size='small' weight='bold'>{"@" + props.entity.text}</Text>
+      return <Text style={{background: PINNED_BACKGROUND}} size='small' weight='bold'>{"@" + entity.text}</Text>
     default:
       return <span />
   }
 }
 
-function MessageSwitch(props) {
-  if (props.embed) {
-    return <MessageEmbed {...props.embed} />
+function MessageSwitch({embed, structuredMessage, ...props}) {
+  if (embed) {
+    return <MessageEmbed {...embed} />
   }
-  if (props.structuredMessage && props.structuredMessage._type === 'root') {
-    return <StructuredMessage {...props.structuredMessage} />
+  if (structuredMessage && structuredMessage._type === 'root') {
+    return <StructuredMessage {...structuredMessage} />
   }
 
   return <TextMessage {...props} />
 }
 
-function PinHeader(props) {
-  if (props.pin && !props.nopin) {
-    return (
-      <Box justify='center'>
-        <Text
-          size='xsmall'
-          color='dark-3'
-          margin={{top: '2px', left: '30px'}}>
-          <Pin color={PIN_COLOR} size='small'/> pinned by @{props.pin.user.handle}
-        </Text>
-      </Box>
-    )
-  }
-  return null
+function PinHeader({pin, nopin}) {
+  if (!pin || nopin) return null
+
+  return (
+    <Box justify='center'>
+      <Text
+        size='xsmall'
+        color='dark-3'
+        margin={{top: '2px', left: '30px'}}>
+        <Pin color={PIN_COLOR} size='small'/> pinned by @{pin.user.handle}
+      </Text>
+    </Box>
+  )
 }
+
 
 function isConsecutive(message, next) {
   if (!next) return false
@@ -154,26 +154,26 @@ function sameDay(message, next) {
   return firstTime.isSame(secondTime, 'day');
 }
 
-function MessageBody(props) {
-  const date = moment(props.message.insertedAt)
-  const consecutive = isConsecutive(props.message, props.next)
-  const background = (props.message.pin && !props.nopin) ? PINNED_BACKGROUND : null
+function MessageBody({message, conversation, next, nopin, editing, setEditing, dialog, hover, setPinnedHover}) {
+  const date = moment(message.insertedAt)
+  const consecutive = isConsecutive(message, next)
+  const background = (message.pin && !nopin) ? PINNED_BACKGROUND : null
   return (
     <Box fill='horizontal' background={background}>
-      <PinHeader {...props.message} />
+      <PinHeader {...message} />
       <Box direction='row' pad={{vertical: 'xsmall', horizontal: 'small'}}>
-        {!consecutive && <Avatar user={props.message.creator} /> }
+        {!consecutive && <Avatar user={message.creator} /> }
         {consecutive && <Box width='45px'></Box>}
-        <Box fill={props.editing ? 'horizontal' : false}>
-          {!consecutive && !props.editing &&
+        <Box fill={editing ? 'horizontal' : false}>
+          {!consecutive && !editing &&
             <Box direction='row' align='center'>
               <Text weight='bold' size='15px' margin={{right: '5px'}}>
-                {props.message.creator.name}
+                {message.creator.name}
               </Text>
-              {props.message.creator.bot && (
+              {message.creator.bot && (
                 <BotIcon />
               )}
-              <WithPresence id={props.message.creator.id} >
+              <WithPresence id={message.creator.id} >
                 {present => <PresenceIndicator present={present} />}
               </WithPresence>
               <Text size='10px'>
@@ -181,34 +181,38 @@ function MessageBody(props) {
               </Text>
             </Box>}
           <Box fill='horizontal'>
-            {props.editing ?
-              <MessageEdit message={props.message} setEditing={props.setEditing} /> :
-              <MessageSwitch {...props.message} />
+            {editing ?
+              <MessageEdit message={message} setEditing={setEditing} /> :
+              <MessageSwitch {...message} />
             }
-            {props.message.file && (<File file={props.message.file} />)}
-            {props.message.reactions && props.message.reactions.length > 0 && (
-              <MessageReactions {...props} />
+            {message.file && (<File file={message.file} />)}
+            {message.reactions && message.reactions.length > 0 && (
+              <MessageReactions
+                message={message}
+                conversation={conversation}
+                hover={hover}
+                setPinnedHover={setPinnedHover} />
             )}
-            {props.message.parent && (
+            {message.parent && (
               <Box style={{borderLeft: '2px solid grey'}}>
-                <Message noHover message={props.message.parent} />
+                <Message noHover message={message.parent} />
               </Box>
             )}
           </Box>
         </Box>
       </Box>
-      {props.dialog && props.dialog.anchorMessage.id === props.message.id && (
-        <Dialog {...props} />
+      {dialog && dialog.anchorMessage.id === message.id && (
+        <Dialog dialog={dialog} />
       )}
     </Box>
   )
 }
 
-function Dialog(props) {
+function Dialog({dialog: {structuredMessage}}) {
   return (
     <Box background={PINNED_BACKGROUND} pad={{vertical: 'small', left: '55px'}} fill='horizontal'>
       <Text size='xsmall' color='dark-4'>only visible to you</Text>
-      <StructuredMessage {...props.dialog.structuredMessage} />
+      <StructuredMessage {...structuredMessage} />
     </Box>
   )
 }
@@ -223,21 +227,21 @@ return moment(dt).calendar(null, {
 });
 }
 
-function DateDivider(props) {
-  if (sameDay(props.message, props.next)) return null
+function DateDivider({message, next}) {
+  if (sameDay(message, next)) return null
 
-  return <Divider text={formatDate(props.message.insertedAt)} />
+  return <Divider text={formatDate(message.insertedAt)} />
 }
 
-function Waterline(props) {
-  if (!props.waterline || !props.next) return null
+function Waterline({waterline, message, next}) {
+  if (!waterline || !next) return null
 
-  const waterline = moment(props.waterline)
-  const current = moment(props.message.insertedAt)
-  const next = moment(props.next.insertedAt)
+  const line = moment(waterline)
+  const current = moment(message.insertedAt)
+  const nxt = moment(next.insertedAt)
 
-  if (waterline.isBefore(next)) return null
-  if (waterline.isAfter(current)) return null
+  if (line.isBefore(nxt)) return null
+  if (line.isAfter(current)) return null
 
   return (
     <Box direction='row' border={{color: 'notif', side: 'bottom'}} justify='end' margin={{vertical: 'small'}}>
@@ -261,15 +265,16 @@ export const MessagePlaceholder = ({index}) => {
   )
 }
 
-function Message(props) {
+export default function Message({noHover, selected, message, onClick, pos, parentRef, ...props}) {
+  const {addMessage, removeMessage} = useContext(VisibleMessagesContext)
   const msgRef = useRef()
   const [hover, setHover] = useState(false)
   const [pinnedHover, setPinnedHover] = useState(false)
   const [editing, setEditing] = useState(false)
   const {edited, setEdited} = useContext(EditingMessageContext)
-  const isEditing = editing || (edited === props.message.id)
-  const isHovered = (pinnedHover || hover) && !props.noHover && !editing
-  const background = props.selected ? SELECTED_BACKGROUND : (isHovered && !props.message.pin) ? 'light-2' : null
+  const isEditing = editing || (edited === message.id)
+  const isHovered = (pinnedHover || hover) && !noHover && !editing
+  const background = selected ? SELECTED_BACKGROUND : (isHovered && !message.pin) ? 'light-2' : null
 
   function wrappedSetEditing(editing) {
     setPinnedHover(false)
@@ -277,25 +282,23 @@ function Message(props) {
     if (!editing) setEdited(null)
   }
 
-  const {addMessage, removeMessage} = props
-
   useEffect(() => {
-    if (!props.parentRef || !props.parentRef.current || !msgRef.current) return
-    const parent = props.parentRef.current.getBoundingClientRect()
+    if (!parentRef || !parentRef.current || !msgRef.current) return
+    const parent = parentRef.current.getBoundingClientRect()
     const child = msgRef.current.getBoundingClientRect()
     if (intersectRect(parent, child)) {
-      addMessage(props.message)
+      addMessage(message)
     } else {
-      removeMessage(props.message)
+      removeMessage(message)
     }
-  }, [props.pos])
+  }, [parentRef, pos])
 
   return (
     <>
     <Box
       ref={msgRef}
-      id={props.message.id}
-      onClick={props.onClick}
+      id={message.id}
+      onClick={onClick}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
       background={background}
@@ -306,26 +309,19 @@ function Message(props) {
           setEditing={wrappedSetEditing}
           hover={isHovered}
           setPinnedHover={setPinnedHover}
+          message={message}
           {...props} />
         {isHovered && (
-          <MessageControls setEditing={wrappedSetEditing} setPinnedHover={setPinnedHover} {...props} />
+          <MessageControls
+            setEditing={wrappedSetEditing}
+            setPinnedHover={setPinnedHover}
+            message={message}
+            {...props} />
         )}
       </Stack>
     </Box>
-    <Waterline message={props.message} next={props.next} waterline={props.waterline} />
-    <DateDivider message={props.message} next={props.next} />
+    <Waterline message={message} next={props.next} waterline={props.waterline} />
+    <DateDivider message={message} next={props.next} />
     </>
   )
 }
-
-function WrappedMessage(props) {
-  return (
-    <VisibleMessagesContext.Consumer>
-    {({addMessage, removeMessage}) => (
-      <Message {...props} addMessage={addMessage} removeMessage={removeMessage} />
-    )}
-    </VisibleMessagesContext.Consumer>
-  )
-}
-
-export default WrappedMessage
