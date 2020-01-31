@@ -1,5 +1,5 @@
-import React from 'react'
-import {ThemeContext} from '../Theme'
+import React, { useContext } from 'react'
+import { ThemeContext } from '../Theme'
 
 export function EmptyPresenceIndicator(props) {
   return (
@@ -15,23 +15,20 @@ export function EmptyPresenceIndicator(props) {
   )
 }
 
-function PresenceIndicator(props) {
+export default function PresenceIndicator({present}) {
+  const {theme} = useContext(ThemeContext)
+  if (!present) return <span />
 
   return (
-  <ThemeContext.Consumer>
-  {({theme}) => (props.present ?
     <span style={{
       height: '.5em',
       width: '.5em',
       backgroundColor: theme.global.colors.presence,
+      border: '1px solid',
+      borderColor: theme.global.colors.presence,
       borderRadius: '50%',
       display: 'inline-block',
       marginRight: '5px'
-    }} /> :
-    <span></span>
-  )}
-  </ThemeContext.Consumer>
+    }} />
   )
 }
-
-export default PresenceIndicator

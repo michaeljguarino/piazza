@@ -1,10 +1,12 @@
 import React from 'react'
-import {Box, Text} from 'grommet'
+import {Box, Text, Stack} from 'grommet'
+import WithPresence from '../utils/presence'
+import PresenceIndicator from './PresenceIndicator'
 
 const background='#ff7b25'
 const DEFAULT_SIZE = '40px'
 
-export default function Avatar({user: {backgroundColor, avatar, handle}, size, rightMargin}) {
+function AvatarInner({user: {backgroundColor, avatar, handle}, size, rightMargin}) {
   const boxSize = size || DEFAULT_SIZE
   return (
     <Box
@@ -23,4 +25,22 @@ export default function Avatar({user: {backgroundColor, avatar, handle}, size, r
       }
     </Box>
   )
+}
+
+export default function Avatar({withPresence, ...props}) {
+  if (withPresence) {
+    return (
+      <Stack anchor='top-right'>
+        <AvatarInner {...props} />
+        <WithPresence id={props.user.id}>
+        {present => (
+          <Box margin={{top: '-2px', right: '-2px'}}>
+            <PresenceIndicator present={present} />
+          </Box>
+        )}
+        </WithPresence>
+      </Stack>
+    )
+  }
+  return <AvatarInner {...props} />
 }

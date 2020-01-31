@@ -1,32 +1,36 @@
 import React from 'react'
-import {Anchor, Text} from 'grommet'
+import { Anchor, Text } from 'grommet'
 import UserDetail from './UserDetail'
+import Flyout from '../utils/Flyout'
 import WithPresence from '../utils/presence'
 import PresenceIndicator from './PresenceIndicator'
-import Flyout from '../utils/Flyout'
 
-function WithFlyout(props) {
-  if (props.noFlyout) return props.children
+function WithFlyout({noFlyout, children, onChat, user}) {
+  if (noFlyout) return children
 
   return (
-    <Flyout target={props.children}>
+    <Flyout target={children}>
     {setOpen => (
-      <UserDetail user={props.user} setOpen={setOpen} onChat={props.onChat} />
+      <UserDetail user={user} setOpen={setOpen} onChat={onChat} />
     )}
     </Flyout>
   )
 }
 
 export default function UserHandle({user, color, weight, size, margin, includePresence, ...props}) {
-  const {id, handle} = user
-
   return (
     <WithFlyout user={user} {...props}>
       <Anchor>
-        <Text size={size || 'small'} weight={weight} color={color || 'black'} margin={margin || {right: '5px'}}>@{handle}</Text>
+        <Text
+          size={size || 'small'}
+          weight={weight}
+          color={color || 'black'}
+          margin={margin || {right: '5px'}}>
+          @{user.handle}
+        </Text>
         {includePresence && (
-          <WithPresence id={id} >
-            {present => <PresenceIndicator present={present} />}
+          <WithPresence id={user.id}>
+          {present => <PresenceIndicator present={present} />}
           </WithPresence>
         )}
       </Anchor>

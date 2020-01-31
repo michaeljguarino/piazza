@@ -19,7 +19,7 @@ export default function UserListEntry({pad, margin, onClick, user, ...props}) {
       fill='horizontal'>
       <Avatar user={user} {...props} />
       <Box>
-        <UserHandle includePresence={true} user={user} {...props} />
+        <UserHandle user={user} includePresence {...props} />
         <Text size='small'>{user.name}</Text>
       </Box>
     </Box>

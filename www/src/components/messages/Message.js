@@ -166,15 +166,13 @@ function MessageBody({message, conversation, next, nopin, editing, setEditing, d
         {consecutive && <Box width='45px'></Box>}
         <Box fill={editing ? 'horizontal' : false}>
           {!consecutive && !editing &&
-            <Box direction='row' align='center'>
-              <Text weight='bold' size='15px' margin={{right: '5px'}}>
+            <Box direction='row' align='center' gap='xsmall'>
+              <Text weight='bold' size='15px'>
                 {message.creator.name}
               </Text>
-              {message.creator.bot && (
-                <BotIcon />
-              )}
-              <WithPresence id={message.creator.id} >
-                {present => <PresenceIndicator present={present} />}
+              {message.creator.bot && (<BotIcon />)}
+              <WithPresence id={message.creator.id}>
+              {present => <PresenceIndicator present={present} />}
               </WithPresence>
               <Text size='10px'>
                 {date.fromNow()}

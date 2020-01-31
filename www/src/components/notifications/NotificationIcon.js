@@ -65,6 +65,7 @@ function BrowserNotif({me, setCurrentNotification, audioRef, ...notif}) {
   const {message, actor} = notif
   const title = getTitle(notif, me)
   if (!title) return null
+
   return (
     <>
     <WebNotification
@@ -100,7 +101,7 @@ export default function NotificationIcon({me, setCurrentConversation}) {
       cache.writeQuery({
         query: NOTIFICATIONS_Q,
         data: {notifications: {...notifications, edges: []}}
-      });
+      })
       updateConversations(cache, () => true, (e) => ({...e, node: {...e.node, unreadNotifications: 0}}))
       setUnseen(0)
     }

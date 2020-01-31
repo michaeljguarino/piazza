@@ -17,6 +17,8 @@ import UpdateProfile from './UpdateProfile'
 import Tools from '../tools/Tools'
 import AdminTools from '../tools/AdminTools'
 import Themes from '../themes/Themes'
+import WithPresence from '../utils/presence'
+import PresenceIndicator from './PresenceIndicator'
 
 export function DropdownItem(props) {
   const {onClick, ...rest} = props
@@ -64,7 +66,12 @@ function Me(props) {
             </FilePicker>
             <CloseableDropdown target={
               <Box>
-                <Text size='small' weight='bold'>{"@" + me.handle}</Text>
+                <Box direction='row' gap='xsmall' align='center'>
+                  <Text size='small' weight='bold'>{"@" + me.handle}</Text>
+                  <WithPresence id={me.id}>
+                  {present => <PresenceIndicator present={present} />}
+                  </WithPresence>
+                </Box>
                 <Text size='small' color='dark-6'>{me.name}</Text>
               </Box>
             }>
