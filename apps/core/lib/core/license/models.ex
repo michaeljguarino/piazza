@@ -3,7 +3,7 @@ defmodule Core.License.Feature do
 end
 
 defmodule Core.License.Policy do
-  defstruct [:limits, :free, :features]
+  defstruct [:limits, :free, :features, :plan]
 end
 
 defmodule Core.License.Limits do

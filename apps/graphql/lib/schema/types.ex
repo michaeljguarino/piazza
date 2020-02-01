@@ -192,6 +192,21 @@ defmodule GraphQl.Schema.Types do
     timestamps()
   end
 
+  object :license do
+    field :limits,   :limits
+    field :features, list_of(:feature)
+    field :plan,     :string
+  end
+
+  object :limits do
+    field :user, :integer
+  end
+
+  object :feature do
+    field :name, :string
+    field :description, :string
+  end
+
   object :message_reaction do
     field :id,         non_null(:id)
     field :user_id,    non_null(:id)
@@ -381,6 +396,7 @@ defmodule GraphQl.Schema.Types do
   object :brand do
     field :id,       non_null(:id)
     field :theme_id, non_null(:id)
+    field :license,  :license, resolve: &Brand.resolve_license/2
     field :theme,    :theme, resolve: fn brand, _, context -> Brand.get_theme(brand, context) end
 
     timestamps()
