@@ -1,8 +1,8 @@
 import React, { useContext } from 'react'
-import { Box, Text, ThemeContext } from 'grommet'
+import { Box, Text, ThemeContext, Meter, Stack } from 'grommet'
 import { User, Lock, Logout, Iteration } from 'grommet-icons'
 import Avatar from './Avatar'
-import { useMutation } from 'react-apollo'
+import { useMutation, useQuery } from 'react-apollo'
 import CloseableDropdown from '../utils/CloseableDropdown'
 import Modal, { ModalHeader } from '../utils/Modal'
 import { AUTH_TOKEN } from '../../constants'
@@ -10,7 +10,7 @@ import MenuItem, { SubMenu } from '../utils/MenuItem'
 import InterchangeableBox from '../utils/InterchangeableBox'
 import HoveredBackground from '../utils/HoveredBackground'
 import { FilePicker } from 'react-file-picker'
-import { ME_Q, UPDATE_USER } from './queries'
+import { ME_Q, UPDATE_USER, PLAN_Q } from './queries'
 import { CurrentUserContext } from '../login/EnsureLogin'
 import UpdatePassword from './UpdatePassword'
 import UpdateProfile from './UpdateProfile'
@@ -19,6 +19,7 @@ import AdminTools from '../tools/AdminTools'
 import Themes from '../themes/Themes'
 import WithPresence from '../utils/presence'
 import PresenceIndicator from './PresenceIndicator'
+import Tooltip from '../utils/Tooltip'
 
 export function DropdownItem(props) {
   const {onClick, ...rest} = props
@@ -37,8 +38,48 @@ const _logout = () => {
   window.location.href = "/login"
 }
 
+function UsageMeter({limit, usage, name}) {
+  return (
+    <Stack anchor='center'>
+      <Meter
+        size='xsmall'
+        thickness='xsmall'
+        type='circle'
+        background='light-2'
+        values={[{
+          value: (usage / limit) * 100,
+          color: 'focus'
+        }]} />
+      <Tooltip align={{bottom: 'top'}}>
+        <Text size='xsmall' style={{cursor: 'pointer'}}>{name}</Text>
+        <Text size='small'>{usage} / {limit} used</Text>
+      </Tooltip>
+    </Stack>
+  )
+}
+
 function PlanDetails() {
-  return null
+  const {loading, data} = useQuery(PLAN_Q)
+  if (loading || !data) return null
+
+  const {license: {limits, plan}, usage} = data.plan
+  return (
+    <Box
+      direction='row'
+      border='top'
+      align='center'
+      fill='horizontal'
+      pad='small'
+      margin={{top: 'xsmall'}}
+      gap='xsmall'>
+      <Box width='60%' gap='xsmall'>
+        <Text size='small'>You're subscribed to the {plan} plan</Text>
+      </Box>
+      <Box width='40%' align='center' justify='center'>
+        <UsageMeter limit={limits.user} usage={usage.user} name='Users' />
+      </Box>
+    </Box>
+  )
 }
 
 function MeDropdown({me}) {

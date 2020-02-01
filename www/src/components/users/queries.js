@@ -1,5 +1,5 @@
 import gql from 'graphql-tag'
-import {UserFragment} from '../models/users'
+import { UserFragment, LicenseFragment } from '../models/users'
 
 export const UPDATE_USER=gql`
   mutation UpdateUser($id: ID!, $attributes: UserAttributes!) {
@@ -56,4 +56,18 @@ export const USER_SUB = gql`
     }
   }
   ${UserFragment}
+`;
+
+export const PLAN_Q = gql`
+  query {
+    plan {
+      license {
+        ...LicenseFragment
+      }
+      usage {
+        user
+      }
+    }
+  }
+  ${LicenseFragment}
 `;
