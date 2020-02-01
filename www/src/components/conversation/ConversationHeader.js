@@ -53,32 +53,32 @@ export function removeConversation(cache, conversationId) {
   });
 }
 
-function ConversationUpdateForm(props) {
+function ConversationUpdateForm({conversation, setOpen}) {
   const [attributes, setAttributes] = useState({
-    name: props.conversation.name,
-    topic: props.conversation.topic,
-    public: props.conversation.public,
-    archived: !!props.conversation.archivedAt
+    name: conversation.name,
+    topic: conversation.topic,
+    public: conversation.public,
+    archived: !!conversation.archivedAt
   })
 
   const [mutation] = useMutation(UPDATE_CONVERSATION, {
-    variables: {id: props.conversation.id, attributes: attributes},
+    variables: {id: conversation.id, attributes: attributes},
     update: (cache, {data}) => {
       const prev = cache.readQuery({ query: CONTEXT_Q });
       cache.writeQuery({
         query: CONTEXT_Q,
         data: updateConversation(prev, data.updateConversation)
       });
-      props.setOpen(false)
+      setOpen(false)
     }
   })
 
   return (
     <Box>
-      <ModalHeader setOpen={props.setOpen} text={`Update #${props.conversation.name}`}/>
+      <ModalHeader setOpen={setOpen} text={`Update #${conversation.name}`}/>
       <Box align='center' justify='center' pad='medium'>
         <ConversationEditForm
-          cancel={() => props.setOpen(false)}
+          cancel={() => setOpen(false)}
           state={attributes}
           mutation={mutation}
           onStateChange={(update) => setAttributes({...attributes, ...update})}
@@ -139,7 +139,7 @@ function LeaveConversation(props) {
   return (<Text onClick={mutation} size='small'>Leave conversation</Text>)
 }
 
-function ConversationDropdown(props) {
+function ConversationDropdown({setAnchor, ...props}) {
   const [notifMutation] = useMutation(UPDATE_PARTICIPANT)
   const currentParticipant = props.conversation.currentParticipant || {}
   const variables = {
@@ -178,7 +178,7 @@ function ConversationDropdown(props) {
                 showAdjacentDays={false}
                 onSelect={(date) => {
                   setOpen(false)
-                  props.setAnchor({timestamp: date})
+                  setAnchor({timestamp: date})
                 }} />
             </Box>
           </SubMenu>
@@ -203,7 +203,7 @@ export default function ConversationHeader({setAnchor}) {
   return (
     <Box fill='horizontal' direction='row' align='center' pad={{left: '20px', top: '7px', bottom: '7px'}}>
       <Box fill='horizontal' direction='column'>
-        <ConversationDropdown me={me} conversation={currentConversation} />
+        <ConversationDropdown me={me} conversation={currentConversation} setAnchor={setAnchor} />
         <Box height='25px' direction='row' align='end' justify='start' pad={{top: '5px', bottom: '5px'}}>
           <Participants
             data={data}
