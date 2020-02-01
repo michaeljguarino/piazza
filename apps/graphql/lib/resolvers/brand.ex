@@ -9,8 +9,6 @@ defmodule GraphQl.Resolvers.Brand do
 
   def resolve_brand(_, _), do: {:ok, BrandService.get_brand!()}
 
-  def resolve_license(_, _), do: {:ok, Piazza.Crypto.License.fetch().policy}
-
   def update_brand(%{attributes: attrs}, %{context: %{current_user: user}}),
     do: BrandService.update_brand(attrs, user)
 

@@ -8,15 +8,6 @@ defmodule GraphQl.BrandQueryTest do
       {:ok, %{data: %{"brand" => found}}} = run_q("""
         query {
           brand {
-            license {
-              features {
-                name
-                description
-              }
-              limits {
-                user
-              }
-            }
             theme {
               id
             }
@@ -25,7 +16,6 @@ defmodule GraphQl.BrandQueryTest do
       """, %{}, %{})
 
       assert found["theme"]["id"] == brand.theme_id
-      %{"features" => [%{"description" => _, "name" => "sso"}], "limits" => %{"user" => 2}} = found["license"]
     end
 
     test "It will sideload the current user's theme" do

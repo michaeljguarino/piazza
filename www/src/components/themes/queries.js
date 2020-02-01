@@ -1,5 +1,5 @@
 import gql from 'graphql-tag'
-import {ThemeFragment} from '../models/brand'
+import { ThemeFragment } from '../models/brand'
 
 export const BRAND_Q = gql`
   query {

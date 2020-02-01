@@ -20,3 +20,16 @@ export const ThemeFragment = gql`
     link
   }
 `;
+
+export const LicenseFragment = gql`
+  fragment LicenseFragment on License {
+    features {
+      name
+      description
+    }
+    plan
+    limits {
+      user
+    }
+  }
+`;

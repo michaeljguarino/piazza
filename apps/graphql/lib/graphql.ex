@@ -10,7 +10,8 @@ defmodule GraphQl do
     Notification,
     Invite,
     Emoji,
-    Brand
+    Brand,
+    Plan
   }
   import_types GraphQl.Schema.Types
   import_types GraphQl.Schema.Inputs
@@ -115,6 +116,11 @@ defmodule GraphQl do
 
     field :brand, :brand do
       resolve safe_resolver(&Brand.resolve_brand/2)
+    end
+
+    field :plan, :plan_details do
+      middleware GraphQl.Schema.Authenticated
+      resolve safe_resolver(&Plan.resolve_plan/2)
     end
 
     connection field :themes, node_type: :theme do

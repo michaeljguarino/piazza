@@ -43,6 +43,9 @@ defmodule Core.Models.User do
 
   def ordered(query \\ __MODULE__, order \\ [asc: :email]), do: from(u in query, order_by: ^order)
 
+  def nonbot(query \\ __MODULE__),
+    do: from(u in query, where: not u.bot)
+
   def active(query \\ __MODULE__),
     do: from(u in query, where: is_nil(u.deleted_at))
 

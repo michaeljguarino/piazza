@@ -3,6 +3,8 @@ defmodule Core.Services.License do
   alias Core.License
   alias Core.License.{Policy, Limits, FailureHandler}
 
+  def fetch(), do: Piazza.Crypto.License.fetch()
+
   def validate(license) do
     %License{policy: policy} = decoded = License.from_json!(license)
 
@@ -51,10 +53,16 @@ defmodule Core.Services.License do
 
   def check_limits(%Policy{free: true}), do: true
   def check_limits(%Policy{limits: %Limits{user: user_limit}}) do
-    case Core.Repo.aggregate(User, :count, :id) do
+    case usage(:user) do
       count when count > user_limit -> false
       _ -> true
     end
+  end
+
+  def usage(:user) do
+    User.nonbot()
+    |> User.active()
+    |> Core.Repo.aggregate(:count, :id)
   end
 
   defp chartmart_url(), do: "#{Application.get_env(:core, :chartmart_url)}/auth/license"
