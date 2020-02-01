@@ -84,6 +84,6 @@ defmodule Core.Services.Brand do
   def set_theme(theme_id, user) do
     %UserTheme{}
     |> UserTheme.changeset(%{theme_id: theme_id, user_id: user.id})
-    |> Core.Repo.insert(on_conflict: :replace_all_except_primary_key, conflict_target: [:user_id])
+    |> Core.Repo.insert(on_conflict: {:replace_all_except, [:id]}, conflict_target: [:user_id])
   end
 end

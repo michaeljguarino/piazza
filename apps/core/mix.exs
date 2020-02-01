@@ -65,7 +65,7 @@ defmodule Core.MixProject do
       {:zstream, "~> 0.5.0"},
       {:ecto_enum, "~> 1.3.2"},
       {:guardian, "~> 1.2.1"},
-      {:piazza_core, "~> 0.1.8"},
+      {:piazza_core, "~> 0.2.3"},
       {:parallax, "~> 1.0"},
       {:poison, "~> 3.1"},
       {:cachex, "~> 3.2"},

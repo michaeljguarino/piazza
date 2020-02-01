@@ -12,7 +12,7 @@ defimpl Core.Recurse.Traversable, for: Core.PubSub.UserCreated do
       records = Enum.map(chunk, &build_update(&1, user_id))
 
       Core.Repo.insert_all(Participant, records,
-        on_conflict: :replace_all_except_primary_key,
+        on_conflict: {:replace_all_except, [:id]},
         conflict_target: [:user_id, :conversation_id]
       )
       |> elem(0)

@@ -3,21 +3,21 @@ defmodule Core.Services.License do
   alias Core.License
   alias Core.License.{Policy, Limits, FailureHandler}
 
-  def validate(license, state) do
+  def validate(license) do
     %License{policy: policy} = decoded = License.from_json!(license)
 
     with {:ok, license} <- check_expiration(decoded),
          true <- check_limits(policy) do
-      update_state(state, license)
+      response(decoded, license)
     else
       _ ->
         FailureHandler.failed()
-        state
+        :error
     end
   end
 
-  def update_state(state, :pass), do: state
-  def update_state(state, license), do: %{state | license: license}
+  def response(decoded, :pass), do: decoded
+  def response(decoded, license), do: {decoded, license}
 
   @doc """
   Force kill the app if the license is invalid

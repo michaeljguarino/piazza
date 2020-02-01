@@ -1,7 +1,6 @@
 defmodule Core.Services.LicenseTest do
   use Core.DataCase, async: true
   alias Core.Services.License
-  alias Piazza.Crypto.License.State
   alias Piazza.Crypto.RSA
 
   use Mimic
@@ -12,8 +11,7 @@ defmodule Core.Services.LicenseTest do
       pk = conf(:public_key)
       {:ok, decrypted} = RSA.decrypt(nonexpired, ExPublicKey.loads!(pk))
 
-      state = License.validate(decrypted, %State{license: nonexpired})
-      assert state.license == nonexpired
+      %Core.License{} = License.validate(decrypted)
     end
 
     test "For expired licenses it will request a refreshed license" do
@@ -29,14 +27,14 @@ defmodule Core.Services.LicenseTest do
       expired_pk = conf(:expired_pk)
       {:ok, decrypted} = RSA.decrypt(expired_license, ExPublicKey.loads!(expired_pk))
 
-      state = License.validate(decrypted, %State{license: expired_license})
-      assert state.license == refreshed_license
+      {%Core.License{}, refreshed}  = License.validate(decrypted)
+      assert refreshed == refreshed_license
     end
 
     test "If limits are within boundaries, it will pass" do
       license = mk_license()
       insert_list(3, :user)
-      %{license: "passed"} = License.validate(license, %State{license: "passed"})
+      %Core.License{} = License.validate(license)
     end
 
     test "If limits exceed boundaries, it will fail" do
@@ -44,7 +42,7 @@ defmodule Core.Services.LicenseTest do
       insert_list(6, :user)
       expect(Core.License.FailureHandler, :failed, fn -> send pid, :failed end)
 
-      License.validate(mk_license(), %State{license: :failed})
+      License.validate(mk_license())
 
       assert_receive :failed
     end

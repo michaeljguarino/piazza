@@ -47,7 +47,7 @@ defimpl Core.Recurse.Traversable, for: Core.PubSub.ConversationCreated do
 
       Core.Repo.insert_all(Participant, records,
         conflict_target: [:user_id, :conversation_id],
-        on_conflict: :replace_all_except_primary_key
+        on_conflict: {:replace_all_except, [:id]}
       )
       |> elem(0)
     end)

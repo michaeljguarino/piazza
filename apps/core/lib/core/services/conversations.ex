@@ -402,7 +402,7 @@ defmodule Core.Services.Conversations do
       %MessageReaction{user_id: user.id}
       |> MessageReaction.changeset(%{message_id: message_id, name: name})
       |> Core.Repo.insert(
-        on_conflict: :replace_all_except_primary_key,
+        on_conflict: {:replace_all_except, [:id]},
         conflict_target: [:name, :message_id, :user_id]
       )
     end)
@@ -481,7 +481,7 @@ defmodule Core.Services.Conversations do
         Participant,
         models,
         returning: true,
-        on_conflict: :replace_all_except_primary_key,
+        on_conflict: {:replace_all_except, [:id]},
         conflict_target: [:conversation_id, :user_id]
       )
       Enum.each(results, &handle_notify(PubSub.ParticipantCreated, &1, actor: user))

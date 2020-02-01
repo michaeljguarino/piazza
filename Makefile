@@ -58,6 +58,9 @@ web: ## starts a local webserver
 testup: ## setup test dependencies
 	docker-compose up -d
 
+testdown: ## tear down test dependencies
+	docker-compose down
+
 connectdb: ## proxies the db in kubernetes via kubectl
 	@echo "run psql -U piazza -h 127.0.0.1 piazza to connect"
 	kubectl port-forward statefulset/piazza-postgresql 5432 -n piazza
