@@ -116,4 +116,12 @@ defmodule GraphQl.Schema.Inputs do
   input_object :brand_attributes do
     field :theme_id, :id
   end
+
+  enum :reset_token_type do
+    value :password
+  end
+
+  input_object :reset_token_args do
+    field :password, :string
+  end
 end

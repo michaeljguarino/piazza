@@ -9,6 +9,22 @@
 # move said applications out of the umbrella.
 import Config
 
+config :email,
+  ecto_repos: [Core.Repo],
+  generators: [context_app: false],
+  domain: "piazzaapp.com",
+  host: "https://chat.piazzaapp.com"
+
+# Configures the endpoint
+config :email, Email.Endpoint,
+  url: [host: "localhost"],
+  secret_key_base: "hRenGXlFBmj1NSEkmQMHdxxrQvFxYKXNQN6nYz2M7NU/P2LcMtRhCRdz9v4Fu6Ry",
+  render_errors: [view: Email.ErrorView, accepts: ~w(html json)],
+  pubsub: [name: Email.PubSub, adapter: Phoenix.PubSub.PG2]
+
+config :email, Email.Mailer,
+  adapter: Email.Adapter.Chartmart
+
 # Configure Mix tasks and generators
 config :core,
   ecto_repos: [Core.Repo]

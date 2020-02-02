@@ -282,8 +282,10 @@ export default function Message({noHover, selected, message, onClick, pos, paren
 
   useEffect(() => {
     if (!parentRef || !parentRef.current || !msgRef.current) return
+
     const parent = parentRef.current.getBoundingClientRect()
     const child = msgRef.current.getBoundingClientRect()
+
     if (intersectRect(parent, child)) {
       addMessage(message)
     } else {

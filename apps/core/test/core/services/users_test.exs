@@ -3,6 +3,8 @@ defmodule Core.Services.UsersTest do
   alias Core.Services.Users
   alias Core.PubSub
 
+  @pwd "super strong pwd"
+
   describe "create_user/1" do
     test "Admins can create a user" do
       {:ok, user} = Users.create_user(%{
@@ -51,7 +53,7 @@ defmodule Core.Services.UsersTest do
 
   describe "update_user/2" do
     test "A user can update himself" do
-      user = build(:user) |> with_password("super strong pwd")
+      user = build(:user) |> with_password(@pwd)
       {:ok, updated} = Users.update_user(user.id, %{name: "New Name"}, user)
 
       assert updated.name == "New Name"
@@ -60,7 +62,7 @@ defmodule Core.Services.UsersTest do
 
     @tag :skip
     test "A user can add avatars" do
-      user = build(:user) |> with_password("super strong pwd")
+      user = build(:user) |> with_password(@pwd)
       url  = "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/Mona_Lisa%2C_by_Leonardo_da_Vinci%2C_from_C2RMF_retouched.jpg/600px-Mona_Lisa%2C_by_Leonardo_da_Vinci%2C_from_C2RMF_retouched.jpg"
       {:ok, user} = Users.update_user(user.id, %{avatar: url}, user)
 
@@ -69,7 +71,7 @@ defmodule Core.Services.UsersTest do
 
     test "Admins can modify user roles" do
       admin = insert(:user, roles: %{admin: true})
-      user = build(:user) |> with_password("super strong pwd")
+      user = build(:user) |> with_password(@pwd)
       {:ok, updated} = Users.update_user(user.id, %{roles: %{admin: true}}, admin)
 
       assert updated.roles.admin
@@ -78,12 +80,12 @@ defmodule Core.Services.UsersTest do
 
     test "Non admins cannot modify roles" do
       nonadmin = insert(:user, roles: %{admin: false})
-      user = build(:user) |> with_password("super strong pwd")
+      user = build(:user) |> with_password(@pwd)
       {:error, _} = Users.update_user(user.id, %{roles: %{admin: true}}, nonadmin)
     end
 
     test "A user can't update someone else" do
-      user = build(:user) |> with_password("super strong pwd")
+      user = build(:user) |> with_password(@pwd)
       other_user = insert(:user)
       {:error, msg} = Users.update_user(user.id, %{name: "New Name"}, other_user)
 
@@ -93,9 +95,9 @@ defmodule Core.Services.UsersTest do
 
   describe "#login/2" do
     test "A user can login with his password" do
-      user = build(:user) |> with_password("super strong pwd")
+      user = build(:user) |> with_password(@pwd)
 
-      {:ok, login} = Users.login_user(user.email, "super strong pwd")
+      {:ok, login} = Users.login_user(user.email, @pwd)
 
       assert login.id == user.id
     end
@@ -103,9 +105,32 @@ defmodule Core.Services.UsersTest do
     test "A deleted user cannot login" do
       user =
         build(:user, deleted_at: DateTime.utc_now())
-        |> with_password("super strong pwd")
+        |> with_password(@pwd)
 
-      {:error, :not_found} = Users.login_user(user.email, "super strong pwd")
+      {:error, :not_found} = Users.login_user(user.email, @pwd)
+    end
+  end
+
+  describe "#create_reset_token/1" do
+    test ":password tokens can be created" do
+      user = insert(:user)
+
+      {:ok, token} = Users.create_reset_token(%{email: user.email, type: :password})
+
+      assert token.secure_id
+    end
+  end
+
+  describe "#apply_reset_token/2" do
+    test ":password tokens can update passwords" do
+      user  = insert(:user)
+      token = insert(:reset_token, user: user)
+
+      {:ok, user} = Users.apply_reset_token(token, %{password: @pwd})
+
+      {:ok, _} = Users.login_user(user.email, @pwd)
+
+      refute refetch(token)
     end
   end
 end

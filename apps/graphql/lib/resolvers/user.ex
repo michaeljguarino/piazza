@@ -41,6 +41,10 @@ defmodule GraphQl.Resolvers.User do
     |> maybe_resolve_invite(args)
   end
 
+  def create_reset_token(args, _), do: Users.create_reset_token(args)
+
+  def apply_reset_token(%{id: id, args: args}, _), do: Users.apply_reset_token(id, args)
+
   defp maybe_resolve_invite({:ok, user}, %{invite_token: token}) do
     with {:ok, _} <- Core.Services.Invites.realize_from_token(token, user),
       do: {:ok, user}

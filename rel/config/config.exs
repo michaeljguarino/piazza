@@ -1,6 +1,22 @@
 import Config
 import System, only: [get_env: 1]
 
+get_domain = fn
+  domain_name when is_binary(domain_name) ->
+    String.split(domain_name, ".")
+    |> Enum.reverse()
+    |> case do
+      [top, domain | _] -> "#{domain}.#{top}"
+      _ -> domain_name
+    end
+  _ -> ""
+end
+
+config :email,
+  adapter: Email.Adapter.Chartmart,
+  domain: get_env("HOST") |> get_domain.(),
+  host: get_env("HOST")
+
 config :arc,
   storage: Arc.Storage.GCS,
   bucket: get_env("GCS_BUCKET")

@@ -1,6 +1,6 @@
 defmodule Core.Services.Users do
   use Core.Services.Base
-  alias Core.Models.User
+  alias Core.Models.{User, ResetToken}
   alias Core.PubSub
   import Core.Policies.User
 
@@ -32,6 +32,9 @@ defmodule Core.Services.Users do
     User.for_ids(user_ids)
     |> Core.Repo.all()
   end
+
+  @spec get_reset_token!(binary) :: ResetToken.t
+  def get_reset_token!(id), do: Core.Repo.get_by!(ResetToken, secure_id: id)
 
   @doc """
   Checks if the password is valid and returns a tagged tuple
@@ -107,6 +110,40 @@ defmodule Core.Services.Users do
     |> when_ok(:update)
   end
 
+  @doc """
+  Creates a generic reset token for an email
+  """
+  @spec create_reset_token(map) :: {:ok, ResetToken.t} | {:error, term}
+  def create_reset_token(attrs) do
+    %ResetToken{}
+    |> ResetToken.changeset(attrs)
+    |> Core.Repo.insert()
+    |> notify(:create)
+  end
+
+  @doc """
+  Generic application of reset tokens
+  """
+  @spec apply_reset_token(ResetToken.t, map) :: user_resp
+  def apply_reset_token(%ResetToken{type: :password, user: user} = token, %{password: _} = args) do
+    start_transaction()
+    |> add_operation(:apply, fn _ ->
+      user
+      |> User.changeset(args)
+      |> Core.Repo.update()
+    end)
+    |> add_operation(:del, fn _ -> Core.Repo.delete(token) end)
+    |> execute(extract: :apply)
+  end
+
+  def apply_reset_token(token, args) when is_binary(token) do
+    get_reset_token!(token)
+    |> Core.Repo.preload([:user])
+    |> apply_reset_token(args)
+  end
+
+  def notify({:ok, %ResetToken{type: :password} = token}, :create),
+    do: handle_notify(PubSub.PasswordReset, token)
   def notify({:ok, user}, :create), do: handle_notify(PubSub.UserCreated, user)
   def notify({:ok, user}, :update), do: handle_notify(PubSub.UserUpdated, user, actor: user)
   def notify(error, _), do: error

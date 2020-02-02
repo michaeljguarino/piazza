@@ -63,7 +63,7 @@ defmodule Core.MixProject do
       {:ex_machina, "~> 2.3", only: :test},
       {:mojito, "~> 0.3.0"},
       {:zstream, "~> 0.5.0"},
-      {:ecto_enum, "~> 1.3.2"},
+      {:ecto_enum, "~> 1.4"},
       {:guardian, "~> 1.2.1"},
       {:piazza_core, "~> 0.2.3"},
       {:parallax, "~> 1.0"},
@@ -78,7 +78,8 @@ defmodule Core.MixProject do
 
       {:mimic, "~> 1.1", only: :test},
 
-      {:aquaduct, in_umbrella: true}
+      {:aquaduct, in_umbrella: true},
+      {:email, in_umbrella: true}
     ]
   end
 

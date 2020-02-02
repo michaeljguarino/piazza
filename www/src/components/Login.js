@@ -54,9 +54,10 @@ function Login(props) {
   if (localStorage.getItem(AUTH_TOKEN)) {
     props.history.push('/')
   }
+
   return (
-    <Box background='brand' direction="column" align="center" justify="center" height="100vh">
-      <Box width="400px" background="light-1" pad='medium' border={{style: "hidden"}} round="small" elevation="small">
+    <Box direction="column" align="center" justify="center" height="100vh">
+      <Box width="60%" pad='medium' border={{style: "hidden"}} round="small" elevation="small">
         {error && <Error errors={error} />}
         <Keyboard onEnter={mutation}>
           <Form onSubmit={mutation}>
@@ -84,16 +85,16 @@ function Login(props) {
                 value={email}
                 name="email"
                 label="Email"
-                onChange={e => setState({...state, email: e.target.value })}
                 placeholder="Your email address"
+                onChange={e => setState({...state, email: e.target.value })}
               />
               <FormField
                 value={password}
                 name="password"
                 label="Password (at least 10 chars)"
                 type="password"
-                onChange={e => setState({...state, password: e.target.value })}
                 placeholder="battery horse fire stapler"
+                onChange={e => setState({...state, password: e.target.value })}
               />
             </Box>
             <Box direction="row" align="center">
@@ -107,13 +108,17 @@ function Login(props) {
               <Anchor
                 margin={{left: '10px'}}
                 size="small"
-                fontWeight="400"
                 onClick={() => setState({...state, login: !login})}>
                 {login ? 'need to create an account?' : 'already have an account?'}
               </Anchor>
             </Box>
           </Form>
         </Keyboard>
+        <Box margin={{top: 'small'}} direction='row' align='center' justify='end'>
+          <Anchor size='small' color='dark-3' onClick={() => props.history.push('/reset-password')}>
+            forgot your password?
+          </Anchor>
+        </Box>
       </Box>
     </Box>
   )

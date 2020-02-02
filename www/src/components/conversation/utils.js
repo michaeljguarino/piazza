@@ -22,7 +22,7 @@ export function updateUnreadMessages(client, conversationId, update) {
 }
 
 export function updateConversations(client, conversationSelector, update) {
-  const {conversations, chats} = client.readQuery({ query: CONTEXT_Q })
+  const {conversations, chats, ...rest} = client.readQuery({ query: CONTEXT_Q })
   const edges = conversations.edges.map((e) => {
     if (conversationSelector(e)) return update(e)
     return e
@@ -35,6 +35,7 @@ export function updateConversations(client, conversationSelector, update) {
   client.writeQuery({
     query: CONTEXT_Q,
     data: {
+      ...rest,
       conversations: {
         ...conversations,
         edges: edges,

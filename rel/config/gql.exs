@@ -25,6 +25,7 @@ config :core, :consumers, [
   Core.PubSub.Consumers.Fanout,
   Core.PubSub.Consumers.Cache,
   Core.PubSub.Consumers.Webhook,
+  Core.PubSub.Consumers.Email,
   Core.PubSub.Participants
 ]
 

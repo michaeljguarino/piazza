@@ -432,5 +432,11 @@ defmodule GraphQl.Schema.Types do
     timestamps()
   end
 
+  object :reset_token do
+    field :id,        :id
+    field :secure_id, :string
+    field :email,     :string
+  end
+
   connection node_type: :theme
 end

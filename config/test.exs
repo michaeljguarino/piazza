@@ -1,5 +1,14 @@
 import Config
 
+# We don't run a server during test. If one is required,
+# you can enable the server option below.
+config :email, Email.Endpoint,
+  http: [port: 4002],
+  server: false
+
+config :email, Email.Mailer,
+  adapter: Bamboo.TestAdapter
+
 # Configure your database
 config :core, Core.Repo,
   username: "postgres",

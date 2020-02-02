@@ -51,7 +51,9 @@ function UsageMeter({limit, usage, name}) {
           color: 'focus'
         }]} />
       <Tooltip align={{bottom: 'top'}}>
-        <Text size='xsmall' style={{cursor: 'pointer'}}>{name}</Text>
+        <Box pad={{bottom: 'xsmall'}} align='center' justify='center'>
+          <Text size='xsmall' style={{cursor: 'pointer'}}>{name}</Text>
+        </Box>
         <Text size='small'>{usage} / {limit} used</Text>
       </Tooltip>
     </Stack>

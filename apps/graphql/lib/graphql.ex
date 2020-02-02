@@ -354,6 +354,20 @@ defmodule GraphQl do
 
       resolve safe_resolver(&Brand.update_brand/2)
     end
+
+    field :create_reset_token, :reset_token do
+      arg :type,  non_null(:reset_token_type)
+      arg :email, non_null(:string)
+
+      resolve safe_resolver(&User.create_reset_token/2)
+    end
+
+    field :apply_reset_token, :user do
+      arg :id,   non_null(:string)
+      arg :args, non_null(:reset_token_args)
+
+      resolve safe_resolver(&User.apply_reset_token/2)
+    end
   end
 
   subscription do

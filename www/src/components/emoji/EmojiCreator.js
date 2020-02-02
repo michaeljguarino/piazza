@@ -27,11 +27,11 @@ export function EmojiForm(props) {
   const [mutation] = useMutation(CREATE_EMOJI, {
     variables: {name, image: image && image.file},
     update: (cache, {data}) => {
-      const prev = cache.readQuery({ query: CONTEXT_Q })
-      if (prev.emoji) {
+      const {emoji, ...prev} = cache.readQuery({ query: CONTEXT_Q })
+      if (emoji) {
         cache.writeQuery({
           query: CONTEXT_Q,
-          data: {...prev, emoji: addEmoji(prev.emoji, data.createEmoji)}
+          data: {...prev, emoji: addEmoji(emoji, data.createEmoji)}
         })
       }
       props.setOpen(false)

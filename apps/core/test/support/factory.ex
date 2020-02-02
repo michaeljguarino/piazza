@@ -160,4 +160,12 @@ defmodule Core.Factory do
       media_type: :image
     }
   end
+
+  def reset_token_factory do
+    %Models.ResetToken{
+      secure_id: sequence(:reset_tokens, & "some-id-#{&1}"),
+      type: :password,
+      user: build(:user)
+    }
+  end
 end

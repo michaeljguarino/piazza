@@ -1,6 +1,7 @@
 defmodule GraphQl.UserMutationsTest do
   use GraphQl.SchemaCase, async: true
   alias Core.Models.User
+  alias Core.Services.Users
 
   describe "createUser" do
     test "Admins can create a new user" do
@@ -150,6 +151,41 @@ defmodule GraphQl.UserMutationsTest do
 
       assert signup["id"]
       assert Core.Services.Conversations.get_participant(signup["id"], conv.id)
+    end
+  end
+
+  describe "createResetToken" do
+    test "It will create reset tokens" do
+      user = insert(:user)
+
+      {:ok, %{data: %{"createResetToken" => token}}} = run_q("""
+        mutation CreateResetToken($email: String!) {
+          createResetToken(email: $email, type: PASSWORD) {
+            secureId
+          }
+        }
+      """, %{"email" => user.email})
+
+      assert Users.get_reset_token!(token["secureId"])
+    end
+  end
+
+  describe "applyResetToken" do
+    test "It will apply reset tokens" do
+      user = insert(:user)
+      token = insert(:reset_token, user: user)
+
+      {:ok, %{data: %{"applyResetToken" => updated}}} = run_q("""
+        mutation ApplyResetToken($id: ID!, $password: String!) {
+          applyResetToken(id: $id, args: {password: $password}) {
+            id
+          }
+        }
+      """, %{"id" => token.secure_id, "password" => "super strong pwd"})
+
+      assert updated["id"] == user.id
+
+      {:ok, _} = Users.login_user(user.email, "super strong pwd")
     end
   end
 end

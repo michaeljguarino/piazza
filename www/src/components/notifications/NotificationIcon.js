@@ -11,22 +11,32 @@ import WebNotification from 'react-web-notification';
 import { conversationNameString } from '../conversation/Conversation'
 import { ICON_HEIGHT, ICON_SPREAD } from '../Piazza'
 import { NOTIF_SOUND } from './constants'
+import { CONTEXT_Q } from '../login/queries'
 
-function _subscribeToNewNotifications(subscribeToMore, unseen, setUnseen, setCurrentNotification, client, updateConversations) {
+function incrNotifications(client, incr) {
+  const {me, ...rest} = client.readQuery({ query: CONTEXT_Q })
+  client.writeQuery({query: CONTEXT_Q, data: {
+    ...rest, me: {
+      ...me,
+      unreadNotifications: me.unreadNotifications + incr
+    }
+  }})
+}
+
+function _subscribeToNewNotifications(subscribeToMore, setCurrentNotification, client, updateConversations) {
   return subscribeToMore({
     document: NEW_NOTIFICATIONS_SUB,
     updateQuery: (prev, { subscriptionData }) => {
       if (!subscriptionData.data) return prev
       const newNotification = subscriptionData.data.newNotifications
       const edges = prev.notifications.edges
-      if (edges.find(({node}) => node.id === newNotification.id)) return prev
-      setUnseen(unseen + 1)
       setCurrentNotification(newNotification)
       updateConversations(
         client,
         ({node}) => node.id === newNotification.message.conversation.id,
         (e) => ({...e, node: {...e.node, unreadNotifications: e.node.unreadNotifications + 1}})
       )
+      incrNotifications(client, 1)
 
       let newNotificationNode = {node: newNotification, __typename: "NotificationEdge"}
       return Object.assign({}, prev, {
@@ -92,9 +102,9 @@ function introduction() {
 export default function NotificationIcon({me, setCurrentConversation}) {
   const audioRef = useRef()
   const client = useApolloClient()
-  const [unseen, setUnseen] = useState(me.unseenNotifications || 0)
   const [currentNotification, setCurrentNotification] = useState(introduction())
   const {data, loading, fetchMore, subscribeToMore} = useQuery(NOTIFICATIONS_Q)
+  const unseen = me.unseenNotifications || 0
   const [mutation] = useMutation(VIEW_NOTIFICATIONS, {
     update: (cache, {data: {viewNotifications}}) => {
       const {notifications} = cache.readQuery({ query: NOTIFICATIONS_Q });
@@ -103,12 +113,12 @@ export default function NotificationIcon({me, setCurrentConversation}) {
         data: {notifications: {...notifications, edges: []}}
       })
       updateConversations(cache, () => true, (e) => ({...e, node: {...e.node, unreadNotifications: 0}}))
-      setUnseen(0)
+      incrNotifications(cache, -unseen)
     }
   })
   useEffect(() => {
     _subscribeToNewNotifications(
-      subscribeToMore, unseen, setUnseen, setCurrentNotification, client, updateConversations)
+      subscribeToMore, setCurrentNotification, client, updateConversations)
   }, [])
 
   if (loading) return (
@@ -150,7 +160,6 @@ export default function NotificationIcon({me, setCurrentConversation}) {
           </Stack>
           <Box style={{minWidth: '300px'}} pad='small' align='center' justify='center'>
             <NotificationList
-              setUnseen={setUnseen}
               edges={edges}
               fetchMore={fetchMore}
               pageInfo={pageInfo}

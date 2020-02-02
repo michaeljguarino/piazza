@@ -30,3 +30,5 @@ defmodule Core.PubSub.EmojiCreated, do: use Piazza.PubSub.Event
 defmodule Core.PubSub.DialogCreated, do: use Piazza.PubSub.Event
 
 defmodule Core.PubSub.InteractionDispatched, do: use Piazza.PubSub.Event
+
+defmodule Core.PubSub.PasswordReset, do: use Piazza.PubSub.Event
