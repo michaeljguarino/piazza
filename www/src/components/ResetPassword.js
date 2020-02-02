@@ -25,6 +25,9 @@ export function ResetPassword() {
   return (
     <Box height='100vh' width='100vw' align='center' justify='center'>
       <Box width='60%' elevation='small' gap='small' pad='medium'>
+        <Box direction='row' align='center' justify='center' fill='horizontal'>
+          <Text weight='bold'>Reset Your Password</Text>
+        </Box>
         <Form onSubmit={mutation}>
           <FormField
             value={email}
@@ -36,13 +39,15 @@ export function ResetPassword() {
             <Button loading={loading} round='xsmall' label='Send reset email' onClick={mutation} />
           </Box>
         </Form>
-        {display && (
+      </Box>
+      {display && (
           <Pill background='status-ok' onClose={() => setDisplay(false)}>
-            <Text>reset password email sent</Text>
-            <Close style={{cursor: 'pointer'}} size='small' onClick={() => setDisplay(false)} />
+            <Box direction='row' align='center' gap='xsmall'>
+              <Text>reset password email sent</Text>
+              <Close style={{cursor: 'pointer'}} size='small' onClick={() => setDisplay(false)} />
+            </Box>
           </Pill>
         )}
-      </Box>
     </Box>
   )
 }

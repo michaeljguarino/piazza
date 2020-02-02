@@ -1,5 +1,6 @@
 defmodule Core.Models.StructuredMessage.Type do
-  @behaviour Ecto.Type
+  use Ecto.Type
+
   def type, do: :map
 
   def cast(doc) when is_binary(doc) do

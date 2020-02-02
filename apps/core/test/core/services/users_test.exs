@@ -118,6 +118,8 @@ defmodule Core.Services.UsersTest do
       {:ok, token} = Users.create_reset_token(%{email: user.email, type: :password})
 
       assert token.secure_id
+
+      assert_receive {:event, %PubSub.PasswordReset{item: ^token}}
     end
   end
 

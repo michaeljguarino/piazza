@@ -12,6 +12,9 @@ get_domain = fn
   _ -> ""
 end
 
+config :email, Email.Mailer,
+  adapter: Email.Adapter.Chartmart
+
 config :email,
   adapter: Email.Adapter.Chartmart,
   domain: get_env("HOST") |> get_domain.(),

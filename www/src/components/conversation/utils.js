@@ -21,16 +21,9 @@ export function updateUnreadMessages(client, conversationId, update) {
   )
 }
 
-export function updateConversations(client, conversationSelector, update) {
+export function updateConversations(client, selector, update) {
   const {conversations, chats, ...rest} = client.readQuery({ query: CONTEXT_Q })
-  const edges = conversations.edges.map((e) => {
-    if (conversationSelector(e)) return update(e)
-    return e
-  })
-  const chatEdges = chats.edges.map((e) => {
-    if (conversationSelector(e)) return update(e)
-    return e
-  })
+  const updater = (e) => selector(e) ? update(e) : e
 
   client.writeQuery({
     query: CONTEXT_Q,
@@ -38,11 +31,11 @@ export function updateConversations(client, conversationSelector, update) {
       ...rest,
       conversations: {
         ...conversations,
-        edges: edges,
+        edges: conversations.edges.map(updater),
       },
       chats: {
         ...chats,
-        edges: chatEdges,
+        edges: chats.edges.map(updater),
       }
     }
   })
@@ -96,8 +89,8 @@ export function updateConversation(prev, conv) {
 }
 
 export function removeConversation(prev, conv) {
-  let edges = prev.conversations.edges.filter((e) => e.node.id !== conv.id)
-  let chatEdges = prev.chats.edges.filter((e) => e.node.id !== conv.id)
+  let edges = prev.conversations.edges.filter(({node: {id}}) => id !== conv.id)
+  let chatEdges = prev.chats.edges.filter(({node: {id}}) => id !== conv.id)
   return {
     ...prev,
     conversations: {

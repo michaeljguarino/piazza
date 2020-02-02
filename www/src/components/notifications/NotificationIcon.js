@@ -18,7 +18,7 @@ function incrNotifications(client, incr) {
   client.writeQuery({query: CONTEXT_Q, data: {
     ...rest, me: {
       ...me,
-      unreadNotifications: me.unreadNotifications + incr
+      unseenNotifications: me.unseenNotifications + incr
     }
   }})
 }
