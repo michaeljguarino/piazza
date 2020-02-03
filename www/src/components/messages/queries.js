@@ -130,11 +130,14 @@ export const DELETE_REACTION = gql`
 `;
 
 export const SEARCH_USERS = gql`
-  query SearchUsers($name: ID!) {
-    searchUsers(name: $name, first: 10) {
+  query SearchUsers($name: ID!, $cursor: String) {
+    searchUsers(name: $name, first: 10, after: $cursor) {
       edges {
         node {
           ...UserFragment
+          roles {
+            admin
+          }
         }
       }
     }

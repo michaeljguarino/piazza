@@ -62,7 +62,7 @@ function CloseChat({conversation, me, currentConversation, setCurrentConversatio
   const [hover, setHover] = useState(false)
   const [mutation] = useMutation(DELETE_PARTICIPANT, {
     variables: {conversationId: conversation.id, userId: me.id},
-    update: (cache, {data}) => {
+    update: (cache) => {
       removeConversation(cache, conversation.id)
       if (currentConversation.id === conversation.id) setCurrentConversation(null)
     }
@@ -74,7 +74,7 @@ function CloseChat({conversation, me, currentConversation, setCurrentConversatio
       onMouseLeave={() => setHover(false)}
       style={{zIndex: 5}}
       onClick={(e) => { e.stopPropagation(); mutation() }}
-      margin={{right: '16px'}}
+      margin={{right: '15px'}}
       align='center'
       justify='center'>
       <Close color={hover ? 'focusText' : 'sidebarText'} size={textSize || 'small'} />

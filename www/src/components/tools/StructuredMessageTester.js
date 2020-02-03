@@ -1,9 +1,9 @@
-import React, {useState} from 'react'
-import {Box} from 'grommet'
-import {useHistory} from 'react-router-dom'
+import React, { useState } from 'react'
+import { Box } from 'grommet'
+import { useHistory } from 'react-router-dom'
 import CodeEditor from '../utils/CodeEditor'
 import StructuredMessage from '../messages/StructuredMessage'
-import {ModalHeader} from '../utils/Modal'
+import { ModalHeader } from '../utils/Modal'
 const parseXml = require('@rgrove/parse-xml')
 
 function parseMessage(msg) {
@@ -39,7 +39,7 @@ const DUMMY_MESSAGE = `<root>
 </root>
 `
 
-function StructuredMessageTester(props) {
+export default function StructuredMessageTester() {
   const [message, setMessage] = useState(DUMMY_MESSAGE)
   const [parsed, setParsed] = useState(parseMessage(message))
   let history = useHistory()
@@ -65,5 +65,3 @@ function StructuredMessageTester(props) {
     </Box>
   )
 }
-
-export default StructuredMessageTester

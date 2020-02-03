@@ -5,6 +5,9 @@ export const UPDATE_USER=gql`
   mutation UpdateUser($id: ID!, $attributes: UserAttributes!) {
     updateUser(id: $id, attributes: $attributes) {
       ...UserFragment
+      roles {
+        admin
+      }
     }
   }
   ${UserFragment}
@@ -39,6 +42,9 @@ export const USERS_Q = gql`
       edges {
         node {
           ...UserFragment
+          roles {
+            admin
+          }
         }
       }
     }

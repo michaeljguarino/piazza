@@ -1,9 +1,10 @@
 import React from 'react'
+import { useHistory } from 'react-router-dom'
 import { Box } from 'grommet'
 import { DropdownItem } from '../users/Me'
 import { download } from '../../utils/file'
 import { apiHost, secure } from '../../helpers/hostname'
-import { Download, Iteration } from 'grommet-icons'
+import { Download, Iteration, Group } from 'grommet-icons'
 import ThemeSelector from '../themes/ThemeSelector'
 import Modal, { ModalHeader } from '../utils/Modal'
 
@@ -29,8 +30,10 @@ function BrandThemeModal({setOpen}) {
 }
 
 export default function AdminTools({me: {exportToken}}) {
+  const history = useHistory()
   return (
     <Box pad={{bottom: 'xxsmall'}}>
+      <DropdownItem icon={Group} text='user directory' onClick={() => history.push('/directory')} />
       <Modal target={<DropdownItem icon={Iteration} text='update branding' />}>
       {setOpen => (<BrandThemeModal setOpen={setOpen} />)}
       </Modal>

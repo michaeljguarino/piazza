@@ -124,7 +124,7 @@ defmodule Core.Services.Users do
   @doc """
   Generic application of reset tokens
   """
-  @spec apply_reset_token(ResetToken.t, map) :: user_resp
+  @spec apply_reset_token(ResetToken.t | binary, map) :: user_resp
   def apply_reset_token(%ResetToken{type: :password, user: user} = token, %{password: _} = args) do
     start_transaction()
     |> add_operation(:apply, fn _ ->
