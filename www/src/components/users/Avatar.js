@@ -27,12 +27,12 @@ function AvatarInner({user: {backgroundColor, avatar, handle}, size, rightMargin
   )
 }
 
-export default function Avatar({withPresence, ...props}) {
+export default function Avatar({withPresence, user, size, rightMargin}) {
   if (withPresence) {
     return (
       <Stack anchor='top-right'>
-        <AvatarInner {...props} />
-        <WithPresence id={props.user.id}>
+        <AvatarInner user={user} size={size} rightMargin={rightMargin} />
+        <WithPresence id={user.id}>
         {present => (
           <Box margin={{top: '-2px', right: '-2px'}}>
             <PresenceIndicator present={present} />
@@ -42,5 +42,5 @@ export default function Avatar({withPresence, ...props}) {
       </Stack>
     )
   }
-  return <AvatarInner {...props} />
+  return <AvatarInner user={user} size={size} rightMargin={rightMargin} />
 }

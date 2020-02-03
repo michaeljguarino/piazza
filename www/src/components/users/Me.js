@@ -161,7 +161,7 @@ function MeHeader({me: {id, handle, name}}) {
   )
 }
 
-export default function Me(props) {
+export default function Me({pad}) {
   const [mutation] = useMutation(UPDATE_USER, {
     update: (cache, { data: { updateUser } }) => {
       const {me} = cache.readQuery({ query: ME_Q });
@@ -177,7 +177,7 @@ export default function Me(props) {
           sidebarHover
           accentText
           style={{cursor: 'pointer'}}
-          pad={{...props.pad, top: 'small', bottom: '7px'}}
+          pad={{...pad, top: 'small', bottom: '7px'}}
           align='center'
           direction='row'>
           <Box direction='row' align='center' margin={{bottom: '5px'}}>

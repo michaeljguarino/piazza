@@ -1,23 +1,20 @@
-import React, {useState, useRef} from 'react'
-import {Keyboard, Box} from 'grommet'
-import {useMutation} from 'react-apollo'
-import Button, {SecondaryButton} from '../utils/Button'
+import React, { useState, useRef } from 'react'
+import { Keyboard, Box } from 'grommet'
+import { useMutation } from 'react-apollo'
+import Button, { SecondaryButton } from '../utils/Button'
 import InputField from '../utils/InputField'
-import {UPDATE_USER} from './queries'
+import { UPDATE_USER } from './queries'
 import { Editor } from 'slate-react'
 import Plain from 'slate-plain-serializer'
 
-function getUserFields(attrs) {
-  const {bio, title, phone} = attrs
-  return {bio, title, phone}
-}
+const getUserFields = ({bio, title, phone}) => ({bio, title, phone})
 
-function UpdateProfile(props) {
-  const [userFields, setUserFields] = useState(getUserFields(props.me))
+export default function UpdateProfile({me, callback}) {
+  const [userFields, setUserFields] = useState(getUserFields(me))
   const editorRef = useRef()
-  const [mutation, {loading}] = useMutation(UPDATE_USER, {variables: {id: props.me.id, attributes: userFields}})
+  const [mutation, {loading}] = useMutation(UPDATE_USER, {variables: {id: me.id, attributes: userFields}})
   const submit = () => {
-    props.callback && props.callback()
+    callback && callback()
     mutation()
   }
 
@@ -48,7 +45,7 @@ function UpdateProfile(props) {
             }} />
         </Box>
         <Box direction='row' align='center' justify='end' gap='xsmall'>
-          <SecondaryButton round='xsmall' label='Cancel' onClick={props.callback} />
+          <SecondaryButton round='xsmall' label='Cancel' onClick={callback} />
           <Button loading={loading} round='xsmall' label='Save' onClick={submit} />
         </Box>
       </Box>
@@ -56,5 +53,3 @@ function UpdateProfile(props) {
     </Keyboard>
   )
 }
-
-export default UpdateProfile

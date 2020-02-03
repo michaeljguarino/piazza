@@ -1,17 +1,17 @@
-import React, {useState} from 'react'
-import {Box} from 'grommet'
-import {useMutation} from 'react-apollo'
-import {UPDATE_USER} from './queries'
-import Errors, {Error} from '../utils/Error'
+import React, { useState } from 'react'
+import { Box } from 'grommet'
+import { useMutation } from 'react-apollo'
+import { UPDATE_USER } from './queries'
+import Errors, { Error } from '../utils/Error'
 import InputField from '../utils/InputField'
-import Button, {SecondaryButton} from '../utils/Button'
+import Button, { SecondaryButton } from '../utils/Button'
 
-function UpdatePassword(props) {
+export default function UpdatePassword({me, callback}) {
   const [password, setPassword] = useState('')
   const [confirm, setConfirm] = useState('')
   const [unconfirmed, setUnconfirmed] = useState(false)
   const [mutation, {loading, error}] = useMutation(UPDATE_USER, {
-    variables: {id: props.me.id, attributes: {password: password}}
+    variables: {id: me.id, attributes: {password: password}}
   })
   const wrapped = () => {
     if (password !== confirm) {
@@ -19,7 +19,7 @@ function UpdatePassword(props) {
       return
     }
 
-    props.callback && props.callback()
+    callback && callback()
     mutation()
   }
   return (
@@ -32,20 +32,18 @@ function UpdatePassword(props) {
         type='password'
         value={password}
         placeholder='battery horse fire stapler'
-        onChange={(e) => setPassword(e.target.value)} />
+        onChange={({target: {value}}) => setPassword(value)} />
       <InputField
         label='Confirm'
         labelWidth='80px'
         type='password'
         value={confirm}
         placeholder='battery horse fire stapler'
-        onChange={(e) => setConfirm(e.target.value)} />
+        onChange={({target: {value}}) => setConfirm(value)} />
       <Box margin={{top: 'xsmall'}} direction='row' align='center' justify='end' gap='xsmall'>
-        <SecondaryButton label='Cancel' onClick={props.callback} round='xsmall' />
+        <SecondaryButton label='Cancel' onClick={callback} round='xsmall' />
         <Button loading={loading} label='Change' round='xsmall' onClick={wrapped} />
       </Box>
     </Box>
   )
 }
-
-export default UpdatePassword

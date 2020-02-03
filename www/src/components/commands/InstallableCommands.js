@@ -9,7 +9,7 @@ import {CommandForm} from './CommandCreator'
 import Scroller from '../utils/Scroller'
 import {mergeAppend} from '../../utils/array'
 
-function InstallableCommand(props) {
+function InstallableCommand({installable}) {
   const [hover, setHover] = useState(false)
   return (
     <Box
@@ -23,11 +23,11 @@ function InstallableCommand(props) {
       gap='small'
       background={hover ? 'lightHover' : null}>
       <Box width='45px' align='center' justify='center'>
-        <img alt='' src={props.installable.avatar} width='45px' height='45px' />
+        <img alt='' src={installable.avatar} width='45px' height='45px' />
       </Box>
       <Box>
-        <Text size='small'>{props.installable.name}</Text>
-        <Text size='small'>{props.installable.description}</Text>
+        <Text size='small'>{installable.name}</Text>
+        <Text size='small'>{installable.description}</Text>
       </Box>
     </Box>
   )
@@ -45,17 +45,17 @@ function toCommand(builtin) {
   }
 }
 
-function InstallableCommandCreator(props) {
-  const [formState, setFormState] = useState(formStateFromCommand(props.command))
+function InstallableCommandCreator({additionalVars, command, setOpen}) {
+  const [formState, setFormState] = useState(formStateFromCommand(command))
   return (
     <Box width="600px" pad={{bottom: 'small'}} round='small'>
-      <ModalHeader text={`Update ${props.command.name}`} setOpen={props.setOpen} />
+      <ModalHeader text={`Update ${command.name}`} setOpen={setOpen} />
       <Box pad={{horizontal: 'medium', bottom: 'small'}} gap='medium'>
         <Box direction='row' align='center' pad='small' border='bottom'>
           <Box align='center'>
             <CommandListEntry disableEdit command={{
               ...formState,
-              bot: {name: formState.name, handle: formState.name, avatar: props.command.avatar || props.command.bot.avatar},
+              bot: {name: formState.name, handle: formState.name, avatar: command.avatar || command.bot.avatar},
               webhook: {url: formState.url}
             }} />
           </Box>
@@ -63,8 +63,8 @@ function InstallableCommandCreator(props) {
         <CommandForm
           action='Create'
           mutation={CREATE_COMMAND}
-          vars={{...(props.additionalVars || {}), commandName: props.command.name}}
-          setOpen={props.setOpen}
+          vars={{...(additionalVars || {}), commandName: command.name}}
+          setOpen={setOpen}
           formState={formState}
           setFormState={setFormState} />
       </Box>
@@ -72,22 +72,21 @@ function InstallableCommandCreator(props) {
   )
 }
 
-function WrappedInstallableCommand(props) {
+function WrappedInstallableCommand({installable}) {
   return (
     <Modal
-      target={<InstallableCommand {...props} />}>
+      target={<InstallableCommand installable={installable} />}>
     {(setOpen) => (
       <InstallableCommandCreator
         setOpen={setOpen}
-        command={toCommand(props.installable)}
-        additionalVars={{bot: {avatar: props.installable.avatar}}}
+        command={toCommand(installable)}
+        additionalVars={{bot: {avatar: installable.avatar}}}
       />)}
     </Modal>
   )
 }
 
-const onFetchMore = (prev, {fetchMoreResult}) => {
-  const {edges, pageInfo} = fetchMoreResult.installableCommands
+const onFetchMore = (prev, {fetchMoreResult: {installableCommands: {edges, pageInfo}}}) => {
   return edges.length ? {
     ...prev,
     installableCommands: {
@@ -98,7 +97,7 @@ const onFetchMore = (prev, {fetchMoreResult}) => {
   } : prev;
 }
 
-function InstallableCommands(props) {
+export default function InstallableCommands() {
   const {data, loading, fetchMore} = useQuery(INSTALLABLE_COMMANDS)
   if (loading) return null
   const {edges, pageInfo} = data.installableCommands
@@ -116,16 +115,11 @@ function InstallableCommands(props) {
           edges={edges}
           style={{overflow: 'auto', maxHeight: '80%'}}
           mapper={({node}) => (<WrappedInstallableCommand key={node.id} installable={node} />)}
-          onLoadMore={() => {
-            if (!pageInfo.hasNextPage) return
-            fetchMore({
-              variables: {cursor: pageInfo.endCursor},
-              updateQuery: onFetchMore
-            })
-          }}/>
+          onLoadMore={() => pageInfo.hasNextPage && fetchMore({
+            variables: {cursor: pageInfo.endCursor},
+            updateQuery: onFetchMore
+          })}/>
       </Box>
     </Box>
   )
 }
-
-export default InstallableCommands

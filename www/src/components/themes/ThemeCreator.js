@@ -10,15 +10,15 @@ import {ChromePicker} from 'react-color'
 import {addTheme} from './utils'
 import {CREATE_THEME, THEME_Q} from './queries'
 
-function ThemePicker(props) {
+function ThemePicker({field, active, color, onChange}) {
   const [hover, setHover] = useState(false)
 
   return (
     <Box gap='xsmall'>
-      <Text weight='bold' size='small'>{props.field}</Text>
-      <Box direction='row' round='xsmall' border={props.active ? {color: "focus", size: 'small'} : 'all'}>
+      <Text weight='bold' size='small'>{field}</Text>
+      <Box direction='row' round='xsmall' border={active ? {color: "focus", size: 'small'} : 'all'}>
         <Box width='100%' pad='xsmall'>
-          {props.color}
+          {color}
         </Box>
         <Box
           width='90px'
@@ -29,7 +29,7 @@ function ThemePicker(props) {
           elevation={hover ? 'small' : null}
           border='left'
           pad='xsmall'
-          onClick={() => props.onChange(props.field)}>
+          onClick={() => onChange(field)}>
           Change
         </Box>
       </Box>
@@ -71,10 +71,10 @@ function deserializeSlack(serialized, theme) {
   }
 }
 
-function ThemeForm(props) {
-  const [theme, setTheme] = useState(cleanTheme(props.theme))
+function ThemeForm({theme, cancel}) {
+  const [themeAttrs, setThemeAttrs] = useState(cleanTheme(theme))
   const [active, setActive] = useState('brand')
-  const [name, setName] = useState(props.theme.name || '')
+  const [name, setName] = useState(theme.name || '')
   const [mutation] = useMutation(CREATE_THEME, {
     variables: {name, attributes: theme},
     update: (cache, {data}) => {
@@ -83,14 +83,12 @@ function ThemeForm(props) {
         query: THEME_Q,
         data: addTheme(prev, data.createTheme)
       })
-      props.cancel()
+      cancel()
     }
   })
 
   function wrappedSetTheme(fieldName, value) {
-    let newTheme = {...theme}
-    newTheme[fieldName] = value
-    setTheme(newTheme)
+    setThemeAttrs({...themeAttrs, [fieldName]: value})
   }
 
   return (
@@ -119,7 +117,7 @@ function ThemeForm(props) {
             value={serializeTheme(theme)}
             onChange={(e) => {
               const deserialized = deserializeTheme(e.target.value, theme)
-              setTheme(deserialized)
+              setThemeAttrs(deserialized)
             }} />
         </Box>
         <Box margin={{top: 'small'}} gap='small' direction='row'>
@@ -128,7 +126,7 @@ function ThemeForm(props) {
             value={serializeSlack(theme)}
             onChange={(e) => {
               const deserialized = deserializeSlack(e.target.value, theme)
-              setTheme(deserialized)
+              setThemeAttrs(deserialized)
             }} />
         </Box>
       </Box>
@@ -139,23 +137,21 @@ function ThemeForm(props) {
       />
     </Box>
     <Box direction='row' margin={{top: 'small'}} gap='xsmall' justify='end'>
-      <SecondaryButton round='xsmall' label='Cancel' onClick={() => props.cancel()} />
+      <SecondaryButton round='xsmall' label='Cancel' onClick={() => cancel()} />
       <Button round='xsmall' label='Create' onClick={mutation} />
     </Box>
     </>
   )
 }
 
-function ThemeCreator(props) {
+export default function ThemeCreator({cancel}) {
   return (
     <ThemeContext.Consumer>
     {({brand: {theme}}) => (
       <Box gap='small' width='720px' pad='small'>
-        <ThemeForm theme={theme} cancel={props.cancel} />
+        <ThemeForm theme={theme} cancel={cancel} />
       </Box>
     )}
     </ThemeContext.Consumer>
   )
 }
-
-export default ThemeCreator

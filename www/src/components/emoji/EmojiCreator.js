@@ -21,7 +21,7 @@ function generatePreview(file, callback) {
 
 const MODAL_WIDTH = '400px'
 
-export function EmojiForm(props) {
+export function EmojiForm({setOpen}) {
   const [image, setImage] = useState(null)
   const [name, setName] = useState('')
   const [mutation] = useMutation(CREATE_EMOJI, {
@@ -34,7 +34,7 @@ export function EmojiForm(props) {
           data: {...prev, emoji: addEmoji(emoji, data.createEmoji)}
         })
       }
-      props.setOpen(false)
+      setOpen(false)
     }
   })
 
@@ -83,14 +83,14 @@ export function EmojiForm(props) {
         </Box>
       </Box>
       <Box gap='xsmall' direction='row' fill='horizontal' justify='end'>
-        <SecondaryButton round='xsmall' pad='xsmall' label='Cancel' onClick={() => props.setOpen(false)} />
+        <SecondaryButton round='xsmall' pad='xsmall' label='Cancel' onClick={() => setOpen(false)} />
         <Button onClick={mutation} round='xsmall' pad='xsmall' disabled={!image || !name} label='Create' />
       </Box>
     </Box>
   )
 }
 
-function EmojiCreator(props) {
+export default function EmojiCreator() {
   return (
     <ThemeContext.Extend value={{layer: {zIndex: 30}}}>
       <Modal target={
@@ -117,5 +117,3 @@ function EmojiCreator(props) {
     </ThemeContext.Extend>
   )
 }
-
-export default EmojiCreator

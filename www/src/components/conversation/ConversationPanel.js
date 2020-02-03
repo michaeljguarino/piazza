@@ -13,7 +13,7 @@ import { Conversations } from '../login/MyConversations'
 import ConversationPager from './ConversationPager'
 import ChatCreator from './ChatCreator'
 
-const PADDING = {left: '15px'}
+export const PADDING = {left: '15px'}
 
 function SidebarFlyout({icon, text, children}) {
   return (

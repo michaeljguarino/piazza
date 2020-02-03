@@ -3,8 +3,7 @@ import { Box, Text } from 'grommet';
 import Conversation from './Conversation';
 import HoveredBackground from '../utils/HoveredBackground';
 import { mergeAppend } from '../../utils/array';
-
-const PADDING = {left: '15px'}
+import { PADDING } from './ConversationPanel';
 
 function appendConversations(type, prev, {fetchMoreResult}) {
   const {edges, pageInfo} = fetchMoreResult[type]

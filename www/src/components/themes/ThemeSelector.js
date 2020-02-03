@@ -81,13 +81,10 @@ export default function ThemeSelector({brand}) {
         ))}
         </Box>
       )}
-      onLoadMore={() => {
-        if (!pageInfo.hasNextPage) return
-        fetchMore({
-          variables: {cursor: pageInfo.endCursor},
-          updateQuery: onFetchMore
-        })
-      }}
+      onLoadMore={() => pageInfo.hasNextPage && fetchMore({
+        variables: {cursor: pageInfo.endCursor},
+        updateQuery: onFetchMore
+      })}
     />
   )
 }

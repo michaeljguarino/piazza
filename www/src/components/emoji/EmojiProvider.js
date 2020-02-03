@@ -1,12 +1,12 @@
 import React from 'react'
-import {Box} from 'grommet'
-import {Query} from 'react-apollo'
+import { Box } from 'grommet'
+import { Query } from 'react-apollo'
 import Loading from '../utils/Loading'
-import {EMOJI_Q} from './queries'
+import { EMOJI_Q } from './queries'
 
 export const EmojiContext = React.createContext({})
 
-function EmojiProvider(props) {
+export default function EmojiProvider({children}) {
   return (
     <Query query={EMOJI_Q}>
     {({loading, data}) => {
@@ -14,12 +14,10 @@ function EmojiProvider(props) {
       const emoji = data.emoji.edges
       return (
         <EmojiContext.Provider value={emoji}>
-        {props.children}
+        {children}
         </EmojiContext.Provider>
       )
     }}
     </Query>
   )
 }
-
-export default EmojiProvider

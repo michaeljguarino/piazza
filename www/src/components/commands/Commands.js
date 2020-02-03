@@ -28,7 +28,7 @@ const onFetchMore = (prev, {fetchMoreResult}) => {
   } : prev
 }
 
-function FlyoutContent(props) {
+function FlyoutContent() {
   const [expanded, setExpanded] = useState(false)
   const {loading, data, fetchMore} = useQuery(COMMANDS_Q)
   if (loading) return null
@@ -55,13 +55,10 @@ function FlyoutContent(props) {
               <CommandListEntry
                 key={node.id} pad={{vertical: 'xsmall', horizontal: 'small'}} command={node} />
             )}
-            onLoadMore={() => {
-              if (!pageInfo.hasNextPage)  return
-              fetchMore({
-                variables: {cursor: pageInfo.endCursor},
-                updateQuery: onFetchMore
-              })
-            }}
+            onLoadMore={() => pageInfo.hasNextPage && fetchMore({
+              variables: {cursor: pageInfo.endCursor},
+              updateQuery: onFetchMore
+            })}
           />
         </Box>
         <Box margin={{top: 'xsmall'}} pad='small' border='top'>

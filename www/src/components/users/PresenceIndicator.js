@@ -1,14 +1,14 @@
 import React, { useContext } from 'react'
 import { ThemeContext } from '../Theme'
 
-export function EmptyPresenceIndicator(props) {
+export function EmptyPresenceIndicator({emptyColor}) {
   return (
     <span style={{
       height: '.5em',
       width: '.5em',
       borderRadius: '50%',
       border: '1px solid',
-      borderColor: props.emptyColor || '#EDEDED',
+      borderColor: emptyColor || '#EDEDED',
       display: 'inline-block',
       marginRight: '5px'
     }} />

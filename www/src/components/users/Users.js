@@ -1,15 +1,15 @@
 import React from 'react'
-import {Box} from 'grommet'
-import {User} from 'grommet-icons'
+import { Box } from 'grommet'
+import { User } from 'grommet-icons'
 import { useQuery } from 'react-apollo'
 import Scroller from '../utils/Scroller'
-import Flyout, {FlyoutHeader, FlyoutContainer} from '../utils/Flyout'
+import Flyout, { FlyoutHeader, FlyoutContainer } from '../utils/Flyout'
 import HoveredBackground from '../utils/HoveredBackground'
 import UserListEntry from './UserListEntry'
-import {mergeAppend} from '../../utils/array'
-import {USERS_Q, USER_SUB} from './queries'
-import {updateUser, addUser} from './utils'
-import {ICON_HEIGHT, ICON_SPREAD} from '../Piazza'
+import { mergeAppend } from '../../utils/array'
+import { USERS_Q, USER_SUB } from './queries'
+import { updateUser, addUser } from './utils'
+import { ICON_HEIGHT, ICON_SPREAD } from '../Piazza'
 import { useSubscription } from '../utils/hooks'
 import Loading from '../utils/Loading'
 
@@ -100,14 +100,10 @@ export default function Users({width, ignore, noFlyout, pad, margin, onChat, col
             color={color}
             onClick={onClick} />
         )}
-        onLoadMore={() => {
-          if (!pageInfo.hasNextPage) return
-
-          fetchMore({
-            variables: {cursor: pageInfo.endCursor},
-            updateQuery: onFetchMore
-          })
-        }}
+        onLoadMore={() => pageInfo.hasNextPage && fetchMore({
+          variables: {cursor: pageInfo.endCursor},
+          updateQuery: onFetchMore
+        })}
       />
     </Box>
   )
