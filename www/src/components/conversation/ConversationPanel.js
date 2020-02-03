@@ -1,11 +1,7 @@
 import React, { useContext } from 'react'
-import Conversation from './Conversation'
 import Me from '../users/Me'
 import { Box, Text } from 'grommet'
 import ConversationCreator, { CreateConversation } from './ConversationCreator'
-import Chats from './Chats'
-import Scroller from '../utils/Scroller'
-import {mergeAppend} from '../../utils/array'
 import Flyout from '../utils/Flyout'
 import HoveredBackground from '../utils/HoveredBackground'
 import { Terminal, Group } from 'grommet-icons'
@@ -14,6 +10,8 @@ import { CommandFlyout } from '../commands/Commands'
 import { ExternalInvite } from './MagicLinkInvite'
 import { CurrentUserContext } from '../login/EnsureLogin'
 import { Conversations } from '../login/MyConversations'
+import ConversationPager from './ConversationPager'
+import ChatCreator from './ChatCreator'
 
 const PADDING = {left: '15px'}
 
@@ -39,80 +37,56 @@ function SidebarFlyout({icon, text, children}) {
 
 export default function ConversationPanel() {
   const me = useContext(CurrentUserContext)
-  const {conversations, chats, setCurrentConversation, currentConversation, loadMore} = useContext(Conversations)
-  const {pageInfo} = conversations
-
+  const {conversations, chats, setCurrentConversation, currentConversation, fetchMore} = useContext(Conversations)
   return (
     <Box>
       <Me me={me} pad={PADDING} />
-      <Box margin={{vertical: 'medium'}} gap='xsmall'>
-        <SidebarFlyout icon={Group} text='Directory'>
-        {setOpen => <UserFlyout setOpen={setOpen} />}
-        </SidebarFlyout>
-        <SidebarFlyout icon={Terminal} text='Apps'>
-        {setOpen => <CommandFlyout setOpen={setOpen} />}
-        </SidebarFlyout>
-      </Box>
-      <Box margin={{bottom: 'small'}}>
-        <ConversationCreator
-          padding={PADDING}
-          setCurrentConversation={setCurrentConversation} />
-        <Scroller
-          id='conversations-list'
-          style={{
-            overflow: 'auto',
-            maxHeight: '40vh'
-          }}
-          edges={conversations.edges}
-          onLoadMore={() => {
-            if (!pageInfo.hasNextPage) return
-
-            loadMore({
-              variables: {cursor: pageInfo.endCursor},
-              updateQuery: (prev, {fetchMoreResult}) => {
-                const edges = fetchMoreResult.conversations.edges
-                const pageInfo = fetchMoreResult.conversations.pageInfo
-
-                return edges.length ? {
-                  ...prev,
-                  conversations: {
-                    ...prev.conversations,
-                    pageInfo,
-                    edges: mergeAppend(edges, prev.conversations.edges, (e) => e.node.id),
-                  }
-                } : prev;
-              }
-            })}}
-          mapper={(edge) => <Conversation
-            pad={{...PADDING, vertical: 'small'}}
-            key={edge.node.id}
+      <div height='100%' style={{overflow: 'auto'}}>
+        <Box margin={{vertical: 'medium'}} gap='xsmall'>
+          <SidebarFlyout icon={Group} text='Directory'>
+          {setOpen => <UserFlyout setOpen={setOpen} />}
+          </SidebarFlyout>
+          <SidebarFlyout icon={Terminal} text='Apps'>
+          {setOpen => <CommandFlyout setOpen={setOpen} />}
+          </SidebarFlyout>
+        </Box>
+        <Box margin={{bottom: 'small'}}>
+          <ConversationCreator
+            padding={PADDING}
+            setCurrentConversation={setCurrentConversation} />
+          <ConversationPager
+            {...conversations}
+            type='conversations'
+            fetchMore={fetchMore}
             currentConversation={currentConversation}
-            setCurrentConversation={setCurrentConversation}
-            conversation={edge.node} />
-          } />
-      </Box>
-      <Box margin={{bottom: 'medium'}}>
-        <CreateConversation pad={PADDING} />
-      </Box>
-      <Chats
-        pad={{...PADDING, vertical: 'small'}}
-        currentConversation={currentConversation}
-        setCurrentConversation={setCurrentConversation}
-        chats={chats}
-      />
-      <ExternalInvite>
-        <HoveredBackground>
-          <Box direction='row' margin={{vertical: 'small'}} pad={PADDING}>
-            <Text
-              highlight
-              style={{cursor: 'pointer'}}
-              size='small'
-              color='sidebarText'>
-              + Invite someone else
-            </Text>
-          </Box>
-        </HoveredBackground>
-      </ExternalInvite>
+            setCurrentConversation={setCurrentConversation} />
+        </Box>
+        <Box margin={{bottom: 'medium'}}>
+          <CreateConversation pad={PADDING} />
+        </Box>
+        <Box>
+          <ChatCreator padding={PADDING} setCurrentConversation={setCurrentConversation} />
+          <ConversationPager
+            {...chats}
+            type='chats'
+            fetchMore={fetchMore}
+            currentConversation={currentConversation}
+            setCurrentConversation={setCurrentConversation} />
+        </Box>
+        <ExternalInvite>
+          <HoveredBackground>
+            <Box direction='row' margin={{vertical: 'small'}} pad={PADDING}>
+              <Text
+                highlight
+                style={{cursor: 'pointer'}}
+                size='small'
+                color='sidebarText'>
+                + Invite someone else
+              </Text>
+            </Box>
+          </HoveredBackground>
+        </ExternalInvite>
+      </div>
     </Box>
   )
 }

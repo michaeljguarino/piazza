@@ -14,7 +14,7 @@ export default function AppContext({children, sideEffects}) {
   const client = useApolloClient()
   const [currentConversation, setCurrentConversation] = useState(null)
   const [waterline, setWaterline] = useState(null)
-  const {loading, data, loadMore, subscribeToMore, error} = useQuery(CONTEXT_Q)
+  const {loading, data, fetchMore, subscribeToMore, error} = useQuery(CONTEXT_Q)
 
   if (loading) return (<Box height='100vh'><Loading/></Box>)
 
@@ -57,7 +57,7 @@ export default function AppContext({children, sideEffects}) {
       <EmojiContext.Provider value={data.emoji.edges}>
         <Conversations.Provider value={{
           setWaterline,
-          loadMore,
+          fetchMore,
           conversations,
           chats,
           waterline: waterline || lastSeenAt,

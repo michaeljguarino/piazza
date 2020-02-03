@@ -10,14 +10,15 @@ export const Conversations = React.createContext({
                                 conversations: null,
                                 setCurrentConversation: null,
                                 waterline: null,
-                                setWaterline: null
+                                setWaterline: null,
+                                fetchMore: () => null
                              })
 
 function MyConversations(props) {
   const client = useApolloClient()
   const [currentConversation, setCurrentConversation] = useState(null)
   const [waterline, setWaterline] = useState(null)
-  const {loading, data, loadMore, subscribeToMore} = useQuery(CONVERSATIONS_Q)
+  const {loading, data, fetchMore, subscribeToMore} = useQuery(CONVERSATIONS_Q)
 
   if (loading) return (<Box height="100vh"><Loading /></Box>)
 
@@ -52,19 +53,19 @@ function MyConversations(props) {
   return (
     <Conversations.Provider value={{
       setWaterline,
+      fetchMore,
       waterline: waterline || lastSeenAt,
       currentConversation: current,
       conversations: data.conversations,
       chats: data.chats,
       setCurrentConversation: wrappedSetCurrentConversation,
-      loadMore: loadMore
     }}>
     {props.children(
       current,
       data.conversations,
       data.chats,
       wrappedSetCurrentConversation,
-      loadMore,
+      fetchMore,
       waterline,
       setWaterline
     )}
