@@ -8,7 +8,7 @@ import Theme from './Theme'
 import '../styles/App.css';
 import Login from './Login'
 import StructuredMessageTester from './tools/StructuredMessageTester'
-import { ResetPassword } from './ResetPassword';
+import { ResetPassword, ChangePassword } from './ResetPassword';
 
 
 export default function App() {
@@ -21,6 +21,7 @@ export default function App() {
           <Route exact path="/login" component={Login} />
           <Route path="/invite/:inviteToken" component={Login} />
           <Route path="/messageeditor" component={StructuredMessageTester} />
+          <Route path='/reset-password/:token' component={ChangePassword} />
           <Route path='/reset-password' component={ResetPassword} />
         </Switch>
       </Grommet>

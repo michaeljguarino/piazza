@@ -22,7 +22,6 @@ defmodule Email.Adapter.Chartmart do
       [{"authorization", "Bearer #{token()}"} | @headers],
       Jason.encode!(convert(email))
     )
-    |> IO.inspect()
   end
 
   def handle_config(conf), do: conf

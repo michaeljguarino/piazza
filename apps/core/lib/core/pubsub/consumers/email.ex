@@ -7,7 +7,7 @@ defmodule Core.PubSub.Consumers.Email do
     max_demand: 20
 
   def handle_event(event) do
-    with %Bamboo.Email{} = email <- Core.PubSub.Email.construct(event) |> IO.inspect(),
+    with %Bamboo.Email{} = email <- Core.PubSub.Email.construct(event),
       do: Email.Mailer.deliver_now(email)
   end
 end
