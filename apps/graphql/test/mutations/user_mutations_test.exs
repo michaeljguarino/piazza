@@ -72,20 +72,39 @@ defmodule GraphQl.UserMutationsTest do
     end
   end
 
-  describe "deleteUser" do
+  describe "activateUser" do
     test "An admin can delete users" do
-      user = build(:user) |> with_password("really strong password")
+      user  = insert(:user)
       admin = insert(:user, roles: %{admin: true})
-      {:ok, %{data: %{"deleteUser" => user}}} = run_q("""
-        mutation deleteUser($id: ID!) {
-          deleteUser(id: $id) {
+
+      {:ok, %{data: %{"activateUser" => updated}}} = run_q("""
+        mutation ActivateUser($id: ID!) {
+          activateUser(id: $id) {
             id
             deletedAt
           }
         }
       """, %{"id" => user.id}, %{current_user: admin})
 
-      assert user["deletedAt"]
+      assert updated["id"] == user.id
+      assert updated["deletedAt"]
+    end
+
+    test "An admin can reactivate users" do
+      user  = insert(:user, deleted_at: Timex.now())
+      admin = insert(:user, roles: %{admin: true})
+
+      {:ok, %{data: %{"activateUser" => updated}}} = run_q("""
+        mutation ActivateUser($id: ID!) {
+          activateUser(id: $id, active: true) {
+            id
+            deletedAt
+          }
+        }
+      """, %{"id" => user.id}, %{current_user: admin})
+
+      assert updated["id"] == user.id
+      refute updated["deletedAt"]
     end
   end
 

@@ -111,6 +111,20 @@ defmodule Core.Services.Users do
   end
 
   @doc """
+  Reactivates a user (wiping its delete state).
+
+  allowed roles:
+  * admin
+  """
+  @spec activate_user(binary, User.t) :: user_resp
+  def activate_user(user_id, user) do
+    get_user!(user_id)
+    |> Ecto.Changeset.change(%{deleted_at: nil})
+    |> allow(user, :delete)
+    |> when_ok(:update)
+  end
+
+  @doc """
   Creates a generic reset token for an email
   """
   @spec create_reset_token(map) :: {:ok, ResetToken.t} | {:error, term}

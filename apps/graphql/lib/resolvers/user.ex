@@ -11,17 +11,21 @@ defmodule GraphQl.Resolvers.User do
 
   def list_users(args, _) do
     User.ordered()
-    |> User.active()
+    |> maybe_include_inactive(args)
     |> paginate(args)
   end
-
-  def create_user(%{attributes: attrs}, %{context: %{current_user: user}}),
-    do: Users.create_user(attrs, user)
 
   def search_users(%{name: name} = args, _) do
     User.search(name)
+    |> maybe_include_inactive(args)
     |> paginate(args)
   end
+
+  defp maybe_include_inactive(query, %{active: false}), do: query
+  defp maybe_include_inactive(query, _), do: User.active(query)
+
+  def create_user(%{attributes: attrs}, %{context: %{current_user: user}}),
+    do: Users.create_user(attrs, user)
 
   def signup(%{attributes: attrs} = args, _) do
     Users.create_user(attrs)
@@ -32,7 +36,9 @@ defmodule GraphQl.Resolvers.User do
   def update_user(%{id: id, attributes: attrs}, %{context: %{current_user: user}}),
     do: Users.update_user(id, attrs, user)
 
-  def delete_user(%{id: id}, %{context: %{current_user: user}}),
+  def activate_user(%{id: id, active: true}, %{context: %{current_user: user}}),
+    do: Users.activate_user(id, user)
+  def activate_user(%{id: id}, %{context: %{current_user: user}}),
     do: Users.delete_user(id, user)
 
   def login_user(%{email: email, password: pwd} = args, _) do

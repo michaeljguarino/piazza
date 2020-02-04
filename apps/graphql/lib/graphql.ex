@@ -52,6 +52,8 @@ defmodule GraphQl do
     @desc "Fetches a list of users in the system"
     connection field :users, node_type: :user do
       middleware GraphQl.Schema.Authenticated
+      arg :active, :boolean
+
       resolve &User.list_users/2
     end
 
@@ -79,6 +81,7 @@ defmodule GraphQl do
     connection field :search_users, node_type: :user do
       middleware GraphQl.Schema.Authenticated
       arg :name, non_null(:string)
+      arg :active, :boolean
 
       resolve &User.search_users/2
     end
@@ -175,12 +178,13 @@ defmodule GraphQl do
       resolve safe_resolver(&User.update_user/2)
     end
 
-    @desc "Deletes a user by id"
-    field :delete_user, :user do
+    @desc "Toggles user activation"
+    field :activate_user, :user do
       middleware GraphQl.Schema.Authenticated
-      arg :id, non_null(:id)
+      arg :id,     non_null(:id)
+      arg :active, :boolean
 
-      resolve safe_resolver(&User.delete_user/2)
+      resolve safe_resolver(&User.activate_user/2)
     end
 
     @desc "Creates a new conversation"

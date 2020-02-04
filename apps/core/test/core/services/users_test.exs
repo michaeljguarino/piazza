@@ -51,6 +51,26 @@ defmodule Core.Services.UsersTest do
     end
   end
 
+  describe "#activate_user/2" do
+    test "Admins can reactivate users" do
+      admin = insert(:user, roles: %{admin: true})
+      other_user = insert(:user, deleted_at: Timex.now())
+
+      {:ok, deleted} = Users.activate_user(other_user.id, admin)
+
+      refute deleted.deleted_at
+    end
+
+    test "Non admins cannot reactivate" do
+      user = insert(:user)
+      other_user = insert(:user, deleted_at: Timex.now())
+
+      {:error, _} = Users.activate_user(other_user.id, user)
+
+      assert refetch(other_user).deleted_at
+    end
+  end
+
   describe "update_user/2" do
     test "A user can update himself" do
       user = build(:user) |> with_password(@pwd)
