@@ -5,6 +5,7 @@ export const UPDATE_USER=gql`
   mutation UpdateUser($id: ID!, $attributes: UserAttributes!) {
     updateUser(id: $id, attributes: $attributes) {
       ...UserFragment
+      deletedAt
       roles {
         admin
       }
@@ -33,8 +34,8 @@ export const ME_Q=gql`
 `
 
 export const USERS_Q = gql`
-  query Users($cursor: String) {
-    users(first: 15, after: $cursor) {
+  query Users($cursor: String, $active: Boolean) {
+    users(first: 15, after: $cursor, active: $active) {
       pageInfo {
         endCursor
         hasNextPage
@@ -42,6 +43,7 @@ export const USERS_Q = gql`
       edges {
         node {
           ...UserFragment
+          deletedAt
           roles {
             admin
           }
@@ -58,6 +60,19 @@ export const USER_SUB = gql`
       delta
       payload {
         ...UserFragment
+      }
+    }
+  }
+  ${UserFragment}
+`;
+
+export const TOGGLE_ACTIVE = gql`
+  mutation Active($id: ID!, $active: Boolean!) {
+    activateUser(id: $id, active: $active) {
+      ...UserFragment
+      deletedAt
+      roles {
+        admin
       }
     }
   }

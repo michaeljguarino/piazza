@@ -39,7 +39,11 @@ export const DEFAULT_THEME = {
     }
   },
   checkBox: {
-    color: 'action'
+    color: 'action',
+    size: '20px',
+    toggle: {
+      size: '36px'
+    }
   },
   select: {
     searchInput: SearchInput
