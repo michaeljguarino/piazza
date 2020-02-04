@@ -117,8 +117,12 @@ export default function NotificationIcon({me, setCurrentConversation}) {
     }
   })
   useEffect(() => {
-    _subscribeToNewNotifications(
-      subscribeToMore, setCurrentNotification, client, updateConversations)
+    return _subscribeToNewNotifications(
+      subscribeToMore,
+      setCurrentNotification,
+      client,
+      updateConversations
+    )
   }, [])
 
   if (loading) return (
