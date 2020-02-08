@@ -23,5 +23,7 @@ admin:
   name: {{ .Values.adminName }}
   password: {{ dedupe . "piazza.admin.password" (randAlphaNum 26) }}
 
+defaultWorkspace: {{ default "general" .Values.defaultWorkspace }}
+
 ingress:
   dns: {{ .Values.piazzaDns }}

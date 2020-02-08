@@ -11,22 +11,32 @@ defmodule GraphQl do
     Invite,
     Emoji,
     Brand,
-    Plan
+    Plan,
+    Workspace
   }
   import_types GraphQl.Schema.Types
   import_types GraphQl.Schema.Inputs
 
-  def context(ctx) do
-    loader =
-      Dataloader.new()
-      |> Dataloader.add_source(Conversation, Conversation.data(ctx))
-      |> Dataloader.add_source(User, User.data(ctx))
-      |> Dataloader.add_source(Platform, Platform.data(ctx))
-      |> Dataloader.add_source(Emoji, Emoji.data(ctx))
-      |> Dataloader.add_source(Brand, Brand.data(ctx))
+  @sources [
+    Conversation,
+    User,
+    Platform,
+    Emoji,
+    Brand,
+    Workspace
+  ]
 
+  def context(ctx) do
+    loader = make_dataloader(@sources, ctx)
     Map.put(ctx, :loader, loader)
   end
+
+  defp make_dataloader(sources, ctx) do
+    Enum.reduce(sources, Dataloader.new(), fn source, loader ->
+      Dataloader.add_source(loader, source, source.data(ctx))
+    end)
+  end
+
 
   def plugins do
     [Absinthe.Middleware.Dataloader] ++ Absinthe.Plugin.defaults()
@@ -57,23 +67,32 @@ defmodule GraphQl do
       resolve &User.list_users/2
     end
 
+    connection field :workspaces, node_type: :workspace do
+      middleware GraphQl.Schema.Authenticated
+
+      resolve &Workspace.list_workspaces/2
+    end
+
     @desc "Fetches a list of public or private conversations, don't attempt to preload participants or messages plz"
     connection field :conversations, node_type: :conversation do
       middleware GraphQl.Schema.Authenticated
-      arg :public, :boolean
+      arg :public,       :boolean
+      arg :workspace_id, :id
 
       resolve &Conversation.list_conversations/2
     end
 
     connection field :chats, node_type: :conversation do
       middleware GraphQl.Schema.Authenticated
+      arg :workspace_id, :id
 
       resolve fn args, context -> Conversation.list_conversations(Map.put(args, :chat, true), context) end
     end
 
     connection field :search_conversations, node_type: :conversation do
       middleware GraphQl.Schema.Authenticated
-      arg :name, non_null(:string)
+      arg :name,         non_null(:string)
+      arg :workspace_id, :id
 
       resolve &Conversation.search_conversations/2
     end
@@ -153,6 +172,12 @@ defmodule GraphQl do
       arg :invite_token, :string
 
       resolve safe_resolver(&User.login_user/2)
+    end
+
+    field :create_workspace, :workspace do
+      arg :attributes, non_null(:workspace_attributes)
+
+      resolve safe_resolver(&Workspace.create_workspace/2)
     end
 
     field :create_invite, :invite do

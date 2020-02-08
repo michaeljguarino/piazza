@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Redirect } from 'react-router-dom'
+import { Redirect, useParams, useHistory } from 'react-router-dom'
 import { useQuery, useApolloClient } from 'react-apollo'
 import { CONTEXT_Q } from './queries'
 import { Box } from 'grommet'
@@ -10,22 +10,35 @@ import Loading from '../utils/Loading'
 import { updateConversations, subscribeToNewConversations } from '../conversation/utils'
 import { Conversations } from './MyConversations'
 
+function _findConversation({edges}, id) {
+  const conv = edges.find(({node}) => node.id === id)
+  return conv && conv.node
+}
+
+function findConversation({conversations, chats}, id) {
+  return _findConversation(conversations, id) || _findConversation(chats, id)
+}
+
 export default function AppContext({children, sideEffects}) {
   const client = useApolloClient()
-  const [currentConversation, setCurrentConversation] = useState(null)
   const [waterline, setWaterline] = useState(null)
   const {loading, data, fetchMore, subscribeToMore, error} = useQuery(CONTEXT_Q)
+  const {conversationId} = useParams()
+  let history = useHistory()
 
-  if (loading) return (<Box height='100vh'><Loading/></Box>)
+  if (loading) return <Box height='100vh'><Loading/></Box>
 
   if (error || !data || !data.me || !data.me.id) {
     wipeToken()
-    return (<Redirect to='/login'/>)
+    return <Redirect to='/login'/>
   }
+  
+  const {conversations, chats} = data
+  const current = findConversation(data, conversationId)
 
-  let current = currentConversation || data.conversations.edges[0].node
+  if (!conversationId) return <Redirect to={`/conv/${conversations.edges[0].node.id}`} />
 
-  const wrappedSetCurrentConversation = (conv) => {
+  const setCurrentConversation = (conv) => {
     if (conv) {
       updateConversations(client, (e) => e.node.id === conv.id, (e) => (
         {...e, node: {...e.node, unreadMessages: 0, unreadNotifications: 0}}
@@ -40,7 +53,7 @@ export default function AppContext({children, sideEffects}) {
     if (conv) {
       setWaterline(conv.currentParticipant && conv.currentParticipant.lastSeenAt)
     }
-    setCurrentConversation(conv)
+    history.push(`/conv/${conv.id}`)
   }
 
   subscribeToNewConversations(subscribeToMore)
@@ -50,7 +63,6 @@ export default function AppContext({children, sideEffects}) {
     current.currentParticipant &&
     current.currentParticipant.lastSeenAt
   )
-  const {conversations, chats} = data
 
   return (
     <CurrentUserContext.Provider value={data.me}>
@@ -60,9 +72,9 @@ export default function AppContext({children, sideEffects}) {
           fetchMore,
           conversations,
           chats,
+          setCurrentConversation,
           waterline: waterline || lastSeenAt,
-          currentConversation: current,
-          setCurrentConversation: wrappedSetCurrentConversation
+          currentConversation: current
         }}>
           {children}
         </Conversations.Provider>

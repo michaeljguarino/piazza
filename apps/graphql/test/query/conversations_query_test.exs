@@ -196,6 +196,31 @@ defmodule GraphQl.ConversationQueryTest do
       assert ids_equal(conversations, expected)
     end
 
+    test "It can filter by workspace if specified" do
+      user = insert(:user)
+      workspace = insert(:workspace)
+      conversations = insert_list(3, :conversation, workspace: workspace)
+      expected = Enum.sort_by(conversations, & &1.name) |> Enum.take(2)
+      for conv <- expected,
+        do: insert(:participant, user: user, conversation: conv)
+      insert_list(2, :participant, user: user)
+
+      {:ok, %{data: %{"conversations" => found}}} = run_q("""
+        query Conversations($id: ID) {
+          conversations(workspaceId: $id, first: 5) {
+            edges {
+              node {
+                id
+              }
+            }
+          }
+        }
+      """, %{"id" => workspace.id}, %{current_user: user})
+
+      assert from_connection(found)
+             |> ids_equal(expected)
+    end
+
     test "It will list only public conversations if specified" do
       user = insert(:user)
       expected = insert_list(3, :conversation)
@@ -363,7 +388,7 @@ defmodule GraphQl.ConversationQueryTest do
 
   describe "searchConversations" do
     test "A user can search accessible conversations" do
-      user = insert(:user)
+      user    = insert(:user)
       public  = insert(:conversation, name: "conv1")
       ignored = insert(:conversation, name: "conv2", public: false)
       private = insert(:conversation, name: "conv3", public: false)
@@ -392,6 +417,29 @@ defmodule GraphQl.ConversationQueryTest do
       assert conversations[private.id]["name"]
       refute conversations[ignored.id]
       refute conversations[miss.id]
+    end
+
+    test "It can filter by workspace" do
+      user      = insert(:user)
+      workspace = insert(:workspace)
+      first     = insert(:conversation, name: "conv1", workspace: workspace)
+      second    = insert(:conversation, name: "conv2", workspace: workspace)
+      insert(:conversation, name: "conv3")
+
+      {:ok, %{data: %{"searchConversations" => found}}} = run_q("""
+        query Search($id: ID) {
+          searchConversations(workspaceId: $id, name: "conv", first: 5) {
+            edges {
+              node {
+                id
+              }
+            }
+          }
+        }
+      """, %{"id" => workspace.id}, %{current_user: user})
+
+      assert from_connection(found)
+             |> ids_equal([first, second])
     end
   end
 end

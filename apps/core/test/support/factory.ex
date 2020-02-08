@@ -1,6 +1,5 @@
 defmodule Core.Factory do
   use ExMachina.Ecto, repo: Core.Repo
-
   alias Core.Models
 
   def user_factory() do
@@ -13,7 +12,8 @@ defmodule Core.Factory do
 
   def conversation_factory() do
     %Models.Conversation{
-      name: sequence(:conversation, &"conversation-#{&1}")
+      name: sequence(:conversation, &"conversation-#{&1}"),
+      workspace: build(:workspace)
     }
   end
 
@@ -166,6 +166,12 @@ defmodule Core.Factory do
       secure_id: sequence(:reset_tokens, & "some-id-#{&1}"),
       type: :password,
       user: build(:user)
+    }
+  end
+
+  def workspace_factory do
+    %Models.Workspace{
+      name: sequence(:workspace, & "workspace-#{&1}")
     }
   end
 end

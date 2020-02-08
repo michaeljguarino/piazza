@@ -113,14 +113,20 @@ defmodule GraphQl.Resolvers.Conversation do
   def list_conversations(args, %{context: context}) do
     query(:conversation, Map.merge(args, context))
     |> Conversation.ordered()
+    |> filter_workspace(args)
     |> paginate(args)
   end
 
   def search_conversations(%{name: name} = args, %{context: %{current_user: user}}) do
     Conversation.accessible(user.id)
     |> Conversation.search(name)
+    |> filter_workspace(args)
     |> paginate(args)
   end
+
+  def filter_workspace(query, %{workspace_id: id}),
+    do: Conversation.for_workspace(query, id)
+  def filter_workspace(query, _), do: query
 
   def list_messages(args, %{source: conversation}) do
     Message.for_conversation(conversation.id)

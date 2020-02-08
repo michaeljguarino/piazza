@@ -21,6 +21,11 @@ defmodule GraphQl.Schema.Inputs do
     field :admin, :boolean
   end
 
+  input_object :workspace_attributes do
+    field :name,        :string
+    field :description, :string
+  end
+
   input_object :conversation_attributes do
     field :public,   :boolean
     field :name,     :string

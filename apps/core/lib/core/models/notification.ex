@@ -1,6 +1,6 @@
 defmodule Core.Models.Notification do
   use Piazza.Ecto.Schema
-  alias Core.Models.{User, Message}
+  alias Core.Models.{User, Message, Workspace}
 
   defenum Type, mention: 0, message: 1
 
@@ -8,9 +8,10 @@ defmodule Core.Models.Notification do
     field :type, Type
     field :seen_at, :utc_datetime_usec
 
-    belongs_to :user,  User
-    belongs_to :actor, User
-    belongs_to :message, Message
+    belongs_to :user,      User
+    belongs_to :actor,     User
+    belongs_to :message,   Message
+    belongs_to :workspace, Workspace
 
     timestamps()
   end
@@ -45,5 +46,6 @@ defmodule Core.Models.Notification do
     |> foreign_key_constraint(:user_id)
     |> foreign_key_constraint(:actor_id)
     |> foreign_key_constraint(:message_id)
+    |> foreign_key_constraint(:workspace_id)
   end
 end

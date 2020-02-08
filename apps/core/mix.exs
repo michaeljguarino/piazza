@@ -68,7 +68,7 @@ defmodule Core.MixProject do
       {:piazza_core, "~> 0.2.4"},
       {:parallax, "~> 1.0"},
       {:poison, "~> 3.1"},
-      {:cachex, "~> 3.2"},
+      {:nebulex, "~> 1.1"},
       {:libring, "~> 1.0"},
       {:csv, "~> 2.3"},
       {:grpc, github: "elixir-grpc/grpc"},

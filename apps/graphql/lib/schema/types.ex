@@ -1,10 +1,25 @@
 defmodule GraphQl.Schema.Types do
   use GraphQl.Schema.Base
-  alias GraphQl.Resolvers.{Conversation, User, Platform, Emoji, Brand}
+  alias GraphQl.Resolvers.{
+    Conversation,
+    User,
+    Platform,
+    Emoji,
+    Brand,
+    Workspace
+  }
   import GraphQl.Schema.Helpers, only: [manual_dataloader: 4]
 
+  object :workspace do
+    field :id,          non_null(:id)
+    field :name,        non_null(:string)
+    field :description, :string
+
+    timestamps()
+  end
+
   object :user do
-    field :id,         :id
+    field :id,         non_null(:id)
     field :name,       non_null(:string)
     field :handle,     non_null(:string)
     field :email,      non_null(:string)
@@ -59,6 +74,7 @@ defmodule GraphQl.Schema.Types do
     field :archived_at,         :datetime
     field :creator,             :user, resolve: dataloader(User)
     field :current_participant, :participant, resolve: dataloader(Conversation)
+    field :workspace,           :workspace, resolve: dataloader(Workspace)
 
     field :pinned_message_count, :integer do
       resolve fn conversation, _, %{context: %{loader: loader}} ->
@@ -328,6 +344,7 @@ defmodule GraphQl.Schema.Types do
     field :admin, :boolean
   end
 
+  connection node_type: :workspace
   connection node_type: :conversation
   connection node_type: :user
   connection node_type: :message

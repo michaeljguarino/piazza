@@ -5,8 +5,10 @@ defmodule Core.Models.Conversation do
     Message,
     User,
     Notification,
-    PinnedMessage
+    PinnedMessage,
+    Workspace
   }
+  alias Core.Services.Workspaces
 
   schema "conversations" do
     field :name,            :string
@@ -22,7 +24,8 @@ defmodule Core.Models.Conversation do
     has_many :participants,        Participant
     has_many :messages,            Message
 
-    belongs_to :creator, User
+    belongs_to :creator,   User
+    belongs_to :workspace, Workspace
 
     timestamps()
   end
@@ -33,10 +36,16 @@ defmodule Core.Models.Conversation do
 
   def chat(query \\ __MODULE__), do: from(c in query, where: c.chat)
 
-  def for_user(query \\ any(), user_id) do
+  def for_user(query \\ __MODULE__, user_id) do
     from(c in query,
       join: p in ^Participant.for_user(user_id),
         on: p.conversation_id == c.id
+    )
+  end
+
+  def for_workspace(query \\ __MODULE__, workspace_id) do
+    from(c in query,
+      where: c.workspace_id == ^workspace_id
     )
   end
 
@@ -128,8 +137,10 @@ defmodule Core.Models.Conversation do
     model
     |> cast(attrs, @valid)
     |> mod_archived(attrs)
+    |> put_new_change(:workspace_id, &Workspaces.default_id/0)
     |> validate_required([:name, :public])
     |> validate_length(:name, max: 255)
+    |> foreign_key_constraint(:workspace_id)
     |> unique_constraint(:name)
     |> unique_constraint(:chat_dedupe_key)
   end

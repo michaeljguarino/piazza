@@ -45,7 +45,7 @@ export default function StructuredMessageTester() {
   let history = useHistory()
   return (
     <Box>
-      <ModalHeader big text='Structured Message Developer' setOpen={() => history.push("/")} />
+      <ModalHeader big text='Structured Message Developer' setOpen={() => history.goBack()} />
       <Box style={{maxHeight: '80vh', minWidth: '60vw'}} pad='medium' gap='medium'>
         <Box direction='row' gap='medium' fill='horizontal'>
           <Box width='60%' border>

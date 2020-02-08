@@ -123,12 +123,22 @@ config :rtc,  :start_client, true
 config :gql,  :start_thrift_server, false
 config :rtc,  :start_thrift_server, true
 config :core, :start_rtc_client, false
+config :core, :default_workspace, "general"
 
 config :joken, invite_secret: "super_secret"
 config :gql,   github_secret: "super super secret"
 config :gql,   github_incoming_webhook: "https://dummy.webhook"
 
 config :grpc, start_server: true
+
+config :core, Core.Cache.Local,
+  gc_interval: 86_400,
+  allocated_memory: 1_000_000,
+  gc_cleanup_interval: 100
+
+config :core, Core.Cache,
+  local: Core.Cache.Local,
+  node_selector: Nebulex.Adapters.Dist
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.

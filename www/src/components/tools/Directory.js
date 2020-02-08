@@ -103,7 +103,7 @@ export default function Directory() {
 
   return (
     <Box height='100vh'>
-      <ModalHeader big text='Directory' setOpen={() => history.push('/')} />
+      <ModalHeader big text='Directory' setOpen={() => history.goBack()} />
       <Box pad={{horizontal: 'medium', vertical: 'small'}} gap='small' height='100%'>
         <Box direction='row' fill='horizontal' align='center' border='bottom' pad='small'>
           <Box fill='horizontal'>

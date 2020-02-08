@@ -212,7 +212,7 @@ defmodule Core.Services.Conversations do
     Participant.for_conversation(conversation_id)
     |> Participant.preload([:user])
     |> Participant.ordered()
-    |> Core.Cache.list_cache(:participants, conversation_id)
+    |> Core.Cache.list_cache({:participants, conversation_id})
   end
 
   @doc """

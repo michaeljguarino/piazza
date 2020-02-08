@@ -16,14 +16,15 @@ defmodule Core.PubSub.Consumers.Notifications do
   def handle_event(event) do
     with {:ok, event} <- Notifiable.preload(event),
          [_ | _] = notifs <- Notifiable.notifs(event) do
-      msg   = Notifiable.message(event)
+      msg   = Notifiable.message(event) |> Core.Repo.preload([:conversation])
       actor = Notifiable.actor(event)
       data  = Enum.map(notifs, fn {type, user_id} ->
         timestamped(%{
           user_id: user_id,
           type: type,
           actor_id: actor.id,
-          message_id: msg.id
+          message_id: msg.id,
+          workspace_id: msg.conversation.workspace_id
         })
       end)
 

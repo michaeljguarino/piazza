@@ -2,15 +2,15 @@ defmodule Core.Application do
   @moduledoc false
   use Application
   alias Core.Services.License
-  import Cachex.Spec
   import Supervisor.Spec
 
   def start(_type, _args) do
     children = [
       Core.Repo,
       Core.PubSub.Broadcaster,
+      Core.Cache.Local,
+      Core.Cache,
       worker(Piazza.Crypto.License, [conf(:license), conf(:public_key), &License.invalid/1, &License.validate/1]),
-      worker(Cachex, [:participants, [expiration: expiration(default: :timer.minutes(20))]]),
       worker(Core.RtcClient, [])
     ] ++ conf(:consumers, [])
       ++ broker()

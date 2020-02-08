@@ -1,6 +1,6 @@
 defmodule Core.Services.ConversationsTest do
   use Core.DataCase, async: true
-  alias Core.Services.Conversations
+  alias Core.Services.{Conversations, Workspaces}
   alias Core.PubSub
 
   describe "create_conversation/2" do
@@ -10,6 +10,7 @@ defmodule Core.Services.ConversationsTest do
 
       assert conv.name == "my conversation"
       assert conv.creator_id == user.id
+      assert conv.workspace_id == Workspaces.default_id()
 
       assert Conversations.get_participant(user.id, conv.id)
 
@@ -19,11 +20,12 @@ defmodule Core.Services.ConversationsTest do
 
   describe "#create_chat/2" do
     test "A user can create a chat with another user" do
-      user = insert(:user)
+      user       = insert(:user)
       other_user = insert(:user)
 
       {:ok, conv} = Conversations.create_chat(other_user.id, user)
 
+      assert conv.workspace_id == Workspaces.default_id()
       refute conv.public
       assert Conversations.get_participant(other_user.id, conv.id).notification_preferences.message
       assert Conversations.get_participant(user.id, conv.id).notification_preferences.message
