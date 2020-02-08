@@ -28,7 +28,7 @@ function CreateChat(props) {
       color={hover ? 'focus' : 'dark-5'}
       style={{cursor: 'pointer'}}
       onClick={mutation}
-      size='15px' />
+      size='12px' />
   )
 }
 

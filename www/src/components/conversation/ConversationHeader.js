@@ -229,9 +229,11 @@ export default function ConversationHeader({setAnchor}) {
         </Box>
       </Box>
       <MessageSearch conversation={currentConversation} setAnchor={setAnchor} />
-      <UserIcon />
-      <Commands />
-      <NotificationIcon me={me} conversation={currentConversation} />
+      <Box direction='row' align='center' flex={false}>
+        <UserIcon />
+        <Commands />
+        <NotificationIcon me={me} conversation={currentConversation} />
+      </Box>
     </Box>
   )
 }
