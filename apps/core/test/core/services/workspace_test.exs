@@ -1,13 +1,15 @@
 defmodule Core.Services.WorkspaceTest do
   use Core.DataCase, async: true
-  alias Core.Services.Workspaces
+  alias Core.Services.{Workspaces, Conversations}
 
   describe "create" do
     test "Admins can create new workspaces" do
       admin = insert(:user, roles: %{admin: true})
-      {:ok, wkspace} = Workspaces.create(%{name: "general"}, admin)
+      {:ok, workspace} = Workspaces.create(%{name: "general"}, admin)
 
-      assert wkspace.name == "general"
+      assert workspace.name == "general"
+      conv = Conversations.get_conversation_by_name!("general")
+      assert conv.workspace_id == workspace.id
     end
 
     test "non admins cannot create" do

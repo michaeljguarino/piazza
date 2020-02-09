@@ -30,7 +30,7 @@ defmodule Core.Models.Conversation do
     timestamps()
   end
 
-  @valid ~w(name public global topic chat chat_dedupe_key archived_at)a
+  @valid ~w(name public global topic chat chat_dedupe_key archived_at workspace_id)a
 
   def nonchat(query \\ __MODULE__), do: from(c in query, where: not c.chat)
 

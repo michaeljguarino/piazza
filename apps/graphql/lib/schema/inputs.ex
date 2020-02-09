@@ -27,11 +27,12 @@ defmodule GraphQl.Schema.Inputs do
   end
 
   input_object :conversation_attributes do
-    field :public,   :boolean
-    field :name,     :string
-    field :topic,    :string
-    field :global,   :boolean
-    field :archived, :boolean
+    field :public,       :boolean
+    field :name,         :string
+    field :topic,        :string
+    field :global,       :boolean
+    field :archived,     :boolean
+    field :workspace_id, :id
   end
 
   input_object :message_attributes do

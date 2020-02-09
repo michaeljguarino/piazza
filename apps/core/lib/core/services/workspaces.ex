@@ -42,10 +42,21 @@ defmodule Core.Services.Workspaces do
   """
   @spec create(map, User.t) :: workspace_resp
   def create(args, user) do
-    %Workspace{}
-    |> Workspace.changeset(args)
-    |> allow(user, :create)
-    |> when_ok(:insert)
+    start_transaction()
+    |> add_operation(:workspace, fn _ ->
+      %Workspace{}
+      |> Workspace.changeset(args)
+      |> allow(user, :create)
+      |> when_ok(:insert)
+    end)
+    |> add_operation(:conversation, fn %{workspace: %{id: wk_id, name: name}} ->
+      Core.Services.Conversations.create_conversation(%{
+        name: name,
+        public: true,
+        workspace_id: wk_id
+      }, user)
+    end)
+    |> execute(extract: :workspace)
   end
 
   @doc """
