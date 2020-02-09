@@ -38,6 +38,15 @@ export const THEME_Q = gql`
   ${ThemeFragment}
 `;
 
+export const UPDATE_WORKSPACE = gql`
+  mutation UpdateWorkspace($id: ID!, $attributes: WorkspaceAttributes!) {
+    updateWorkspace(id: $id, attributes: $attributes) {
+      ...WorkspaceFragment
+    }
+  }
+  ${WorkspaceFragment}
+`;
+
 export const SET_THEME = gql`
   mutation SetTheme($id: ID!) {
     setTheme(id: $id) {

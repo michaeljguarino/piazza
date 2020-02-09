@@ -30,7 +30,6 @@ export default function AppContext({children, sideEffects}) {
   const [waterline, setWaterline] = useState(null)
   const {conversationId, workspace} = useParams()
   const workspaceId = workspace || workspaces[0].id
-  console.log(workspaceId)
 
   const {loading, data, fetchMore, subscribeToMore, error} = useQuery(CONTEXT_Q, {
     variables: {workspaceId}

@@ -14,13 +14,10 @@ import { NOTIF_SOUND } from './constants'
 import { CONTEXT_Q } from '../login/queries'
 import { Conversations } from '../login/MyConversations'
 
-function incrNotifications(client, incr) {
-  const {me, ...rest} = client.readQuery({ query: CONTEXT_Q })
-  client.writeQuery({query: CONTEXT_Q, data: {
-    ...rest, me: {
-      ...me,
-      unseenNotifications: me.unseenNotifications + incr
-    }
+function incrNotifications(client, incr, workspaceId) {
+  const {me, ...rest} = client.readQuery({ query: CONTEXT_Q, variables: {workspaceId} })
+  client.writeQuery({query: CONTEXT_Q, variables: {workspaceId}, data: {
+    ...rest, me: {...me, unseenNotifications: me.unseenNotifications + incr}
   }})
 }
 
@@ -38,7 +35,7 @@ function _subscribeToNewNotifications(subscribeToMore, setCurrentNotification, c
         ({node}) => node.id === newNotification.message.conversation.id,
         (e) => ({...e, node: {...e.node, unreadNotifications: e.node.unreadNotifications + 1}})
       )
-      incrNotifications(client, 1)
+      incrNotifications(client, 1, workspaceId)
 
       let newNotificationNode = {node: newNotification, __typename: "NotificationEdge"}
       return Object.assign({}, prev, {
@@ -116,10 +113,12 @@ export default function NotificationIcon({me, setCurrentConversation}) {
         query: NOTIFICATIONS_Q,
         data: {notifications: {...notifications, edges: []}}
       })
-      updateConversations(cache, workspaceId, () => true, (e) => ({...e, node: {...e.node, unreadNotifications: 0}}))
-      incrNotifications(cache, -unseen)
+      updateConversations(
+        cache, workspaceId, () => true, (e) => ({...e, node: {...e.node, unreadNotifications: 0}}))
+      incrNotifications(cache, -unseen, workspaceId)
     }
   })
+
   useEffect(() => {
     return _subscribeToNewNotifications(
       subscribeToMore,

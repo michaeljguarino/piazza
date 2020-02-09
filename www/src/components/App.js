@@ -18,9 +18,10 @@ export default function App() {
     {theme => (
       <Grommet theme={theme}>
         <Switch>
-          <Route exact path="/" component={Piazza} />
           <Route exact path="/login" component={Login} />
           <Route exact path='/directory' component={Directory} />
+          <Route exact path="/" component={Piazza} />
+          <Route exact path='/wk/:workspace' component={Piazza} />
           <Route path='/wk/:workspace/:conversationId' component={Piazza} />
           <Route path="/invite/:inviteToken" component={Login} />
           <Route path="/messageeditor" component={StructuredMessageTester} />
