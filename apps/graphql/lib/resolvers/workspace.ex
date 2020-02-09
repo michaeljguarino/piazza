@@ -7,6 +7,9 @@ defmodule GraphQl.Resolvers.Workspace do
   def create_workspace(%{attributes: attrs}, %{context: %{current_user: user}}),
     do: Workspaces.create(attrs, user)
 
+  def update_workspace(%{attributes: attrs, id: id}, %{context: %{current_user: user}}),
+    do: Workspaces.update(attrs, id, user)
+
   def list_workspaces(args, %{context: %{current_user: user}}) do
     Workspace.for_user(user.id)
     |> Workspace.ordered()

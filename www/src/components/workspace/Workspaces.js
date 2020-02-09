@@ -9,6 +9,7 @@ function Workspace({workspace}) {
   const [hover, setHover] = useState(false)
   return (
     <Box
+      style={{cursor: 'pointer'}}
       pad='small'
       background={hover ? 'light-3' : null}
       onMouseEnter={() => setHover(true)}
@@ -20,10 +21,10 @@ function Workspace({workspace}) {
 }
 
 
-function WorkspaceDropdown({dropRef, workspaces}) {
+function WorkspaceDropdown({dropRef, workspaces, setOpen}) {
   console.log(workspaces)
   return (
-    <Drop target={dropRef.current} align={{bottom: 'top'}}>
+    <Drop target={dropRef.current} align={{bottom: 'top'}} onClickOutside={() => setOpen(false)}>
       <Box pad={{vertical: 'small'}}>
         {workspaces.map((workspace) => <Workspace key={workspace.id} workspace={workspace} />)}
       </Box>
@@ -42,7 +43,7 @@ export default function Workspaces({pad}) {
 
   return (
     <>
-    {open && <WorkspaceDropdown dropRef={dropRef} workspaces={workspaces} />}
+    {open && <WorkspaceDropdown dropRef={dropRef} workspaces={workspaces} setOpen={setOpen} />}
     <HoveredBackground>
       <Box
         ref={dropRef}

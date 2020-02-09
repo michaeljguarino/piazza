@@ -21,7 +21,7 @@ function findConversation({conversations, chats}, id) {
 }
 
 function conversationUrl({id}, workspaceId) {
-  return `/${workspaceId}/conv/${id}`
+  return `/wk/${workspaceId}/${id}`
 }
 
 export default function AppContext({children, sideEffects}) {
@@ -30,6 +30,7 @@ export default function AppContext({children, sideEffects}) {
   const [waterline, setWaterline] = useState(null)
   const {conversationId, workspace} = useParams()
   const workspaceId = workspace || workspaces[0].id
+  console.log(workspaceId)
 
   const {loading, data, fetchMore, subscribeToMore, error} = useQuery(CONTEXT_Q, {
     variables: {workspaceId}
@@ -45,13 +46,13 @@ export default function AppContext({children, sideEffects}) {
   }
 
   const {conversations, chats} = data
-  const current = findConversation(data, conversationId)
+  const current = findConversation(data, conversationId) || conversations.edges[0].node
 
-  if (!conversationId) return <Redirect to={conversationUrl(conversations.edges[0].node, workspaceId)} />
+  if (!conversationId) return <Redirect to={conversationUrl(current, workspaceId)} />
 
   const setCurrentConversation = (conv) => {
     if (conv) {
-      updateConversations(client, (e) => e.node.id === conv.id, (e) => (
+      updateConversations(client, workspaceId, (e) => e.node.id === conv.id, (e) => (
         {...e, node: {...e.node, unreadMessages: 0, unreadNotifications: 0}}
       ))
     }

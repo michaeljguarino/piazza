@@ -21,12 +21,13 @@ export function updateUnreadMessages(client, conversationId, update) {
   )
 }
 
-export function updateConversations(client, selector, update) {
-  const {conversations, chats, ...rest} = client.readQuery({ query: CONTEXT_Q })
+export function updateConversations(client, workspaceId, selector, update) {
+  const {conversations, chats, ...rest} = client.readQuery({ query: CONTEXT_Q, variables: {workspaceId} })
   const updater = (e) => selector(e) ? update(e) : e
 
   client.writeQuery({
     query: CONTEXT_Q,
+    variables: {workspaceId},
     data: {
       ...rest,
       conversations: {

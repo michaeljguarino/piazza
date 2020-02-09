@@ -27,7 +27,7 @@ function MyConversations(props) {
 
   const wrappedSetCurrentConversation = (conv) => {
     if (conv) {
-      updateConversations(client, (e) => e.node.id === conv.id, (e) => (
+      updateConversations(client, null, (e) => e.node.id === conv.id, (e) => (
         {...e, node: {...e.node, unreadMessages: 0, unreadNotifications: 0}}
       ))
     }

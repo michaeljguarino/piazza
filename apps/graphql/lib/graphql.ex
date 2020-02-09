@@ -180,6 +180,13 @@ defmodule GraphQl do
       resolve safe_resolver(&Workspace.create_workspace/2)
     end
 
+    field :update_workspace, :workspace do
+      arg :attributes, non_null(:workspace_attributes)
+      arg :id, non_null(:id)
+
+      resolve safe_resolver(&Workspace.update_workspace/2)
+    end
+
     field :create_invite, :invite do
       arg :attributes, non_null(:invite_attributes)
 

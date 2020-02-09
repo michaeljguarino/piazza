@@ -23,4 +23,22 @@ defmodule GraphQl.WorkspaceMutationsTest do
       assert workspace["description"] == "a description"
     end
   end
+
+  describe "updateWorkspace" do
+    test "Admins can update a workspace" do
+      admin = insert(:user, roles: %{admin: true})
+      workspace = insert(:workspace)
+
+      {:ok, %{data: %{"updateWorkspace" => updated}}} = run_q("""
+        mutation UpdateWorkspace($id: ID!, $description: String) {
+          updateWorkspace(id: $id, attributes: {description: $description}) {
+            id
+            description
+          }
+        }
+      """, %{"id" => workspace.id, "description" => "description"}, %{current_user: admin})
+
+      assert updated["description"] == "description"
+    end
+  end
 end

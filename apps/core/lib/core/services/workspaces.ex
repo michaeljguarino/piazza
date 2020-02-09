@@ -6,6 +6,9 @@ defmodule Core.Services.Workspaces do
 
   @type workspace_resp :: {:ok, Workspace.t} | {:error, term}
 
+  @spec get!(binary) :: Workspace.t
+  def get!(id), do: Core.Repo.get!(Workspace, id)
+
   @doc """
   Fetches a workspace by name (with read-through caching)
   """
@@ -57,6 +60,17 @@ defmodule Core.Services.Workspaces do
       }, user)
     end)
     |> execute(extract: :workspace)
+  end
+
+  @doc """
+  Updates a workspace
+  """
+  @spec update(map, binary, User.t) :: workspace_resp
+  def update(args, id, user) do
+    get!(id)
+    |> Workspace.changeset(args)
+    |> allow(user, :update)
+    |> when_ok(:update)
   end
 
   @doc """

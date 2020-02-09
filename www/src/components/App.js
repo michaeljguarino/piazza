@@ -21,7 +21,7 @@ export default function App() {
           <Route exact path="/" component={Piazza} />
           <Route exact path="/login" component={Login} />
           <Route exact path='/directory' component={Directory} />
-          <Route path='/:workspace/conv/:conversationId' component={Piazza} />
+          <Route path='/wk/:workspace/:conversationId' component={Piazza} />
           <Route path="/invite/:inviteToken" component={Login} />
           <Route path="/messageeditor" component={StructuredMessageTester} />
           <Route path='/reset-password/:token' component={ChangePassword} />

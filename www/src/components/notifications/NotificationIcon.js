@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, useContext } from 'react'
 import { Box, Stack, Text } from 'grommet'
 import { useQuery, useMutation, useApolloClient } from 'react-apollo'
 import { Notification } from 'grommet-icons'
@@ -12,6 +12,7 @@ import { conversationNameString } from '../conversation/Conversation'
 import { ICON_HEIGHT, ICON_SPREAD } from '../Piazza'
 import { NOTIF_SOUND } from './constants'
 import { CONTEXT_Q } from '../login/queries'
+import { Conversations } from '../login/MyConversations'
 
 function incrNotifications(client, incr) {
   const {me, ...rest} = client.readQuery({ query: CONTEXT_Q })
@@ -23,7 +24,7 @@ function incrNotifications(client, incr) {
   }})
 }
 
-function _subscribeToNewNotifications(subscribeToMore, setCurrentNotification, client, updateConversations) {
+function _subscribeToNewNotifications(subscribeToMore, setCurrentNotification, client, updateConversations, workspaceId) {
   return subscribeToMore({
     document: NEW_NOTIFICATIONS_SUB,
     updateQuery: (prev, { subscriptionData }) => {
@@ -33,6 +34,7 @@ function _subscribeToNewNotifications(subscribeToMore, setCurrentNotification, c
       setCurrentNotification(newNotification)
       updateConversations(
         client,
+        workspaceId,
         ({node}) => node.id === newNotification.message.conversation.id,
         (e) => ({...e, node: {...e.node, unreadNotifications: e.node.unreadNotifications + 1}})
       )
@@ -104,6 +106,8 @@ export default function NotificationIcon({me, setCurrentConversation}) {
   const client = useApolloClient()
   const [currentNotification, setCurrentNotification] = useState(introduction())
   const {data, loading, fetchMore, subscribeToMore} = useQuery(NOTIFICATIONS_Q)
+  const {workspaceId} = useContext(Conversations)
+
   const unseen = me.unseenNotifications || 0
   const [mutation] = useMutation(VIEW_NOTIFICATIONS, {
     update: (cache, {data: {viewNotifications}}) => {
@@ -112,7 +116,7 @@ export default function NotificationIcon({me, setCurrentConversation}) {
         query: NOTIFICATIONS_Q,
         data: {notifications: {...notifications, edges: []}}
       })
-      updateConversations(cache, () => true, (e) => ({...e, node: {...e.node, unreadNotifications: 0}}))
+      updateConversations(cache, workspaceId, () => true, (e) => ({...e, node: {...e.node, unreadNotifications: 0}}))
       incrNotifications(cache, -unseen)
     }
   })
@@ -121,7 +125,8 @@ export default function NotificationIcon({me, setCurrentConversation}) {
       subscribeToMore,
       setCurrentNotification,
       client,
-      updateConversations
+      updateConversations,
+      workspaceId
     )
   }, [])
 

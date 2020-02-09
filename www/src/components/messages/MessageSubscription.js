@@ -6,14 +6,14 @@ import { applyNewMessage, updateMessage, removeMessage } from './utils'
 import { CurrentUserContext } from '../login/EnsureLogin'
 import { Conversations } from '../login/MyConversations'
 
-function applyDelta({client, subscriptionData}, currentConversation, me) {
+function applyDelta({client, subscriptionData}, currentConversation, workspaceId, me) {
   if (!subscriptionData.data) return
   const messageDelta = subscriptionData.data.messageDelta
   const message = messageDelta.payload
   const convId = message.conversationId
 
   if (convId !== currentConversation.id) {
-    updateConversations(client, (e) => e.node.id === convId, (e) => (
+    updateConversations(client, workspaceId, (e) => e.node.id === convId, (e) => (
       {...e, node: {...e.node, unreadMessages: e.node.unreadMessages + 1}}
     ))
   }
@@ -45,11 +45,11 @@ function applyDelta({client, subscriptionData}, currentConversation, me) {
 
 function MessageSubscription({children}) {
   const me = useContext(CurrentUserContext)
-  const {currentConversation} = useContext(Conversations)
+  const {currentConversation, workspaceId} = useContext(Conversations)
 
   return (
     <Subscription subscription={MESSAGES_SUB} onSubscriptionData={(data) =>
-      applyDelta(data, currentConversation, me)
+      applyDelta(data, currentConversation, workspaceId, me)
     }>
     {() => children}
     </Subscription>
