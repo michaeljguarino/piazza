@@ -1,14 +1,14 @@
-import React, {useState} from 'react'
-import {useMutation} from 'react-apollo'
-import {Box, Text, TextInput} from 'grommet'
-import {THEME_FIELDS, SLACK_THEME_FIELDS, LINK_DEFAULT, BUTTON_DEFAULT} from './constants'
+import React, { useState } from 'react'
+import { useMutation } from 'react-apollo'
+import { Box, Text, TextInput } from 'grommet'
+import { THEME_FIELDS, SLACK_THEME_FIELDS, LINK_DEFAULT, BUTTON_DEFAULT } from './constants'
 import Button, {SecondaryButton} from '../utils/Button'
 import InputField from '../utils/InputField'
-import {chunk} from '../../utils/array'
-import {ThemeContext} from '../Theme'
-import {ChromePicker} from 'react-color'
-import {addTheme} from './utils'
-import {CREATE_THEME, THEME_Q} from './queries'
+import { chunk } from '../../utils/array'
+import { ThemeContext } from '../Workspace'
+import { ChromePicker } from 'react-color'
+import { addTheme } from './utils'
+import { CREATE_THEME, THEME_Q } from './queries'
 
 function ThemePicker({field, active, color, onChange}) {
   const [hover, setHover] = useState(false)

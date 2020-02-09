@@ -5,7 +5,7 @@ import { ConversationFragment } from '../models/conversations';
 
 
 export const CONTEXT_Q = gql`
-  query Context($cursor: String, $chatCursor: String) {
+  query Context($workspaceId: ID, $cursor: String, $chatCursor: String) {
     me {
       ...UserFragment
       notificationPreferences {
@@ -26,7 +26,7 @@ export const CONTEXT_Q = gql`
         }
       }
     }
-    conversations(first: 20, after: $cursor) {
+    conversations(workspaceId: $workspaceId, first: 20, after: $cursor) {
       pageInfo {
         hasNextPage
         endCursor

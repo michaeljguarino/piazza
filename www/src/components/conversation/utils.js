@@ -41,7 +41,7 @@ export function updateConversations(client, selector, update) {
   })
 }
 
-export function subscribeToNewConversations(subscribeToMore) {
+export function subscribeToNewConversations(subscribeToMore, workspaceId) {
   return subscribeToMore({
     document: CONVERSATIONS_SUB,
     updateQuery: (prev, { subscriptionData }) => {
@@ -50,7 +50,7 @@ export function subscribeToNewConversations(subscribeToMore) {
       const participant = participantDelta.payload
       switch(participantDelta.delta) {
         case "CREATE":
-          return addConversation(prev, participant.conversation)
+          return addConversation(prev, participant.conversation, workspaceId)
         case "DELETE":
           return removeConversation(prev, participant.conversation)
         case "UPDATE":
@@ -62,7 +62,9 @@ export function subscribeToNewConversations(subscribeToMore) {
   })
 }
 
-export function addConversation(prev, conv) {
+export function addConversation(prev, conv, workspaceId) {
+  if (workspaceId && conv.workspace.id !== workspaceId) return prev
+
   let scope = conv.chat ? prev.chats : prev.conversations
   if (scope.edges.find((e) => e.node.id === conv.id)) return prev
 

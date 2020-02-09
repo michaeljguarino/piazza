@@ -20,3 +20,11 @@ export const ThemeFragment = gql`
     link
   }
 `;
+
+export const WorkspaceFragment = gql`
+  fragment WorkspaceFragment on Workspace {
+    id
+    name
+    description
+  }
+`;

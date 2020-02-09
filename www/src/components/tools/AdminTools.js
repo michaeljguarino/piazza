@@ -5,7 +5,7 @@ import { DropdownItem } from '../users/Me'
 import { download } from '../../utils/file'
 import { apiHost, secure } from '../../helpers/hostname'
 import { Download, Iteration, Group } from 'grommet-icons'
-import ThemeSelector from '../themes/ThemeSelector'
+import ThemeSelector from '../workspace/ThemeSelector'
 import Modal, { ModalHeader } from '../utils/Modal'
 
 const HOST_PREFIX = `${secure() ? 'https' : 'http'}://${apiHost()}`

@@ -2,7 +2,7 @@ import React from 'react';
 import { Switch, Route } from 'react-router-dom';
 import Piazza from './Piazza'
 import { Grommet } from 'grommet';
-import Theme from './Theme'
+import Workspace from './Workspace'
 import Login from './Login'
 import StructuredMessageTester from './tools/StructuredMessageTester'
 import { ResetPassword, ChangePassword } from './ResetPassword';
@@ -14,14 +14,14 @@ import '../styles/App.css';
 
 export default function App() {
   return (
-    <Theme>
+    <Workspace>
     {theme => (
       <Grommet theme={theme}>
         <Switch>
           <Route exact path="/" component={Piazza} />
           <Route exact path="/login" component={Login} />
           <Route exact path='/directory' component={Directory} />
-          <Route path='/conv/:conversationId' component={Piazza} />
+          <Route path='/:workspace/conv/:conversationId' component={Piazza} />
           <Route path="/invite/:inviteToken" component={Login} />
           <Route path="/messageeditor" component={StructuredMessageTester} />
           <Route path='/reset-password/:token' component={ChangePassword} />
@@ -29,6 +29,6 @@ export default function App() {
         </Switch>
       </Grommet>
     )}
-    </Theme>
+    </Workspace>
   );
 }

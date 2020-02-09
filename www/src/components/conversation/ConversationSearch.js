@@ -1,14 +1,15 @@
-import React, {useState, useRef} from 'react'
-import {useApolloClient, useQuery} from 'react-apollo'
-import {TextInput, Box, Text} from 'grommet'
-import {Return, Search} from 'grommet-icons'
+import React, { useState, useRef, useContext } from 'react'
+import { useApolloClient, useQuery } from 'react-apollo'
+import { TextInput, Box, Text } from 'grommet'
+import { Return, Search } from 'grommet-icons'
 import { SEARCH_Q, PUBLIC_CONVERSATIONS } from './queries'
-import {addConversation} from './utils'
+import { addConversation } from './utils'
 import Scroller from '../utils/Scroller'
-import {mergeAppend} from '../../utils/array'
+import { mergeAppend } from '../../utils/array'
 import moment from 'moment'
 import { CONTEXT_Q } from '../login/queries'
 import Loading from '../utils/Loading'
+import { Conversations } from '../login/MyConversations'
 
 function _addConversation(client, conversation) {
   const prev = client.readQuery({ query: CONTEXT_Q });
@@ -18,12 +19,12 @@ function _addConversation(client, conversation) {
   });
 }
 
-export function searchConversations(client, query, callback) {
+export function searchConversations(client, query, callback, workspaceId) {
   if (query.length === 0) return
 
   client.query({
     query: SEARCH_Q,
-    variables: {q: query}
+    variables: {workspaceId, q: query}
   }).then(({data}) => {
     return data.searchConversations.edges.map((e) => {
       return {value: e.node, label: <ConversationResult name={e.node.name} />}
@@ -71,12 +72,10 @@ function ConversationRow(props) {
 }
 
 const onFetchMore = (prev, {fetchMoreResult}) => {
-  const edges = fetchMoreResult.conversations.edges
-  const pageInfo = fetchMoreResult.conversations.pageInfo
+  const {edges, pageInfo} = fetchMoreResult.conversations
 
   return edges.length ? {
-    ...prev,
-    conversations: {
+    ...prev, conversations: {
       ...prev.conversations,
       pageInfo,
       edges: mergeAppend(edges, prev.conversations.edges, (e) => e.node.id),
@@ -85,18 +84,21 @@ const onFetchMore = (prev, {fetchMoreResult}) => {
 }
 
 
-function ConversationSearch(props) {
+export default function ConversationSearch({onSearchClose}) {
+  const {workspaceId, setCurrentConversation} = useContext(Conversations)
   const client = useApolloClient()
   const searchRef = useRef()
   const [value, setValue] = useState('')
   const [suggestions, setSuggestions] = useState([])
-  const {loading, data, fetchMore} = useQuery(PUBLIC_CONVERSATIONS)
+  const {loading, data, fetchMore} = useQuery(PUBLIC_CONVERSATIONS, {variables: {workspaceId}})
 
   const wrappedSetCurrentConv = (conv) => {
     _addConversation(client, conv)
-    props.onSearchClose()
-    props.setCurrentConversation(conv)
+    onSearchClose()
+    setCurrentConversation(conv)
   }
+
+  const {edges, pageInfo} = data.conversations
 
   return (
     <Box ref={searchRef} fill='horizontal' width='40vw' gap='small' pad='small'>
@@ -113,17 +115,16 @@ function ConversationSearch(props) {
           plain
           suggestions={suggestions}
           placeholder='search by name'
-          onSelect={(e) => {
-            wrappedSetCurrentConv(e.selection.value)
+          onSelect={({selection: {value}}) => {
+            wrappedSetCurrentConv(value)
             setValue('')
             setSuggestions([])
-            props.onSearchClose()
+            onSearchClose()
           }}
           value={value}
-          onChange={(event) => {
-            const q = event.target.value
-            setValue(q)
-            searchConversations(client, q, setSuggestions)
+          onChange={({target: {value}}) => {
+            setValue(value)
+            searchConversations(client, value, setSuggestions, workspaceId)
           }}
         />
       </Box>
@@ -135,14 +136,12 @@ function ConversationSearch(props) {
             overflow: 'auto',
             height: '40vh'
           }}
-          edges={data.conversations.edges}
+          edges={edges}
           onLoadMore={() => {
-            const {pageInfo} = data.conversations
-            if (!pageInfo.hasNextPage) return
-
-            fetchMore({
+            pageInfo.hasNextPage && fetchMore({
               variables: {cursor: pageInfo.endCursor},
-              updateQuery: onFetchMore})
+              updateQuery: onFetchMore}
+            )
           }}
           mapper={({node}) => (
             <ConversationRow
@@ -154,5 +153,3 @@ function ConversationSearch(props) {
     </Box>
   )
 }
-
-export default ConversationSearch

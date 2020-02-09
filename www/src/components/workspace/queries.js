@@ -1,7 +1,7 @@
 import gql from 'graphql-tag'
-import { ThemeFragment } from '../models/brand'
+import { ThemeFragment, WorkspaceFragment } from '../models/workspace'
 
-export const BRAND_Q = gql`
+export const WORKSPACE_Q = gql`
   query {
     brand {
       themeId
@@ -9,8 +9,16 @@ export const BRAND_Q = gql`
         ...ThemeFragment
       }
     }
+    workspaces(first: 10) {
+      edges {
+        node {
+          ...WorkspaceFragment
+        }
+      }
+    }
   }
   ${ThemeFragment}
+  ${WorkspaceFragment}
 `;
 
 export const THEME_Q = gql`

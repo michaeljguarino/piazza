@@ -1,6 +1,5 @@
 defmodule Core.Models.Workspace do
   use Piazza.Ecto.Schema
-  alias Core.Models.Conversation
 
   schema "workspaces" do
     field :name, :string
@@ -12,10 +11,14 @@ defmodule Core.Models.Workspace do
   @valid ~w(name description)a
 
   def for_user(query \\ __MODULE__, user_id) do
-    conversations = Conversation.for_user(user_id)
     from(w in query,
-      join: c in subquery(conversations),
-        on: c.workspace_id == w.id
+      where: fragment("""
+        exists(
+          select p.id
+          from conversations c, participants p
+          where c.id = p.conversation_id
+            and p.user_id = ? and c.workspace_id = ?)
+      """, type(^user_id, :binary_id), w.id)
     )
   end
 

@@ -1,19 +1,21 @@
-import React, {useState} from 'react'
-import {Box, Text} from 'grommet'
-import {Add} from 'grommet-icons'
+import React, { useState, useContext } from 'react'
+import { Box, Text } from 'grommet'
+import { Add } from 'grommet-icons'
 import { useMutation } from 'react-apollo'
-import Modal, {ModalHeader} from '../utils/Modal'
+import Modal, { ModalHeader } from '../utils/Modal'
 import HoveredBackground from '../utils/HoveredBackground'
 import { CREATE_CONVERSATION } from './queries'
 import ConversationEditForm from './ConversationEditForm'
-import {addConversation} from './utils'
+import { addConversation } from './utils'
 import ConversationSearch from './ConversationSearch'
 import { CONTEXT_Q } from '../login/queries'
+import { Conversations } from '../login/MyConversations'
 
 function ConversationForm({setOpen, setCurrentConversation}) {
+  const {workspaceId} = useContext(Conversations)
   const [state, setState] = useState({public: true})
   const [mutation, {loading}] = useMutation(CREATE_CONVERSATION, {
-    variables: {attributes: state},
+    variables: {attributes: {workspaceId, ...state}},
     update: (cache, { data: { createConversation } }) => {
       setCurrentConversation(createConversation)
       const prev = cache.readQuery({ query: CONTEXT_Q });
@@ -51,9 +53,7 @@ export function CreateConversation(props) {
           </Text>
         </Box>
       </HoveredBackground>}>
-      {setOpen => (
-        <ConversationForm setOpen={setOpen} />
-      )}
+    {setOpen => (<ConversationForm setOpen={setOpen} />)}
     </Modal>
   )
 }
@@ -67,7 +67,7 @@ function HeaderLabel() {
         size='15px'
         width='100%'
         color='sidebarText'>
-          Conversations
+        Conversations
       </Text>
     </HoveredBackground>
   )
@@ -91,7 +91,7 @@ function HeaderAdd() {
   )
 }
 
-function ConversationCreator({setCurrentConversation, padding}) {
+export default function ConversationCreator({setCurrentConversation, padding}) {
   return (
     <Box fill='horizontal' pad={{right: '12px'}}>
       <Box pad={padding} fill='horizontal' direction="row" align="center" margin={{bottom: '5px'}}>
@@ -116,5 +116,3 @@ function ConversationCreator({setCurrentConversation, padding}) {
     </Box>
   )
 }
-
-export default ConversationCreator

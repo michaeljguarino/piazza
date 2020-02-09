@@ -2,7 +2,7 @@ import React from 'react'
 import { useQuery } from 'react-apollo'
 import { SearchInput } from './utils/SelectSearchInput'
 import Loading from './utils/Loading'
-import { BRAND_Q } from './themes/queries'
+import { WORKSPACE_Q } from './workspace/queries'
 
 export const DEFAULT_COLOR_THEME = {
   brand: '#2F415B',
@@ -96,20 +96,22 @@ function buildTheme(theme) {
 }
 
 export const ThemeContext = React.createContext({theme: {}, name: null, id: null, brand: null})
+export const WorkspaceContext = React.createContext({workspaces: []})
 
-function Theme(props) {
-  const {loading, data} = useQuery(BRAND_Q)
-  if (loading) return <Loading height='100vh' width='100vw' />
+export default function Workspace({children}) {
+  const {loading, data} = useQuery(WORKSPACE_Q)
+  if (!data && loading) return <Loading height='100vh' width='100vw' />
 
   const brand = data.brand
   const {id, name, ...themeAttrs} = brand.theme
   const theme = buildTheme(themeAttrs)
+  const workspaces = data.workspaces ? data.workspaces.edges.map(({node}) => node) : []
 
   return (
-    <ThemeContext.Provider value={{theme, name, id, brand}}>
-      {props.children(theme)}
-    </ThemeContext.Provider>
+    <WorkspaceContext.Provider value={{workspaces}}>
+      <ThemeContext.Provider value={{theme, name, id, brand}}>
+        {children(theme)}
+      </ThemeContext.Provider>
+    </WorkspaceContext.Provider>
   )
 }
-
-export default Theme

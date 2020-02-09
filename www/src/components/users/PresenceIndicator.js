@@ -1,5 +1,5 @@
 import React, { useContext } from 'react'
-import { ThemeContext } from '../Theme'
+import { ThemeContext } from '../Workspace'
 
 export function EmptyPresenceIndicator({emptyColor}) {
   return (

@@ -1,12 +1,12 @@
-import React, {useState} from 'react'
-import {Box, Text} from 'grommet'
+import React, { useState } from 'react'
+import { Box, Text } from 'grommet'
 import ThemeSelector from './ThemeSelector'
 import ThemeCreator from './ThemeCreator'
 import InterchangeableBox from '../utils/InterchangeableBox'
 import {ModalHeader} from '../utils/Modal'
-import Button, {SecondaryButton} from '../utils/Button'
+import Button, { SecondaryButton } from '../utils/Button'
 
-function Themes({setOpen, brand}) {
+export default function Themes({setOpen, brand}) {
   const [header, setHeader] = useState('Select a theme')
   function withHeaderUpdate(fun, header) {
     return () => {
@@ -37,5 +37,3 @@ function Themes({setOpen, brand}) {
     </Box>
   )
 }
-
-export default Themes

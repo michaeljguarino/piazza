@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import { Redirect, useParams, useHistory } from 'react-router-dom'
 import { useQuery, useApolloClient } from 'react-apollo'
 import { CONTEXT_Q } from './queries'
@@ -9,6 +9,7 @@ import { EmojiContext } from '../emoji/EmojiProvider'
 import Loading from '../utils/Loading'
 import { updateConversations, subscribeToNewConversations } from '../conversation/utils'
 import { Conversations } from './MyConversations'
+import { WorkspaceContext } from '../Workspace'
 
 function _findConversation({edges}, id) {
   const conv = edges.find(({node}) => node.id === id)
@@ -19,11 +20,21 @@ function findConversation({conversations, chats}, id) {
   return _findConversation(conversations, id) || _findConversation(chats, id)
 }
 
+function conversationUrl({id}, workspaceId) {
+  return `/${workspaceId}/conv/${id}`
+}
+
 export default function AppContext({children, sideEffects}) {
   const client = useApolloClient()
+  const {workspaces} = useContext(WorkspaceContext)
   const [waterline, setWaterline] = useState(null)
-  const {loading, data, fetchMore, subscribeToMore, error} = useQuery(CONTEXT_Q)
-  const {conversationId} = useParams()
+  const {conversationId, workspace} = useParams()
+  const workspaceId = workspace || workspaces[0].id
+
+  const {loading, data, fetchMore, subscribeToMore, error} = useQuery(CONTEXT_Q, {
+    variables: {workspaceId}
+  })
+
   let history = useHistory()
 
   if (loading) return <Box height='100vh'><Loading/></Box>
@@ -32,11 +43,11 @@ export default function AppContext({children, sideEffects}) {
     wipeToken()
     return <Redirect to='/login'/>
   }
-  
+
   const {conversations, chats} = data
   const current = findConversation(data, conversationId)
 
-  if (!conversationId) return <Redirect to={`/conv/${conversations.edges[0].node.id}`} />
+  if (!conversationId) return <Redirect to={conversationUrl(conversations.edges[0].node, workspaceId)} />
 
   const setCurrentConversation = (conv) => {
     if (conv) {
@@ -53,10 +64,10 @@ export default function AppContext({children, sideEffects}) {
     if (conv) {
       setWaterline(conv.currentParticipant && conv.currentParticipant.lastSeenAt)
     }
-    history.push(`/conv/${conv.id}`)
+    history.push(conversationUrl(conv, workspaceId))
   }
 
-  subscribeToNewConversations(subscribeToMore)
+  subscribeToNewConversations(subscribeToMore, workspaceId)
 
   const lastSeenAt = (
     current &&
@@ -73,6 +84,7 @@ export default function AppContext({children, sideEffects}) {
           conversations,
           chats,
           setCurrentConversation,
+          workspaceId,
           waterline: waterline || lastSeenAt,
           currentConversation: current
         }}>

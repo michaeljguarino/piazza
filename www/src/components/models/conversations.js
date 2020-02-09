@@ -1,6 +1,7 @@
 import gql from 'graphql-tag'
-import {UserFragment} from './users'
-import {EmojiFragment} from './emoji'
+import { UserFragment } from './users'
+import { EmojiFragment } from './emoji'
+import { WorkspaceFragment } from './workspace';
 
 export const ConversationFragment = gql`
   fragment ConversationFragment on Conversation {
@@ -12,6 +13,9 @@ export const ConversationFragment = gql`
     archivedAt
     unreadMessages
     unreadNotifications
+    workspace {
+      ...WorkspaceFragment
+    }
     currentParticipant {
       lastSeenAt
       notificationPreferences {
@@ -28,6 +32,7 @@ export const ConversationFragment = gql`
       }
     }
   }
+  ${WorkspaceFragment}
 `;
 
 export const EmbedFragment = gql`

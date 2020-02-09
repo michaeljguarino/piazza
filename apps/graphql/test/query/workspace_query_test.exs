@@ -4,10 +4,13 @@ defmodule GraphQl.WorkspaceQueryTest do
   describe "workspaces" do
     test "It will list workspaces a user is a member of" do
       user = insert(:user)
-      expected =
-        insert_list(3, :participant, user: user)
-        |> Enum.map(& &1.conversation.workspace_id)
+      [first | _] = participants = insert_list(3, :participant, user: user)
+      insert(:participant,
+        conversation: build(:conversation, workspace: first.conversation.workspace),
+        user: user
+      )
       insert(:workspace)
+      expected = Enum.map(participants, & &1.conversation.workspace)
 
       {:ok, %{data: %{"workspaces" => found}}} = run_q("""
         query {
@@ -21,6 +24,7 @@ defmodule GraphQl.WorkspaceQueryTest do
         }
       """, %{}, %{current_user: user})
 
+      assert length(found["edges"]) == 3
       assert from_connection(found)
              |> ids_equal(expected)
     end

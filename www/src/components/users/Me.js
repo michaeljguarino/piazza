@@ -16,7 +16,7 @@ import UpdatePassword from './UpdatePassword'
 import UpdateProfile from './UpdateProfile'
 import Tools from '../tools/Tools'
 import AdminTools from '../tools/AdminTools'
-import Themes from '../themes/Themes'
+import Themes from '../workspace/Themes'
 import WithPresence from '../utils/presence'
 import PresenceIndicator from './PresenceIndicator'
 import Tooltip from '../utils/Tooltip'
@@ -147,6 +147,8 @@ function MeDropdown({me}) {
   )
 }
 
+export const HEADER_HEIGHT = 65
+
 function MeHeader({me: {id, handle, name}}) {
   return (
     <Box>
@@ -176,6 +178,7 @@ export default function Me({pad}) {
         <Box
           sidebarHover
           accentText
+          height={`${HEADER_HEIGHT}px`}
           style={{cursor: 'pointer'}}
           pad={{...pad, top: 'small', bottom: '7px'}}
           align='center'

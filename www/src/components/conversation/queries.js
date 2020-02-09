@@ -228,8 +228,8 @@ export const CREATE_INVITE = gql`
 
 
 export const SEARCH_Q=gql`
-query SearchQuery($q : String!) {
-  searchConversations(name: $q, first: 10) {
+query SearchQuery($q : String!, $workspaceId: ID) {
+  searchConversations(workspaceId: $workspaceId, name: $q, first: 10) {
     edges {
       node {
         ...ConversationFragment
@@ -241,8 +241,8 @@ ${ConversationFragment}
 `;
 
 export const PUBLIC_CONVERSATIONS=gql`
-query PublicConversations($cursor: String) {
-  conversations(after: $cursor, first: 15, public: true) {
+query PublicConversations($workspaceId: ID, $cursor: String) {
+  conversations(workspaceId: $workspaceId, after: $cursor, first: 15, public: true) {
     pageInfo {
       hasNextPage
       endCursor

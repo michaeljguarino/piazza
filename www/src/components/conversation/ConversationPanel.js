@@ -1,5 +1,5 @@
 import React, { useContext } from 'react'
-import Me from '../users/Me'
+import Me, { HEADER_HEIGHT } from '../users/Me'
 import { Box, Text } from 'grommet'
 import ConversationCreator, { CreateConversation } from './ConversationCreator'
 import Flyout from '../utils/Flyout'
@@ -12,6 +12,7 @@ import { CurrentUserContext } from '../login/EnsureLogin'
 import { Conversations } from '../login/MyConversations'
 import ConversationPager from './ConversationPager'
 import ChatCreator from './ChatCreator'
+import Workspaces, { FOOTER_HEIGHT } from '../workspace/Workspaces'
 
 export const PADDING = {left: '15px'}
 
@@ -41,7 +42,7 @@ export default function ConversationPanel() {
   return (
     <Box>
       <Me me={me} pad={PADDING} />
-      <div height='100%' style={{overflow: 'auto'}}>
+      <div style={{height: `calc(100vh - ${HEADER_HEIGHT + FOOTER_HEIGHT}px)`, overflow: 'auto'}}>
         <Box margin={{vertical: 'medium'}} gap='xsmall'>
           <SidebarFlyout icon={Group} text='Directory'>
           {setOpen => <UserFlyout setOpen={setOpen} />}
@@ -87,6 +88,7 @@ export default function ConversationPanel() {
           </HoveredBackground>
         </ExternalInvite>
       </div>
+      <Workspaces pad={PADDING} />
     </Box>
   )
 }
