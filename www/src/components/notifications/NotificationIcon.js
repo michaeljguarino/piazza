@@ -13,6 +13,7 @@ import { ICON_HEIGHT, ICON_SPREAD } from '../Piazza'
 import { NOTIF_SOUND } from './constants'
 import { CONTEXT_Q } from '../login/queries'
 import { Conversations } from '../login/MyConversations'
+import { updateNotifications } from '../workspace/utils'
 
 function incrNotifications(client, incr, workspaceId) {
   const {me, ...rest} = client.readQuery({ query: CONTEXT_Q, variables: {workspaceId} })
@@ -36,6 +37,11 @@ function _subscribeToNewNotifications(subscribeToMore, setCurrentNotification, c
         (e) => ({...e, node: {...e.node, unreadNotifications: e.node.unreadNotifications + 1}})
       )
       incrNotifications(client, 1, workspaceId)
+      updateNotifications(
+        client,
+        ({node: {id}}) => id === newNotification.workspace.id,
+        ({node, ...rest}) => ({...rest, node: {...node, unreadNotifications: (node.unreadNotifications || 0) + 1}})
+      )
 
       let newNotificationNode = {node: newNotification, __typename: "NotificationEdge"}
       return Object.assign({}, prev, {
@@ -116,6 +122,7 @@ export default function NotificationIcon({me, setCurrentConversation}) {
       updateConversations(
         cache, workspaceId, () => true, (e) => ({...e, node: {...e.node, unreadNotifications: 0}}))
       incrNotifications(cache, -unseen, workspaceId)
+      updateNotifications(cache, () => true, ({node, ...edge}) => ({...edge, node: {...node, unreadNotifications: 0}}))
     }
   })
 

@@ -4,6 +4,7 @@ import { CONVERSATIONS_SUB } from './queries'
 import sortBy from 'lodash/sortBy'
 import {BeatLoader} from 'react-spinners'
 import { CONTEXT_Q } from '../login/queries'
+import { addWorkspace } from '../workspace/utils'
 
 export function Loader() {
   return (
@@ -42,7 +43,7 @@ export function updateConversations(client, workspaceId, selector, update) {
   })
 }
 
-export function subscribeToNewConversations(subscribeToMore, workspaceId) {
+export function subscribeToNewConversations(subscribeToMore, workspaceId, client) {
   return subscribeToMore({
     document: CONVERSATIONS_SUB,
     updateQuery: (prev, { subscriptionData }) => {
@@ -51,7 +52,7 @@ export function subscribeToNewConversations(subscribeToMore, workspaceId) {
       const participant = participantDelta.payload
       switch(participantDelta.delta) {
         case "CREATE":
-          return addConversation(prev, participant.conversation, workspaceId)
+          return addConversation(prev, participant.conversation, workspaceId, client)
         case "DELETE":
           return removeConversation(prev, participant.conversation)
         case "UPDATE":
@@ -63,8 +64,13 @@ export function subscribeToNewConversations(subscribeToMore, workspaceId) {
   })
 }
 
-export function addConversation(prev, conv, workspaceId) {
-  if (workspaceId && conv.workspace.id !== workspaceId) return prev
+export function addConversation(prev, conv, workspaceId, client) {
+  if (workspaceId && conv.workspace.id !== workspaceId) {
+    if (client) {
+      addWorkspace(client, conv.workspace)
+    }
+    return prev
+  }
 
   let scope = conv.chat ? prev.chats : prev.conversations
   if (scope.edges.find((e) => e.node.id === conv.id)) return prev

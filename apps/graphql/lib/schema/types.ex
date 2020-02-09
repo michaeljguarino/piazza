@@ -333,6 +333,7 @@ defmodule GraphQl.Schema.Types do
     field :user, :user, resolve: dataloader(User)
     field :actor, :user, resolve: dataloader(User)
     field :message, :message, resolve: dataloader(Conversation)
+    field :workspace, :workspace, resolve: dataloader(Workspace)
     field :seen_at, :datetime
 
     timestamps()

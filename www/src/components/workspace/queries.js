@@ -13,6 +13,7 @@ export const WORKSPACE_Q = gql`
       edges {
         node {
           ...WorkspaceFragment
+          unreadNotifications
         }
       }
     }

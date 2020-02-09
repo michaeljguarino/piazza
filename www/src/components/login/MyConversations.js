@@ -44,7 +44,7 @@ function MyConversations(props) {
     setCurrentConversation(conv)
   }
 
-  subscribeToNewConversations(subscribeToMore)
+  subscribeToNewConversations(subscribeToMore, client)
 
   const lastSeenAt = (
     current &&

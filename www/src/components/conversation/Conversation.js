@@ -9,8 +9,6 @@ import { useMutation } from 'react-apollo'
 import { DELETE_PARTICIPANT } from './queries'
 import { removeConversation } from './ConversationHeader'
 
-const NOTIF_COLOR='notif'
-
 export function Icon({me, conversation, emptyColor, textProps}) {
   if (conversation.chat) {
     const {chatParticipants} = conversation
@@ -32,17 +30,17 @@ export function Icon({me, conversation, emptyColor, textProps}) {
   return <Lock style={{marginRight: '5px'}} size='14px' {...textProps} />
 }
 
-function NotificationBadge({conversation}) {
-  if (conversation.unreadNotifications > 0) {
+export function NotificationBadge({unread}) {
+  if (unread > 0) {
     return (
       <Box
         width='30px'
         margin={{vertical: '2px', right: '7px'}}
         align='center'
         justify='center'
-        background={NOTIF_COLOR}
+        background='notif'
         round='xsmall'>
-        <Text size='xsmall' color='white'>{conversation.unreadNotifications}</Text>
+        <Text size='xsmall' color='white'>{unread}</Text>
       </Box>
     )
   }
@@ -92,7 +90,7 @@ function ConversationName({conversation, me, textProps, textSize}) {
 
 function ConversationModifier({conversation, hover, ...props}) {
   if (conversation.unreadNotifications > 0)
-    return <NotificationBadge conversation={conversation} {...props} />
+    return <NotificationBadge unread={conversation.unreadNotifications} />
 
   if (conversation.chat && hover)
     return <CloseChat conversation={conversation} {...props} />

@@ -10,6 +10,8 @@ import { UPDATE_WORKSPACE, WORKSPACE_Q, CREATE_WORKSPACE } from './queries'
 import Button from '../utils/Button'
 import InputField from '../utils/InputField'
 import { CurrentUserContext } from '../login/EnsureLogin'
+import { NotificationBadge } from '../conversation/Conversation'
+import { addWorkspace } from './utils'
 
 const LABEL_SIZE = '100px'
 
@@ -52,7 +54,7 @@ function EditWorkspace({workspace: {id, name, description}, setOpen}) {
   })
 
   return (
-    <Box width='50vw'>
+    <Box width='40vw'>
       <ModalHeader text='Edit Workspace' setOpen={setOpen} />
       <WorkspaceForm
         label='Update'
@@ -69,20 +71,13 @@ function CreateWorkspace({setOpen}) {
   const [mutation, {loading}] = useMutation(CREATE_WORKSPACE, {
     variables: {attributes},
     update: (cache, {data: {createWorkspace}}) => {
-      const {workspaces, ...prev} = cache.readQuery({query: WORKSPACE_Q})
-      cache.writeQuery({
-        query: WORKSPACE_Q,
-        data: {...prev, workspaces: {
-          ...workspaces,
-          edges: [{__typename: "WorkspaceEdge", node: createWorkspace}, ...workspaces.edges]
-        }}
-      })
+      addWorkspace(cache, createWorkspace)
       setOpen(false)
     }
   })
 
   return (
-    <Box width='50vw'>
+    <Box width='40vw'>
       <ModalHeader text='Create Workspace' setOpen={setOpen} />
       <WorkspaceForm
         label='Create'
@@ -114,10 +109,11 @@ function Workspace({workspace, workspaceId, me, setWorkspace}) {
         <Text size='small' style={{fontWeight: 500}}>{workspace.name}</Text>
         {workspace.description && <Text size='small'><i>{workspace.description}</i></Text>}
       </Box>
+      {workspace.unreadNotifications > 0 && !hover && (<NotificationBadge unread={workspace.unreadNotifications} />)}
       {hover && admin && (
         <Modal target={
           <HoveredBackground>
-            <Box style={{cursor: 'pointer'}} accentable width='20px' align='center' justify='center'>
+            <Box style={{cursor: 'pointer'}} accentable width='40px' align='center' justify='center'>
               <Edit size='14px' />
             </Box>
           </HoveredBackground>
