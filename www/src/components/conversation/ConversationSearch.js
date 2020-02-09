@@ -98,8 +98,6 @@ export default function ConversationSearch({onSearchClose}) {
     setCurrentConversation(conv)
   }
 
-  const {edges, pageInfo} = data.conversations
-
   return (
     <Box ref={searchRef} fill='horizontal' width='40vw' gap='small' pad='small'>
       <Box
@@ -136,8 +134,9 @@ export default function ConversationSearch({onSearchClose}) {
             overflow: 'auto',
             height: '40vh'
           }}
-          edges={edges}
+          edges={data.conversations.edges}
           onLoadMore={() => {
+            const {pageInfo} = data.conversations
             pageInfo.hasNextPage && fetchMore({
               variables: {cursor: pageInfo.endCursor},
               updateQuery: onFetchMore}

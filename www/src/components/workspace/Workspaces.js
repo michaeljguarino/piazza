@@ -6,12 +6,34 @@ import { Conversations } from '../login/MyConversations'
 import { Edit, Add } from 'grommet-icons'
 import Modal, { ModalHeader } from '../utils/Modal'
 import { useMutation } from 'react-apollo'
-import { UPDATE_WORKSPACE, WORKSPACE_Q } from './queries'
+import { UPDATE_WORKSPACE, WORKSPACE_Q, CREATE_WORKSPACE } from './queries'
 import Button from '../utils/Button'
 import InputField from '../utils/InputField'
 import { CurrentUserContext } from '../login/EnsureLogin'
 
 const LABEL_SIZE = '100px'
+
+function WorkspaceForm({attributes, setAttributes, onClick, loading, label}) {
+  return (
+    <Box pad='small' gap='small'>
+      <InputField
+        labelWidth={LABEL_SIZE}
+        label='name'
+        value={attributes.name}
+        placeholder='a short name'
+        onChange={({target: {value}}) => setAttributes({...attributes, name: value})} />
+      <InputField
+        labelWidth={LABEL_SIZE}
+        label='description'
+        value={attributes.description}
+        placeholder='what you do in this workspace'
+        onChange={({target: {value}}) => setAttributes({...attributes, description: value})} />
+      <Box direction='row' justify='end'>
+        <Button round='xsmall' loading={loading} label={label} onClick={onClick} />
+      </Box>
+    </Box>
+  )
+}
 
 function EditWorkspace({workspace: {id, name, description}, setOpen}) {
   const [attributes, setAttributes] = useState({name, description})
@@ -32,27 +54,47 @@ function EditWorkspace({workspace: {id, name, description}, setOpen}) {
   return (
     <Box width='50vw'>
       <ModalHeader text='Edit Workspace' setOpen={setOpen} />
-      <Box pad='small' gap='small'>
-        <InputField
-          labelWidth={LABEL_SIZE}
-          label='name'
-          value={attributes.name}
-          onChange={({target: {value}}) => setAttributes({...attributes, name: value})} />
-        <InputField
-          labelWidth={LABEL_SIZE}
-          label='description'
-          value={attributes.description}
-          placeholder='what you do in this workspace'
-          onChange={({target: {value}}) => setAttributes({...attributes, description: value})} />
-        <Box direction='row' justify='end'>
-          <Button round='xsmall' loading={loading} label='Update' onClick={mutation} />
-        </Box>
-      </Box>
+      <WorkspaceForm
+        label='Update'
+        attributes={attributes}
+        setAttributes={setAttributes}
+        onClick={mutation}
+        loading={loading} />
     </Box>
   )
 }
 
-function Workspace({workspace, workspaceId, me}) {
+function CreateWorkspace({setOpen}) {
+  const [attributes, setAttributes] = useState({name: '', description: ''})
+  const [mutation, {loading}] = useMutation(CREATE_WORKSPACE, {
+    variables: {attributes},
+    update: (cache, {data: {createWorkspace}}) => {
+      const {workspaces, ...prev} = cache.readQuery({query: WORKSPACE_Q})
+      cache.writeQuery({
+        query: WORKSPACE_Q,
+        data: {...prev, workspaces: {
+          ...workspaces,
+          edges: [{__typename: "WorkspaceEdge", node: createWorkspace}, ...workspaces.edges]
+        }}
+      })
+      setOpen(false)
+    }
+  })
+
+  return (
+    <Box width='50vw'>
+      <ModalHeader text='Create Workspace' setOpen={setOpen} />
+      <WorkspaceForm
+        label='Create'
+        attributes={attributes}
+        setAttributes={setAttributes}
+        onClick={mutation}
+        loading={loading} />
+    </Box>
+  )
+}
+
+function Workspace({workspace, workspaceId, me, setWorkspace}) {
   const [hover, setHover] = useState(false)
   const selected = workspace.id === workspaceId
   const admin = me.roles && me.roles.admin
@@ -68,7 +110,7 @@ function Workspace({workspace, workspaceId, me}) {
       border={selected ? {side: 'right', size: '2px', color: 'focus'} : null}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}>
-      <Box width='100%'>
+      <Box width='100%' onClick={() => setWorkspace(workspace)}>
         <Text size='small' style={{fontWeight: 500}}>{workspace.name}</Text>
         {workspace.description && <Text size='small'><i>{workspace.description}</i></Text>}
       </Box>
@@ -98,7 +140,7 @@ function CreateTarget() {
   )
 }
 
-function WorkspaceDropdown({dropRef, workspaces, setOpen, workspaceId}) {
+function WorkspaceDropdown({dropRef, workspaces, setOpen, workspaceId, setWorkspace}) {
   const me = useContext(CurrentUserContext)
 
   return (
@@ -108,9 +150,18 @@ function WorkspaceDropdown({dropRef, workspaces, setOpen, workspaceId}) {
           <Text size='small' style={{fontWeight: 500}}>Switch Workspaces</Text>
         </Box>
         {workspaces.map((workspace) => (
-          <Workspace key={workspace.id} me={me} workspaceId={workspaceId} workspace={workspace} />
+          <Workspace
+            key={workspace.id}
+            me={me}
+            workspaceId={workspaceId}
+            workspace={workspace}
+            setWorkspace={setWorkspace} />
         ))}
-        {me.roles.admin && (<CreateTarget />)}
+        {me.roles.admin && (
+          <Modal target={<CreateTarget />}>
+          {setOpen => <CreateWorkspace setOpen={setOpen} />}
+          </Modal>
+        )}
       </Box>
     </Drop>
   )
@@ -122,7 +173,7 @@ export default function Workspaces({pad}) {
   const [open, setOpen] = useState(false)
   const dropRef = useRef()
   const {workspaces} = useContext(WorkspaceContext)
-  const {workspaceId} = useContext(Conversations)
+  const {workspaceId, setWorkspace} = useContext(Conversations)
 
   const current = workspaces.find(({id}) => id === workspaceId)
 
@@ -132,6 +183,7 @@ export default function Workspaces({pad}) {
         <WorkspaceDropdown
           dropRef={dropRef}
           workspaceId={workspaceId}
+          setWorkspace={setWorkspace}
           workspaces={workspaces}
           setOpen={setOpen} />
       )}

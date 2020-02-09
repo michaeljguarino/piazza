@@ -66,6 +66,7 @@ export default function AppContext({children, sideEffects}) {
     }
     history.push(conversationUrl(conv, workspaceId))
   }
+  const setWorkspace = ({id}) => history.push(`/wk/${id}`)
 
   subscribeToNewConversations(subscribeToMore, workspaceId)
 
@@ -85,6 +86,7 @@ export default function AppContext({children, sideEffects}) {
           chats,
           setCurrentConversation,
           workspaceId,
+          setWorkspace,
           waterline: waterline || lastSeenAt,
           currentConversation: current
         }}>
