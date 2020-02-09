@@ -14,11 +14,16 @@ defmodule GraphQl.Schema.Types do
     field :id,          non_null(:id)
     field :name,        non_null(:string)
     field :description, :string
+
     field :unread_notifications, :integer do
       resolve fn workspace, _, %{context: %{loader: loader, current_user: user}} ->
         manual_dataloader(
           loader, Workspace, {:one, Core.Models.Workspace}, unread_notifications: {user, workspace})
       end
+    end
+
+    field :icon, :string, resolve: fn
+      workspace, _, _ -> {:ok, Core.Storage.url({workspace.icon, workspace}, :original)}
     end
 
     timestamps()

@@ -24,6 +24,7 @@ defmodule GraphQl.Schema.Inputs do
   input_object :workspace_attributes do
     field :name,        :string
     field :description, :string
+    field :icon,        :upload_or_url
   end
 
   input_object :conversation_attributes do
@@ -42,8 +43,8 @@ defmodule GraphQl.Schema.Inputs do
   end
 
   input_object :participant_attributes do
-    field :conversation_id, non_null(:string)
-    field :user_id, non_null(:string)
+    field :conversation_id,          non_null(:string)
+    field :user_id,                  non_null(:string)
     field :notification_preferences, :notification_prefs
   end
 
@@ -58,11 +59,11 @@ defmodule GraphQl.Schema.Inputs do
   end
 
   input_object :command_update_attributes do
-    field :name, :string
+    field :name,          :string
     field :documentation, :string
-    field :description, :string
+    field :description,   :string
 
-    field :webhook, :webhook_attributes
+    field :webhook,          :webhook_attributes
     field :incoming_webhook, :incoming_webhook_attributes
   end
 
@@ -71,7 +72,7 @@ defmodule GraphQl.Schema.Inputs do
   end
 
   input_object :incoming_webhook_attributes do
-    field :name, non_null(:string)
+    field :name,     non_null(:string)
     field :routable, :boolean
   end
 
@@ -98,8 +99,8 @@ defmodule GraphQl.Schema.Inputs do
   end
 
   input_object :emoji_attributes do
-    field :image, :upload_or_url
-    field :name, non_null(:string)
+    field :image,    :upload_or_url
+    field :name,     non_null(:string)
     field :fullname, :string
   end
 

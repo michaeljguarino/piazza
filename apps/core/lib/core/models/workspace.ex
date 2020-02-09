@@ -1,9 +1,12 @@
 defmodule Core.Models.Workspace do
   use Piazza.Ecto.Schema
+  use Arc.Ecto.Schema
 
   schema "workspaces" do
-    field :name, :string
+    field :name,        :string
     field :description, :string
+    field :icon,        Core.Storage.Type
+    field :icon_id,     :binary_id
 
     timestamps()
   end
@@ -31,7 +34,9 @@ defmodule Core.Models.Workspace do
   def changeset(model, attrs \\ %{}) do
     model
     |> cast(attrs, @valid)
+    |> generate_uuid(:icon_id)
     |> unique_constraint(:name)
     |> validate_required([:name])
+    |> cast_attachments(attrs, [:icon], allow_urls: true)
   end
 end
