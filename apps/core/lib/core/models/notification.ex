@@ -28,8 +28,21 @@ defmodule Core.Models.Notification do
     )
   end
 
+  def for_workspaces(query \\ __MODULE__, workspace_ids) do
+    from(n in query,
+      where: n.workspace_id in ^workspace_ids)
+  end
+
   def unseen(query \\ __MODULE__),
     do: from(n in query, where: is_nil(n.seen_at))
+
+  def unseen_count(query \\ __MODULE__) do
+    from(n in query,
+      where: is_nil(n.seen_at),
+      group_by: n.workspace_id,
+      select: {n.workspace_id, count(n.id)}
+    )
+  end
 
   def ordered(query \\ __MODULE__, order \\ [desc: :inserted_at]),
     do: from(n in query, order_by: ^order)

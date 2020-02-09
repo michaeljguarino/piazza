@@ -16,13 +16,10 @@ defmodule GraphQl.Resolvers.Base do
     quote do
       import GraphQl.Resolvers.Base
       alias unquote(model)
+
       def data(args \\ %{}), do: Dataloader.Ecto.new(Core.Repo, query: &query/2, default_params: filter_context(args))
 
       def query(_queryable, _args), do: unquote(model).any()
-
-      def filter_context(ctx) do
-        Map.take(ctx, [:current_user])
-      end
 
       defoverridable [query: 2, data: 1]
     end
@@ -30,5 +27,9 @@ defmodule GraphQl.Resolvers.Base do
 
   def paginate(query, args) do
     Relay.Connection.from_query(query, &Core.Repo.all/1, args)
+  end
+
+  def filter_context(ctx) do
+    Map.take(ctx, [:current_user])
   end
 end

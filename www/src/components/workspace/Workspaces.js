@@ -132,7 +132,7 @@ function Workspace({workspace, workspaceId, me, setWorkspace}) {
 function CreateTarget() {
   return (
     <HoveredBackground>
-      <Box accentable style={{cursor: 'pointer'}} fill='horizontal' margin='small' direction='row' align='center' gap='small'>
+      <Box accentable style={{cursor: 'pointer'}} fill='horizontal' margin='small' direction='row' align='center' gap='xsmall'>
         <Add size='14px' />
         <Text size='small'>create another workspace</Text>
       </Box>
