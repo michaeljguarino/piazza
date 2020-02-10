@@ -12,6 +12,8 @@ import InputField from '../utils/InputField'
 import { CurrentUserContext } from '../login/EnsureLogin'
 import { NotificationBadge } from '../conversation/Conversation'
 import { addWorkspace } from './utils'
+import { AvatarContainer } from '../users/Avatar'
+import { FilePicker } from 'react-file-picker'
 
 const LABEL_SIZE = '100px'
 
@@ -41,16 +43,7 @@ function EditWorkspace({workspace: {id, name, description}, setOpen}) {
   const [attributes, setAttributes] = useState({name, description})
   const [mutation, {loading}] = useMutation(UPDATE_WORKSPACE, {
     variables: {id, attributes},
-    update: (cache, {data: {updateWorkspace}}) => {
-      const {workspaces, ...prev} = cache.readQuery({query: WORKSPACE_Q})
-      cache.writeQuery({
-        query: WORKSPACE_Q,
-        data: {...prev, workpaces: {...workspaces, edges: workspaces.edges.map(
-          (edge) => edge.node.id === updateWorkspace.id ? {...edge, node: updateWorkspace} : edge
-        )}}
-      })
-      setOpen(false)
-    }
+    onCompleted: () => setOpen(false)
   })
 
   return (
@@ -67,7 +60,7 @@ function EditWorkspace({workspace: {id, name, description}, setOpen}) {
 }
 
 function CreateWorkspace({setOpen}) {
-  const [attributes, setAttributes] = useState({name: '', description: ''})
+  const [attributes, setAttributes] = useState({name: '', description: '', icon: null})
   const [mutation, {loading}] = useMutation(CREATE_WORKSPACE, {
     variables: {attributes},
     update: (cache, {data: {createWorkspace}}) => {
@@ -89,6 +82,25 @@ function CreateWorkspace({setOpen}) {
   )
 }
 
+function WorkspaceIcon({workspace: {icon, name}}) {
+  return (
+    <AvatarContainer img={icon} text={name} />
+  )
+}
+
+function UploadableIcon({workspace}) {
+  const [mutation] = useMutation(UPDATE_WORKSPACE, {variables: {id: workspace.id}})
+  return (
+    <FilePicker
+      extensions={['jpg', 'jpeg', 'png']}
+      dims={{minWidth: 100, maxWidth: 500, minHeight: 100, maxHeight: 500}}
+      onChange={ (file) => mutation({variables: {attributes: {icon: file}}})}
+    >
+      <span style={{cursor: 'pointer'}}><WorkspaceIcon workspace={workspace} /></span>
+    </FilePicker>
+  )
+}
+
 function Workspace({workspace, workspaceId, me, setWorkspace}) {
   const [hover, setHover] = useState(false)
   const selected = workspace.id === workspaceId
@@ -105,13 +117,14 @@ function Workspace({workspace, workspaceId, me, setWorkspace}) {
       border={selected ? {side: 'right', size: '2px', color: 'focus'} : null}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}>
+      <UploadableIcon workspace={workspace} />
       <Box width='100%' onClick={() => setWorkspace(workspace)}>
         <Text size='small' style={{fontWeight: 500}}>{workspace.name}</Text>
         {workspace.description && <Text size='small'><i>{workspace.description}</i></Text>}
       </Box>
       {workspace.unreadNotifications > 0 && !hover && (<NotificationBadge unread={workspace.unreadNotifications} />)}
       {hover && admin && (
-        <Modal target={
+        <Modal disableClickOutside target={
           <HoveredBackground>
             <Box style={{cursor: 'pointer'}} accentable width='40px' align='center' justify='center'>
               <Edit size='14px' />
@@ -172,6 +185,8 @@ export default function Workspaces({pad}) {
   const {workspaceId, setWorkspace} = useContext(Conversations)
 
   const current = workspaces.find(({id}) => id === workspaceId)
+  const notifs = workspaces.filter(({id}) => id !== workspaceId)
+                  .reduce((sum, {unreadNotifications}) => sum + (unreadNotifications || 0), 0)
 
   return (
     <ThemeContext.Extend value={{layer: {zIndex: 25}}}>
@@ -191,10 +206,15 @@ export default function Workspaces({pad}) {
           accentText
           height={`${FOOTER_HEIGHT}px`}
           style={{cursor: 'pointer'}}
-          pad={{...pad, top: 'small', bottom: '7px'}}
+          pad={{...pad, right: 'small', top: 'small', bottom: '7px'}}
           align='center'
+          justify='end'
           direction='row'>
-          <Text size='small' weight='bold'>{current.name}</Text>
+          <Box direction='row' gap='small' width='100%' align='center'>
+            <WorkspaceIcon workspace={current} />
+            <Text size='small' weight='bold'>{current.name}</Text>
+          </Box>
+          {notifs > 0 && <NotificationBadge unread={notifs} />}
         </Box>
       </HoveredBackground>
     </ThemeContext.Extend>

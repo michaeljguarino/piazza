@@ -26,5 +26,6 @@ export const WorkspaceFragment = gql`
     id
     name
     description
+    icon
   }
 `;

@@ -124,7 +124,7 @@ function CommandDetail({command, disableEdit}) {
             <TableCell><strong>Webhook Url</strong></TableCell>
             <TableCell>{command.webhook.url}</TableCell>
           </TableRow>
-          {command.incomingWebhook && (
+          {command.incomingWebhook && command.incomingWebhook.conversation && (
             <TableRow>
               <TableCell><strong>Incoming Webhook</strong></TableCell>
               <TableCell>

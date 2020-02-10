@@ -1,37 +1,42 @@
 import React from 'react'
-import {Box, Text, Stack} from 'grommet'
+import { Box, Text, Stack } from 'grommet'
 import WithPresence from '../utils/presence'
 import PresenceIndicator from './PresenceIndicator'
 
-const background='#ff7b25'
+const DEFAULT_BACKGROUND = '#103A50'
 const DEFAULT_SIZE = '40px'
 
-function AvatarInner({user: {backgroundColor, avatar, handle}, size, rightMargin}) {
+export function AvatarContainer({background, img, text, size, rightMargin}) {
   const boxSize = size || DEFAULT_SIZE
+
   return (
     <Box
       border={{style: 'hidden'}}
       style={{minWidth: '40px'}}
       round='xsmall'
-      background={avatar ? null : (backgroundColor || background)}
+      background={img ? null : (background || DEFAULT_BACKGROUND)}
       align='center'
       justify='center'
       width={boxSize}
       height={boxSize}
       margin={{right: rightMargin || '5px'}}>
-      {avatar ?
-        <img alt='my avatar' height={boxSize} width={boxSize} style={{borderRadius: '6px'}} src={avatar}/> :
-        <Text>{handle.charAt(0).toUpperCase()}</Text>
+      {img ?
+        <img alt='' height={boxSize} width={boxSize} style={{borderRadius: '6px'}} src={img}/> :
+        <Text>{text.charAt(0).toUpperCase()}</Text>
       }
     </Box>
   )
 }
 
-export default function Avatar({withPresence, user, size, rightMargin}) {
+export default function Avatar({withPresence, user, ...props}) {
   if (withPresence) {
     return (
       <Stack anchor='top-right'>
-        <AvatarInner user={user} size={size} rightMargin={rightMargin} />
+        <AvatarContainer
+          img={user.avatar}
+          text={user.handle}
+          background={user.backgroundColor}
+          {...props} />
         <WithPresence id={user.id}>
         {present => (
           <Box margin={{top: '-2px', right: '-2px'}}>
@@ -42,5 +47,12 @@ export default function Avatar({withPresence, user, size, rightMargin}) {
       </Stack>
     )
   }
-  return <AvatarInner user={user} size={size} rightMargin={rightMargin} />
+
+  return (
+    <AvatarContainer
+      img={user.avatar}
+      text={user.handle}
+      background={user.backgroundColor}
+      {...props} />
+  )
 }

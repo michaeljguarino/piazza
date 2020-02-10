@@ -1,3 +1,13 @@
+export function generatePreview(file, callback) {
+  let reader = new FileReader();
+  reader.onloadend = () => callback({
+    file: file,
+    previewUrl: reader.result
+  })
+
+  reader.readAsDataURL(file)
+}
+
 export function download(url, name) {
   var tempLink = document.createElement('a');
   tempLink.style.display = 'none';

@@ -28,24 +28,24 @@ export function ModalHeader({big, ...props}) {
   )
 }
 
-function Modal(props) {
+function Modal({onOpen, disableClickOutside, target, children, position, ...props}) {
   const [open, setOpen] = useState(!!props.open)
 
   return (
     <>
       <span onClick={() => {
-        props.onOpen && props.onOpen()
+        onOpen && onOpen()
         setOpen(true)
       }}>
-      {props.target}
+      {target}
       </span>
       {open && (
         <Layer
           modal
-          position={props.position || 'center'}
-          onClickOutside={() => props.disableClickOutside ? null : setOpen(false)}
-          onEsc={() => setOpen(false)} >
-          {props.children(setOpen)}
+          position={position || 'center'}
+          onClickOutside={() => !disableClickOutside && setOpen(false)}
+          onEsc={() => !disableClickOutside && setOpen(false)} >
+          {children(setOpen)}
         </Layer>
       )}
     </>
