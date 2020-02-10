@@ -113,6 +113,7 @@ function Workspace({workspace, workspaceId, me, setWorkspace}) {
       align='center'
       style={!selected ? {cursor: 'pointer'} : null}
       pad='small'
+      gap='small'
       background={(hover && !selected) ? 'light-3' : null}
       border={selected ? {side: 'right', size: '2px', color: 'focus'} : null}
       onMouseEnter={() => setHover(true)}
