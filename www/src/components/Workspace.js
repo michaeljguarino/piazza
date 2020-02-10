@@ -99,7 +99,7 @@ export const ThemeContext = React.createContext({theme: {}, name: null, id: null
 export const WorkspaceContext = React.createContext({workspaces: []})
 
 export default function Workspace({children}) {
-  const {loading, data} = useQuery(WORKSPACE_Q)
+  const {loading, data} = useQuery(WORKSPACE_Q, {errorPolicy: 'all'})
   if (!data && loading) return <Loading height='100vh' width='100vw' />
 
   const brand = data.brand
