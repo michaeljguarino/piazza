@@ -18,9 +18,10 @@ function ConversationForm({setOpen, setCurrentConversation}) {
     variables: {attributes: {workspaceId, ...state}},
     update: (cache, { data: { createConversation } }) => {
       setCurrentConversation(createConversation)
-      const prev = cache.readQuery({ query: CONTEXT_Q });
+      const prev = cache.readQuery({ query: CONTEXT_Q, variables: {workspaceId} });
       cache.writeQuery({
         query: CONTEXT_Q,
+        variables: {workspaceId},
         data: addConversation(prev, createConversation)
       });
       setOpen(false)

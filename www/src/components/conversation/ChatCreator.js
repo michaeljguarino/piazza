@@ -11,15 +11,18 @@ import Users from '../users/Users'
 import Button from '../utils/Button'
 import { CurrentUserContext } from '../login/EnsureLogin'
 import { CONTEXT_Q } from '../login/queries'
+import { Conversations } from '../login/MyConversations'
 
 function ChatButton({setCurrentConversation, setOpen, participants}) {
+  const {workspaceId} = useContext(Conversations)
   const [mutation] = useMutation(CREATE_CHAT, {
     variables: {userIds: participants},
     update: (cache, { data: { createChat } }) => {
       setCurrentConversation(createChat)
-      const prev = cache.readQuery({ query: CONTEXT_Q });
+      const prev = cache.readQuery({ query: CONTEXT_Q, variables: {workspaceId} });
       cache.writeQuery({
         query: CONTEXT_Q,
+        variables: {workspaceId},
         data: addConversation(prev, createChat)
       });
       setOpen(false)

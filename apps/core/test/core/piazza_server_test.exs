@@ -35,6 +35,7 @@ defmodule Core.Piazza.ServerTest do
     test "If the participant was deleted, it'll ignore" do
       user = insert(:user)
       conversation = insert(:conversation)
+      insert(:participant, user: user, conversation: conversation, deleted_at: Timex.now())
 
       %PingResponse{fulfilled: false} = Server.leave_conversation(%LeaveConversationRequest{
         user_id: user.id,

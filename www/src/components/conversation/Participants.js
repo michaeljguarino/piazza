@@ -120,7 +120,7 @@ const _subscribeToParticipantDeltas = (props, subscribeToMore) => {
   })
 }
 
-function Participants({loading, data, fetchMore, subscribeToMore, ...props}) {
+export default function Participants({loading, data, fetchMore, subscribeToMore, ...props}) {
   useSubscription(
     () => _subscribeToParticipantDeltas(props, subscribeToMore),
     props.conversation.id
@@ -182,5 +182,3 @@ function Participants({loading, data, fetchMore, subscribeToMore, ...props}) {
     </Flyout>
   )
 }
-
-export default Participants

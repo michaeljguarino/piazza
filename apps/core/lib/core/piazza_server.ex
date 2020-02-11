@@ -23,7 +23,7 @@ defmodule Core.Piazza.Server do
   def leave_conversation(%LeaveConversationRequest{user_id: uid, conversation_id: cid}, _) do
     with %Conversation{} <- Services.Conversations.get_conversation(cid),
          %User{} = user <- Services.Users.get_user(uid),
-         %Participant{} <- Services.Conversations.get_participant(uid, cid),
+         %Participant{deleted_at: nil} <- Services.Conversations.get_participant(uid, cid),
          {:ok, _} <- Services.Conversations.bump_last_seen(cid, user) do
       PingResponse.new(fulfilled: true)
     else
