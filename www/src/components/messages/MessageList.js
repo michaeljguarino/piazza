@@ -1,4 +1,7 @@
-import React, { useState, useContext } from 'react'
+import React, { useState, useContext, useEffect } from 'react'
+import { Box, Text } from 'grommet'
+import { Wifi, Close } from 'grommet-icons'
+import { Detector } from 'react-detect-offline'
 import Message, { MessagePlaceholder } from './Message'
 import { Subscription, useQuery } from 'react-apollo'
 import Scroller from '../utils/Scroller'
@@ -7,6 +10,7 @@ import { mergeAppend } from '../../utils/array'
 import { MESSAGES_Q, DIALOG_SUB } from './queries'
 import { Conversations } from '../login/MyConversations'
 import { ReplyContext } from './ReplyProvider'
+import Pill from '../utils/Pill'
 
 export const DialogContext = React.createContext({
   dialog: null,
@@ -23,13 +27,44 @@ export function DialogProvider(props) {
   )
 }
 
+function OnlineInner({online, text}) {
+  const [open, setOpen] = useState(true)
+
+  if (!open) return null
+
+  return (
+    <Pill background='sidebar' onClose={() => setOpen(false)}>
+      <Box direction='row' align='center' gap='small'>
+        <Wifi size='14px' color={online ? 'status-ok' : 'status-critical'} />
+        <Text size='small' color='focusText'>{text}</Text>
+        <Close style={{cursor: 'pointer'}} color='focusText' size='14px' onClick={() => setOpen(false)} />
+      </Box>
+    </Pill>
+  )
+}
+
+function BackOnline({refetch}) {
+  useEffect(() => {
+    refetch()
+  }, [])
+  return <OnlineInner online text='connection reestablished' />
+}
+
+function Offline() {
+  return <OnlineInner text='connection lost' />
+}
+
 function MessageList() {
+  const [ignore, setIgnore] = useState(true)
   const {currentConversation, waterline} = useContext(Conversations)
   const {setReply} = useContext(ReplyContext)
-  const {loading, error, data, fetchMore} = useQuery(MESSAGES_Q, {
+  const {loading, error, data, fetchMore, refetch} = useQuery(MESSAGES_Q, {
     variables: {conversationId: currentConversation.id},
     fetchPolicy: 'cache-and-network'
   })
+  useEffect(() => {
+    setTimeout(() => setIgnore(false), 10000)
+  }, [])
 
   if (loading && !data) return <Loading height='calc(100vh - 135px)' width='100%' />
   if (error) return <div>wtf</div>
@@ -45,6 +80,10 @@ function MessageList() {
       }}>
       {() => (
         <>
+        <Detector render={({online}) => {
+          if (ignore) return null
+          return online ? <BackOnline refetch={refetch} /> : <Offline />
+        }} />
         <Scroller
           id='message-viewport'
           edges={edges}
