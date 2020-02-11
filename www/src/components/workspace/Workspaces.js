@@ -119,7 +119,7 @@ function Workspace({workspace, workspaceId, me, setWorkspace}) {
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}>
       <UploadableIcon workspace={workspace} />
-      <Box width='100%' onClick={() => setWorkspace(workspace)}>
+      <Box width='100%' onClick={() => !selected && setWorkspace(workspace)}>
         <Text size='small' style={{fontWeight: 500}}>{workspace.name}</Text>
         {workspace.description && <Text size='small'><i>{workspace.description}</i></Text>}
       </Box>

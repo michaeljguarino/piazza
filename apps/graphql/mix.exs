@@ -33,6 +33,7 @@ defmodule Graphql.MixProject do
       {:absinthe, "~> 1.4.6"},
       {:absinthe_relay, "~> 1.4.6"},
       {:absinthe_plug, "~> 1.4.0"},
+      {:apq, "~> 1.2.0"},
 
       {:core, in_umbrella: true}
       # {:dep_from_hexpm, "~> 0.3.0"},

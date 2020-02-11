@@ -20,13 +20,13 @@ export default function App() {
         <Switch>
           <Route exact path="/login" component={Login} />
           <Route exact path='/directory' component={Directory} />
-          <Route exact path="/" component={Piazza} />
           <Route exact path='/wk/:workspace' component={Piazza} />
           <Route path='/wk/:workspace/:conversationId' component={Piazza} />
           <Route path="/invite/:inviteToken" component={Login} />
           <Route path="/messageeditor" component={StructuredMessageTester} />
           <Route path='/reset-password/:token' component={ChangePassword} />
           <Route path='/reset-password' component={ResetPassword} />
+          <Route path="/" component={Piazza} />
         </Switch>
       </Grommet>
     )}

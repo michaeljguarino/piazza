@@ -5,12 +5,13 @@ import { createLink } from "apollo-absinthe-upload-link";
 import { InMemoryCache } from 'apollo-cache-inmemory'
 import { AUTH_TOKEN } from '../constants'
 import { split } from 'apollo-link'
-import {hasSubscription} from "@jumpn/utils-graphql";
-import {createAbsintheSocketLink} from "@absinthe/socket-apollo-link";
-import * as AbsintheSocket from "@absinthe/socket";
-import {Socket as PhoenixSocket} from "phoenix";
+import { hasSubscription } from "@jumpn/utils-graphql";
+import { createAbsintheSocketLink } from "@absinthe/socket-apollo-link"
+import { createPersistedQueryLink } from "apollo-link-persisted-queries"
+import * as AbsintheSocket from "@absinthe/socket"
+import { Socket as PhoenixSocket } from "phoenix"
 import customFetch from './uploadLink'
-import {apiHost, secure} from './hostname'
+import { apiHost, secure } from './hostname'
 import {wipeToken} from './authentication'
 
 const API_HOST = apiHost()
@@ -57,7 +58,7 @@ const socketLink = createAbsintheSocketLink(absintheSocket);
 const splitLink = split(
   (operation) => hasSubscription(operation.query),
   socketLink,
-  httpLink,
+  createPersistedQueryLink().concat(httpLink),
 );
 
 const client = new ApolloClient({
