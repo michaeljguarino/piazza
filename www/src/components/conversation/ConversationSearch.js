@@ -11,10 +11,11 @@ import { CONTEXT_Q } from '../login/queries'
 import Loading from '../utils/Loading'
 import { Conversations } from '../login/MyConversations'
 
-function _addConversation(client, conversation) {
-  const prev = client.readQuery({ query: CONTEXT_Q });
+function _addConversation(client, conversation, workspaceId) {
+  const prev = client.readQuery({ query: CONTEXT_Q, variables: {workspaceId} });
   client.writeQuery({
     query: CONTEXT_Q,
+    variables: {workspaceId},
     data: addConversation(prev, conversation)
   });
 }
@@ -93,7 +94,7 @@ export default function ConversationSearch({onSearchClose}) {
   const {loading, data, fetchMore} = useQuery(PUBLIC_CONVERSATIONS, {variables: {workspaceId}})
 
   const wrappedSetCurrentConv = (conv) => {
-    _addConversation(client, conv)
+    _addConversation(client, conv, workspaceId)
     onSearchClose()
     setCurrentConversation(conv)
   }

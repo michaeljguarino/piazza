@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import { useMutation } from 'react-apollo'
 import { Box, Text, ThemeContext, TextInput } from 'grommet'
 import { DocumentImage } from 'grommet-icons'
@@ -8,6 +8,7 @@ import {FilePicker} from 'react-file-picker'
 import { CREATE_EMOJI } from './queries'
 import {addEmoji} from './utils'
 import { CONTEXT_Q } from '../login/queries'
+import { Conversations } from '../login/MyConversations'
 
 function generatePreview(file, callback) {
   let reader = new FileReader();
@@ -22,15 +23,17 @@ function generatePreview(file, callback) {
 const MODAL_WIDTH = '400px'
 
 export function EmojiForm({setOpen}) {
+  const {workspaceId} = useContext(Conversations)
   const [image, setImage] = useState(null)
   const [name, setName] = useState('')
   const [mutation] = useMutation(CREATE_EMOJI, {
     variables: {name, image: image && image.file},
     update: (cache, {data}) => {
-      const {emoji, ...prev} = cache.readQuery({ query: CONTEXT_Q })
+      const {emoji, ...prev} = cache.readQuery({ query: CONTEXT_Q, variables: {workspaceId} })
       if (emoji) {
         cache.writeQuery({
           query: CONTEXT_Q,
+          variables: {workspaceId},
           data: {...prev, emoji: addEmoji(emoji, data.createEmoji)}
         })
       }

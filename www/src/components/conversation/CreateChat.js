@@ -7,14 +7,15 @@ import { Conversations } from '../login/MyConversations'
 import { CONTEXT_Q } from '../login/queries'
 
 export default function CreateChat({onChat, user}) {
-  const {setCurrentConversation} = useContext(Conversations)
+  const {setCurrentConversation, workspaceId} = useContext(Conversations)
   const [hover, setHover] = useState(false)
   const [mutation] = useMutation(CREATE_CHAT, {
     variables: {userIds: [user.id]},
     update: (cache, {data: {createChat}}) => {
-      const data = cache.readQuery({ query: CONTEXT_Q });
+      const data = cache.readQuery({ query: CONTEXT_Q, variables: {workspaceId} });
       cache.writeQuery({
         query: CONTEXT_Q,
+        variables: {workspaceId},
         data: addConversation(data, createChat)
       });
       setCurrentConversation(createChat)

@@ -3,11 +3,11 @@ import {useMutation, useQuery} from 'react-apollo'
 import {Box, Text, Markdown, Anchor, Calendar} from 'grommet'
 import {Down} from 'grommet-icons'
 import CloseableDropdown from '../utils/CloseableDropdown'
-import Modal, {ModalHeader} from '../utils/Modal'
+import Modal, { ModalHeader } from '../utils/Modal'
 import {UPDATE_CONVERSATION, UPDATE_PARTICIPANT, DELETE_PARTICIPANT, CONVERSATION_CONTEXT} from './queries'
 import ConversationEditForm from './ConversationEditForm'
 import NotificationIcon from '../notifications/NotificationIcon'
-import {CurrentUserContext} from '../login/EnsureLogin'
+import { CurrentUserContext } from '../login/EnsureLogin'
 import Participants from './Participants'
 import PinnedMessages from './PinnedMessages'
 import Files from './Files'
@@ -15,8 +15,8 @@ import Commands from '../commands/Commands'
 import {UserIcon} from '../users/Users'
 import MessageSearch from './MessageSearch'
 import NotificationsPreferences, {DEFAULT_PREFS} from '../users/NotificationPreferences'
-import {updateConversation} from './utils'
-import {conversationNameString, Icon} from './Conversation'
+import { updateConversation } from './utils'
+import { conversationNameString, Icon } from './Conversation'
 import pick from 'lodash/pick'
 import InterchangeableBox from '../utils/InterchangeableBox'
 import MenuItem, {SubMenu} from '../utils/MenuItem'
@@ -32,28 +32,24 @@ export const BOX_ATTRS = {
   border: 'right'
 }
 
-export function removeConversation(cache, conversationId) {
-  const prev = cache.readQuery({ query: CONTEXT_Q });
-  const convs = prev.conversations.edges.filter(({node}) => node.id !== conversationId)
-  const chats = prev.chats.edges.filter(({node}) => node.id !== conversationId)
+export function removeConversation(cache, conversationId, workspaceId) {
+  const {conversations, chats, ...prev} = cache.readQuery({ query: CONTEXT_Q, variables: {workspaceId} });
+  const convEdges = conversations.edges.filter(({node}) => node.id !== conversationId)
+  const chatEdges = chats.edges.filter(({node}) => node.id !== conversationId)
 
   cache.writeQuery({
     query: CONTEXT_Q,
+    variables: { workspaceId },
     data: {
       ...prev,
-      conversations: {
-        ...prev.conversations,
-        edges: convs
-      },
-      chats: {
-        ...prev.chats,
-        edges: chats
-      }
+      conversations: {...conversations, edges: convEdges},
+      chats: {...chats, edges: chatEdges}
     }
   });
 }
 
 function ConversationUpdateForm({conversation, setOpen}) {
+  const {workspaceId} = useContext(Conversations)
   const [attributes, setAttributes] = useState({
     name: conversation.name,
     topic: conversation.topic,
@@ -64,9 +60,10 @@ function ConversationUpdateForm({conversation, setOpen}) {
   const [mutation] = useMutation(UPDATE_CONVERSATION, {
     variables: {id: conversation.id, attributes: attributes},
     update: (cache, {data}) => {
-      const prev = cache.readQuery({ query: CONTEXT_Q });
+      const prev = cache.readQuery({ query: CONTEXT_Q, variables: {workspaceId} });
       cache.writeQuery({
         query: CONTEXT_Q,
+        variables: {workspaceId},
         data: updateConversation(prev, data.updateConversation)
       });
       setOpen(false)
@@ -127,12 +124,13 @@ function ConversationName(props) {
 const DROP_WIDTH = '240px'
 
 function LeaveConversation(props) {
+  const {workspaceId} = useContext(Conversations)
   const [mutation] = useMutation(DELETE_PARTICIPANT, {
     variables: {conversationId: props.conversation.id, userId: props.me.id},
     update: (cache, {data: {deleteParticipant}}) => {
       props.setOpen(false)
       props.setCurrentConversation(null)
-      removeConversation(cache, deleteParticipant.conversationId)
+      removeConversation(cache, deleteParticipant.conversationId, workspaceId)
     }
   })
 

@@ -1,6 +1,7 @@
 import { ApolloClient } from 'apollo-client'
 import { setContext } from 'apollo-link-context'
 import { onError } from 'apollo-link-error'
+import { RetryLink } from "apollo-link-retry";
 import { createLink } from "apollo-absinthe-upload-link";
 import { InMemoryCache } from 'apollo-cache-inmemory'
 import { AUTH_TOKEN } from '../constants'
@@ -21,6 +22,11 @@ const WS_URI=`${secure() ? 'wss' : 'ws'}://${API_HOST}/socket`
 const httpLink = createLink({
   uri: GQL_URL,
   fetch: customFetch
+})
+
+const retryLink = new RetryLink({
+  delay: {initial: 200},
+  attempts: {max: 10}
 })
 
 const authLink = setContext((_, { headers }) => {
@@ -58,7 +64,7 @@ const socketLink = createAbsintheSocketLink(absintheSocket);
 const splitLink = split(
   (operation) => hasSubscription(operation.query),
   socketLink,
-  createPersistedQueryLink().concat(httpLink),
+  createPersistedQueryLink().concat(retryLink).concat(httpLink),
 );
 
 const client = new ApolloClient({

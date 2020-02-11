@@ -25,17 +25,17 @@ function conversationUrl({id}, workspaceId) {
 }
 
 export default function AppContext({children, sideEffects}) {
+  let history = useHistory()
   const client = useApolloClient()
   const {workspaces} = useContext(WorkspaceContext)
   const [waterline, setWaterline] = useState(null)
   const {conversationId, workspace} = useParams()
-  const workspaceId = workspace || workspaces[0].id
+  const workspaceId = workspace || (workspaces.length > 0 ? workspaces[0].id : null)
 
   const {loading, data, fetchMore, subscribeToMore, error} = useQuery(CONTEXT_Q, {
     variables: {workspaceId}
   })
 
-  let history = useHistory()
   useEffect(() => subscribeToNewConversations(subscribeToMore, workspaceId, client), [workspaceId])
 
   if (loading) return <Box height='100vh'><Loading/></Box>

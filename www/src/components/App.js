@@ -1,5 +1,5 @@
 import React from 'react';
-import { Switch, Route } from 'react-router-dom';
+import { Switch, Route, Redirect } from 'react-router-dom';
 import Piazza from './Piazza'
 import { Grommet } from 'grommet';
 import Workspace from './Workspace'
@@ -18,6 +18,7 @@ export default function App() {
     {theme => (
       <Grommet theme={theme}>
         <Switch>
+          <Route exact path="/" component={Piazza} />
           <Route exact path="/login" component={Login} />
           <Route exact path='/directory' component={Directory} />
           <Route exact path='/wk/:workspace' component={Piazza} />
@@ -26,7 +27,7 @@ export default function App() {
           <Route path="/messageeditor" component={StructuredMessageTester} />
           <Route path='/reset-password/:token' component={ChangePassword} />
           <Route path='/reset-password' component={ResetPassword} />
-          <Route path="/" component={Piazza} />
+          <Redirect to='/' />
         </Switch>
       </Grommet>
     )}

@@ -1,7 +1,6 @@
 import React, { useState, useContext, useEffect } from 'react'
 import { Box, Text } from 'grommet'
 import { Wifi, Close } from 'grommet-icons'
-import { Detector } from 'react-detect-offline'
 import Message, { MessagePlaceholder } from './Message'
 import { Subscription, useQuery } from 'react-apollo'
 import Scroller from '../utils/Scroller'
