@@ -1,20 +1,18 @@
 import React, { useState, useContext } from 'react'
-import {useMutation, useQuery} from 'react-apollo'
-import {Box, Text, Markdown, Anchor, Calendar} from 'grommet'
+import { useMutation, useQuery } from 'react-apollo'
+import { Box, Text, Markdown, Anchor, Calendar } from 'grommet'
 import {Down} from 'grommet-icons'
 import CloseableDropdown from '../utils/CloseableDropdown'
 import Modal, { ModalHeader } from '../utils/Modal'
-import {UPDATE_CONVERSATION, UPDATE_PARTICIPANT, DELETE_PARTICIPANT, CONVERSATION_CONTEXT} from './queries'
+import { UPDATE_CONVERSATION, UPDATE_PARTICIPANT, DELETE_PARTICIPANT, CONVERSATION_CONTEXT } from './queries'
 import ConversationEditForm from './ConversationEditForm'
 import NotificationIcon from '../notifications/NotificationIcon'
 import { CurrentUserContext } from '../login/EnsureLogin'
 import Participants from './Participants'
 import PinnedMessages from './PinnedMessages'
 import Files from './Files'
-import Commands from '../commands/Commands'
-import {UserIcon} from '../users/Users'
 import MessageSearch from './MessageSearch'
-import NotificationsPreferences, {DEFAULT_PREFS} from '../users/NotificationPreferences'
+import NotificationsPreferences, { DEFAULT_PREFS } from '../users/NotificationPreferences'
 import { updateConversation } from './utils'
 import { conversationNameString, Icon } from './Conversation'
 import pick from 'lodash/pick'
@@ -29,7 +27,6 @@ export const BOX_ATTRS = {
   align: "center",
   style: {cursor: 'pointer', lineHeight: '15px'},
   pad: {horizontal: '8px'},
-  border: 'right'
 }
 
 export function removeConversation(cache, conversationId, workspaceId) {
@@ -191,6 +188,25 @@ function ConversationDropdown({setAnchor, ...props}) {
   )
 }
 
+export function HeaderIcon({icon, count}) {
+  return (
+    <HoveredBackground>
+      <Box
+        accentable
+        direction='row'
+        align='center'
+        gap='xsmall'
+        style={{cursor: 'pointer'}}
+        pad='xsmall'
+        border={count > 0 ? {color: 'light-6'} : null}
+        round='small'>
+        {count > 0 && <Text size='xsmall'>{count}</Text>}
+        {React.createElement(icon, {size: '16px'})}
+      </Box>
+    </HoveredBackground>
+  )
+}
+
 export default function ConversationHeader({setAnchor}) {
   const {currentConversation} = useContext(Conversations)
   const me = useContext(CurrentUserContext)
@@ -199,37 +215,35 @@ export default function ConversationHeader({setAnchor}) {
   })
 
   return (
-    <Box fill='horizontal' direction='row' align='center' pad={{left: '20px', top: '7px', bottom: '7px'}}>
+    <Box fill='horizontal' direction='row' align='center' pad={{left: '20px', vertical: '7px'}}>
       <Box fill='horizontal' direction='column'>
         <ConversationDropdown me={me} conversation={currentConversation} setAnchor={setAnchor} />
-        <Box height='25px' direction='row' align='end' justify='start' pad={{top: '5px', bottom: '5px'}}>
-          <Participants
-            data={data}
-            loading={loading}
-            fetchMore={fetchMore}
-            subscribeToMore={subscribeToMore}
-            conversation={currentConversation} />
-          <PinnedMessages
-            data={data}
-            loading={loading}
-            fetchMore={fetchMore}
-            subscribeToMore={subscribeToMore}
-            conversation={currentConversation}  />
-          <Files
-            data={data}
-            loading={loading}
-            fetchMore={fetchMore}
-            subscribeToMore={subscribeToMore}
-            conversation={currentConversation} />
-          <Box {...BOX_ATTRS} align='center' justify='center' border={null}>
-            <ConversationUpdate conversation={currentConversation} />
-          </Box>
+        <Box height='25px' direction='row' align='end' justify='start' pad={{vertical: '5px',}}>
+          <ConversationUpdate conversation={currentConversation} />
         </Box>
       </Box>
+      <Box direction='row' align='center' flex={false} gap='small'>
+        <PinnedMessages
+          data={data}
+          loading={loading}
+          fetchMore={fetchMore}
+          subscribeToMore={subscribeToMore}
+          conversation={currentConversation}  />
+        <Files
+          data={data}
+          loading={loading}
+          fetchMore={fetchMore}
+          subscribeToMore={subscribeToMore}
+          conversation={currentConversation} />
+      </Box>
       <MessageSearch conversation={currentConversation} setAnchor={setAnchor} />
-      <Box direction='row' align='center' flex={false}>
-        <UserIcon />
-        <Commands />
+      <Box direction='row' align='center' flex={false} gap='small'>
+        <Participants
+          data={data}
+          loading={loading}
+          fetchMore={fetchMore}
+          subscribeToMore={subscribeToMore}
+          conversation={currentConversation} />
         <NotificationIcon me={me} conversation={currentConversation} />
       </Box>
     </Box>

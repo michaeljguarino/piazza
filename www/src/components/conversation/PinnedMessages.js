@@ -3,11 +3,10 @@ import {Box, Text} from 'grommet'
 import {Pin} from 'grommet-icons'
 import Scroller from '../utils/Scroller'
 import Flyout, { FlyoutHeader, FlyoutContainer } from '../utils/Flyout'
-import HoveredBackground from '../utils/HoveredBackground'
 import { PINNED_MESSAGE_SUB } from '../messages/queries'
 import { addPinnedMessage, removePinnedMessage } from '../messages/utils'
 import { mergeAppend } from '../../utils/array'
-import { BOX_ATTRS } from './ConversationHeader'
+import { HeaderIcon } from './ConversationHeader'
 import Message from '../messages/Message'
 import { Loader } from './utils'
 import { useSubscription } from '../utils/hooks'
@@ -49,28 +48,17 @@ const onLoadMore = (prev, {fetchMoreResult}) => {
   } : prev;
 }
 
-function PinnedMessages({loading, data, fetchMore, subscribeToMore, ...props}) {
+function PinnedMessages({loading, data, fetchMore, subscribeToMore, conversation}) {
   useSubscription(
-    () => _subscribeToNewPins(props.conversation.id, subscribeToMore),
-    props.conversation.id
+    () => _subscribeToNewPins(conversation.id, subscribeToMore),
+    conversation.id
   )
 
   if (loading) return <Loader />
-  const conv = data.conversation
-  const messageEdges = data.conversation.pinnedMessages.edges
-  const pageInfo = data.conversation.pinnedMessages.pageInfo
+  const {pinnedMessages: {edges, pageInfo}, pinnedMessageCount} = data.conversation
 
   return (
-    <Flyout target={
-      <HoveredBackground>
-        <Box accentable {...BOX_ATTRS}>
-          <Text height='12px' style={{lineHeight: '12px'}} margin={{right: '3px'}}>
-            <Pin size='12px'/>
-          </Text>
-          <Text size='xsmall'>{conv.pinnedMessageCount}</Text>
-        </Box>
-      </HoveredBackground>
-    }>
+    <Flyout target={<HeaderIcon icon={Pin} count={pinnedMessageCount} />}>
     {setOpen => (
       <FlyoutContainer width='50vw'>
         <FlyoutHeader text='Pinned Messages' setOpen={setOpen} />
@@ -84,7 +72,7 @@ function PinnedMessages({loading, data, fetchMore, subscribeToMore, ...props}) {
         </Box>
         <Scroller
           id='pinned-messages'
-          edges={messageEdges}
+          edges={edges}
           style={{
             overflow: 'auto',
             maxHeight: '100%',
@@ -92,19 +80,17 @@ function PinnedMessages({loading, data, fetchMore, subscribeToMore, ...props}) {
             justifyContent: 'flex-start',
             flexDirection: 'column',
           }}
-          mapper={(edge) => (
+          mapper={({node}) => (
             <Message
-              key={edge.node.message.id}
+              key={node.message.id}
               nopin
-              conversation={props.conversation}
-              message={edge.node.message}
+              conversation={conversation}
+              message={node.message}
               next={null} />
           )}
           onLoadMore={() => {
-            if (!pageInfo.hasNextPage) return
-
-            fetchMore({
-              variables: {conversationId: props.conversation.id, pinCursor: pageInfo.endCursor},
+            pageInfo.hasNextPage && fetchMore({
+              variables: {conversationId: conversation.id, pinCursor: pageInfo.endCursor},
               updateQuery: onLoadMore
             })
           }} />

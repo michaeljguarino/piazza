@@ -155,7 +155,7 @@ export default function NotificationIcon({me, setCurrentConversation}) {
     <HoveredBackground>
       <Box
         accentable
-        margin={{left: ICON_SPREAD, right: '15px'}}
+        margin={{right: '15px'}}
         align='center'
         justify='center'>
         <Dropdown onClose={mutation}>

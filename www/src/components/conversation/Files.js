@@ -1,13 +1,12 @@
 import React from 'react'
-import {Box, Text} from 'grommet'
-import {Document} from 'grommet-icons'
+import { Box, Text } from 'grommet'
+import { Document } from 'grommet-icons'
 import Scroller from '../utils/Scroller'
-import Flyout, {FlyoutHeader, FlyoutContainer} from '../utils/Flyout'
-import {mergeAppend} from '../../utils/array'
-import {BOX_ATTRS} from './ConversationHeader'
-import HoveredBackground from '../utils/HoveredBackground'
-import {FileEntry} from '../messages/File'
-import {Loader} from './utils'
+import Flyout, { FlyoutHeader, FlyoutContainer } from '../utils/Flyout'
+import { mergeAppend } from '../../utils/array'
+import { HeaderIcon } from './ConversationHeader'
+import { FileEntry } from '../messages/File'
+import { Loader } from './utils'
 
 const doFetchMore = (prev, {fetchMoreResult}) => {
   const edges = fetchMoreResult.conversation.files.edges
@@ -36,22 +35,12 @@ const NoFiles = () => {
   )
 }
 
-function Files({loading, data, fetchMore}) {
+export default function Files({loading, data, fetchMore}) {
   if (loading) return <Loader />
-  let pageInfo = data.conversation.files.pageInfo
-  let edges = data.conversation.files.edges
+  const {files: {edges, pageInfo}, fileCount} = data.conversation
 
   return (
-    <Flyout width='30vw' target={
-      <HoveredBackground>
-        <Box {...BOX_ATTRS} accentable>
-          <Text height='12px' style={{lineHeight: '12px'}} margin={{right: '3px'}}>
-            <Document size='12px' />
-          </Text>
-          <Text size='xsmall'>{data.conversation.fileCount}</Text>
-        </Box>
-      </HoveredBackground>
-    }>
+    <Flyout width='30vw' target={<HeaderIcon icon={Document} count={fileCount} />}>
     {setOpen => (
       <FlyoutContainer width='40vw'>
         <FlyoutHeader text='Files' setOpen={setOpen} />
@@ -70,8 +59,7 @@ function Files({loading, data, fetchMore}) {
             emptyState={<NoFiles />}
             mapper={({node}, next) => (<FileEntry key={node.id} file={node} next={next} />)}
             onLoadMore={() => {
-              if (!pageInfo.hasNextPage) return
-              fetchMore({
+              pageInfo.hasNextPage && fetchMore({
                 variables: {fileCursor: pageInfo.endCursor},
                 updateQuery: doFetchMore
               })
@@ -82,5 +70,3 @@ function Files({loading, data, fetchMore}) {
     </Flyout>
   )
 }
-
-export default Files

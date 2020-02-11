@@ -1,14 +1,13 @@
 import React from 'react'
 import { Box, Text } from 'grommet'
-import { UserNew } from 'grommet-icons'
+import { User } from 'grommet-icons'
 import Scroller from '../utils/Scroller'
 import Flyout, { FlyoutHeader, FlyoutContainer } from '../utils/Flyout'
 import Avatar from '../users/Avatar'
 import UserHandle from '../users/UserHandle'
 import { PARTICIPANT_SUB } from './queries'
 import { mergeAppend } from '../../utils/array'
-import { BOX_ATTRS } from './ConversationHeader'
-import HoveredBackground from '../utils/HoveredBackground'
+import { HeaderIcon } from './ConversationHeader'
 import WithPresence from '../utils/presence'
 import PresenceIndicator from '../users/PresenceIndicator'
 import ParticipantInvite, { ParticipantInviteButton } from './ParticipantInvite'
@@ -127,19 +126,10 @@ export default function Participants({loading, data, fetchMore, subscribeToMore,
   )
 
   if (loading) return <Loader />
-  const {edges, pageInfo} = data.conversation.participants
+  const {participants: {edges, pageInfo}, participantCount} = data.conversation
 
   return (
-    <Flyout width='30vw' target={
-      <HoveredBackground>
-        <Box {...BOX_ATTRS} pad={{right: '8px'}} accentable>
-          <Text height='12px' style={{lineHeight: '12px'}} margin={{right: '3px'}}>
-            <UserNew size='12px' />
-          </Text>
-          <Text size='xsmall'>{data.conversation.participantCount}</Text>
-        </Box>
-      </HoveredBackground>
-    }>
+    <Flyout width='30vw' target={<HeaderIcon icon={User} count={participantCount} />}>
     {setOpen => (
       <FlyoutContainer width='40vw'>
         <FlyoutHeader text='Participants' setOpen={setOpen} />
@@ -159,8 +149,7 @@ export default function Participants({loading, data, fetchMore, subscribeToMore,
             edges={edges}
             mapper={(p) => (<Participant key={p.node.id} user={p.node.user} />)}
             onLoadMore={() => {
-              if (!pageInfo.hasNextPage) return
-              fetchMore({
+              pageInfo.hasNextPage && fetchMore({
                 variables: {partCursor: pageInfo.endCursor},
                 updateQuery: doFetchMore})
             }} />
