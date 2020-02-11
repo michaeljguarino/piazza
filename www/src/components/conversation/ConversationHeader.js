@@ -21,6 +21,7 @@ import MenuItem, {SubMenu} from '../utils/MenuItem'
 import HoveredBackground from '../utils/HoveredBackground'
 import { Conversations } from '../login/MyConversations'
 import { CONTEXT_Q } from '../login/queries'
+import { ICON_HEIGHT } from '../Piazza'
 
 export const BOX_ATTRS = {
   direction: "row",
@@ -189,6 +190,7 @@ function ConversationDropdown({setAnchor, ...props}) {
 }
 
 export function HeaderIcon({icon, count}) {
+  const positive = count > 0
   return (
     <HoveredBackground>
       <Box
@@ -197,11 +199,11 @@ export function HeaderIcon({icon, count}) {
         align='center'
         gap='xsmall'
         style={{cursor: 'pointer'}}
-        pad='xsmall'
-        border={count > 0 ? {color: 'light-6'} : null}
+        pad={positive ? 'xsmall' : null}
+        border={positive ? {color: 'light-6'} : null}
         round='small'>
-        {count > 0 && <Text size='xsmall'>{count}</Text>}
-        {React.createElement(icon, {size: '16px'})}
+        {positive && <Text size='xsmall'>{count}</Text>}
+        {React.createElement(icon, {size: (positive ? '16px' : ICON_HEIGHT)})}
       </Box>
     </HoveredBackground>
   )

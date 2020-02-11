@@ -1,6 +1,6 @@
 import React from 'react'
 import { Box, Text } from 'grommet'
-import { Document } from 'grommet-icons'
+import { Resources } from 'grommet-icons'
 import Scroller from '../utils/Scroller'
 import Flyout, { FlyoutHeader, FlyoutContainer } from '../utils/Flyout'
 import { mergeAppend } from '../../utils/array'
@@ -40,7 +40,7 @@ export default function Files({loading, data, fetchMore}) {
   const {files: {edges, pageInfo}, fileCount} = data.conversation
 
   return (
-    <Flyout width='30vw' target={<HeaderIcon icon={Document} count={fileCount} />}>
+    <Flyout width='30vw' target={<HeaderIcon icon={Resources} count={fileCount} />}>
     {setOpen => (
       <FlyoutContainer width='40vw'>
         <FlyoutHeader text='Files' setOpen={setOpen} />

@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react'
-import { Chat } from 'grommet-icons'
+import { ChatOption } from 'grommet-icons'
 import { useMutation } from 'react-apollo'
 import { CREATE_CHAT } from './queries'
 import {addConversation} from './utils'
@@ -24,7 +24,7 @@ export default function CreateChat({onChat, user}) {
   })
 
   return (
-    <Chat
+    <ChatOption
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
       color={hover ? 'focus' : null}
