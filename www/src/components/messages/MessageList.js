@@ -11,6 +11,7 @@ import { MESSAGES_Q, DIALOG_SUB } from './queries'
 import { Conversations } from '../login/MyConversations'
 import { ReplyContext } from './ReplyProvider'
 import Pill from '../utils/Pill'
+import AvailabilityDetector from '../utils/AvailabilityDetector'
 
 export const DialogContext = React.createContext({
   dialog: null,
@@ -80,10 +81,9 @@ function MessageList() {
       }}>
       {() => (
         <>
-        <Detector render={({online}) => {
-          if (ignore) return null
-          return online ? <BackOnline refetch={refetch} /> : <Offline />
-        }} />
+        <AvailabilityDetector>
+        {online => online ? <BackOnline refetch={refetch} /> : <Offline />}
+        </AvailabilityDetector>
         <Scroller
           id='message-viewport'
           edges={edges}

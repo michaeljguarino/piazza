@@ -207,7 +207,7 @@ export default function Workspaces({pad}) {
           accentText
           height={`${FOOTER_HEIGHT}px`}
           style={{cursor: 'pointer'}}
-          pad={{...pad, right: 'small', top: 'small', bottom: '7px'}}
+          pad={{...pad, right: 'small', vertical: 'small'}}
           align='center'
           justify='end'
           direction='row'>
