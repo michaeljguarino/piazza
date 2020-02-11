@@ -97,18 +97,12 @@ export function updateConversation(prev, conv) {
   return {...prev, conversations: scope}
 }
 
-export function removeConversation(prev, conv) {
-  let edges = prev.conversations.edges.filter(({node: {id}}) => id !== conv.id)
-  let chatEdges = prev.chats.edges.filter(({node: {id}}) => id !== conv.id)
+export function removeConversation({conversations, chats, ...prev}, conv) {
+  let edges = conversations.edges.filter(({node: {id}}) => id !== conv.id)
+  let chatEdges = chats.edges.filter(({node: {id}}) => id !== conv.id)
   return {
     ...prev,
-    conversations: {
-      ...prev.conversations,
-      edges: edges,
-    },
-    chats: {
-      ...prev.chats,
-      edges: chatEdges
-    }
+    conversations: {...conversations, edges: edges},
+    chats: {...chats, edges: chatEdges}
   }
 }

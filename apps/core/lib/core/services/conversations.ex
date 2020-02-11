@@ -508,11 +508,12 @@ defmodule Core.Services.Conversations do
 
   defp handle_delete_participant(
     %Participant{user_id: uid, conversation: %{chat: true}} = participant,
-    %User{id: uid}
+    %User{id: uid} = user
   ) do
     participant
     |> Ecto.Changeset.change(%{deleted_at: DateTime.utc_now()})
     |> Core.Repo.update()
+    |> notify(:delete, user)
   end
   defp handle_delete_participant(participant, user) do
     participant

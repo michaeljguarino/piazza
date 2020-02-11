@@ -25,6 +25,7 @@ defimpl Core.PubSub.Cache, for: Core.PubSub.ParticipantUpdated do
 end
 
 defimpl Core.PubSub.Cache, for: Core.PubSub.ParticipantDeleted do
+  def prime(%{item: %{conversation: %{chat: true}}}), do: :ok
   def prime(%{item: %{id: id, conversation_id: conv_id}}) do
     Core.Cache.transaction(fn ->
       Core.Cache.refresh({:participants, conv_id}, fn val ->

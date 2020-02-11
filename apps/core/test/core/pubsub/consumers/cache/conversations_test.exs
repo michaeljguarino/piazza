@@ -25,6 +25,13 @@ defmodule Core.PubSub.Consumers.CacheTest do
 
       [] = Core.Cache.get({:participants, participant.conversation_id})
     end
+
+    test "It will ignore if the conversation is a chat" do
+      participant = insert(:participant, conversation: build(:conversation, chat: true))
+
+      event = %PubSub.ParticipantDeleted{item: participant}
+      :ok = Cache.handle_event(event)
+    end
   end
 
   describe "ParticipantUpdated" do

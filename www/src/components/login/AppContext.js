@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react'
+import React, { useState, useContext, useEffect } from 'react'
 import { Redirect, useParams, useHistory } from 'react-router-dom'
 import { useQuery, useApolloClient } from 'react-apollo'
 import { CONTEXT_Q } from './queries'
@@ -36,6 +36,7 @@ export default function AppContext({children, sideEffects}) {
   })
 
   let history = useHistory()
+  useEffect(() => subscribeToNewConversations(subscribeToMore, workspaceId, client), [workspaceId])
 
   if (loading) return <Box height='100vh'><Loading/></Box>
 
@@ -43,11 +44,6 @@ export default function AppContext({children, sideEffects}) {
     wipeToken()
     return <Redirect to='/login'/>
   }
-
-  const {conversations, chats} = data
-  const current = findConversation(data, conversationId) || conversations.edges[0].node
-
-  if (!conversationId) return <Redirect to={conversationUrl(current, workspaceId)} />
 
   const setCurrentConversation = (conv) => {
     if (conv) {
@@ -68,7 +64,10 @@ export default function AppContext({children, sideEffects}) {
   }
   const setWorkspace = ({id}) => history.push(`/wk/${id}`)
 
-  subscribeToNewConversations(subscribeToMore, workspaceId)
+  const {conversations, chats} = data
+  const current = findConversation(data, conversationId) || conversations.edges[0].node
+
+  if (!conversationId) return <Redirect to={conversationUrl(current, workspaceId)} />
 
   const lastSeenAt = (
     current &&
