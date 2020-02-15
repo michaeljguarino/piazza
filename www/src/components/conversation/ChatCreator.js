@@ -50,7 +50,7 @@ function Header({padding}) {
             size='15px'
             width='100%'
             color='sidebarText'>
-              Chats
+              Direct Messages
           </Text>
         </Box>
         <Box

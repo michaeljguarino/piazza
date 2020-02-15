@@ -115,7 +115,7 @@ function Conversation({conversation, ...props}) {
         direction='row'
         align='center'
         justify='end'
-        height='24px'
+        height='25px'
         style={{cursor: 'pointer'}}
         onClick={() => props.setCurrentConversation(conversation)}
         pad={props.pad}

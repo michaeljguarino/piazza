@@ -1,7 +1,7 @@
 import React, { useState, useContext } from 'react'
 import { useMutation, useQuery } from 'react-apollo'
 import { Box, Text, Markdown, Anchor, Calendar } from 'grommet'
-import {Down} from 'grommet-icons'
+import { Down } from 'grommet-icons'
 import CloseableDropdown from '../utils/CloseableDropdown'
 import Modal, { ModalHeader } from '../utils/Modal'
 import { UPDATE_CONVERSATION, UPDATE_PARTICIPANT, DELETE_PARTICIPANT, CONVERSATION_CONTEXT } from './queries'
@@ -17,18 +17,11 @@ import { updateConversation } from './utils'
 import { conversationNameString, Icon } from './Conversation'
 import pick from 'lodash/pick'
 import InterchangeableBox from '../utils/InterchangeableBox'
-import MenuItem, {SubMenu} from '../utils/MenuItem'
+import MenuItem, { SubMenu } from '../utils/MenuItem'
 import HoveredBackground from '../utils/HoveredBackground'
 import { Conversations } from '../login/MyConversations'
 import { CONTEXT_Q } from '../login/queries'
 import { ICON_HEIGHT } from '../Piazza'
-
-export const BOX_ATTRS = {
-  direction: "row",
-  align: "center",
-  style: {cursor: 'pointer', lineHeight: '15px'},
-  pad: {horizontal: '8px'},
-}
 
 export function removeConversation(cache, conversationId, workspaceId) {
   const {conversations, chats, ...prev} = cache.readQuery({ query: CONTEXT_Q, variables: {workspaceId} });
