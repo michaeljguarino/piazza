@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, useState } from 'react'
 import { Subscription } from 'react-apollo'
 import { MESSAGES_SUB, MESSAGES_Q } from './queries'
 import { updateConversations } from '../conversation/utils'
@@ -6,7 +6,7 @@ import { applyNewMessage, updateMessage, removeMessage } from './utils'
 import { CurrentUserContext } from '../login/EnsureLogin'
 import { Conversations } from '../login/MyConversations'
 
-function applyDelta({client, subscriptionData}, currentConversation, workspaceId, me) {
+function applyDelta({client, subscriptionData}, currentConversation, workspaceId, me, setScrollTo) {
   if (!subscriptionData.data) return
   const messageDelta = subscriptionData.data.messageDelta
   const message = messageDelta.payload
@@ -16,6 +16,8 @@ function applyDelta({client, subscriptionData}, currentConversation, workspaceId
     updateConversations(client, workspaceId, (e) => e.node.id === convId, (e) => (
       {...e, node: {...e.node, unreadMessages: e.node.unreadMessages + 1}}
     ))
+  } else {
+    setScrollTo(message.id)
   }
 
   if (message.creator.id === me.id) return
@@ -43,16 +45,21 @@ function applyDelta({client, subscriptionData}, currentConversation, workspaceId
   }
 }
 
+export const MessageScrollContext = React.createContext({scrollTo: null, setScrollTo: () => null})
+
 function MessageSubscription({children}) {
+  const [scrollTo, setScrollTo] = useState(null)
   const me = useContext(CurrentUserContext)
   const {currentConversation, workspaceId} = useContext(Conversations)
 
   return (
-    <Subscription subscription={MESSAGES_SUB} onSubscriptionData={(data) =>
-      applyDelta(data, currentConversation, workspaceId, me)
-    }>
-    {() => children}
-    </Subscription>
+    <MessageScrollContext.Provider value={{scrollTo, setScrollTo}}>
+      <Subscription subscription={MESSAGES_SUB} onSubscriptionData={(data) =>
+        applyDelta(data, currentConversation, workspaceId, me, setScrollTo)
+      }>
+      {() => children}
+      </Subscription>
+    </MessageScrollContext.Provider>
   )
 }
 

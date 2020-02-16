@@ -10,13 +10,13 @@ import { removeMessage, updateMessage, addPinnedMessage, removePinnedMessage } f
 import EmojiPicker from '../emoji/EmojiPicker'
 import { CurrentUserContext } from '../login/EnsureLogin'
 
-
+const BORDER = {side: 'right', color: 'light-6'}
 const CONTROL_ATTRS = {
   style: {cursor: 'pointer'},
   align: 'center',
   justify: 'center',
-  border: 'right',
-  width: '25px'
+  border: BORDER,
+  width: '30px'
 }
 
 function DeleteMessage({message, conversation}) {
@@ -135,8 +135,7 @@ function MessageControls(props) {
 
   return (
     <Box
-      border
-      elevation='xxsmall'
+      elevation='xsmall'
       background='white'
       direction='row'
       height='30px'
@@ -149,7 +148,7 @@ function MessageControls(props) {
           accentable
           onClick={() => props.setReply(props.message)}
           {...CONTROL_ATTRS}
-          border={props.message.creator.id === me.id ? 'right' : null}>
+          border={props.message.creator.id === me.id ? BORDER : null}>
           <BlockQuote size='15px' />
         </Box>
       </HoveredBackground>

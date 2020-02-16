@@ -11,6 +11,7 @@ import { Conversations } from '../login/MyConversations'
 import { ReplyContext } from './ReplyProvider'
 import Pill from '../utils/Pill'
 import AvailabilityDetector from '../utils/AvailabilityDetector'
+import { MessageScrollContext } from './MessageSubscription'
 
 export const DialogContext = React.createContext({
   dialog: null,
@@ -58,6 +59,7 @@ function MessageList() {
   const [ignore, setIgnore] = useState(true)
   const {currentConversation, waterline} = useContext(Conversations)
   const {setReply} = useContext(ReplyContext)
+  const {scrollTo} = useContext(MessageScrollContext)
   const {loading, error, data, fetchMore, refetch} = useQuery(MESSAGES_Q, {
     variables: {conversationId: currentConversation.id},
     fetchPolicy: 'cache-and-network'
@@ -107,7 +109,8 @@ function MessageList() {
               message={edge.node}
               setReply={setReply}
               dialog={dialog}
-              next={next.node} />
+              next={next.node}
+              scrollTo={scrollTo} />
           )}
           onLoadMore={() => {
             if (!pageInfo.hasNextPage) return

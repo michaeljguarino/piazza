@@ -263,7 +263,7 @@ export const MessagePlaceholder = ({index}) => {
   )
 }
 
-export default function Message({noHover, selected, message, onClick, pos, parentRef, ...props}) {
+export default function Message({noHover, selected, scrollTo, message, onClick, pos, parentRef, ...props}) {
   const {addMessage, removeMessage} = useContext(VisibleMessagesContext)
   const msgRef = useRef()
   const [hover, setHover] = useState(false)
@@ -292,6 +292,10 @@ export default function Message({noHover, selected, message, onClick, pos, paren
       removeMessage(message)
     }
   }, [parentRef, pos])
+
+  useEffect(() => {
+    scrollTo && msgRef && msgRef.current && message.id === scrollTo && msgRef.current.scrollIntoView()
+  }, [msgRef, scrollTo])
 
   return (
     <>
