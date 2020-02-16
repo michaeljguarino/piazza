@@ -25,6 +25,10 @@ defmodule Core.Models.Workspace do
     )
   end
 
+  def first(query \\ __MODULE__) do
+    from(w in query, limit: 1)
+  end
+
   def ordered(query \\ __MODULE__, order \\ [asc: :name]) do
     from(w in query, order_by: ^order)
   end

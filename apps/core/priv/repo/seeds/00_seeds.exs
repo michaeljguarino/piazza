@@ -13,7 +13,13 @@ seed do
     password: get_env("ADMIN_PASSWORD"),
     roles: %{admin: true}
   }) |> Repo.insert!()
-  Core.Services.Conversations.create_conversation(%{name: "townhall", global: true, public: true}, admin)
+  id = Core.Services.Workspaces.default_id()
+  Core.Services.Conversations.create_conversation(%{
+    name: "townhall",
+    global: true,
+    public: true,
+    workspace_id: id
+  }, admin)
 end
 
 

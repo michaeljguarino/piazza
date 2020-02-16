@@ -34,6 +34,15 @@ defmodule Core.Services.Workspaces do
   def default_id() do
     case Core.Repo.get_by(Workspace, name: Workspace.default()) do
       %{id: id} -> id
+      _ -> create_if_none_present()
+    end
+  end
+
+  defp create_if_none_present() do
+    Workspace.first()
+    |> Core.Repo.one()
+    |> case do
+      %{id: id} -> id
       _ ->
         {:ok, %{id: id}} = create_default()
         id
