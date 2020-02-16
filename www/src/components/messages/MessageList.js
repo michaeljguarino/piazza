@@ -12,6 +12,7 @@ import { ReplyContext } from './ReplyProvider'
 import Pill from '../utils/Pill'
 import AvailabilityDetector from '../utils/AvailabilityDetector'
 import { MessageScrollContext } from './MessageSubscription'
+import { debounce } from 'lodash'
 
 export const DialogContext = React.createContext({
   dialog: null,
@@ -55,7 +56,7 @@ function Offline() {
   return <OnlineInner text='connection lost' />
 }
 
-function MessageList() {
+export default function MessageList() {
   const [ignore, setIgnore] = useState(true)
   const {currentConversation, waterline} = useContext(Conversations)
   const {setReply} = useContext(ReplyContext)
@@ -64,9 +65,13 @@ function MessageList() {
     variables: {conversationId: currentConversation.id},
     fetchPolicy: 'cache-and-network'
   })
+
   useEffect(() => {
-    setTimeout(() => setIgnore(false), 10000)
-  }, [])
+    const timeout = ignore ? setTimeout(() => setIgnore(false), 15000) : null
+    return () => timeout && clearTimeout(timeout)
+  }, [ignore])
+
+  const onScroll = debounce(() => setIgnore(true), 0, {leading: true})
 
   if (loading && !data) return <Loading height='calc(100vh - 135px)' width='100%' />
   if (error) return <div>wtf</div>
@@ -89,6 +94,7 @@ function MessageList() {
           id='message-viewport'
           edges={edges}
           placeholder={(i) => <MessagePlaceholder index={i} />}
+          onScroll={onScroll}
           loading={loading}
           direction='up'
           style={{
@@ -110,7 +116,8 @@ function MessageList() {
               setReply={setReply}
               dialog={dialog}
               next={next.node}
-              scrollTo={scrollTo} />
+              scrollTo={scrollTo}
+              ignoreScrollTo={ignore} />
           )}
           onLoadMore={() => {
             if (!pageInfo.hasNextPage) return
@@ -140,7 +147,4 @@ function MessageList() {
     )}
   </DialogProvider>
   )
-
 }
-
-export default MessageList

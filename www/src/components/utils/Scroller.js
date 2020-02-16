@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect } from "react";
 import {lookahead, dupe} from '../../utils/array'
 import {debounce} from 'lodash'
 
-function Scroller({loading, placeholder, ...props}) {
+function Scroller({loading, placeholder, onScroll, ...props}) {
   const scrollRef = useRef()
   const [pos, setPos] = useState(0)
   const [scrolling, setScrolling] = useState(false)
@@ -25,6 +25,7 @@ function Scroller({loading, placeholder, ...props}) {
       }
       updatePosition(elem.scrollTop)
     }
+    onScroll && onScroll()
   }
 
   useEffect(() => {
