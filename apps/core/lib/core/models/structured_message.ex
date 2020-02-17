@@ -8,7 +8,7 @@ defmodule Core.Models.StructuredMessage do
     end
 
     component "attachment" do
-      attributes ~w(accent height width pad margin align justify gap)
+      attributes ~w(accent height width pad margin align justify gap direction)
       parents ~w(root)
     end
 
