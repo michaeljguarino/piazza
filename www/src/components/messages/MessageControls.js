@@ -16,7 +16,7 @@ const CONTROL_ATTRS = {
   align: 'center',
   justify: 'center',
   border: BORDER,
-  width: '30px'
+  width: '40px'
 }
 
 function DeleteMessage({message, conversation}) {
@@ -138,9 +138,9 @@ function MessageControls(props) {
       elevation='xsmall'
       background='white'
       direction='row'
-      height='30px'
+      height='35px'
       round='xsmall'
-      margin={{right: '10px'}}>
+      margin={{right: '10px', top: '-10px'}}>
       <MessageReaction {...props} />
       <PinMessage {...props} />
       <HoveredBackground>
