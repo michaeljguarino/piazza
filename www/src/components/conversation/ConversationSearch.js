@@ -56,8 +56,7 @@ function ConversationRow(props) {
       onClick={() => props.setCurrentConversation(props.conversation)}>
       <Box width='100%'>
         <Box width='100%' gap='xsmall' direction='row' align='center'>
-          <Text size='small' style={{fontWeight: 500}}># {props.conversation.name}</Text>
-          <Text size='small'>- <i>{props.conversation.topic || 'someone should have written a topic'}</i></Text>
+          <Text size='small' style={{fontWeight: 500}}># {props.conversation.name} - <i>{props.conversation.topic || 'someone should have written a topic'}</i></Text>
         </Box>
         <Box direction='row'>
           <Text size='xsmall' color='dark-4'>
