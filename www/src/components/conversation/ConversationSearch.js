@@ -12,10 +12,10 @@ import Loading from '../utils/Loading'
 import { Conversations } from '../login/MyConversations'
 
 function _addConversation(client, conversation, workspaceId) {
-  const prev = client.readQuery({ query: CONTEXT_Q, variables: {workspaceId} });
+  const prev = client.readQuery({ query: CONTEXT_Q, variables: { workspaceId } });
   client.writeQuery({
     query: CONTEXT_Q,
-    variables: {workspaceId},
+    variables: { workspaceId },
     data: addConversation(prev, conversation)
   });
 }
@@ -33,15 +33,15 @@ export function searchConversations(client, query, callback, workspaceId) {
   }).then(callback)
 }
 
-function ConversationResult(props) {
+function ConversationResult({name}) {
   return (
     <Box direction="row" align="center" gap="small" pad="small">
-      <Text size='small'># {props.name}</Text>
+      <Text size='small'># {name}</Text>
     </Box>
   )
 }
 
-function ConversationRow(props) {
+function ConversationRow({conversation, setCurrentConversation}) {
   const [hover, setHover] = useState(false)
 
   return (
@@ -53,14 +53,14 @@ function ConversationRow(props) {
       onMouseLeave={() => setHover(false)}
       pad={{vertical: "xsmall", horizontal: 'small'}}
       background={hover ? 'light-2' : null}
-      onClick={() => props.setCurrentConversation(props.conversation)}>
+      onClick={() => setCurrentConversation(conversation)}>
       <Box width='100%'>
         <Box width='100%' gap='xsmall' direction='row' align='center'>
-          <Text size='small' style={{fontWeight: 500}}># {props.conversation.name} - <i>{props.conversation.topic || 'someone should have written a topic'}</i></Text>
+          <Text size='small' style={{fontWeight: 500}}># {conversation.name} - <i>{conversation.topic || 'someone should have written a topic'}</i></Text>
         </Box>
         <Box direction='row'>
           <Text size='xsmall' color='dark-4'>
-            Created by {props.conversation.creator.name} {moment(props.conversation.insertedAt).fromNow()}
+            Created by {conversation.creator.name} {moment(conversation.insertedAt).fromNow()}
           </Text>
         </Box>
       </Box>

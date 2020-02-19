@@ -1,9 +1,11 @@
 import React, { useState } from 'react'
 import { Box } from 'grommet'
 import { useHistory } from 'react-router-dom'
-import CodeEditor from '../utils/CodeEditor'
 import StructuredMessage from '../messages/StructuredMessage'
 import { ModalHeader } from '../utils/Modal'
+import AceEditor from "react-ace"
+import "ace-builds/src-noconflict/mode-xml"
+import "ace-builds/src-noconflict/theme-terminal"
 const parseXml = require('@rgrove/parse-xml')
 
 function parseMessage(msg) {
@@ -49,13 +51,24 @@ export default function StructuredMessageTester() {
       <Box style={{maxHeight: '80vh', minWidth: '60vw'}} pad='medium' gap='medium'>
         <Box direction='row' gap='medium' fill='horizontal'>
           <Box width='60%' border>
-            <CodeEditor value={message} onChange={(text) =>  {
+            <AceEditor
+              mode='xml'
+              theme='terminal'
+              height='80vh'
+              width='100%'
+              name='structured-message'
+              value={message}
+              showGutter
+              showPrintMargin
+              highlightActiveLine
+              editorProps={{ $blockScrolling: true }}
+              onChange={(text) =>  {
                 setMessage(message)
                 const parsed = parseMessage(text)
                 if (parsed) {
                   setParsed(parsed)
                 }
-            }} lang='xml' />
+            }} />
           </Box>
           <Box pad='xsmall' border fill='horizontal'>
             {parsed}
