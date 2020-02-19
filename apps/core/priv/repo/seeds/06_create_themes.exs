@@ -21,19 +21,19 @@ seed do
   }, "hoth", admin)
 
   {:ok, %{id: id}} = Brand.create_theme(%{
-    brand: "#2F415B",
-    sidebar: "#2F415B",
-    sidebar_hover: "#263449",
-    focus: "#CF6D57",
-    action: "#2F415B",
-    action_hover: "#2a3b52",
+    brand: "#1A1D21",
+    sidebar: "#1A1D21",
+    sidebar_hover: "#000000",
+    focus: "#0576B9",
+    action: "#007a5a",
+    action_hover: "#007a5a",
     focus_text: "#FFFFFF",
     active_text: "#FFFFFF",
-    tag_light: "#6d7a8c",
-    tag_medium: "#59677c",
-    presence: "#006633",
-    notif: "#EB4D5C",
-    link: "#2F415B"
+    tag_light: "#000000",
+    tag_medium: "#1A1D21",
+    presence: "#39E500",
+    notif: "#CC4400",
+    link: "#1264a3"
   }, "piazza", admin)
 
   {:ok, _} = %Models.Brand{theme_id: id} |> Core.Repo.insert()
