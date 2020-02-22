@@ -44,8 +44,8 @@ sections:
   - type: HELM
     name: piazza
     configuration:
-    - name: giphySecret
-      documentation: giphy api key to use for the /giphy command
+    - name: defaultWorkspace
+      documentation: name of the initial workspace you want to create (e.g. "general")
       type: STRING
     - name: adminEmail
       documentation: email of the seed admin user

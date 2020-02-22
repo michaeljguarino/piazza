@@ -12,7 +12,7 @@ end
 
 defmodule Core.License do
   alias Core.License.{Policy, Limits, Feature}
-  defstruct [:expires_at, :refresh_token, :policy]
+  defstruct [:expires_at, :refresh_token, :policy, :secrets]
 
   def from_json!(json) do
     Poison.decode!(json, as: %__MODULE__{

@@ -1,4 +1,6 @@
 defmodule Gql.Clients.Giphy do
+  alias Core.Services.License
+
   require Logger
   @sample_size 15
 
@@ -100,5 +102,10 @@ defmodule Gql.Clients.Giphy do
 
   def endpoint(), do: "https://api.giphy.com/v1/"
 
-  def client_secret(), do: Application.get_env(:gql, :giphy_secret)
+  def client_secret() do
+    case License.fetch() do
+      %{secrets: %{"giphySecret" => secret}} -> secret
+      _ -> nil
+    end
+  end
 end
