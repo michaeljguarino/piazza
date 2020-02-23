@@ -206,9 +206,9 @@ const PLUGIN_TEMPLATES = [
 
 function MentionManager({editorState, setEditorState, onChange, disableSubmit}) {
   const [emojiPicker, setEmojiPicker] = useState(false)
+  const client    = useApolloClient()
   const emojiRef  = useRef()
   const editorRef = useRef()
-  const client    = useApolloClient()
 
   const plugins = useMemo(() => PLUGIN_TEMPLATES.map(({trigger, capture, suggestions, replacement}) => (
     new SuggestionsPlugin({
@@ -243,9 +243,8 @@ function MentionManager({editorState, setEditorState, onChange, disableSubmit}) 
       placeholder='this is for talking'
     />
     {plugins.map((plugin, index) => {
-      const SuggestionPortal = plugin.SuggestionPortal
       return (
-        <SuggestionPortal
+        <plugin.SuggestionPortal
           alignTop
           key={index}
           value={editorState}

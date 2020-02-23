@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useState, useCallback} from 'react'
 import {Box, Text} from 'grommet'
 import {FormPrevious} from 'grommet-icons'
 import HoveredBackground from './HoveredBackground'
@@ -40,10 +40,11 @@ function slideAnimate(type) {
 function InterchangeableBox(props) {
   const [loaded, setLoaded] = useState(false)
   const [alternate, setAlternate] = useState(null)
-  function wrappedSetAlternate(alternate) {
+
+  const wrappedSetAlternate = useCallback((alternate) => {
     setLoaded(true)
     setAlternate(alternate)
-  }
+  }, [setLoaded, setAlternate])
 
   return (!alternate ?
     <Box animation={loaded && !props.noWrap ? slideAnimate('slideLeft') : null} {...props}>

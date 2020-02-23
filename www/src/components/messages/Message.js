@@ -1,4 +1,4 @@
-import React, {useState, useRef, useEffect, useContext} from 'react'
+import React, { useState, useRef, useEffect, useContext, useCallback } from 'react'
 import {Box, Text, Markdown, Stack} from 'grommet'
 import {Pin} from 'grommet-icons'
 import Avatar from '../users/Avatar'
@@ -274,11 +274,11 @@ export default function Message({noHover, selected, scrollTo, ignoreScrollTo, me
   const isHovered = (pinnedHover || hover) && !noHover && !editing
   const background = selected ? SELECTED_BACKGROUND : (isHovered && !message.pin) ? 'light-2' : null
 
-  function wrappedSetEditing(editing) {
+  const wrappedSetEditing = useCallback((editing) => {
     setPinnedHover(false)
     setEditing(editing)
     if (!editing) setEdited(null)
-  }
+  }, [setPinnedHover, setEdited, setEditing])
 
   useEffect(() => {
     if (!parentRef || !parentRef.current || !msgRef.current) return

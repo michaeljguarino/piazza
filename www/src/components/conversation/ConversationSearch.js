@@ -1,4 +1,4 @@
-import React, { useState, useRef, useContext } from 'react'
+import React, { useState, useRef, useContext, useCallback } from 'react'
 import { useApolloClient, useQuery } from 'react-apollo'
 import { TextInput, Box, Text } from 'grommet'
 import { Return, Search } from 'grommet-icons'
@@ -92,11 +92,11 @@ export default function ConversationSearch({onSearchClose}) {
   const [suggestions, setSuggestions] = useState([])
   const {loading, data, fetchMore} = useQuery(PUBLIC_CONVERSATIONS, {variables: {workspaceId}})
 
-  const wrappedSetCurrentConv = (conv) => {
+  const wrappedSetCurrentConv = useCallback((conv) => {
     _addConversation(client, conv, workspaceId)
     onSearchClose()
     setCurrentConversation(conv)
-  }
+  }, [onSearchClose, setCurrentConversation, workspaceId])
 
   return (
     <Box ref={searchRef} fill='horizontal' width='40vw' gap='small' pad='small'>

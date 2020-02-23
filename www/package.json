@@ -69,7 +69,8 @@
     "slate-smart-suggestions": "https://github.com/michaeljguarino/slate-suggestions",
     "slate-suggestions": "^0.4.0",
     "styled-components": "^4.3.2",
-    "subscriptions-transport-ws": "^0.9.16"
+    "subscriptions-transport-ws": "^0.9.16",
+    "why-did-you-update": "^1.0.8"
   },
   "scripts": {
     "start": "react-scripts start",

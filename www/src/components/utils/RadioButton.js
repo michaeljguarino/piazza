@@ -1,16 +1,16 @@
-import React, {useState} from 'react'
+import React, {useState, useCallback} from 'react'
 import {Box, ThemeContext} from 'grommet'
 import {normalizeColor} from './colors'
 
-function RadioButton(props) {
+function RadioButton({onChange, ...props}) {
   const [hover, setHover] = useState(false)
   const [enabled, setEnabled] = useState(!!props.enabled)
   const enabledStyle = enabled ? {borderColor: normalizeColor('focus', props.theme)} : {}
 
-  function wrappedSetEnabled(enabled) {
+  const wrappedSetEnabled = useCallback((enabled) => {
     setEnabled(enabled)
-    props.onChange && props.onChange(enabled)
-  }
+    onChange && onChange(enabled)
+  }, [onChange, setEnabled])
 
   return (
     <Box

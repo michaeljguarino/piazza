@@ -98,13 +98,13 @@ export function ResetPassword() {
         </Form>
       </Box>
       {display && (
-          <Pill background='status-ok' onClose={() => setDisplay(false)}>
-            <Box direction='row' align='center' gap='xsmall'>
-              <Text>reset password email sent</Text>
-              <Close style={{cursor: 'pointer'}} size='small' onClick={() => setDisplay(false)} />
-            </Box>
-          </Pill>
-        )}
+        <Pill background='status-ok' onClose={() => setDisplay(false)}>
+          <Box direction='row' align='center' gap='xsmall'>
+            <Text>reset password email sent</Text>
+            <Close style={{cursor: 'pointer'}} size='small' onClick={() => setDisplay(false)} />
+          </Box>
+        </Pill>
+      )}
     </Box>
   )
 }
