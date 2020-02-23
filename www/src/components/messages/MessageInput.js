@@ -15,7 +15,7 @@ import {ReplyGutter, ReplyContext} from './ReplyProvider'
 import { Progress } from 'react-sweet-progress';
 import "react-sweet-progress/lib/style.css";
 import moment from 'moment'
-import Plain from 'slate-plain-serializer'
+import { plainDeserialize, plainSerialize } from '../../utils/slate'
 import { EditingMessageContext } from './VisibleMessages'
 import { Conversations } from '../login/MyConversations'
 
@@ -94,7 +94,7 @@ function FileInput({attachment, setAttachment}) {
 }
 
 function MessageInputInner({attachment, setAttachment, reply, setReply, conversation, setWaterline, typists, notifyTyping, dropRef}) {
-  const [editorState, setEditorState] = useState(Plain.deserialize(''))
+  const [editorState, setEditorState] = useState(plainDeserialize(''))
   const [uploadProgress, setUploadProgress] = useState(null)
   const [disableSubmit, setDisableSubmit] = useState(false)
   const {setEdited} = useContext(EditingMessageContext)
@@ -143,14 +143,14 @@ function MessageInputInner({attachment, setAttachment, reply, setReply, conversa
           if (e.key === 'Enter' && !e.shiftKey && !disableSubmit) {
             mutation({variables: {
               conversationId: conversation.id,
-              attributes: {attachment, parentId, text: Plain.serialize(editorState)}
+              attributes: {attachment, parentId, text: plainSerialize(editorState)}
             }})
-            setEditorState(Plain.deserialize(''))
+            setEditorState(plainDeserialize(''))
             setAttachment(null)
           }
         }}
         onUp={() => (
-          Plain.serialize(editorState) === '' && fetchRecentMessage(
+          plainSerialize(editorState) === '' && fetchRecentMessage(
             cache,  setEdited, me, conversation)
         )}>
         <Box
@@ -163,7 +163,7 @@ function MessageInputInner({attachment, setAttachment, reply, setReply, conversa
           <MentionManager
             parentRef={boxRef}
             editorState={editorState}
-            setEditorState={(editorState) => setEditorState(editorState)}
+            setEditorState={setEditorState}
             disableSubmit={setDisableSubmit}
             clearable={!disableSubmit}
             onChange={notifyTyping} />

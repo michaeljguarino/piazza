@@ -5,10 +5,10 @@ import MentionManager from './MentionManager'
 import Button, {SecondaryButton} from '../utils/Button'
 import {EDIT_MESSAGE, MESSAGES_Q} from './queries'
 import {updateMessage} from './utils'
-import Plain from 'slate-plain-serializer'
+import {plainDeserialize, plainSerialize} from '../../utils/slate'
 
 function MessageEdit(props) {
-  const [editorState, setEditorState] = useState(Plain.deserialize(props.message.text))
+  const [editorState, setEditorState] = useState(plainDeserialize(props.message.text))
   const [mutation] = useMutation(EDIT_MESSAGE, {
     update: (cache, {data: {editMessage}}) => {
       const convId = props.message.conversationId
@@ -34,7 +34,7 @@ function MessageEdit(props) {
       </Box>
       <Box direction='row' gap='xsmall'>
         <Button label='Update' round='xsmall' onClick={() => (
-          mutation({variables: {id: props.message.id, attributes: {text: Plain.serialize(editorState)}}})
+          mutation({variables: {id: props.message.id, attributes: {text: plainSerialize(editorState)}}})
         )} />
         <SecondaryButton label='Cancel' round='xsmall' onClick={() => props.setEditing(false)} />
       </Box>

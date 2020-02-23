@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react'
+import React, { useState, useMemo } from 'react'
 import { Box, Select, Text } from 'grommet'
 import { useApolloClient, useMutation } from 'react-apollo'
 import { ModalHeader } from '../utils/Modal'
@@ -8,8 +8,14 @@ import Button, { SecondaryButton } from '../utils/Button'
 import { CREATE_COMMAND, COMMANDS_Q } from './queries'
 import { addCommand } from './utils'
 import { searchConversations } from '../conversation/ConversationSearch'
-import { Editor } from 'slate-react'
-import Plain from 'slate-plain-serializer'
+import { createEditor } from 'slate'
+import { withHistory } from 'slate-history'
+import {
+  Slate,
+  Editable,
+  withReact,
+} from 'slate-react'
+import {plainSerialize, plainDeserialize} from '../../utils/slate'
 
 const LABEL_WIDTH = '100px'
 
@@ -40,13 +46,14 @@ export function ConversationSelector({onSelect}) {
 }
 
 export function CommandForm({formState, setFormState, vars, mutation, setOpen, action}) {
-  const editorRef = useRef()
+  const editor = useMemo(() => withReact(withHistory(createEditor())), [])
+  const [editorState, setEditorState] = useState(plainDeserialize(formState.documentation))
   const additionalVars = vars || {}
   const {incomingWebhook, ...form} = formState
   const finalVars = incomingWebhook ? {...additionalVars, ...form, incomingWebhook} : {...additionalVars, ...form}
   const [loading, setLoading] = useState(false)
   const [mut] = useMutation(mutation || CREATE_COMMAND, {
-    variables: finalVars,
+    variables: {...finalVars, documentation: plainSerialize(editorState)},
     update: (cache, {data}) => {
       setLoading(false)
       const prev = cache.readQuery({ query: COMMANDS_Q })
@@ -81,14 +88,12 @@ export function CommandForm({formState, setFormState, vars, mutation, setOpen, a
         }} />
       </Box>
       <Box style={{minHeight: '150px'}} pad='small' border round='xsmall'>
-        <Editor
-          ref={editorRef}
-          defaultValue={Plain.deserialize(formState.documentation)}
-          placeholder='Documentation for this commmand (markdown is encouraged)'
-          onChange={state => {
-            const text = Plain.serialize(state.value)
-            setFormState({...formState, documentation: text})
-          }} />
+        <Slate
+          editor={editor}
+          value={editorState}
+          onChange={setEditorState}>
+          <Editable placeholder='write a small bio' />
+        </Slate>
       </Box>
       <Box direction='row' justify='end' align='center' gap='xsmall'>
         <SecondaryButton round='xsmall' label='Cancel' onClick={() => setOpen(false)} />
