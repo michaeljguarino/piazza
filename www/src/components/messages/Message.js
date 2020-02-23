@@ -1,23 +1,24 @@
 import React, { useState, useRef, useEffect, useContext, useCallback } from 'react'
-import {Box, Text, Markdown, Stack} from 'grommet'
-import {Pin} from 'grommet-icons'
+import { Box, Text, Markdown, Stack } from 'grommet'
+import { Pin } from 'grommet-icons'
 import Avatar from '../users/Avatar'
 import moment from 'moment'
 import MessageEmbed from './MessageEmbed'
-import {VisibleMessagesContext, EditingMessageContext} from './VisibleMessages'
+import { VisibleMessagesContext, EditingMessageContext } from './VisibleMessages'
 import UserHandle from '../users/UserHandle'
 import MessageControls from './MessageControls'
 import MessageReactions from './MessageReactions'
 import MessageEdit from './MessageEdit'
 import PresenceIndicator from '../users/PresenceIndicator'
-import {TooltipContent} from '../utils/Tooltip'
+import { TooltipContent } from '../utils/Tooltip'
 import BotIcon from '../utils/BotIcon'
 import WithPresence from '../utils/presence'
 import StructuredMessage from './StructuredMessage'
 import File from './File'
 import Divider from '../utils/Divider'
-import {Emoji} from 'emoji-mart'
-import {intersectRect} from '../../utils/geo'
+import { Emoji } from 'emoji-mart'
+import { intersectRect } from '../../utils/geo'
+import './message.css'
 
 function TextMessage(props) {
   return (
@@ -29,7 +30,6 @@ function TextMessage(props) {
 
 const PINNED_BACKGROUND='rgba(var(--sk_secondary_highlight,242,199,68),.1)'
 const PIN_COLOR='rgb(242,199,68)'
-const SELECTED_BACKGROUND='rgba(255, 229, 119, 0.5)'
 
 function MsgMarkdown(props) {
   return (
@@ -157,9 +157,8 @@ function sameDay(message, next) {
 function MessageBody({message, conversation, next, nopin, editing, setEditing, dialog, hover, setPinnedHover}) {
   const date = moment(message.insertedAt)
   const consecutive = isConsecutive(message, next)
-  const background = (message.pin && !nopin) ? PINNED_BACKGROUND : null
   return (
-    <Box fill='horizontal' background={background}>
+    <Box fill='horizontal'>
       <PinHeader {...message} />
       <Box direction='row' pad={{vertical: 'xsmall', horizontal: 'small'}}>
         {!consecutive && <Avatar user={message.creator} /> }
@@ -263,16 +262,14 @@ export const MessagePlaceholder = ({index}) => {
   )
 }
 
-export default function Message({noHover, selected, scrollTo, ignoreScrollTo, message, onClick, pos, parentRef, ...props}) {
+export default function Message({noHover, selected, scrollTo, ignoreScrollTo, message, onClick, pos, parentRef, nopin, ...props}) {
   const {addMessage, removeMessage} = useContext(VisibleMessagesContext)
   const msgRef = useRef()
-  const [hover, setHover] = useState(false)
   const [pinnedHover, setPinnedHover] = useState(false)
   const [editing, setEditing] = useState(false)
   const {edited, setEdited} = useContext(EditingMessageContext)
   const isEditing = editing || (edited === message.id)
-  const isHovered = (pinnedHover || hover) && !noHover && !editing
-  const background = selected ? SELECTED_BACKGROUND : (isHovered && !message.pin) ? 'light-2' : null
+  const additionalClasses = '' + (message.pin && !nopin ? ' pin' : '') + (selected ? ' selected' : '') + (pinnedHover ? ' hovered' : '')
 
   const wrappedSetEditing = useCallback((editing) => {
     setPinnedHover(false)
@@ -304,26 +301,21 @@ export default function Message({noHover, selected, scrollTo, ignoreScrollTo, me
     <Box
       ref={msgRef}
       id={message.id}
+      className={'message' + additionalClasses}
       onClick={onClick}
-      onMouseEnter={() => setHover(true)}
-      onMouseLeave={() => setHover(false)}
-      background={background}
       flex={false}>
       <Stack fill anchor='top-right'>
         <MessageBody
           editing={isEditing}
           setEditing={wrappedSetEditing}
-          hover={isHovered}
           setPinnedHover={setPinnedHover}
           message={message}
           {...props} />
-        {isHovered && (
-          <MessageControls
-            setEditing={wrappedSetEditing}
-            setPinnedHover={setPinnedHover}
-            message={message}
-            {...props} />
-        )}
+        <MessageControls
+          setEditing={wrappedSetEditing}
+          setPinnedHover={setPinnedHover}
+          message={message}
+          {...props} />
       </Stack>
     </Box>
     <Waterline message={message} next={props.next} waterline={props.waterline} />

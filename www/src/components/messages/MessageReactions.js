@@ -77,17 +77,15 @@ export default function MessageReactions({message, conversation, hover, setPinne
             messageId={message.id} />
         ))}
       </Box>
-      {hover && (
-        <Box direction='row' height='25px'>
-          <MessageReaction
-            message={message}
-            conversation={conversation}
-            setPinnedHover={setPinnedHover}
-            position={['top', 'right', 'bottom']}
-            label={'+'}
-            boxAttrs={{...BOX_ATTRS, backgroud: 'white', border: true}} />
-        </Box>
-      )}
+      <Box direction='row' height='25px' className="message-reactions">
+        <MessageReaction
+          message={message}
+          conversation={conversation}
+          setPinnedHover={setPinnedHover}
+          position={['top', 'right', 'bottom']}
+          label={'+'}
+          boxAttrs={{...BOX_ATTRS, backgroud: 'white', border: true}} />
+      </Box>
     </Box>
   )
 }
