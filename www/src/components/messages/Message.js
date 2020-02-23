@@ -294,7 +294,7 @@ export default function Message({noHover, selected, scrollTo, ignoreScrollTo, me
     if (scrollTo && !ignoreScrollTo && msgRef && msgRef.current && message.id === scrollTo) {
       msgRef.current.scrollIntoView()
     }
-  }, [msgRef, scrollTo, ignoreScrollTo, message.id])
+  }, [msgRef, scrollTo, ignoreScrollTo])
 
   return (
     <>

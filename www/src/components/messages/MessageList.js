@@ -1,11 +1,10 @@
-import React, { useState, useContext, useEffect } from 'react'
+import React, { useState, useContext, useEffect, useCallback } from 'react'
 import { Box, Text } from 'grommet'
 import { Wifi, Close } from 'grommet-icons'
 import Message, { MessagePlaceholder } from './Message'
 import { Subscription, useQuery } from 'react-apollo'
 import Scroller from '../utils/Scroller'
 import Loading from '../utils/Loading'
-import { mergeAppend } from '../../utils/array'
 import { MESSAGES_Q, DIALOG_SUB } from './queries'
 import { Conversations } from '../login/MyConversations'
 import { ReplyContext } from './ReplyProvider'
@@ -71,7 +70,7 @@ export default function MessageList() {
     return () => timeout && clearTimeout(timeout)
   }, [ignore])
 
-  const onScroll = debounce(() => setIgnore(true), 0, {leading: true})
+  const onScroll = useCallback(debounce(() => setIgnore(true), 150, {leading: true}), [])
 
   if (loading && !data) return <Loading height='calc(100vh - 135px)' width='100%' />
   if (error) return <div>wtf</div>
@@ -93,9 +92,9 @@ export default function MessageList() {
         <Scroller
           id='message-viewport'
           edges={edges}
-          placeholder={(i) => <MessagePlaceholder index={i} />}
+          placeholder={(i) => <MessagePlaceholder key={i} index={i} />}
           onScroll={onScroll}
-          loading={loading}
+          offset={100}
           direction='up'
           style={{
             overflow: 'auto',
@@ -119,12 +118,14 @@ export default function MessageList() {
               scrollTo={scrollTo}
               ignoreScrollTo={ignore} />
           )}
-          onLoadMore={() => {
-            if (!pageInfo.hasNextPage) return
-
+          onLoadMore={(setLoading) => {
+            if (!pageInfo.hasNextPage) return setLoading(false)
+            setLoading(true)
             fetchMore({
               variables: {conversationId: currentConversation.id, cursor: pageInfo.endCursor},
               updateQuery: (prev, {fetchMoreResult}) => {
+                console.log('returned')
+                setLoading(false)
                 const {edges, pageInfo} = fetchMoreResult.conversation.messages
                 return edges.length ? {
                   ...prev,
@@ -132,15 +133,14 @@ export default function MessageList() {
                     ...prev.conversation,
                     messages: {
                       ...prev.conversation.messages,
-                      edges: mergeAppend(edges, prev.conversation.messages.edges, (e) => e.node.id),
+                      edges: [...prev.conversation.messages.edges, ...edges],
                       pageInfo
                     }
                   }
                 } : prev;
               }
             })
-          }}
-        />
+          }} />
         </>
     )}
     </Subscription>
