@@ -1,6 +1,6 @@
 import React, { useState, useContext, useEffect, useRef } from 'react'
 import { Box, Text } from 'grommet'
-import { Wifi, Close } from 'grommet-icons'
+import { Wifi, Close, User } from 'grommet-icons'
 import Message, { MessagePlaceholder } from './Message'
 import { Subscription, useQuery } from 'react-apollo'
 import SmoothScroller from '../utils/SmoothScroller'
@@ -12,6 +12,8 @@ import Pill from '../utils/Pill'
 import AvailabilityDetector from '../utils/AvailabilityDetector'
 import { MessageScrollContext } from './MessageSubscription'
 import { VisibleMessagesContext } from './VisibleMessages'
+import { conversationNameString } from '../conversation/Conversation'
+import { CurrentUserContext } from '../login/EnsureLogin'
 
 export const DialogContext = React.createContext({
   dialog: null,
@@ -61,6 +63,21 @@ function sizeEstimate({embed, file, structuredMessage}) {
   return 75
 }
 
+function Prelude({conversation}) {
+  const me = useContext(CurrentUserContext)
+  const name = conversationNameString(conversation, me)
+  const fullname = conversation.chat ? `your chat with ${name}` : name
+  return (
+    <Box fill='horizontal' gap='xsmall' justify='center' pad='large'>
+      <Text weight='bold'>This is the beginning of {fullname}</Text>
+      <Box>
+        <Text size='small'>You can invite other people by clicking the <User size='15px' /> icon above</Text>
+        <Text size='small'>Try typing a slash-command, like `/giphy hey`</Text>
+      </Box>
+    </Box>
+  )
+}
+
 export default function MessageList() {
   const [listRef, setListRef] = useState(null)
   const [ignore, setIgnore] = useState(true)
@@ -99,12 +116,13 @@ export default function MessageList() {
         {online => online ? <BackOnline refetch={refetch} /> : <Offline />}
         </AvailabilityDetector>
         <Box width='100%' height='100%' ref={parentRef}>
+          <div style={{ flex: '1 1 auto' }}>
           <SmoothScroller
             listRef={listRef}
             setListRef={setListRef}
             hasNextPage={pageInfo.hasNextPage}
             loading={loading}
-            items={edges}
+            items={[...edges, 'PRELUDE']}
             sizeEstimate={({node}) => sizeEstimate(node)}
             scrollTo='start'
             placeholder={(i) => <MessagePlaceholder index={i} />}
@@ -112,18 +130,21 @@ export default function MessageList() {
               const edge = edges[visibleStopIndex]
               setLastMessage(edge && edge.node)
             }}
-            mapper={({node}, next, _ref, pos) => (
-              <Message
-                waterline={waterline}
-                key={node.id}
-                parentRef={parentRef}
-                pos={pos}
-                conversation={currentConversation}
-                message={node}
-                setReply={setReply}
-                dialog={dialog}
-                next={next.node} />
-            )}
+            mapper={(edge, next, _ref, pos) => {
+              if (edge === 'PRELUDE') return <Prelude conversation={currentConversation} />
+              const {node} = edge
+              return (
+                <Message
+                  waterline={waterline}
+                  key={node.id}
+                  parentRef={parentRef}
+                  pos={pos}
+                  conversation={currentConversation}
+                  message={node}
+                  setReply={setReply}
+                  dialog={dialog}
+                  next={next.node} />)
+            }}
             loadNextPage={() => {
               return fetchMore({
                 variables: {conversationId: currentConversation.id, cursor: pageInfo.endCursor},
@@ -143,6 +164,7 @@ export default function MessageList() {
               });
             }}
           />
+          </div>
       </Box>
       </>
     )}

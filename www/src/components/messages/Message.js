@@ -147,7 +147,7 @@ function isConsecutive(message, next) {
 }
 
 function sameDay(message, next) {
-  if (!next) return true
+  if (!next) return false
   const firstTime = moment(message.insertedAt)
   const secondTime = moment(next.insertedAt)
 
