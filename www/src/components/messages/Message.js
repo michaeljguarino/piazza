@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useContext, useCallback } from 'react'
+import React, { useState, useRef, useContext, useCallback } from 'react'
 import { Box, Text, Markdown, Stack } from 'grommet'
 import { Pin } from 'grommet-icons'
 import Avatar from '../users/Avatar'
@@ -17,7 +17,6 @@ import StructuredMessage from './StructuredMessage'
 import File from './File'
 import Divider from '../utils/Divider'
 import { Emoji } from 'emoji-mart'
-import { intersectRect } from '../../utils/geo'
 import './message.css'
 
 function TextMessage(props) {
@@ -163,7 +162,7 @@ function MessageBody({message, conversation, next, editing, setEditing, dialog, 
       <Box direction='row' pad={{vertical: 'xsmall', horizontal: 'small'}}>
         {!consecutive && <Avatar user={message.creator} /> }
         {consecutive && <Box width='45px'></Box>}
-        <Box fill={editing ? 'horizontal' : false}>
+        <Box margin={{left: '3px'}} fill={editing ? 'horizontal' : false}>
           {!consecutive && !editing &&
             <Box direction='row' align='center' gap='xsmall'>
               <Text weight='bold' size='15px'>
@@ -263,7 +262,6 @@ export const MessagePlaceholder = ({index}) => {
 }
 
 export default function Message({noHover, selected, scrollTo, ignoreScrollTo, message, onClick, pos, nopin, ...props}) {
-  const {addMessage, removeMessage} = useContext(VisibleMessagesContext)
   const msgRef = useRef()
   const [pinnedHover, setPinnedHover] = useState(false)
   const [editing, setEditing] = useState(false)
@@ -276,25 +274,6 @@ export default function Message({noHover, selected, scrollTo, ignoreScrollTo, me
     setEditing(editing)
     if (!editing) setEdited(null)
   }, [setPinnedHover, setEdited, setEditing])
-
-  // useEffect(() => {
-  //   if (!parentRef || !parentRef.current || !msgRef.current) return
-
-  //   const parent = parentRef.current.getBoundingClientRect()
-  //   const child = msgRef.current.getBoundingClientRect()
-
-  //   if (intersectRect(parent, child)) {
-  //     addMessage(message)
-  //   } else {
-  //     removeMessage(message)
-  //   }
-  // }, [parentRef, pos])
-
-  // useEffect(() => {
-  //   if (scrollTo && !ignoreScrollTo && msgRef && msgRef.current && message.id === scrollTo) {
-  //     msgRef.current.scrollIntoView()
-  //   }
-  // }, [msgRef, scrollTo, ignoreScrollTo])
 
   return (
     <>

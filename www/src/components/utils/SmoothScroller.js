@@ -33,7 +33,7 @@ const ItemWrapper = ({setSize, style, index, parentWidth, sizeEstimate, ...props
 }
 
 export default function SmoothScroller({
-  hasNextPage, scrollTo, placeholder, loading, items, loadNextPage, mapper, listRef, setListRef, ...props}) {
+  hasNextPage, scrollTo, placeholder, loading, items, loadNextPage, mapper, listRef, setListRef, handleScroll, ...props}) {
   const sizeMap = useRef({});
   const setSize = useCallback((index, size) => {
     sizeMap.current = { ...sizeMap.current, [index]: size };
@@ -62,6 +62,11 @@ export default function SmoothScroller({
           itemCount={itemCount}
           itemSize={getSize}
           align={scrollTo}
+          onScroll={({scrollOffset}) => {
+            console.log(scrollOffset)
+            console.log(height)
+            handleScroll(scrollOffset > (height / 2))
+          }}
           onItemsRendered={(ctx) => {
             props.onRendered && props.onRendered(ctx)
             onItemsRendered(ctx)

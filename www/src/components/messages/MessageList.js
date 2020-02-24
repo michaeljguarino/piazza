@@ -1,6 +1,6 @@
 import React, { useState, useContext, useEffect, useRef } from 'react'
-import { Box, Text } from 'grommet'
-import { Wifi, Close, User } from 'grommet-icons'
+import { Box, Text, Layer } from 'grommet'
+import { Wifi, Close, User, Down } from 'grommet-icons'
 import Message, { MessagePlaceholder } from './Message'
 import { Subscription, useQuery } from 'react-apollo'
 import SmoothScroller from '../utils/SmoothScroller'
@@ -66,7 +66,7 @@ function sizeEstimate({embed, file, structuredMessage}) {
 function Prelude({conversation}) {
   const me = useContext(CurrentUserContext)
   const name = conversationNameString(conversation, me)
-  const fullname = conversation.chat ? `your chat with ${name}` : name
+  const fullname = conversation.chat ? `your chat with ${name}` : `#${name}`
   return (
     <Box fill='horizontal' gap='xsmall' justify='center' pad='large'>
       <Text weight='bold'>This is the beginning of {fullname}</Text>
@@ -78,9 +78,32 @@ function Prelude({conversation}) {
   )
 }
 
+function ReturnToBeginning({listRef}) {
+  return (
+    <Layer position='top' modal={false}>
+      <Box pad={{top: '5px'}}>
+        <Box
+          direction='row'
+          align='center'
+          width='40vw'
+          round='small'
+          pad='small'
+          background='brand'>
+          <Box direction='row' fill='horizontal'>
+            <Text size='small'>go to most recent</Text>
+          </Box>
+          <Box pad={{right: 'small'}}>
+            <Down style={{cursor: 'pointer'}} onClick={() => listRef.scrollToItem(0)} size='15px' />
+          </Box>
+        </Box>
+      </Box>
+    </Layer>
+  )
+}
+
 export default function MessageList() {
   const [listRef, setListRef] = useState(null)
-  const [ignore, setIgnore] = useState(true)
+  const [scrolled, setScrolled] = useState(false)
   const {currentConversation, waterline} = useContext(Conversations)
   const {setReply} = useContext(ReplyContext)
   const {scrollTo} = useContext(MessageScrollContext)
@@ -91,12 +114,8 @@ export default function MessageList() {
   const {setLastMessage} = useContext(VisibleMessagesContext)
 
   useEffect(() => {
-    if (ignore) setTimeout(() => setIgnore(false), 15000)
-  }, [ignore])
-
-  useEffect(() => {
-    listRef && !ignore && listRef.scrollToItem(0)
-  }, [ignore, scrollTo, currentConversation])
+    listRef && !scrolled && listRef.scrollToItem(0)
+  }, [scrolled, scrollTo, currentConversation])
 
   if (loading && !data) return <Loading height='calc(100vh - 135px)' width='100%' />
   if (error) return <div>wtf</div>
@@ -112,6 +131,7 @@ export default function MessageList() {
       }}>
       {() => (
         <>
+        {scrolled && <ReturnToBeginning listRef={listRef} />}
         <AvailabilityDetector>
         {online => online ? <BackOnline refetch={refetch} /> : <Offline />}
         </AvailabilityDetector>
@@ -122,31 +142,30 @@ export default function MessageList() {
             setListRef={setListRef}
             hasNextPage={pageInfo.hasNextPage}
             loading={loading}
+            handleScroll={setScrolled}
             items={[...edges, 'PRELUDE']}
             sizeEstimate={({node}) => sizeEstimate(node)}
             scrollTo='start'
             placeholder={(i) => <MessagePlaceholder index={i} />}
-            onRendered={({visibleStopIndex, ...rest}) => {
+            onRendered={({visibleStopIndex}) => {
               const edge = edges[visibleStopIndex]
               setLastMessage(edge && edge.node)
             }}
             mapper={(edge, next, _ref, pos) => {
               if (edge === 'PRELUDE') return <Prelude conversation={currentConversation} />
-              const {node} = edge
               return (
                 <Message
                   waterline={waterline}
-                  key={node.id}
+                  key={edge.node.id}
                   parentRef={parentRef}
                   pos={pos}
                   conversation={currentConversation}
-                  message={node}
+                  message={edge.node}
                   setReply={setReply}
                   dialog={dialog}
                   next={next.node} />)
             }}
-            loadNextPage={() => {
-              return fetchMore({
+            loadNextPage={() => fetchMore({
                 variables: {conversationId: currentConversation.id, cursor: pageInfo.endCursor},
                 updateQuery: (prev, {fetchMoreResult: {conversation: {messages: {edges, pageInfo}}}}) => {
                   return {
@@ -161,8 +180,8 @@ export default function MessageList() {
                     }
                   }
                 }
-              });
-            }}
+              })
+            }
           />
           </div>
       </Box>
