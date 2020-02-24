@@ -154,7 +154,7 @@ function sameDay(message, next) {
   return firstTime.isSame(secondTime, 'day');
 }
 
-function MessageBody({message, conversation, next, nopin, editing, setEditing, dialog, hover, setPinnedHover}) {
+function MessageBody({message, conversation, next, editing, setEditing, dialog, hover, setPinnedHover}) {
   const date = moment(message.insertedAt)
   const consecutive = isConsecutive(message, next)
   return (
@@ -262,7 +262,7 @@ export const MessagePlaceholder = ({index}) => {
   )
 }
 
-export default function Message({noHover, selected, scrollTo, ignoreScrollTo, message, onClick, pos, parentRef, nopin, ...props}) {
+export default function Message({noHover, selected, scrollTo, ignoreScrollTo, message, onClick, pos, nopin, ...props}) {
   const {addMessage, removeMessage} = useContext(VisibleMessagesContext)
   const msgRef = useRef()
   const [pinnedHover, setPinnedHover] = useState(false)
@@ -277,29 +277,29 @@ export default function Message({noHover, selected, scrollTo, ignoreScrollTo, me
     if (!editing) setEdited(null)
   }, [setPinnedHover, setEdited, setEditing])
 
-  useEffect(() => {
-    if (!parentRef || !parentRef.current || !msgRef.current) return
+  // useEffect(() => {
+  //   if (!parentRef || !parentRef.current || !msgRef.current) return
 
-    const parent = parentRef.current.getBoundingClientRect()
-    const child = msgRef.current.getBoundingClientRect()
+  //   const parent = parentRef.current.getBoundingClientRect()
+  //   const child = msgRef.current.getBoundingClientRect()
 
-    if (intersectRect(parent, child)) {
-      addMessage(message)
-    } else {
-      removeMessage(message)
-    }
-  }, [parentRef, pos])
+  //   if (intersectRect(parent, child)) {
+  //     addMessage(message)
+  //   } else {
+  //     removeMessage(message)
+  //   }
+  // }, [parentRef, pos])
 
-  useEffect(() => {
-    if (scrollTo && !ignoreScrollTo && msgRef && msgRef.current && message.id === scrollTo) {
-      msgRef.current.scrollIntoView()
-    }
-  }, [msgRef, scrollTo, ignoreScrollTo])
+  // useEffect(() => {
+  //   if (scrollTo && !ignoreScrollTo && msgRef && msgRef.current && message.id === scrollTo) {
+  //     msgRef.current.scrollIntoView()
+  //   }
+  // }, [msgRef, scrollTo, ignoreScrollTo])
 
   return (
     <>
-    <Waterline message={props.message} next={props.next} waterline={props.waterline} />
-    <DateDivider message={props.message} next={props.next} />
+    <Waterline message={message} next={props.next} waterline={props.waterline} />
+    <DateDivider message={message} next={props.next} />
     <Box
       ref={msgRef}
       id={message.id}

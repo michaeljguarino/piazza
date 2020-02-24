@@ -7,13 +7,13 @@ import OnMediaLoaded from './OnMediaLoaded'
 
 const Item = ({ index, style, mapper, parentRef, isItemLoaded, placeholder, items }) => {
   if (!isItemLoaded(index)) {
-    return placeholder(index)
+    return placeholder && placeholder(index)
   }
 
   return mapper(items[index], items[index + 1] || {}, parentRef, style);
 };
 
-const ItemWrapper = ({setSize, style, index, parentWidth, ...props}) => {
+const ItemWrapper = ({setSize, style, index, parentWidth, sizeEstimate, ...props}) => {
   const ref = useRef()
   useEffect(() => {
     if (!ref.current) return
@@ -32,17 +32,18 @@ const ItemWrapper = ({setSize, style, index, parentWidth, ...props}) => {
   )
 }
 
-export default function SmoothScroller({hasNextPage, scrollTo, loading, items, loadNextPage, mapper, onItemsRendered, ...props}) {
-  const [listRef, setListRef] = useState(null)
+export default function SmoothScroller({
+  hasNextPage, scrollTo, placeholder, loading, items, loadNextPage, mapper, listRef, setListRef, ...props}) {
   const sizeMap = useRef({});
   const setSize = useCallback((index, size) => {
     sizeMap.current = { ...sizeMap.current, [index]: size };
     listRef && listRef.resetAfterIndex(index)
   }, [listRef]);
   const getSize = useCallback(index => sizeMap.current[index] || 50, []);
-  const itemCount = hasNextPage ? items.length + 1 : items.length;
+  const count = items.length
+  const itemCount = hasNextPage ? count + 7 : count;
   const loadMoreItems = loading ? () => {} : loadNextPage;
-  const isItemLoaded = index => !hasNextPage || index < items.length;
+  const isItemLoaded = index => !hasNextPage || index < count
   const ListItem = (props) => ItemWrapper({setSize, mapper, isItemLoaded, items, parentRef: listRef, ...props})
 
   return (
@@ -60,18 +61,18 @@ export default function SmoothScroller({hasNextPage, scrollTo, loading, items, l
           width={width}
           itemCount={itemCount}
           itemSize={getSize}
-          scrollToAlignment={scrollTo}
+          align={scrollTo}
           onItemsRendered={(ctx) => {
-            onItemsRendered && onItemsRendered(ctx)
+            props.onRendered && props.onRendered(ctx)
             onItemsRendered(ctx)
           }}
           ref={(listRef) => {
             setListRef(listRef)
-            ref(ref)
+            ref(listRef)
           }}
           {...props}
         >
-          {(props) => <ListItem setSize={setSize} parentWidth={width} {...props} />}
+          {(props) => <ListItem setSize={setSize} parentWidth={width} placeholder={placeholder} {...props} />}
         </VariableSizeList>
       )}
       </Autosizer>

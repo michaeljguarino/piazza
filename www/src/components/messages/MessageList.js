@@ -1,9 +1,8 @@
-import React, { useState, useContext, useEffect, useCallback } from 'react'
+import React, { useState, useContext, useEffect, useRef } from 'react'
 import { Box, Text } from 'grommet'
 import { Wifi, Close } from 'grommet-icons'
 import Message, { MessagePlaceholder } from './Message'
 import { Subscription, useQuery } from 'react-apollo'
-import Scroller from '../utils/Scroller'
 import SmoothScroller from '../utils/SmoothScroller'
 import Loading from '../utils/Loading'
 import { MESSAGES_Q, DIALOG_SUB } from './queries'
@@ -12,7 +11,7 @@ import { ReplyContext } from './ReplyProvider'
 import Pill from '../utils/Pill'
 import AvailabilityDetector from '../utils/AvailabilityDetector'
 import { MessageScrollContext } from './MessageSubscription'
-import { debounce } from 'lodash'
+import { VisibleMessagesContext } from './VisibleMessages'
 
 export const DialogContext = React.createContext({
   dialog: null,
@@ -56,7 +55,14 @@ function Offline() {
   return <OnlineInner text='connection lost' />
 }
 
+function sizeEstimate({embed, file, structuredMessage}) {
+  if (embed || structuredMessage || file) return 310
+
+  return 75
+}
+
 export default function MessageList() {
+  const [listRef, setListRef] = useState(null)
   const [ignore, setIgnore] = useState(true)
   const {currentConversation, waterline} = useContext(Conversations)
   const {setReply} = useContext(ReplyContext)
@@ -68,11 +74,12 @@ export default function MessageList() {
   const {setLastMessage} = useContext(VisibleMessagesContext)
 
   useEffect(() => {
-    const timeout = ignore ? setTimeout(() => setIgnore(false), 15000) : null
-    return () => timeout && clearTimeout(timeout)
+    if (ignore) setTimeout(() => setIgnore(false), 15000)
   }, [ignore])
 
-  const onScroll = useCallback(debounce(() => setIgnore(true), 150, {leading: true}), [])
+  useEffect(() => {
+    listRef && !ignore && listRef.scrollToItem(0)
+  }, [ignore, scrollTo, currentConversation])
 
   if (loading && !data) return <Loading height='calc(100vh - 135px)' width='100%' />
   if (error) return <div>wtf</div>
@@ -93,102 +100,50 @@ export default function MessageList() {
         </AvailabilityDetector>
         <Box width='100%' height='100%' ref={parentRef}>
           <SmoothScroller
+            listRef={listRef}
+            setListRef={setListRef}
             hasNextPage={pageInfo.hasNextPage}
             loading={loading}
-            items={messageEdges}
+            items={edges}
+            sizeEstimate={({node}) => sizeEstimate(node)}
             scrollTo='start'
             placeholder={(i) => <MessagePlaceholder index={i} />}
-            onItemsRendered={({visibleEndIndex}) => {
-              console.log(visibleEndIndex)
-              setLastMessage(messageEdges[visibleEndIndex].node)
+            onRendered={({visibleStopIndex, ...rest}) => {
+              const edge = edges[visibleStopIndex]
+              setLastMessage(edge && edge.node)
             }}
             mapper={({node}, next, _ref, pos) => (
               <Message
-                waterline={props.waterline}
+                waterline={waterline}
                 key={node.id}
                 parentRef={parentRef}
                 pos={pos}
-                conversation={props.conversation}
+                conversation={currentConversation}
                 message={node}
-                setReply={props.setReply}
+                setReply={setReply}
                 dialog={dialog}
                 next={next.node} />
             )}
             loadNextPage={() => {
-              fetchMore({
-                variables: {conversationId: props.conversation.id, cursor: pageInfo.endCursor},
-                updateQuery: (prev, {fetchMoreResult}) => {
-                  const {edges, pageInfo} = fetchMoreResult.conversation.messages
-                  return edges.length ? {
+              return fetchMore({
+                variables: {conversationId: currentConversation.id, cursor: pageInfo.endCursor},
+                updateQuery: (prev, {fetchMoreResult: {conversation: {messages: {edges, pageInfo}}}}) => {
+                  return {
                     ...prev,
                     conversation: {
                       ...prev.conversation,
                       messages: {
                         ...prev.conversation.messages,
-                        edges: mergeAppend(edges, prev.conversation.messages.edges, (e) => e.node.id),
-                        pageInfo
+                        pageInfo,
+                        edges: [...prev.conversation.messages.edges, ...edges]
                       }
                     }
-                  } : prev;
+                  }
                 }
-              })
+              });
             }}
           />
-
       </Box>
-        {/* <Scroller
-          id='message-viewport'
-          edges={edges}
-          placeholder={(i) => <MessagePlaceholder key={i} index={i} />}
-          onScroll={onScroll}
-          offset={100}
-          direction='up'
-          style={{
-            overflow: 'auto',
-            height: '100%',
-            width: '100%',
-            display: 'flex',
-            justifyContent: 'flex-start',
-            flexDirection: 'column-reverse',
-          }}
-          mapper={(edge, next, ref, pos) => (
-            <Message
-              waterline={waterline}
-              key={edge.node.id}
-              parentRef={ref}
-              pos={pos}
-              conversation={currentConversation}
-              message={edge.node}
-              setReply={setReply}
-              dialog={dialog}
-              next={next.node}
-              scrollTo={scrollTo}
-              ignoreScrollTo={ignore} />
-          )}
-          onLoadMore={(setLoading) => {
-            if (!pageInfo.hasNextPage) return setLoading(false)
-            setLoading(true)
-            fetchMore({
-              variables: {conversationId: currentConversation.id, cursor: pageInfo.endCursor},
-              updateQuery: (prev, {fetchMoreResult}) => {
-                console.log('returned')
-                setLoading(false)
-                const {edges, pageInfo} = fetchMoreResult.conversation.messages
-                return edges.length ? {
-                  ...prev,
-                  conversation: {
-                    ...prev.conversation,
-                    messages: {
-                      ...prev.conversation.messages,
-                      edges: [...prev.conversation.messages.edges, ...edges],
-                      pageInfo
-                    }
-                  }
-                } : prev;
-              }
-            })
-          }}
-        /> */}
       </>
     )}
     </Subscription>

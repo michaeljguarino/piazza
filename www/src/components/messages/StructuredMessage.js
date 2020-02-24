@@ -10,10 +10,12 @@ function recurse(children) {
   return children.map(parse)
 }
 
-function video({key, attributes: {url, loop, autoPlay, ...rest}}) {
+function video({key, attributes: {url, loop, autoPlay, width, height, ...rest}}) {
   return (
     <video
       style={{maxWidth: '250px', maxHeight: '250px'}}
+      width={width || '200px'}
+      height={height || '250px'}
       key={key}
       loop={!!loop}
       autoPlay={!!autoPlay}
@@ -65,8 +67,8 @@ function markdown({attributes: {value, ...rest}, key}) {
   )
 }
 
-function image({key, attributes: {url, ...rest}}) {
-  return <img key={key} alt={url} {...rest} src={url} />
+function image({key, attributes: {url, width, height, ...rest}}) {
+  return <img key={key} alt={url} width={width || '250px'} height={height || '250px'} {...rest} src={url} />
 }
 
 function link({value, attributes, children, key}) {

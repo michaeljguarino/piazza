@@ -1,15 +1,14 @@
-import React, { useState, useCallback } from 'react'
+import React, { useState, useCallback, useContext } from 'react'
 import MessageList from './messages/MessageList'
 import AnchoredMessageList from './messages/AnchoredMessageList'
 import MessageInput from './messages/MessageInput'
 import ReplyProvider from './messages/ReplyProvider'
-import VisibleMessages from './messages/VisibleMessages'
+import VisibleMessages, { VisibleMessagesContext } from './messages/VisibleMessages'
 import MessageSubscription from './messages/MessageSubscription'
 import ConversationPanel from './conversation/ConversationPanel'
 import ConversationHeader from './conversation/ConversationHeader'
 import { Box, Grid, Text } from 'grommet'
 import { FlyoutProvider } from './utils/Flyout'
-import { lastMessage } from './messages/VisibleMessages'
 import { formatDate } from './messages/Message'
 import { fromEvent } from 'file-selector'
 import AppContext from './login/AppContext'
@@ -18,9 +17,9 @@ import AppContext from './login/AppContext'
 export const ICON_HEIGHT = '20px'
 export const ICON_SPREAD = '9px'
 
-function DividerText(props) {
-  const last = props.lastMessage //|| lastMessage(props.visible)
-  if (!last) return null
+function DividerText() {
+  const {lastMessage} = useContext(VisibleMessagesContext)
+  if (!lastMessage) return null
 
   return (
     <Box style={{
@@ -30,7 +29,7 @@ function DividerText(props) {
         top: 60,
       }} background='#fff' pad={{horizontal: '8px'}}>
       <Text style={{fontWeight: 500}} size='small'>
-        {formatDate(last.insertedAt)}
+        {formatDate(lastMessage.insertedAt)}
       </Text>
     </Box>
   )
@@ -67,7 +66,7 @@ const Piazza = () => {
 
   return (
     <VisibleMessages>
-    {(visible, clear) => (
+    {(clear) => (
       <AppContext sideEffects={[() => setAnchor(null), clear]}>
         <FlyoutProvider>
         {(flyoutContent) => (
@@ -92,7 +91,7 @@ const Piazza = () => {
                     style={{height: '100%', width: '100%', maxHeight: 'calc(100vh - 60px)'}}
                     border='top'>
                     <Box width='100%' height='100%' align='center'>
-                      <DividerText visible={visible} />
+                      <DividerText />
                       <Box id='msg-view' width='100%' height='100%'>
                       {anchor ? <AnchoredMessageList
                                   anchor={anchor}

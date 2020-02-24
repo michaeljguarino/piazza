@@ -50,7 +50,7 @@ export default function VisibleMessages({children}) {
     <EditingMessageContext.Provider value={{edited, setEdited}}>
       <VisibleMessagesContext.Provider
         value={{visible, addMessage, removeMessage, clear, lastMessage, setLastMessage}}>
-        {props.children(visible, clear)}
+        {children(clear)}
       </VisibleMessagesContext.Provider>
     </EditingMessageContext.Provider>
   )
