@@ -242,7 +242,7 @@ function Waterline({waterline, message, next}) {
 
   return (
     <Box direction='row' border={{color: 'notif', side: 'bottom'}} justify='end' margin={{vertical: 'small'}}>
-      <Box background='#fff' pad='small' align='center' margin={{top: '-22px'}}>
+      <Box background='#fff' pad='small' align='center' margin={{bottom: '-22px'}}>
         <Text color='notif' size='small'>unread messages</Text>
       </Box>
     </Box>
