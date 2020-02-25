@@ -129,10 +129,10 @@ function parse(struct, index) {
   }
 }
 
-export default function StructuredMessage({children, attributes}) {
+export default React.memo(function StructuredMessage({children, attributes}) {
   return (
     <Box gap='xsmall' {...(attributes || {})}>
       {recurse(children)}
     </Box>
   )
-}
+})

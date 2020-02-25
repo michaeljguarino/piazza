@@ -261,7 +261,8 @@ export const MessagePlaceholder = ({index}) => {
   )
 }
 
-export default function Message({noHover, selected, scrollTo, ignoreScrollTo, message, onClick, pos, nopin, ...props}) {
+const Message = React.memo(({noHover, selected, scrollTo, message, onClick, pos, nopin, ...props}) => {
+  console.log('here')
   const msgRef = useRef()
   const [pinnedHover, setPinnedHover] = useState(false)
   const [editing, setEditing] = useState(false)
@@ -301,4 +302,6 @@ export default function Message({noHover, selected, scrollTo, ignoreScrollTo, me
     </Box>
     </>
   )
-}
+})
+
+export default Message

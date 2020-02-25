@@ -114,6 +114,10 @@ export default function MessageList() {
   const {setLastMessage} = useContext(VisibleMessagesContext)
 
   useEffect(() => {
+    setScrolled(false)
+  }, [currentConversation])
+
+  useEffect(() => {
     listRef && !scrolled && listRef.scrollToItem(0)
   }, [scrolled, scrollTo, currentConversation])
 
@@ -151,14 +155,13 @@ export default function MessageList() {
               const edge = edges[visibleStopIndex]
               setLastMessage(edge && edge.node)
             }}
-            mapper={(edge, next, _ref, pos) => {
+            mapper={(edge, next) => {
               if (edge === 'PRELUDE') return <Prelude conversation={currentConversation} />
               return (
                 <Message
                   waterline={waterline}
                   key={edge.node.id}
                   parentRef={parentRef}
-                  pos={pos}
                   conversation={currentConversation}
                   message={edge.node}
                   setReply={setReply}

@@ -26,6 +26,7 @@
     "immutable": "^4.0.0-rc.12",
     "itiriri": "^2.0.1",
     "lodash": "^4.17.15",
+    "memoize-one": "^5.1.1",
     "moment": "^2.24.0",
     "phoenix": "^1.4.9",
     "rc-datetime-picker": "^1.6.1",
