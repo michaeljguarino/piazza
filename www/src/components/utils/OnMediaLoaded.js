@@ -26,10 +26,9 @@ export default class OnMediaLoaded extends Component {
 	}
 
 	componentDidMount() {
-		const { onLoaded, onDidMount, refreshKey } = this.props
+		const { onLoaded, onDidMount } = this.props
 		this.timingSetup()
 		this.mounted = true
-		this.refreshKey = refreshKey
 		this._prepare()
 	}
 
@@ -100,6 +99,7 @@ export default class OnMediaLoaded extends Component {
 
 	_runOnLoadFunction() {
 		if (this.mounted) {
+			console.log('here')
 			const { onLoaded } = this.props
 			this.setState({ loaded: true, timedOut: false }, () => {
 				onLoaded && onLoaded()

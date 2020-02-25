@@ -112,7 +112,6 @@ export default function MessageList() {
   })
   const parentRef = useRef()
   const {setLastMessage} = useContext(VisibleMessagesContext)
-  console.log(currentConversation.name)
   useEffect(() => {
     setScrolled(false)
   }, [currentConversation])

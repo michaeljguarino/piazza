@@ -16,7 +16,7 @@ function Portal({children}) {
 
 export default function TypeaheadEditor({editor, value, setValue, style, onOpen, searchQuery, handlers}) {
   const ref = useRef()
-  const [target, setTarget] = useState()
+  const [target, setTarget] = useState(null)
   const [index, setIndex] = useState(0)
   const [suggestions, setSuggestions] = useState([])
   const renderElement = useCallback(props => <Element {...props} />, [])
@@ -38,6 +38,8 @@ export default function TypeaheadEditor({editor, value, setValue, style, onOpen,
             break
           case 'Tab':
           case 'Enter':
+            if (target === null || suggestions.length === 0) break
+            console.log('inserting')
             event.preventDefault()
             Transforms.select(editor, target)
             insertMention(editor, suggestions[index].value)
@@ -95,6 +97,7 @@ export default function TypeaheadEditor({editor, value, setValue, style, onOpen,
             }
           }
         }
+        console.log('end on change')
 
         onOpen(false)
         setTarget(null)

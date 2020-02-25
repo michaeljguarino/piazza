@@ -5,6 +5,7 @@ import { VariableSizeList } from 'react-window-reversed'
 import Autosizer from 'react-virtualized-auto-sizer'
 import OnMediaLoaded from './OnMediaLoaded'
 import memoize from 'memoize-one'
+import CellMeasurer from './CellMeasurer'
 import ResizeObserver from 'react-resize-observer'
 
 function shallowDiffers(prev, next) {
@@ -39,24 +40,31 @@ const Item = ({ index, mapper, parentRef, isItemLoaded, placeholder, items, styl
 };
 
 const ItemWrapper = React.memo(({data: {setSize, width, refreshKey, ...rest}, style, index, ...props}) => {
-  const ref = useRef()
+  const [rowRef, setRowRef] = useState(null)
   useEffect(() => {
-    if (!ref.current) return
-    const onTimeout = () => setSize(index, ref.current.getBoundingClientRect().height)
+    if (!rowRef) return
+    const onTimeout = () => setSize(index, rowRef.getBoundingClientRect().height)
     onTimeout()
     const timeouts = [10, 50, 100, 500, 1000].map((timeout) => setTimeout(onTimeout, timeout))
     return () => timeouts.map(clearTimeout)
-  }, [ref.current, width, refreshKey]);
+  }, [rowRef, width, refreshKey]);
 
   return (
-    <OnMediaLoaded refreshKey={refreshKey} onLoaded={() => setSize(index, ref.current.getBoundingClientRect().height)}>
-      <div style={style}>
-        <Box classNames={refreshKey} ref={ref}>
-          <Item index={index} setSize={(size) => setSize(index, size)} {...props} {...rest} />
-          {/* <ResizeObserver onResize={({height}) => setSize(index, height)} /> */}
-        </Box>
-      </div>
-    </OnMediaLoaded>
+    <CellMeasurer refreshKey={refreshKey} index={index} setSize={setSize}>
+      {({registerChild}) => (
+        <OnMediaLoaded refreshKey={refreshKey} onLoaded={() => rowRef && setSize(index, rowRef.getBoundingClientRect().height)}>
+          <div style={style}>
+            <Box classNames={refreshKey} ref={(ref) => {
+                registerChild(ref)
+                setRowRef(ref)
+            }}>
+              <Item index={index} setSize={(size) => setSize(index, size)} {...props} {...rest} />
+              {/* <ResizeObserver onResize={({height}) => setSize(index, height)} /> */}
+            </Box>
+          </div>
+        </OnMediaLoaded>
+      )}
+    </CellMeasurer>
   )
 }, areEqual)
 

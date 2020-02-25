@@ -145,8 +145,9 @@ function MessageInputInner({attachment, setAttachment, reply, setReply, conversa
               conversationId: conversation.id,
               attributes: {attachment, parentId, text: plainSerialize(editorState)}
             }})
-            setEditorState(plainDeserialize(''))
+            // setEditorState(plainDeserialize(''))
             setAttachment(null)
+            // e.preventDefault()
           }
         }}
         onUp={() => (
