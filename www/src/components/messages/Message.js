@@ -1,4 +1,4 @@
-import React, { useState, useRef, useContext, useCallback } from 'react'
+import React, { useState, useRef, useContext, useCallback, useEffect } from 'react'
 import { Box, Text, Markdown, Stack } from 'grommet'
 import { Pin } from 'grommet-icons'
 import Avatar from '../users/Avatar'
@@ -18,6 +18,7 @@ import File from './File'
 import Divider from '../utils/Divider'
 import { Emoji } from 'emoji-mart'
 import './message.css'
+
 
 function TextMessage(props) {
   return (
@@ -261,14 +262,19 @@ export const MessagePlaceholder = ({index}) => {
   )
 }
 
-const Message = React.memo(({noHover, selected, scrollTo, message, onClick, pos, nopin, ...props}) => {
-  console.log('here')
+const Message = React.memo(({noHover, selected, scrollTo, message, onClick, pos, nopin, setSize, ...props}) => {
   const msgRef = useRef()
   const [pinnedHover, setPinnedHover] = useState(false)
   const [editing, setEditing] = useState(false)
   const {edited, setEdited} = useContext(EditingMessageContext)
   const isEditing = editing || (edited === message.id)
   const additionalClasses = '' + (message.pin && !nopin ? ' pin' : '') + (selected ? ' selected' : '') + (pinnedHover ? ' hovered' : '')
+
+  useEffect(() => {
+    if (msgRef && setSize) {
+      msgRef.current && setSize(msgRef.current.getBoundingClientRect().height)
+    }
+  }, [msgRef.current, setSize, message.id])
 
   const wrappedSetEditing = useCallback((editing) => {
     setPinnedHover(false)
@@ -277,7 +283,7 @@ const Message = React.memo(({noHover, selected, scrollTo, message, onClick, pos,
   }, [setPinnedHover, setEdited, setEditing])
 
   return (
-    <>
+    <Box flex={false}>
     <Waterline message={message} next={props.next} waterline={props.waterline} />
     <DateDivider message={message} next={props.next} />
     <Box
@@ -300,7 +306,7 @@ const Message = React.memo(({noHover, selected, scrollTo, message, onClick, pos,
           {...props} />
       </Stack>
     </Box>
-    </>
+    </Box>
   )
 })
 

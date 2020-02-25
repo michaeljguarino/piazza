@@ -5,44 +5,71 @@ import { VariableSizeList } from 'react-window-reversed'
 import Autosizer from 'react-virtualized-auto-sizer'
 import OnMediaLoaded from './OnMediaLoaded'
 import memoize from 'memoize-one'
+import ResizeObserver from 'react-resize-observer'
 
-const Item = ({ index, mapper, parentRef, isItemLoaded, placeholder, items }) => {
+function shallowDiffers(prev, next) {
+  for (let attribute in prev) {
+    if (!(attribute in next)) {
+      return true;
+    }
+  }
+  for (let attribute in next) {
+    if (prev[attribute] !== next[attribute]) {
+      return true;
+    }
+  }
+  return false;
+}
+
+function areEqual(prevProps, nextProps) {
+  const { style: prevStyle, ...prevRest } = prevProps;
+  const { style: nextStyle, ...nextRest } = nextProps;
+
+  return (
+    !shallowDiffers(prevStyle, nextStyle) && !shallowDiffers(prevRest, nextRest)
+  );
+}
+
+const Item = ({ index, mapper, parentRef, isItemLoaded, placeholder, items, style }) => {
   if (!isItemLoaded(index)) {
     return placeholder && placeholder(index)
   }
 
-  return mapper(items[index], items[index + 1] || {}, parentRef);
+  return mapper(items[index], items[index + 1] || {}, parentRef, style);
 };
 
-const ItemWrapper = React.memo(({data: {setSize, width, ...rest}, style, index, ...props}) => {
+const ItemWrapper = React.memo(({data: {setSize, width, refreshKey, ...rest}, style, index, ...props}) => {
   const ref = useRef()
   useEffect(() => {
     if (!ref.current) return
-
-    setSize(index, ref.current.getBoundingClientRect().height);
-  }, [ref, width]);
+    const onTimeout = () => setSize(index, ref.current.getBoundingClientRect().height)
+    onTimeout()
+    const timeouts = [10, 50, 100, 500, 1000].map((timeout) => setTimeout(onTimeout, timeout))
+    return () => timeouts.map(clearTimeout)
+  }, [ref.current, width, refreshKey]);
 
   return (
-    <OnMediaLoaded style={style} onLoaded={() => setSize(index, ref.current.getBoundingClientRect().height)}>
+    <OnMediaLoaded refreshKey={refreshKey} onLoaded={() => setSize(index, ref.current.getBoundingClientRect().height)}>
       <div style={style}>
-        <Box ref={ref}>
-          <Item index={index} {...props} {...rest} />
+        <Box classNames={refreshKey} ref={ref}>
+          <Item index={index} setSize={(size) => setSize(index, size)} {...props} {...rest} />
+          {/* <ResizeObserver onResize={({height}) => setSize(index, height)} /> */}
         </Box>
       </div>
     </OnMediaLoaded>
   )
-})
+}, areEqual)
 
-const buildItemData = memoize((setSize, mapper, isItemLoaded, items, parentRef, width, placeholder, props) => (
-  {setSize, mapper, isItemLoaded, items, parentRef, width, placeholder, ...props}
+const buildItemData = memoize((setSize, mapper, isItemLoaded, items, parentRef, width, placeholder, refreshKey, props) => (
+  {setSize, mapper, isItemLoaded, items, parentRef, width, placeholder, refreshKey, ...props}
 ))
 
 export default function SmoothScroller({
-  hasNextPage, scrollTo, placeholder, loading, items, loadNextPage, mapper, listRef, setListRef, handleScroll, ...props}) {
+  hasNextPage, scrollTo, placeholder, loading, items, loadNextPage, mapper, listRef, setListRef, handleScroll, refreshKey, ...props}) {
   const sizeMap = useRef({});
   const setSize = useCallback((index, size) => {
     sizeMap.current = { ...sizeMap.current, [index]: size };
-    listRef && listRef.resetAfterIndex(index)
+    listRef && listRef.resetAfterIndex(index, true)
   }, [listRef]);
   const getSize = useCallback(index => sizeMap.current[index] || 50, []);
   const count = items.length
@@ -65,7 +92,8 @@ export default function SmoothScroller({
           width={width}
           itemCount={itemCount}
           itemSize={getSize}
-          itemData={buildItemData(setSize, mapper, isItemLoaded, items, listRef, width, placeholder, props)}
+          itemKey={(index) => `${refreshKey}:${index}`}
+          itemData={buildItemData(setSize, mapper, isItemLoaded, items, listRef, width, placeholder, refreshKey, props)}
           align={scrollTo}
           onScroll={({scrollOffset}) => handleScroll(scrollOffset > (height / 2))}
           onItemsRendered={(ctx) => {

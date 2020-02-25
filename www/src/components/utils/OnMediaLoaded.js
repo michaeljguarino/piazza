@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { Component, useEffect, useState, useRef, useCallback } from 'react'
 import {Box} from 'grommet'
 
 export default class OnMediaLoaded extends Component {
@@ -26,9 +26,15 @@ export default class OnMediaLoaded extends Component {
 	}
 
 	componentDidMount() {
-		const { onLoaded, onDidMount } = this.props
+		const { onLoaded, onDidMount, refreshKey } = this.props
 		this.timingSetup()
 		this.mounted = true
+		this.refreshKey = refreshKey
+		this._prepare()
+	}
+
+	_prepare() {
+		const { onLoaded, onDidMount } = this.props
 		this._imgs = this.containerRef.getElementsByTagName('img')
 		this._vids = this.containerRef.getElementsByTagName('video')
 		if (this._imgs.length === 0 && this._vids.length === 0) {

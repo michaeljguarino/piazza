@@ -112,7 +112,7 @@ export default function MessageList() {
   })
   const parentRef = useRef()
   const {setLastMessage} = useContext(VisibleMessagesContext)
-
+  console.log(currentConversation.name)
   useEffect(() => {
     setScrolled(false)
   }, [currentConversation])
@@ -149,6 +149,7 @@ export default function MessageList() {
             handleScroll={setScrolled}
             items={[...edges, 'PRELUDE']}
             sizeEstimate={({node}) => sizeEstimate(node)}
+            refreshKey={currentConversation.id}
             scrollTo='start'
             placeholder={(i) => <MessagePlaceholder index={i} />}
             onRendered={({visibleStopIndex}) => {
