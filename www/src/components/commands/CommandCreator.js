@@ -8,14 +8,12 @@ import Button, { SecondaryButton } from '../utils/Button'
 import { CREATE_COMMAND, COMMANDS_Q } from './queries'
 import { addCommand } from './utils'
 import { searchConversations } from '../conversation/ConversationSearch'
-import { createEditor } from 'slate'
-import { withHistory } from 'slate-history'
 import {
   Slate,
   Editable,
-  withReact,
 } from 'slate-react'
 import {plainSerialize, plainDeserialize} from '../../utils/slate'
+import { useEditor } from '../utils/hooks'
 
 const LABEL_WIDTH = '100px'
 
@@ -46,7 +44,7 @@ export function ConversationSelector({onSelect}) {
 }
 
 export function CommandForm({formState, setFormState, vars, mutation, setOpen, action}) {
-  const editor = useMemo(() => withReact(withHistory(createEditor())), [])
+  const editor = useEditor()
   const [editorState, setEditorState] = useState(plainDeserialize(formState.documentation))
   const additionalVars = vars || {}
   const {incomingWebhook, ...form} = formState

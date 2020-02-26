@@ -87,7 +87,7 @@ function ReturnToBeginning({listRef}) {
           align='center'
           width='40vw'
           round='small'
-          pad='small'
+          pad={{horizontal: 'small', vertical: 'xsmall'}}
           background='brand'>
           <Box direction='row' fill='horizontal'>
             <Text size='small'>go to most recent</Text>
@@ -136,7 +136,10 @@ export default function MessageList() {
         <>
         {scrolled && <ReturnToBeginning listRef={listRef} />}
         <AvailabilityDetector>
-        {online => online ? <BackOnline refetch={refetch} /> : <Offline />}
+        {online => online ? <BackOnline refetch={() => {
+          refetch()
+          setScrolled(false)
+        }} /> : <Offline />}
         </AvailabilityDetector>
         <Box width='100%' height='100%' ref={parentRef}>
           <div style={{ flex: '1 1 auto' }}>

@@ -11,10 +11,8 @@ import HoveredBackground from '../utils/HoveredBackground'
 import EmojiPicker from '../emoji/EmojiPicker'
 import { emojiIndex } from 'emoji-mart'
 import './MentionManager.css'
-import TypeaheadEditor, { withMentions } from '../utils/TypeaheadEditor'
-import { Editor, Transforms, createEditor } from 'slate'
-import { withReact } from 'slate-react'
-import { withHistory } from 'slate-history'
+import TypeaheadEditor from '../utils/TypeaheadEditor'
+import { Editor, Transforms } from 'slate'
 
 const BUILTIN_MENTIONS = [
   {mention: "here", explanation: "Notifies all members of the conversation who are currently online"},
@@ -179,14 +177,10 @@ const insertEmoji = (editor, emoji) => {
   Transforms.insertText(editor, emoji, {at})
 }
 
-function MentionManager({editorState, setEditorState, onChange, disableSubmit}) {
+function MentionManager({editor, editorState, setEditorState, onChange, disableSubmit}) {
   const [emojiPicker, setEmojiPicker] = useState(false)
   const client    = useApolloClient()
   const emojiRef  = useRef()
-  const editor = useMemo(
-    () => withMentions(withReact(withHistory(createEditor()))),
-    []
-  )
 
   return (
     <>

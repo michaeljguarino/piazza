@@ -4,24 +4,23 @@ import { useMutation } from 'react-apollo'
 import Button, { SecondaryButton } from '../utils/Button'
 import InputField from '../utils/InputField'
 import { UPDATE_USER } from './queries'
-import { createEditor } from 'slate'
-import { withHistory } from 'slate-history'
 import {
   Slate,
   Editable,
-  withReact,
 } from 'slate-react'
 import { plainDeserialize, plainSerialize } from '../../utils/slate'
+import { useEditor } from '../utils/hooks'
 
 const getUserFields = ({bio, title, phone}) => ({bio, title, phone})
 
 export default function UpdateProfile({me, callback}) {
   const [editorState, setEditorState] = useState(plainDeserialize(me.bio || ''))
   const [userFields, setUserFields] = useState(getUserFields(me))
-  const editor = useMemo(() => withReact(withHistory(createEditor())), [])
+  const editor = useEditor()
   const [mutation, {loading}] = useMutation(UPDATE_USER, {
     variables: {id: me.id, attributes: {...userFields, bio: plainSerialize(editorState)}}
   })
+
   const submit = () => {
     callback && callback()
     mutation()

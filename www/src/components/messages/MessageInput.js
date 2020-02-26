@@ -18,6 +18,8 @@ import moment from 'moment'
 import { plainDeserialize, plainSerialize } from '../../utils/slate'
 import { EditingMessageContext } from './VisibleMessages'
 import { Conversations } from '../login/MyConversations'
+import { useEditor } from '../utils/hooks'
+import { Editor, Transforms } from 'slate'
 
 
 const TEXT_SIZE='xsmall'
@@ -93,7 +95,7 @@ function FileInput({attachment, setAttachment}) {
   )
 }
 
-function MessageInputInner({attachment, setAttachment, reply, setReply, conversation, setWaterline, typists, notifyTyping, dropRef}) {
+function MessageInputInner({editor, attachment, setAttachment, reply, setReply, conversation, setWaterline, typists, notifyTyping, dropRef}) {
   const [editorState, setEditorState] = useState(plainDeserialize(''))
   const [uploadProgress, setUploadProgress] = useState(null)
   const [disableSubmit, setDisableSubmit] = useState(false)
@@ -145,9 +147,10 @@ function MessageInputInner({attachment, setAttachment, reply, setReply, conversa
               conversationId: conversation.id,
               attributes: {attachment, parentId, text: plainSerialize(editorState)}
             }})
-            // setEditorState(plainDeserialize(''))
+            Transforms.select(editor, Editor.start(editor, []))
+            setEditorState(plainDeserialize(''))
             setAttachment(null)
-            // e.preventDefault()
+            e.preventDefault()
           }
         }}
         onUp={() => (
@@ -163,6 +166,7 @@ function MessageInputInner({attachment, setAttachment, reply, setReply, conversa
           round='xsmall'>
           <MentionManager
             parentRef={boxRef}
+            editor={editor}
             editorState={editorState}
             setEditorState={setEditorState}
             disableSubmit={setDisableSubmit}
@@ -184,6 +188,7 @@ export default function MessageInput(props) {
   const [channel, setChannel] = useState(null)
   const cache = useMemo(() => new TimedCache(2000, setTypists), [])
   const id = currentConversation.id
+  const editor = useEditor()
   useEffect(() => {
     const channel = socket.channel(`conversation:${id}`)
     setChannel(channel)
@@ -210,6 +215,8 @@ export default function MessageInput(props) {
       dropRef={dropRef}
       typists={typists}
       notifyTyping={notifyTyping}
+      editor={editor}
+      setReply={setReply}
       {...props} />
     </>
   )

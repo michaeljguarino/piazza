@@ -39,26 +39,27 @@ const Item = ({ index, mapper, parentRef, isItemLoaded, placeholder, items, styl
   return mapper(items[index], items[index + 1] || {}, parentRef, style);
 };
 
-const ItemWrapper = React.memo(({data: {setSize, width, refreshKey, ...rest}, style, index, ...props}) => {
+const ItemWrapper = React.memo(({data: {setSize, width, refreshKey, items, ...rest}, style, index, ...props}) => {
   const [rowRef, setRowRef] = useState(null)
+  const item = items[index]
   useEffect(() => {
     if (!rowRef) return
     const onTimeout = () => setSize(index, rowRef.getBoundingClientRect().height)
     onTimeout()
     const timeouts = [10, 50, 100, 500, 1000].map((timeout) => setTimeout(onTimeout, timeout))
     return () => timeouts.map(clearTimeout)
-  }, [rowRef, width, refreshKey]);
+  }, [rowRef, width, item, index]);
 
   return (
     <CellMeasurer refreshKey={refreshKey} index={index} setSize={setSize}>
       {({registerChild}) => (
-        <OnMediaLoaded refreshKey={refreshKey} onLoaded={() => rowRef && setSize(index, rowRef.getBoundingClientRect().height)}>
+        <OnMediaLoaded refreshKey={item} onLoaded={() => rowRef && setSize(index, rowRef.getBoundingClientRect().height)}>
           <div style={style}>
             <Box classNames={refreshKey} ref={(ref) => {
                 registerChild(ref)
                 setRowRef(ref)
             }}>
-              <Item index={index} setSize={(size) => setSize(index, size)} {...props} {...rest} />
+              <Item index={index} items={items} setSize={(size) => setSize(index, size)} {...props} {...rest} />
               {/* <ResizeObserver onResize={({height}) => setSize(index, height)} /> */}
             </Box>
           </div>
