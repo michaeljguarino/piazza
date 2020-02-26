@@ -26,7 +26,7 @@ This is currently a near-complete slack app.  Some of the features include:
 
 The underlying api is implemented using graphql with elixir as the language choice.  Graphql was used mainly because I wanted to experiment with it, but also it has one of the more future-proof subscription mechanisms I've seen. The web client is written in react.
 
-The current default configuration will consume around 4cpus in a kubernetes cluster.  I haven't stress-tested it by any means, but I wouldn't be surprised if that supported normal usage for a few hundred users.  Cost comparison with slack even after just 10 or so users is very favorable (unless you're on free of course).
+The current default configuration will consume around 1.5cpus in a kubernetes cluster (if you're being stingy).  I haven't stress-tested it by any means, but I wouldn't be surprised if that supported normal usage for a few hundred users.  Cost comparison with slack even after just 10 or so users is very favorable (unless you're on free of course).
 
 The other huge win is privacy.  Not only do you maintain complete control over your information, you can also self-host your integrations without having to expose them to the public internet (just slap kube service discovery on them, connect the pipes, and neglect ever creating an ingress).
 
