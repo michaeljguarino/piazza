@@ -108,17 +108,17 @@ export default function MessageList() {
   const {setReply} = useContext(ReplyContext)
   const {scrollTo} = useContext(MessageScrollContext)
   const {loading, error, data, fetchMore, refetch} = useQuery(MESSAGES_Q, {
-    variables: {conversationId: currentConversation.id},
+    variables: {conversationId: currentConversation.id}
   })
   const parentRef = useRef()
   const {setLastMessage} = useContext(VisibleMessagesContext)
   useEffect(() => {
     setScrolled(false)
-  }, [currentConversation])
+  }, [currentConversation.id])
 
   useEffect(() => {
     listRef && !scrolled && listRef.scrollToItem(0)
-  }, [scrolled, scrollTo, currentConversation])
+  }, [scrolled, scrollTo])
 
   if (loading && !data) return <Loading height='calc(100vh - 135px)' width='100%' />
   if (error) return <div>wtf</div>
@@ -137,8 +137,8 @@ export default function MessageList() {
         {scrolled && <ReturnToBeginning listRef={listRef} />}
         <AvailabilityDetector>
         {online => online ? <BackOnline refetch={() => {
+          listRef && listRef.scrollToItem(0)
           refetch()
-          setScrolled(false)
         }} /> : <Offline />}
         </AvailabilityDetector>
         <Box width='100%' height='100%' ref={parentRef}>

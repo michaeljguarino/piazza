@@ -103,7 +103,6 @@ export default function SmoothScroller({
           itemSize={getSize}
           itemKey={(index) => `${refreshKey}:${index}`}
           itemData={buildItemData(setSize, mapper, isItemLoaded, items, listRef, width, placeholder, refreshKey, props)}
-          align={scrollTo}
           onScroll={({scrollOffset}) => handleScroll(scrollOffset > (height / 2))}
           onItemsRendered={(ctx) => {
             props.onRendered && props.onRendered(ctx)

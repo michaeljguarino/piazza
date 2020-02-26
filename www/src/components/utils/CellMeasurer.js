@@ -87,7 +87,6 @@ export default class CellMeasurer extends React.PureComponent {
     if (this.refreshOn !== refreshKey) {
       this.refreshOn = refreshKey
       const {height} = this._getCellMeasurements();
-      console.log(height)
       setSize(rowIndex, height)
 
       // // If size has changed, let Grid know to re-render.

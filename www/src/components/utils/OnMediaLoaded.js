@@ -99,7 +99,6 @@ export default class OnMediaLoaded extends Component {
 
 	_runOnLoadFunction() {
 		if (this.mounted) {
-			console.log('here')
 			const { onLoaded } = this.props
 			this.setState({ loaded: true, timedOut: false }, () => {
 				onLoaded && onLoaded()

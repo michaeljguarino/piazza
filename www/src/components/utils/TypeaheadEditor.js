@@ -39,7 +39,6 @@ export default function TypeaheadEditor({editor, value, setValue, style, onOpen,
           case 'Tab':
           case 'Enter':
             if (target === null || suggestions.length === 0) break
-            console.log('inserting')
             event.preventDefault()
             Transforms.select(editor, target)
             insertMention(editor, suggestions[index].value)
@@ -97,7 +96,6 @@ export default function TypeaheadEditor({editor, value, setValue, style, onOpen,
             }
           }
         }
-        console.log('end on change')
 
         onOpen(false)
         setTarget(null)
