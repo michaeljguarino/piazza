@@ -16,7 +16,7 @@ export function ReplyGutter({reply, setReply, ...props}) {
     <Box pad='small' border='top'>
       <Box style={{borderLeft: "2px solid gray"}}>
         <Stack anchor='top-right'>
-          <Message noHover message={reply} {...props} />
+          <Message noHover message={reply} next={{}} {...props} />
           <Box
             width='25px'
             height='25px'

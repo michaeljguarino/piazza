@@ -4,6 +4,15 @@
 .message.pin {
   background: rgba(var(--sk_secondary_highlight,242,199,68),.1);
 }
+.message.nohover {
+  background: #FFFFFF !important;
+}
+.message.nohover.override .message-controls {
+  display: none !important;
+}
+.mesage.nohover.override .message-reactions {
+  display: none !important;
+}
 
 .message.selected:hover {
   background: rgba(255, 229, 119, 0.5);

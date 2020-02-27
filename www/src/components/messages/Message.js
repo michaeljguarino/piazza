@@ -138,7 +138,7 @@ function PinHeader({pin, nopin}) {
 
 
 function isConsecutive(message, next) {
-  if (!next) return false
+  if (!next || !next.creator) return false
   if (message.creator.id !== next.creator.id) return false
   const firstTime = moment(message.insertedAt)
   const secondTime = moment(next.insertedAt)
@@ -148,6 +148,8 @@ function isConsecutive(message, next) {
 
 function sameDay(message, next) {
   if (!next) return false
+  if (next && !next.insertedAt) return true
+
   const firstTime = moment(message.insertedAt)
   const secondTime = moment(next.insertedAt)
 
@@ -289,7 +291,7 @@ const Message = React.memo(({noHover, selected, scrollTo, message, onClick, pos,
     <Box
       ref={msgRef}
       id={message.id}
-      className={'message' + additionalClasses}
+      className={'message' + additionalClasses + (noHover ? ' nohover override' : '')}
       onClick={onClick}
       flex={false}>
       <Stack fill anchor='top-right'>
