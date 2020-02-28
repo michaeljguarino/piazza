@@ -86,8 +86,8 @@ function ChatCreator({padding, setCurrentConversation}) {
       <Modal round='small' target={<Header padding={padding} />}>
         {setOpen => (
           <Box
-            width="400px"
-            style={{maxHeight: '70vh'}}
+            width="50vw"
+            style={{maxHeight: '65vh'}}
             pad={{bottom: 'small'}}
             round='small'>
             <ModalHeader text='Start a chat' setOpen={setOpen} />

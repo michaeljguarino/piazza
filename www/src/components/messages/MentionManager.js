@@ -127,7 +127,7 @@ function builtinMention(mention, explanation) {
 
 function customEmojiSuggestion(emoji) {
   return (
-    <Box direction='row' align='center' pad='xsmall'>
+    <Box direction='row' align='center' pad='xsmall' gap='xsmall'>
       <img width='15px' height='15px' alt={emoji.name} src={emoji.imageUrl} />
       <Text size='xsmall'>:{emoji.name}:</Text>
     </Box>
@@ -136,7 +136,7 @@ function customEmojiSuggestion(emoji) {
 
 function emojiSuggestion(emoji) {
   return (
-    <Box direction='row' align='center' pad='xsmall'>
+    <Box direction='row' align='center' pad='xsmall' gap='xsmall'>
       <Text size='xsmall'>{emoji.native} {emoji.colons}</Text>
     </Box>
   )
