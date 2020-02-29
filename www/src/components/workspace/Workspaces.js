@@ -167,7 +167,7 @@ function WorkspaceDropdown({dropRef, workspaces, setOpen, workspaceId, setWorksp
             workspace={workspace}
             setWorkspace={setWorkspace} />
         ))}
-        {me.roles.admin && (
+        {me.roles && me.roles.admin && (
           <Modal target={<CreateTarget />}>
           {setOpen => <CreateWorkspace setOpen={setOpen} />}
           </Modal>
