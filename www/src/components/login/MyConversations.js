@@ -13,7 +13,8 @@ export const Conversations = React.createContext({
                                 setWaterline: null,
                                 fetchMore: () => null,
                                 workspaceId: null,
-                                setWorkspace: () => null
+                                setWorkspace: () => null,
+                                refetch: () => null
                              })
 
 function MyConversations(props) {

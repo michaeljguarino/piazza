@@ -108,9 +108,9 @@ function ChatCreator({padding, setCurrentConversation}) {
               </ParticipantInvite>
             </Box>
             <Users
-              onClick={addParticipant}
-              showLoading
               noFlyout
+              showLoading
+              onClick={addParticipant}
               ignore={new Set([me.id, ...participants.map((u) => u.id)])}
               pad={{horizontal: 'small', vertical: 'xxsmall'}}
               margin={{bottom: 'xxsmall'}}

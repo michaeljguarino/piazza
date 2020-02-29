@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, useEffect } from 'react'
 import Me, { HEADER_HEIGHT } from '../users/Me'
 import { Box, Text } from 'grommet'
 import ConversationCreator, { CreateConversation } from './ConversationCreator'
@@ -13,6 +13,7 @@ import { Conversations } from '../login/MyConversations'
 import ConversationPager from './ConversationPager'
 import ChatCreator from './ChatCreator'
 import Workspaces, { FOOTER_HEIGHT } from '../workspace/Workspaces'
+import AvailabilityDetector from '../utils/AvailabilityDetector'
 
 export const PADDING = {left: '15px'}
 
@@ -36,11 +37,19 @@ function SidebarFlyout({icon, text, children}) {
   )
 }
 
+function BackOnline({refetch}) {
+  useEffect(() => refetch(), [])
+  return null
+}
+
 export default function ConversationPanel() {
   const me = useContext(CurrentUserContext)
-  const {conversations, chats, setCurrentConversation, currentConversation, fetchMore} = useContext(Conversations)
+  const {conversations, chats, setCurrentConversation, currentConversation, fetchMore, refetch} = useContext(Conversations)
   return (
     <Box>
+      <AvailabilityDetector>
+      {online => online && <BackOnline refetch={refetch} />}
+      </AvailabilityDetector>
       <Me me={me} pad={PADDING} />
       <div style={{height: `calc(100vh - ${HEADER_HEIGHT + FOOTER_HEIGHT}px)`, overflow: 'auto'}}>
         <Box margin={{vertical: 'medium'}} gap='xsmall'>

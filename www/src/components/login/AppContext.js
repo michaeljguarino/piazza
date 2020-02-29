@@ -32,7 +32,7 @@ export default function AppContext({children, sideEffects}) {
   const {conversationId, workspace} = useParams()
   const workspaceId = workspace || (workspaces.length > 0 ? workspaces[0].id : null)
 
-  const {loading, data, fetchMore, subscribeToMore, error} = useQuery(CONTEXT_Q, {
+  const {loading, data, fetchMore, subscribeToMore, error, refetch} = useQuery(CONTEXT_Q, {
     variables: {workspaceId}
   })
 
@@ -85,6 +85,7 @@ export default function AppContext({children, sideEffects}) {
           chats,
           setCurrentConversation,
           workspaceId,
+          refetch,
           setWorkspace,
           waterline: waterline || lastSeenAt,
           currentConversation: current

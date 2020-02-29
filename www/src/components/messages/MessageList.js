@@ -83,13 +83,15 @@ function ReturnToBeginning({listRef}) {
     <Layer position='top' modal={false}>
       <Box pad={{top: '5px'}}>
         <Box
+          style={{minWidth: '100px'}}
           direction='row'
           align='center'
-          width='40vw'
+          width='25vw'
           round='small'
           pad={{horizontal: 'small', vertical: 'xsmall'}}
+          gap='small'
           background='brand'>
-          <Box direction='row' fill='horizontal'>
+          <Box direction='row' fill='horizontal' justify='center'>
             <Text size='small'>go to most recent</Text>
           </Box>
           <Box pad={{right: 'small'}}>
