@@ -7,6 +7,7 @@ defmodule Gql.Application do
 
   def start(_type, _args) do
     topologies = Application.get_env(:libcluster, :topologies)
+    Gql.Plug.MetricsExporter.setup()
     GraphQl.Instrumenter.install(GraphQl)
 
     children = [
