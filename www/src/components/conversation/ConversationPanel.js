@@ -56,7 +56,7 @@ export default function ConversationPanel() {
           <SidebarFlyout icon={Group} text='Directory'>
           {setOpen => <UserFlyout setOpen={setOpen} />}
           </SidebarFlyout>
-          <SidebarFlyout icon={Terminal} text='Apps'>
+          <SidebarFlyout icon={Terminal} text='Bots'>
           {setOpen => <CommandFlyout setOpen={setOpen} />}
           </SidebarFlyout>
         </Box>

@@ -81,13 +81,13 @@ function FlyoutContent() {
 export function CommandFlyout({setOpen, ...props}) {
   return (
     <FlyoutContainer width='30vw'>
-      <FlyoutHeader text='Commands' setOpen={setOpen} />
+      <FlyoutHeader text='Bots' setOpen={setOpen} />
       <FlyoutContent setOpen={setOpen} {...props} />
     </FlyoutContainer>
   )
 }
 
-function Commands(props) {
+export default function Commands(props) {
   return (
     <HoveredBackground>
       <Box
@@ -103,5 +103,3 @@ function Commands(props) {
     </HoveredBackground>
   )
 }
-
-export default Commands

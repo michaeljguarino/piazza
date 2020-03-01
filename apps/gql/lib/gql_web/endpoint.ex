@@ -29,5 +29,7 @@ defmodule GqlWeb.Endpoint do
   plug Plug.MethodOverride
   plug Plug.Head
 
+  plug Gql.Plug.MetricsExporter
+
   plug GqlWeb.Router
 end

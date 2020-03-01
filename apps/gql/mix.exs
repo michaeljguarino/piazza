@@ -49,6 +49,7 @@ defmodule Gql.MixProject do
       {:guardian, "~> 1.2.1"},
       {:cors_plug, "~> 2.0"},
       {:libcluster, "~> 3.1.1"},
+      {:prometheus_plugs, "~> 1.1.1"},
 
       {:core, in_umbrella: true},
       {:graphql, in_umbrella: true}

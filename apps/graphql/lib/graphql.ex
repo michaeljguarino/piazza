@@ -37,6 +37,9 @@ defmodule GraphQl do
     end)
   end
 
+  def middleware(middlewares, field, object) do
+	  GraphQl.Instrumenter.instrument(middlewares, field, object)
+  end
 
   def plugins do
     [Absinthe.Middleware.Dataloader] ++ Absinthe.Plugin.defaults()

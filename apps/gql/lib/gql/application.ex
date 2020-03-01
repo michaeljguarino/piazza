@@ -7,6 +7,8 @@ defmodule Gql.Application do
 
   def start(_type, _args) do
     topologies = Application.get_env(:libcluster, :topologies)
+    GraphQl.Instrumenter.install(GraphQl)
+
     children = [
       GqlWeb.Endpoint,
       {Cluster.Supervisor, [topologies, [name: Gql.ClusterSupervisor]]},
