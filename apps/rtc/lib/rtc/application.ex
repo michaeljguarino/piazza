@@ -5,6 +5,9 @@ defmodule Rtc.Application do
 
   def start(_type, _args) do
     topologies = Application.get_env(:libcluster, :topologies)
+    Rtc.Plug.MetricsExporter.setup()
+    GraphQl.Instrumenter.install(GraphQl)
+
     children = [
       RtcWeb.Endpoint,
       Rtc.Presence,

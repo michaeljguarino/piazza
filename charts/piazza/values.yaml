@@ -26,6 +26,8 @@ image:
   tag: "0.5.0"
   pullPolicy: Always
 
+dashboard_provider: sidecar
+
 imagePullSecrets:
 - name: chartmartcreds
 

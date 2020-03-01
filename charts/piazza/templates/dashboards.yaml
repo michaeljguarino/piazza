@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "piazza.fullname" $ }}-dashboards-{{ .Values.dashboard_provider }}
+  labels:
+{{ include "piazza.labels" . | indent 4 }}
+    dashboard-provider: {{ .Values.dashboard_provider }}
+data:
+  piazza-beam.json:
+{{ toYaml (.Files.Get "dashboards/beam.json") | indent 4 }}

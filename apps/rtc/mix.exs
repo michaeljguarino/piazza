@@ -50,6 +50,7 @@ defmodule Rtc.MixProject do
       {:guardian, "~> 1.2.1"},
       {:libcluster, "~> 3.1.1"},
       {:cors_plug, "~> 2.0"},
+      {:prometheus_plugs, "~> 1.1.1"},
 
       {:core, in_umbrella: true},
       {:aquaduct, in_umbrella: true},

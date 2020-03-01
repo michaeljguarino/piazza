@@ -25,5 +25,7 @@ defmodule RtcWeb.Endpoint do
   plug Plug.MethodOverride
   plug Plug.Head
 
+  plug Rtc.Plug.MetricsExporter
+
   plug RtcWeb.Router
 end

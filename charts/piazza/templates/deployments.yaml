@@ -112,6 +112,10 @@ spec:
       labels:
         app.kubernetes.io/name: piazza-rtc
         app.kubernetes.io/instance: {{ .Release.Name }}
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/path: "/metrics"
+        prometheus.io/port: {{ .Values.rtc.port | quote }}
     spec:
       serviceAccountName: piazza
       {{- with .Values.imagePullSecrets }}
