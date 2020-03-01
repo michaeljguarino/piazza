@@ -63,7 +63,7 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "erlang_vm_ets_limit{app_kubernetes_io_name=\"$service\", instance=\"$node\"}",
+              "expr": "erlang_vm_ets_limit{app_kubernetes_io_name=\"$service\"}",
               "format": "time_series",
               "intervalFactor": 2,
               "legendFormat": "ETS Limit",
@@ -71,7 +71,7 @@
               "step": 2
             },
             {
-              "expr": "erlang_vm_ets_tables{app_kubernetes_io_name=\"$service\", instance=\"$node\"}",
+              "expr": "erlang_vm_ets_tables{app_kubernetes_io_name=\"$service\"}",
               "format": "time_series",
               "intervalFactor": 2,
               "legendFormat": "ETS Tables",
@@ -79,7 +79,7 @@
               "step": 2
             },
             {
-              "expr": "erlang_vm_dets_tables{app_kubernetes_io_name=\"$service\", instance=\"$node\"}",
+              "expr": "erlang_vm_dets_tables{app_kubernetes_io_name=\"$service\"}",
               "format": "time_series",
               "intervalFactor": 2,
               "legendFormat": "DETS Tables",
@@ -155,7 +155,7 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "erlang_vm_process_limit{app_kubernetes_io_name=\"$service\", instance=\"$node\"}",
+              "expr": "erlang_vm_process_limit{app_kubernetes_io_name=\"$service\"}",
               "format": "time_series",
               "hide": true,
               "intervalFactor": 2,
@@ -164,7 +164,7 @@
               "step": 2
             },
             {
-              "expr": "erlang_vm_process_count{app_kubernetes_io_name=\"$service\", instance=\"$node\"}",
+              "expr": "erlang_vm_process_count{app_kubernetes_io_name=\"$service\"}",
               "format": "time_series",
               "intervalFactor": 2,
               "legendFormat": "Processes",
@@ -172,7 +172,7 @@
               "step": 2
             },
             {
-              "expr": "erlang_vm_statistics_run_queues_length_total{app_kubernetes_io_name=\"$service\", instance=\"$node\"}",
+              "expr": "erlang_vm_statistics_run_queues_length_total{app_kubernetes_io_name=\"$service\"}",
               "format": "time_series",
               "intervalFactor": 2,
               "legendFormat": "Run Queues Length",
@@ -253,7 +253,7 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "irate(erlang_vm_statistics_context_switches{app_kubernetes_io_name=\"$service\", instance=\"$node\"}[$interval])",
+              "expr": "irate(erlang_vm_statistics_context_switches{app_kubernetes_io_name=\"$service\"}[$interval])",
               "format": "time_series",
               "intervalFactor": 2,
               "legendFormat": "Context Switches",
@@ -261,7 +261,7 @@
               "step": 2
             },
             {
-              "expr": "irate(erlang_vm_statistics_reductions_total{app_kubernetes_io_name=\"$service\", instance=\"$node\"}[$interval])",
+              "expr": "irate(erlang_vm_statistics_reductions_total{app_kubernetes_io_name=\"$service\"}[$interval])",
               "format": "time_series",
               "intervalFactor": 2,
               "legendFormat": "Reductions",
@@ -269,7 +269,7 @@
               "step": 2
             },
             {
-              "expr": "irate(erlang_vm_statistics_runtime_milliseconds{app_kubernetes_io_name=\"$service\", instance=\"$node\"}[$interval])",
+              "expr": "irate(erlang_vm_statistics_runtime_milliseconds{app_kubernetes_io_name=\"$service\"}[$interval])",
               "format": "time_series",
               "intervalFactor": 2,
               "legendFormat": "Runtime",
@@ -370,7 +370,7 @@
           "tableColumn": "",
           "targets": [
             {
-              "expr": "process_uptime_seconds{app_kubernetes_io_name=\"$service\", instance=\"$node\"}",
+              "expr": "process_uptime_seconds{app_kubernetes_io_name=\"$service\"}",
               "intervalFactor": 2,
               "legendFormat": "",
               "refId": "A",
@@ -437,7 +437,7 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "irate(erlang_vm_statistics_bytes_output_total{app_kubernetes_io_name=\"$service\", instance=\"$node\"}[$interval])",
+              "expr": "irate(erlang_vm_statistics_bytes_output_total{app_kubernetes_io_name=\"$service\"}[$interval])",
               "format": "time_series",
               "intervalFactor": 2,
               "legendFormat": "Output Bytes",
@@ -446,7 +446,7 @@
               "step": 2
             },
             {
-              "expr": "irate(erlang_vm_statistics_bytes_received_total{app_kubernetes_io_name=\"$service\", instance=\"$node\"}[$interval])",
+              "expr": "irate(erlang_vm_statistics_bytes_received_total{app_kubernetes_io_name=\"$service\"}[$interval])",
               "format": "time_series",
               "intervalFactor": 2,
               "legendFormat": "Received Bytes",
@@ -536,7 +536,7 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "irate(erlang_vm_statistics_garbage_collection_number_of_gcs{app_kubernetes_io_name=\"$service\", instance=\"$node\"}[$interval])",
+              "expr": "irate(erlang_vm_statistics_garbage_collection_number_of_gcs{app_kubernetes_io_name=\"$service\"}[$interval])",
               "format": "time_series",
               "intervalFactor": 2,
               "legendFormat": "Number of GCs",
@@ -545,7 +545,7 @@
               "step": 2
             },
             {
-              "expr": "irate(erlang_vm_statistics_garbage_collection_bytes_reclaimed{app_kubernetes_io_name=\"$service\", instance=\"$node\"}[$interval])",
+              "expr": "irate(erlang_vm_statistics_garbage_collection_bytes_reclaimed{app_kubernetes_io_name=\"$service\"}[$interval])",
               "format": "time_series",
               "intervalFactor": 2,
               "legendFormat": "Bytes Reclaimed",
@@ -624,7 +624,7 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "erlang_vm_memory_bytes_total{app_kubernetes_io_name=\"$service\", instance=\"$node\", kind=\"processes\"}",
+              "expr": "erlang_vm_memory_bytes_total{app_kubernetes_io_name=\"$service\", kind=\"processes\"}",
               "format": "time_series",
               "intervalFactor": 2,
               "legendFormat": "Processes Memory",
@@ -632,7 +632,7 @@
               "step": 2
             },
             {
-              "expr": "erlang_vm_memory_system_bytes_total{app_kubernetes_io_name=\"$service\", instance=\"$node\", usage=\"atom\"}",
+              "expr": "erlang_vm_memory_system_bytes_total{app_kubernetes_io_name=\"$service\", usage=\"atom\"}",
               "format": "time_series",
               "intervalFactor": 2,
               "legendFormat": "Atoms",
@@ -640,7 +640,7 @@
               "step": 2
             },
             {
-              "expr": "erlang_vm_memory_system_bytes_total{app_kubernetes_io_name=\"$service\", instance=\"$node\", usage=\"binary\"}",
+              "expr": "erlang_vm_memory_system_bytes_total{app_kubernetes_io_name=\"$service\", usage=\"binary\"}",
               "format": "time_series",
               "intervalFactor": 2,
               "legendFormat": "Binary",
@@ -648,7 +648,7 @@
               "step": 2
             },
             {
-              "expr": "erlang_vm_memory_system_bytes_total{app_kubernetes_io_name=\"$service\", instance=\"$node\", usage=\"code\"}",
+              "expr": "erlang_vm_memory_system_bytes_total{app_kubernetes_io_name=\"$service\", usage=\"code\"}",
               "format": "time_series",
               "intervalFactor": 2,
               "legendFormat": "Code",
@@ -656,7 +656,7 @@
               "step": 2
             },
             {
-              "expr": "erlang_vm_memory_system_bytes_total{app_kubernetes_io_name=\"$service\", instance=\"$node\", usage=\"ets\"}",
+              "expr": "erlang_vm_memory_system_bytes_total{app_kubernetes_io_name=\"$service\", usage=\"ets\"}",
               "format": "time_series",
               "intervalFactor": 2,
               "legendFormat": "ETS",
@@ -746,7 +746,7 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "process_virtual_memory_bytes{app_kubernetes_io_name=\"$service\", instance=\"$node\"}",
+              "expr": "process_virtual_memory_bytes{app_kubernetes_io_name=\"$service\"}",
               "format": "time_series",
               "intervalFactor": 2,
               "legendFormat": "Virtual Memory",
@@ -754,7 +754,7 @@
               "step": 2
             },
             {
-              "expr": "process_resident_memory_bytes{app_kubernetes_io_name=\"$service\", instance=\"$node\"}",
+              "expr": "process_resident_memory_bytes{app_kubernetes_io_name=\"$service\"}",
               "format": "time_series",
               "intervalFactor": 2,
               "legendFormat": "Resident Memory",
@@ -843,7 +843,7 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "process_open_fds{app_kubernetes_io_name=\"$service\", instance=\"$node\"}",
+              "expr": "process_open_fds{app_kubernetes_io_name=\"$service\"}",
               "format": "time_series",
               "intervalFactor": 2,
               "legendFormat": "Open FDs",
@@ -852,7 +852,7 @@
               "step": 2
             },
             {
-              "expr": "process_max_fds{app_kubernetes_io_name=\"$service\", instance=\"$node\"}",
+              "expr": "process_max_fds{app_kubernetes_io_name=\"$service\"}",
               "format": "time_series",
               "intervalFactor": 2,
               "legendFormat": "Max FDs",
@@ -860,7 +860,7 @@
               "step": 2
             },
             {
-              "expr": "erlang_vm_port_limit{app_kubernetes_io_name=\"$service\", instance=\"$node\"}",
+              "expr": "erlang_vm_port_limit{app_kubernetes_io_name=\"$service\"}",
               "format": "time_series",
               "intervalFactor": 2,
               "legendFormat": "Max Ports",
@@ -868,7 +868,7 @@
               "step": 2
             },
             {
-              "expr": "erlang_vm_port_count{app_kubernetes_io_name=\"$service\", instance=\"$node\"}",
+              "expr": "erlang_vm_port_count{app_kubernetes_io_name=\"$service\"}",
               "format": "time_series",
               "intervalFactor": 2,
               "legendFormat": "Ports",
@@ -954,7 +954,7 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "process_threads_total{app_kubernetes_io_name=\"$service\", instance=\"$node\"}",
+              "expr": "process_threads_total{app_kubernetes_io_name=\"$service\"}",
               "format": "time_series",
               "intervalFactor": 2,
               "legendFormat": "Threads",
@@ -963,7 +963,7 @@
               "step": 2
             },
             {
-              "expr": "sum(irate(process_cpu_seconds_total{app_kubernetes_io_name=\"$service\", instance=\"$node\"}[$interval])) without (kind) * 100",
+              "expr": "sum(irate(process_cpu_seconds_total{app_kubernetes_io_name=\"$service\"}[$interval])) without (kind) * 100",
               "format": "time_series",
               "intervalFactor": 2,
               "legendFormat": "CPU",
@@ -1039,38 +1039,6 @@
         "regex": "",
         "sort": 1,
         "type": "query"
-      },
-      {
-        "allValue": null,
-        "current": {
-          "text": "172.17.0.1:4000",
-          "value": "172.17.0.1:4000"
-        },
-        "datasource": "Prometheus",
-        "hide": 0,
-        "includeAll": false,
-        "label": "Node",
-        "multi": false,
-        "name": "node",
-        "options": [],
-        "query": "label_values(erlang_vm_process_count{app_kubernetes_io_name=\"$service\"}, instance)",
-        "refresh": 1,
-        "regex": "",
-        "sort": 1,
-        "tagValuesQuery": "label_values({job=\"$tag\"},instance)",
-        "tags": [
-          "api",
-          "elli",
-          "linux",
-          "lisp",
-          "mysql",
-          "prometheus",
-          "push",
-          "rabbitmq"
-        ],
-        "tagsQuery": "label_values(job)",
-        "type": "query",
-        "useTags": true
       },
       {
         "auto": false,

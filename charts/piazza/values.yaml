@@ -7,12 +7,16 @@ replicaCount: 1
 postgresql:
   postgresqlUsername: piazza
   postgresqlDatabase: piazza
+  metrics:
+    enabled: true
   resources:
     requests:
       cpu: .5
       memory: 1Gi
 
 rabbitmq:
+  metrics:
+    enabled: true
   rabbitmq:
     username: rabbitmq
 
