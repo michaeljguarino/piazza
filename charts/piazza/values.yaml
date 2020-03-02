@@ -9,6 +9,8 @@ postgresql:
   postgresqlDatabase: piazza
   metrics:
     enabled: true
+    image:
+      repository: wrouesnel/postgres_exporter
   resources:
     requests:
       cpu: .5

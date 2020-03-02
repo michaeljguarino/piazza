@@ -8,3 +8,25 @@ metadata:
 data:
   piazza-beam.json:
 {{ toYaml (.Files.Get "dashboards/beam.json") | indent 4 }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "piazza.fullname" $ }}-dashboards-rabbitmq
+  labels:
+{{ include "piazza.labels" . | indent 4 }}
+    grafana_dashboard: '1'
+data:
+  piazza-rabbitmq.json:
+{{ toYaml (.Files.Get "dashboards/rabbit.json") | indent 4 }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "piazza.fullname" $ }}-dashboards-postgres
+  labels:
+{{ include "piazza.labels" . | indent 4 }}
+    grafana_dashboard: '1'
+data:
+  piazza-postgres.json:
+{{ toYaml (.Files.Get "dashboards/postgres.json") | indent 4 }}
