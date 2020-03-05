@@ -4,7 +4,7 @@ import { Pin } from 'grommet-icons'
 import Avatar from '../users/Avatar'
 import moment from 'moment'
 import MessageEmbed from './MessageEmbed'
-import { VisibleMessagesContext, EditingMessageContext } from './VisibleMessages'
+import { EditingMessageContext } from './VisibleMessages'
 import UserHandle from '../users/UserHandle'
 import MessageControls from './MessageControls'
 import MessageReactions from './MessageReactions'
@@ -226,22 +226,48 @@ return moment(dt).calendar(null, {
 });
 }
 
-function DateDivider({message, next}) {
-  if (sameDay(message, next)) return null
+function DateDivider({waterline, message, next}) {
+  const same = sameDay(message, next)
+  const unread = isWaterline(waterline, message, next)
 
-  return <Divider text={formatDate(message.insertedAt)} />
+  if (!same && unread) {
+    return (
+      <>
+      <Box direction='row' justify='end' height='0px'>
+        <Box
+          style={{zIndex: 5}}
+          margin={{top: '-5px'}}
+          pad='small'
+          background='#ffffff'
+          align='center'>
+          <Text color='notif' size='small'>unread messages</Text>
+        </Box>
+      </Box>
+      <Divider text={formatDate(message.insertedAt)} color='notif' />
+      </>
+    )
+  }
+
+  if (unread) return <Waterline />
+  if (!same) return <Divider text={formatDate(message.insertedAt)} />
+
+  return null
 }
 
-function Waterline({waterline, message, next}) {
-  if (!waterline || !next) return null
+function isWaterline(waterline, message, next) {
+  if (!waterline || !next) return false
 
   const line = moment(waterline)
   const current = moment(message.insertedAt)
   const nxt = moment(next.insertedAt)
 
-  if (line.isBefore(nxt)) return null
-  if (line.isAfter(current)) return null
+  if (line.isBefore(nxt)) return false
+  if (line.isAfter(current)) return false
 
+  return true
+}
+
+function Waterline() {
   return (
     <Box direction='row' border={{color: 'notif', side: 'bottom'}} justify='end' margin={{vertical: 'small'}}>
       <Box background='#fff' pad='small' align='center' margin={{bottom: '-22px'}}>
@@ -276,7 +302,7 @@ const Message = React.memo(({noHover, selected, scrollTo, message, onClick, pos,
     if (msgRef && setSize) {
       msgRef.current && setSize(msgRef.current.getBoundingClientRect().height)
     }
-  }, [msgRef.current, setSize, message.id])
+  }, [msgRef, setSize, message.id])
 
   const wrappedSetEditing = useCallback((editing) => {
     setPinnedHover(false)
@@ -286,8 +312,7 @@ const Message = React.memo(({noHover, selected, scrollTo, message, onClick, pos,
 
   return (
     <Box flex={false}>
-    <Waterline message={message} next={props.next} waterline={props.waterline} />
-    <DateDivider message={message} next={props.next} />
+    <DateDivider message={message} next={props.next} waterline={props.waterline} />
     <Box
       ref={msgRef}
       id={message.id}

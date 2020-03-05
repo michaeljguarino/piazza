@@ -1,4 +1,4 @@
-import React, { Component, useEffect, useState, useRef, useCallback } from 'react'
+import React, { Component } from 'react'
 import {Box} from 'grommet'
 
 export default class OnMediaLoaded extends Component {
@@ -26,7 +26,6 @@ export default class OnMediaLoaded extends Component {
 	}
 
 	componentDidMount() {
-		const { onLoaded, onDidMount } = this.props
 		this.timingSetup()
 		this.mounted = true
 		this._prepare()

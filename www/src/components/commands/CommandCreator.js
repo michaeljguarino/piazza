@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react'
+import React, { useState } from 'react'
 import { Box, Select, Text } from 'grommet'
 import { useApolloClient, useMutation } from 'react-apollo'
 import { ModalHeader } from '../utils/Modal'

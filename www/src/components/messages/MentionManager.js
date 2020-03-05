@@ -1,4 +1,4 @@
-import React, { useState, useRef, useMemo } from 'react'
+import React, { useState, useRef } from 'react'
 import { useApolloClient } from 'react-apollo'
 import Avatar from '../users/Avatar'
 import UserHandle from '../users/UserHandle'

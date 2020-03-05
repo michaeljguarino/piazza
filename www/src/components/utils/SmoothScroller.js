@@ -6,7 +6,6 @@ import Autosizer from 'react-virtualized-auto-sizer'
 import OnMediaLoaded from './OnMediaLoaded'
 import memoize from 'memoize-one'
 import CellMeasurer from './CellMeasurer'
-import ResizeObserver from 'react-resize-observer'
 
 function shallowDiffers(prev, next) {
   for (let attribute in prev) {

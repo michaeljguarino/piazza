@@ -57,8 +57,8 @@ export function MessageReaction({conversation, setPinnedHover, boxAttrs, positio
   })
 
   function toggleOpen(value) {
-    setPinnedHover && setPinnedHover(value)
     setOpen(value)
+    setPinnedHover && setPinnedHover(value)
   }
 
   return (

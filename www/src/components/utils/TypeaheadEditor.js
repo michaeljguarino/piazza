@@ -48,6 +48,8 @@ export default function TypeaheadEditor({editor, value, setValue, style, onOpen,
             event.preventDefault()
             setTarget(null)
             break
+          default:
+            // ignore
         }
       }
     },

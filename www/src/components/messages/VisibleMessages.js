@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react'
+import React, { useState } from 'react'
 import moment from 'moment'
 
 export const VisibleMessagesContext = React.createContext({

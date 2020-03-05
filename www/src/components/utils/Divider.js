@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import {ThemeContext, Text} from 'grommet'
 import styled from 'styled-components'
 import {normalizeColor} from './colors'
@@ -25,15 +25,12 @@ ${props => (
 )}
 `;
 
-function Divider(props) {
+function Divider({text, color}) {
+  const theme = useContext(ThemeContext)
   return (
-    <ThemeContext.Consumer>
-    {theme => (
-      <StyledDivider theme={theme} color={props.color}>
-        {props.text && <Text style={{fontWeight: 500}} size='small'>{props.text}</Text>}
-      </StyledDivider>
-    )}
-    </ThemeContext.Consumer>
+    <StyledDivider theme={theme} color={color}>
+      {text && <Text style={{fontWeight: 500}} size='small'>{text}</Text>}
+    </StyledDivider>
   )
 }
 

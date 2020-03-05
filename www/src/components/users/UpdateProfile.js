@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react'
+import React, { useState } from 'react'
 import { Keyboard, Box } from 'grommet'
 import { useMutation } from 'react-apollo'
 import Button, { SecondaryButton } from '../utils/Button'
