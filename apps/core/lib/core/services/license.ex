@@ -24,7 +24,7 @@ defmodule Core.Services.License do
   @doc """
   Force kill the app if the license is invalid
   """
-  def invalid(_), do: FailureHandler.failed()
+  def invalid(res), do: IO.inspect(res) && FailureHandler.failed()
 
   def check_expiration(%License{expires_at: expiry, refresh_token: token}) do
     expiry

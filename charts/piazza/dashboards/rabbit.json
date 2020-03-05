@@ -12,11 +12,9 @@
       }
     ]
   },
-  "description": "Rabbitmq stats and alerting using RabbitMQ Exporter (https://github.com/kbudde/rabbitmq_exporter)",
+  "description": "Piazza rabbitmq overview",
   "editable": true,
-  "gnetId": 4279,
   "graphTooltip": 1,
-  "id": 63,
   "iteration": 1583098014792,
   "links": [],
   "panels": [
@@ -1111,7 +1109,7 @@
     ]
   },
   "timezone": "browser",
-  "title": "RabbitMQ Monitoring",
+  "title": "Piazza Rabbitmq",
   "uid": "piazza-rabbitmq",
   "version": 1
 }
