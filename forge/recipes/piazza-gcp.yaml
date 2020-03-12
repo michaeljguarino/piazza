@@ -2,7 +2,7 @@ name: piazza-gcp
 description: Installs everything needed for piazza to run on GCP
 provider: GCP
 sections:
-- name: chartmart
+- name: bootstrap
   items:
   - type: TERRAFORM
     name: gcp-bootstrap
@@ -26,14 +26,14 @@ sections:
     - name: txt_owner
       documentation: arbitrary name for externaldns to use to track ownership of dns records
       type: STRING
-      default: chartmart
+      default: forge
     - name: dns_domain
       documentation: top level domain to use
       type: STRING
 - name: piazza
   items:
   - type: TERRAFORM
-    name: kube
+    name: gcp
     configuration:
     - name: gcpProjectId
       documentation: The project id to use

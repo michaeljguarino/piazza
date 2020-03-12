@@ -13,10 +13,10 @@ get_domain = fn
 end
 
 config :email, Email.Mailer,
-  adapter: Email.Adapter.Chartmart
+  adapter: Email.Adapter.Forge
 
 config :email,
-  adapter: Email.Adapter.Chartmart,
+  adapter: Email.Adapter.Forge,
   domain: get_env("HOST") |> get_domain.(),
   host: get_env("HOST")
 

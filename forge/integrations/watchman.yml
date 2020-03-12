@@ -1,6 +1,6 @@
 description: Notifies you of build success/failure
 name: watchman
-sourceUrl: https://github.com/michaeljguarino/chartmart
+sourceUrl: https://github.com/michaeljguarino/forge
 tags:
 - tag: CI/CD
 spec:

@@ -23,7 +23,7 @@ config :email, Email.Endpoint,
   pubsub: [name: Email.PubSub, adapter: Phoenix.PubSub.PG2]
 
 config :email, Email.Mailer,
-  adapter: Email.Adapter.Chartmart
+  adapter: Email.Adapter.Forge
 
 # Configure Mix tasks and generators
 config :core,
@@ -108,7 +108,7 @@ config :rtc, :start_broker, true
 config :libcluster, :topologies, []
 
 config :core, :start_broker, true
-config :core, :chartmart_url, "https://mart.piazzaapp.com"
+config :core, :forge_url, "https://forge.piazza.app"
 
 config :arc,
   storage: Arc.Storage.GCS,

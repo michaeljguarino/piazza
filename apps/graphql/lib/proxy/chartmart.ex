@@ -1,4 +1,4 @@
-defmodule GraphQl.Proxy.Chartmart do
+defmodule GraphQl.Proxy.Forge do
   @headers [
     {"accept", "application/json"},
     {"content-type", "application/json"}
@@ -65,5 +65,5 @@ defmodule GraphQl.Proxy.Chartmart do
     |> Map.new()
   end
 
-  def url(), do: "#{Application.get_env(:core, :chartmart_url)}/gql"
+  def url(), do: "#{Application.get_env(:core, :forge_url)}/gql"
 end

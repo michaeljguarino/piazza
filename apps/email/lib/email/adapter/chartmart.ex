@@ -1,6 +1,6 @@
-defmodule Email.Adapter.Chartmart do
+defmodule Email.Adapter.Forge do
   @moduledoc """
-  Bamboo adapter for sending emails using chartmart's email
+  Bamboo adapter for sending emails using forge's email
   proxy endpoint.
 
   Requires a valid license with an embedded license token to
@@ -17,7 +17,7 @@ defmodule Email.Adapter.Chartmart do
 
   @spec deliver(Bamboo.Email.t, term) :: {:ok, term} | {:error, term}
   def deliver(email, _) do
-    chartmart_url()
+    forge_url()
     |> Mojito.post(
       [{"authorization", "Bearer #{token()}"} | @headers],
       Jason.encode!(convert(email))
@@ -39,8 +39,8 @@ defmodule Email.Adapter.Chartmart do
   defp to_address({name, address}), do: %{email: address, name: name}
   defp to_address(addr) when is_binary(addr), do: %{email: addr}
 
-  defp chartmart_url(),
-    do: "#{Application.get_env(:core, :chartmart_url)}/api/email"
+  defp forge_url(),
+    do: "#{Application.get_env(:core, :forge_url)}/api/email"
 
   defp token() do
     %{refresh_token: token} = Piazza.Crypto.License.fetch()

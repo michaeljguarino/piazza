@@ -14,7 +14,7 @@ defmodule GraphQl.Resolvers.Platform do
   end
 
   def list_installable_commands(%{first: first} = args, _) do
-    GraphQl.Proxy.Chartmart.list_integrations(first, args[:after])
+    GraphQl.Proxy.Forge.list_integrations(first, args[:after])
   end
 
   def search_commands(%{name: name} = args, _) do

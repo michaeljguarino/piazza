@@ -35,30 +35,30 @@ image:
 dashboard_provider: sidecar
 
 imagePullSecrets:
-- name: chartmartcreds
+- name: forgecreds
 
 gql:
   port: 4000
-  image: dkr.piazzaapp.com/piazza/gql
+  image: dkr.piazza.app/piazza/gql
   gcsBucket: piazzaapp-uploads
   resources: {}
   replicas: 2
 
 rtc:
   port: 4000
-  image: dkr.piazzaapp.com/piazza/rtc
+  image: dkr.piazza.app/piazza/rtc
   replicas: 2
   resources: {}
 
 www:
   dns: chat.piazzaapp.com
   port: 80
-  image: dkr.piazzaapp.com/piazza/www
+  image: dkr.piazza.app/piazza/www
   replicas: 1
   resources: {}
 
 cron:
-  image: dkr.piazzaapp.com/piazza/cron
+  image: dkr.piazza.app/piazza/cron
   resources:
     requests:
       cpu: .1

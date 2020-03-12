@@ -1,9 +1,9 @@
-defmodule GraphQl.Proxy.ChartmartTest do
+defmodule GraphQl.Proxy.ForgeTest do
   use GraphQl.SchemaCase, async: true
   use Mimic
-  alias GraphQl.Proxy.Chartmart
+  alias GraphQl.Proxy.Forge
 
-  @url "#{Application.get_env(:core, :chartmart_url)}/gql"
+  @url "#{Application.get_env(:core, :forge_url)}/gql"
   @body Jason.encode!(%{data: %{integrations: %{
     pageInfo: %{hasNextPage: true, endCursor: "cursor"},
     edges: [
@@ -26,7 +26,7 @@ defmodule GraphQl.Proxy.ChartmartTest do
     test "It will convert to connection format" do
       expect(Mojito, :post, fn @url, _, _ -> {:ok, %Mojito.Response{body: @body}} end)
 
-      {:ok, %{page_info: page_info, edges: edges}} = Chartmart.list_integrations(5)
+      {:ok, %{page_info: page_info, edges: edges}} = Forge.list_integrations(5)
 
       assert page_info.has_next_page
       assert page_info.end_cursor

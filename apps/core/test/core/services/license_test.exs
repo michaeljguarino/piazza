@@ -15,7 +15,7 @@ defmodule Core.Services.LicenseTest do
     end
 
     test "For expired licenses it will request a refreshed license" do
-      url = "#{conf(:chartmart_url)}/auth/license"
+      url = "#{conf(:forge_url)}/auth/license"
       refreshed_license = conf(:license)
 
       expect(Mojito, :post, fn ^url, _, body ->

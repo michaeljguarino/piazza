@@ -2,7 +2,7 @@ defmodule GraphQl.CommandsQueryTest do
   use GraphQl.SchemaCase, async: true
   use Mimic
 
-  @url "#{Application.get_env(:core, :chartmart_url)}/gql"
+  @url "#{Application.get_env(:core, :forge_url)}/gql"
   @body Jason.encode!(%{data: %{integrations: %{
     pageInfo: %{hasNextPage: true, endCursor: "cursor"},
     edges: [

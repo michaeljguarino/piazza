@@ -43,7 +43,7 @@ defmodule Core.Services.License do
 
   def refetch_license(token) do
     payload = Jason.encode!(%{refresh_token: token})
-    with {:ok, %{body: body}} <- Mojito.post(chartmart_url(), @headers, payload),
+    with {:ok, %{body: body}} <- Mojito.post(forge_url(), @headers, payload),
         %{"license" => license} <- Jason.decode!(body) do
       {:ok, license}
     else
@@ -65,5 +65,5 @@ defmodule Core.Services.License do
     |> Core.Repo.aggregate(:count, :id)
   end
 
-  defp chartmart_url(), do: "#{Application.get_env(:core, :chartmart_url)}/auth/license"
+  defp forge_url(), do: "#{Application.get_env(:core, :forge_url)}/auth/license"
 end
