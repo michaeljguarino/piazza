@@ -10,7 +10,6 @@ rabbitmq:
 
 secrets:
   jwt: {{ dedupe . "piazza.secrets.jwt" (randAlphaNum 26) }}
-  giphy: {{ .Values.giphySecret }}
   erlang: {{ dedupe . "piazza.secrets.erlang" (randAlphaNum 26) }}
   invite_secret: {{ dedupe . "piazza.secrets.invite_secret" (randAlphaNum 26) }}
 

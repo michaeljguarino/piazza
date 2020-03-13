@@ -1,0 +1,10 @@
+description: slack incoming webhook for CI statuses
+icon: https://pbs.twimg.com/profile_images/1235979339579129857/Q3UAuYHN_400x400.png
+name: semaphore
+sourceUrl: https://github.com/michaeljguarino/piazza
+tags:
+- tag: CI/CD
+spec:
+  description: Notifies you of ci/cd statuses
+  documentation: This is just an incoming webhook. Copy the slack compatible webhook and paste it in the semaphore notifications form.
+  webhook: http://piazza-gql:4000/null

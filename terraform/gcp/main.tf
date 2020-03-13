@@ -32,7 +32,7 @@ provider "kubernetes" {
 }
 
 resource "google_service_account" "piazza" {
-  account_id = "piazza"
+  account_id = "forge-piazza"
   display_name = "Service account for piazza"
 }
 
