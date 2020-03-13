@@ -26,7 +26,7 @@ const httpLink = createLink({
 
 const retryLink = new RetryLink({
   delay: {initial: 200},
-  attempts: {max: 10}
+  attempts: {max: 100}
 })
 
 const authLink = setContext((_, { headers }) => {

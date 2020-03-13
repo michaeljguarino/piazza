@@ -78,16 +78,12 @@ defmodule GqlWeb.WebhookControllerTest do
 
     test "It creates a gif message on select", %{conn: conn} do
       gif_url = "https://media.giphy.com/some.gif"
-      # expect(Mojito, :get, fn "https://api.giphy.com/v1/gifs/search" <> _, _ ->
-      #   json = Jason.encode!(%{data: [%{images: %{original: %{mp4: gif_url}}}]})
-      #   {:ok, %Mojito.Response{body: json, status_code: 200}}
-      # end)
 
       path = Routes.webhook_path(conn, :giphy_interaction)
 
       result =
         conn
-        |> post(path, %{"select" => gif_url, "search" => "doggos"})
+        |> post(path, %{"select" => gif_url, "search" => "doggos", "width" => 100, "height" => 100})
         |> json_response(200)
 
       {:ok, %{"_type" => "root", "children" => [

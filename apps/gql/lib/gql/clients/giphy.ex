@@ -1,5 +1,6 @@
 defmodule Gql.Clients.Giphy do
   alias Core.Services.License
+  alias Gql.Giphy.{Response, Gif, Image, ImageContent}
 
   require Logger
   @sample_size 15
@@ -17,7 +18,7 @@ defmodule Gql.Clients.Giphy do
 
   def fetch(params) do
     case get("gifs/search?#{params}") do
-      {:ok, %{"data" => [_ | _] = results}} -> Enum.random(results) |> select_url()
+      {:ok, %Response{data: [_ | _] = results}} -> Enum.random(results) |> select_url()
       _ -> {:error, :not_found}
     end
   end
@@ -26,7 +27,8 @@ defmodule Gql.Clients.Giphy do
     path = "#{endpoint()}#{path}"
     retry(fn -> Mojito.get(path, headers) end)
     |> case do
-      {:ok, %Mojito.Response{body: body, status_code: 200}} -> Jason.decode(body)
+      {:ok, %Mojito.Response{body: body, status_code: 200}} ->
+        Response.decode(body)
       error ->
         Logger.error "Error from giphy: #{inspect(error)}"
         {:error, :not_found}
@@ -47,16 +49,16 @@ defmodule Gql.Clients.Giphy do
     end
   end
 
-  def build_dialog(url, search, interaction) do
+  def build_dialog({url, {width, height}}, search, interaction) do
     pruned = prune_url(url)
     shuffle_payload = Jason.encode!(%{shuffle: search}) |> xml_escape()
-    select_payload = Jason.encode!(%{select: pruned, search: search}) |> xml_escape()
+    select_payload = Jason.encode!(%{select: pruned, search: search, width: width, height: height}) |> xml_escape()
     """
     <root>
       <box pad="small" gap="small">
         <box>
           <link href="#{pruned}" target="_blank">
-            <video url="#{pruned}" autoPlay="true" loop="true" />
+            <video url="#{pruned}" width="#{width}" height="#{height}" autoPlay="true" loop="true" />
           </link>
         </box>
         <box direction="row" gap="xsmall">
@@ -68,13 +70,13 @@ defmodule Gql.Clients.Giphy do
     """
   end
 
-  def build_message(url) do
+  def build_message(url, width, height) do
     pruned = prune_url(url)
     """
     <root>
       <box pad="small">
         <link href="#{pruned}" target="_blank">
-          <video url="#{pruned}" autoPlay="true" loop="true" />
+          <video url="#{pruned}" width="#{width}" height="#{height}" autoPlay="true" loop="true" />
         </link>
       </box>
     </root>
@@ -91,14 +93,21 @@ defmodule Gql.Clients.Giphy do
     String.replace(str, "\"", "&quot;")
   end
 
-  def select_url(%{"images" => %{"original" => %{"mp4" => url}}}), do: {:ok, url}
-  def select_url(%{"images" => %{"original" => %{"url" => url}}}), do: {:ok, url}
-  def select_url(%{"images" => %{"fixed_height" => %{"mp4" => url}}}), do: {:ok, url}
-  def select_url(%{"images" => %{"fixed_height" => %{"url" => url}}}), do: {:ok, url}
-  def select_url(%{"images" => %{"fixed_width" => %{"mp4" => url}}}), do: {:ok, url}
-  def select_url(%{"images" => %{"fixed_width" => %{"url" => url}}}), do: {:ok, url}
-  def select_url(%{"embed_url" => url}), do: {:ok, url}
+  def select_url(%Gif{images: %Image{original: %ImageContent{mp4: url} = img}}) when not is_nil(url),
+    do: {:ok, {url, dimensions(img)}}
+  def select_url(%Gif{images: %Image{fixed_height: %ImageContent{mp4: url} = img}}) when not is_nil(url),
+    do: {:ok, {url, dimensions(img)}}
+  def select_url(%Gif{images: %Image{fixed_width: %ImageContent{mp4: url} = img}}) when not is_nil(url),
+    do: {:ok, {url, dimensions(img)}}
+  def select_url(%Gif{images: %Image{fixed_height: %ImageContent{url: url} = img}}) when not is_nil(url),
+    do: {:ok, {url, dimensions(img)}}
+  def select_url(%Gif{images: %Image{original: %ImageContent{url: url} = img}}) when not is_nil(url),
+    do: {:ok, {url, dimensions(img)}}
+  def select_url(%Gif{images: %Image{fixed_width: %ImageContent{url: url} = img}}) when not is_nil(url),
+    do: {:ok, {url, dimensions(img)}}
   def select_url(_), do: {:error, :not_found}
+
+  defp dimensions(%ImageContent{width: width, height: height}), do: {width, height}
 
   def endpoint(), do: "https://api.giphy.com/v1/"
 

@@ -17,9 +17,9 @@ defmodule GqlWeb.WebhookController do
       json(conn, message)
     end
   end
-  def giphy_interaction(conn, %{"select" => url, "search" => search}) do
+  def giphy_interaction(conn, %{"select" => url, "search" => search, "width" => width, "height" => height}) do
     text = "Here's what I found for #{search}"
-    json(conn, %{text: text, structured_message: Giphy.build_message(url)})
+    json(conn, %{text: text, structured_message: Giphy.build_message(url, width, height)})
   end
 
   def piazza(conn, %{"text" => "/piazza" <> args} = msg) do
