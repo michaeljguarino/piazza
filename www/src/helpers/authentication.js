@@ -10,7 +10,7 @@ const ME_Q = gql`
   }
 `
 
-async function validateLogin() {
+export async function validateLogin() {
   return client.query({
     query: ME_Q
   }).then(res => {
@@ -18,8 +18,10 @@ async function validateLogin() {
   })
 }
 
-function wipeToken() {
+export function wipeToken() {
   localStorage.removeItem(AUTH_TOKEN)
 }
 
-export { validateLogin, wipeToken }
+export function fetchToken() {
+  return localStorage.getItem(AUTH_TOKEN)
+}

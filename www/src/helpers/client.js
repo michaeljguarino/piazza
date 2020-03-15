@@ -12,12 +12,12 @@ import { createPersistedQueryLink } from "apollo-link-persisted-queries"
 import * as AbsintheSocket from "@absinthe/socket"
 import { Socket as PhoenixSocket } from "phoenix"
 import customFetch from './uploadLink'
-import { apiHost, secure } from './hostname'
-import {wipeToken} from './authentication'
+import { apiHost } from './hostname'
+import {wipeToken, fetchToken} from './authentication'
 
 const API_HOST = apiHost()
-const GQL_URL=`${secure() ? 'https' : 'http'}://${API_HOST}/gql`
-const WS_URI=`${secure() ? 'wss' : 'ws'}://${API_HOST}/socket`
+const GQL_URL=`https://${API_HOST}/gql`
+const WS_URI=`wss://${API_HOST}/socket`
 
 const httpLink = createLink({
   uri: GQL_URL,
@@ -26,11 +26,16 @@ const httpLink = createLink({
 
 const retryLink = new RetryLink({
   delay: {initial: 200},
-  attempts: {max: 100}
+  attempts: {
+    max: 100,
+    retryIf: (error) => {
+      return !!error && !!fetchToken()
+    }
+  }
 })
 
 const authLink = setContext((_, { headers }) => {
-  const token = localStorage.getItem(AUTH_TOKEN)
+  const token = fetchToken()
   let authHeaders = token ? {authorization: `Bearer ${token}`} : {}
   return {
     headers: Object.assign(headers || {}, authHeaders)
@@ -64,11 +69,11 @@ const socketLink = createAbsintheSocketLink(absintheSocket);
 const splitLink = split(
   (operation) => hasSubscription(operation.query),
   socketLink,
-  createPersistedQueryLink().concat(retryLink).concat(httpLink),
+  createPersistedQueryLink().concat(retryLink).concat(resetToken).concat(httpLink),
 );
 
 const client = new ApolloClient({
-  link: authLink.concat(resetToken).concat(splitLink),
+  link: authLink.concat(splitLink),
   cache: new InMemoryCache()
 })
 

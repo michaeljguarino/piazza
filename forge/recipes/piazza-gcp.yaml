@@ -30,6 +30,9 @@ sections:
     - name: dns_domain
       documentation: top level domain to use
       type: STRING
+    - name: grafana_dns
+      type: STRING
+      documentation: dns for your grafana instance
 - name: piazza
   items:
   - type: TERRAFORM
