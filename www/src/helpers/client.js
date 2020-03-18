@@ -27,10 +27,8 @@ const httpLink = createLink({
 const retryLink = new RetryLink({
   delay: {initial: 200},
   attempts: {
-    max: 100,
-    retryIf: (error) => {
-      return !!error && !!fetchToken()
-    }
+    max: Infinity,
+    retryIf: (error) => !!error && !!fetchToken()
   }
 })
 
