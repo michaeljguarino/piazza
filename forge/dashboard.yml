@@ -1,0 +1,7 @@
+dashboards:
+- name: erlang
+  uid: piazza-beam
+- name: rabbitmq
+  uid: piazza-rabbitmq
+- name: postgres
+  uid: piazza-postgres
