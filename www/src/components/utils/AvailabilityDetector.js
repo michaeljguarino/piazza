@@ -3,6 +3,15 @@ import { Detector } from 'react-detect-offline'
 
 const SLEEP_INTERVAL = 10000
 
+export const AWOKEN = 'awoken'
+export const ONLINE = 'online'
+export const OFFLINE = 'offline'
+
+function status(online, awoken) {
+  if (online && awoken) return AWOKEN
+  return online ? ONLINE : OFFLINE
+}
+
 const epochTime = () => (new Date()).getTime()
 
 function ToggleIgnore({current, setIgnore}) {
@@ -35,7 +44,7 @@ export default function AvailabilityDetector({children}) {
   }, [])
 
   return <Detector render={({online}) => (
-      ignore ? <ToggleIgnore current={online} setIgnore={setIgnore} /> :
-               children((awake || online))
+      ignore ? <ToggleIgnore current={status(online, awake)} setIgnore={setIgnore} /> :
+               children(status(online, awake))
   )} />
 }

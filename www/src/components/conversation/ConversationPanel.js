@@ -13,7 +13,7 @@ import { Conversations } from '../login/MyConversations'
 import ConversationPager from './ConversationPager'
 import ChatCreator from './ChatCreator'
 import Workspaces, { FOOTER_HEIGHT } from '../workspace/Workspaces'
-import AvailabilityDetector from '../utils/AvailabilityDetector'
+import AvailabilityDetector, { OFFLINE } from '../utils/AvailabilityDetector'
 
 export const PADDING = {left: '15px'}
 
@@ -37,8 +37,10 @@ function SidebarFlyout({icon, text, children}) {
   )
 }
 
-function BackOnline({refetch}) {
-  useEffect(() => refetch(), [])
+function BackOnline({refetch, status}) {
+  useEffect(() => {
+    refetch()
+  }, [status])
   return null
 }
 
@@ -48,7 +50,7 @@ export default function ConversationPanel() {
   return (
     <Box>
       <AvailabilityDetector>
-      {online => online && <BackOnline refetch={refetch} />}
+      {status => status !== OFFLINE && <BackOnline refetch={refetch} status={status} />}
       </AvailabilityDetector>
       <Me me={me} pad={PADDING} />
       <div style={{height: `calc(100vh - ${HEADER_HEIGHT + FOOTER_HEIGHT}px)`, overflow: 'auto'}}>

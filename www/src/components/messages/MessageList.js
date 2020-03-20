@@ -9,7 +9,7 @@ import { MESSAGES_Q, DIALOG_SUB } from './queries'
 import { Conversations } from '../login/MyConversations'
 import { ReplyContext } from './ReplyProvider'
 import Pill from '../utils/Pill'
-import AvailabilityDetector from '../utils/AvailabilityDetector'
+import AvailabilityDetector, { OFFLINE } from '../utils/AvailabilityDetector'
 import { MessageScrollContext } from './MessageSubscription'
 import { VisibleMessagesContext } from './VisibleMessages'
 import { conversationNameString } from '../conversation/Conversation'
@@ -46,10 +46,10 @@ function OnlineInner({online, text}) {
   )
 }
 
-function BackOnline({refetch}) {
+function BackOnline({refetch, status}) {
   useEffect(() => {
     refetch()
-  }, [])
+  }, [status])
   return <OnlineInner online text='connection reestablished' />
 }
 
@@ -138,10 +138,10 @@ export default function MessageList() {
         <>
         {scrolled && <ReturnToBeginning listRef={listRef} />}
         <AvailabilityDetector>
-        {online => online ? <BackOnline refetch={() => {
+        {status => status !== OFFLINE ? <BackOnline refetch={() => {
           listRef && listRef.scrollToItem(0)
           refetch()
-        }} /> : <Offline />}
+        }} status={status} /> : <Offline />}
         </AvailabilityDetector>
         <Box width='100%' height='100%' ref={parentRef}>
           <div style={{ flex: '1 1 auto' }}>
