@@ -132,7 +132,7 @@ export default function ConversationSearch({onSearchClose}) {
           id='conversations-selector'
           style={{
             overflow: 'auto',
-            height: '40vh'
+            maxHeight: '40vh'
           }}
           edges={data.conversations.edges}
           onLoadMore={() => {
