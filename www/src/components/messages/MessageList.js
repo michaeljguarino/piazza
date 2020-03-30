@@ -80,7 +80,7 @@ function Prelude({conversation}) {
 
 function ReturnToBeginning({listRef}) {
   return (
-    <Layer position='top' modal={false}>
+    <Layer position='top' modal={false} plain>
       <Box pad={{top: '5px'}}>
         <Box
           style={{minWidth: '100px'}}
