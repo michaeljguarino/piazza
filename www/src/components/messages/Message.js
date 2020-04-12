@@ -156,28 +156,26 @@ function sameDay(message, next) {
   return firstTime.isSame(secondTime, 'day');
 }
 
+const DATE_PATTERN = 'h:mm:ss'
+
 function MessageBody({message, conversation, next, editing, setEditing, dialog, hover, setPinnedHover}) {
   const date = moment(message.insertedAt)
   const consecutive = isConsecutive(message, next)
   return (
     <Box fill='horizontal'>
       <PinHeader {...message} />
-      <Box direction='row' pad={{vertical: 'xsmall', horizontal: 'small'}}>
+      <Box direction='row' pad={{vertical: 'xxsmall', horizontal: 'small'}}>
         {!consecutive && <Avatar user={message.creator} /> }
         {consecutive && <Box width='45px'></Box>}
         <Box margin={{left: '3px'}} fill={editing ? 'horizontal' : false}>
           {!consecutive && !editing &&
-            <Box direction='row' align='center' gap='xsmall'>
-              <Text weight='bold' size='15px'>
-                {message.creator.name}
-              </Text>
+            <Box direction='row' align='center' gap='xsmall' margin={{bottom: 'xxsmall'}}>
+              <Text weight='bold' size='14px'>{message.creator.name}</Text>
               {message.creator.bot && (<BotIcon />)}
               <WithPresence id={message.creator.id}>
               {present => <PresenceIndicator present={present} />}
               </WithPresence>
-              <Text size='10px'>
-                {date.fromNow()}
-              </Text>
+              <Text color='dark-2' size='10px'>{date.format(DATE_PATTERN)}</Text>
             </Box>}
           <Box fill='horizontal'>
             {editing ?

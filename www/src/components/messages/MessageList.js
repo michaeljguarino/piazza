@@ -151,7 +151,7 @@ export default function MessageList() {
             hasNextPage={pageInfo.hasNextPage}
             loading={loading}
             handleScroll={setScrolled}
-            items={[...edges, 'PRELUDE']}
+            items={pageInfo.hasNextPage ? edges : [...edges, 'PRELUDE']}
             sizeEstimate={({node}) => sizeEstimate(node)}
             refreshKey={currentConversation.id}
             scrollTo='start'

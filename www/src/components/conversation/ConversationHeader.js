@@ -194,7 +194,7 @@ export function HeaderIcon({icon, count}) {
         style={{cursor: 'pointer'}}
         pad={positive ? 'xsmall' : null}
         border={positive ? {color: 'light-6'} : null}
-        round='small'>
+        round='xsmall'>
         {positive && <Text size='xsmall'>{count}</Text>}
         {React.createElement(icon, {size: (positive ? '16px' : ICON_HEIGHT)})}
       </Box>
