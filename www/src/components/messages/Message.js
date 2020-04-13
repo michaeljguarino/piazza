@@ -156,7 +156,7 @@ function sameDay(message, next) {
   return firstTime.isSame(secondTime, 'day');
 }
 
-const DATE_PATTERN = 'h:mm:ss'
+const DATE_PATTERN = 'h:mm a'
 
 function MessageBody({message, conversation, next, editing, setEditing, dialog, hover, setPinnedHover}) {
   const date = moment(message.insertedAt)
@@ -168,15 +168,16 @@ function MessageBody({message, conversation, next, editing, setEditing, dialog, 
         {!consecutive && <Avatar user={message.creator} /> }
         {consecutive && <Box width='45px'></Box>}
         <Box margin={{left: '3px'}} fill={editing ? 'horizontal' : false}>
-          {!consecutive && !editing &&
-            <Box direction='row' align='center' gap='xsmall' margin={{bottom: 'xxsmall'}}>
-              <Text weight='bold' size='14px'>{message.creator.name}</Text>
-              {message.creator.bot && (<BotIcon />)}
+          {!consecutive && !editing && (
+            <Box direction='row' align='center' margin={{bottom: 'xxsmall'}}>
+              <Text weight='bold' size='14px' margin={{right: 'xsmall'}}>{message.creator.name}</Text>
+              {message.creator.bot && (<BotIcon margin={{right: 'xsmall'}} />)}
               <WithPresence id={message.creator.id}>
               {present => <PresenceIndicator present={present} />}
               </WithPresence>
               <Text color='dark-2' size='10px'>{date.format(DATE_PATTERN)}</Text>
-            </Box>}
+            </Box>
+          )}
           <Box fill='horizontal'>
             {editing ?
               <MessageEdit message={message} setEditing={setEditing} /> :

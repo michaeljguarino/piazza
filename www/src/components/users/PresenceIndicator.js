@@ -17,7 +17,7 @@ export function EmptyPresenceIndicator({emptyColor}) {
 
 export default function PresenceIndicator({present}) {
   const {theme} = useContext(ThemeContext)
-  if (!present) return <span />
+  if (!present) return null
 
   return (
     <span style={{
