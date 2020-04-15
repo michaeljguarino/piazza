@@ -57,7 +57,7 @@ const ItemWrapper = React.memo(({data: {setSize, width, refreshKey, items, ...re
             <Box classNames={refreshKey} ref={(ref) => {
                 registerChild(ref)
                 setRowRef(ref)
-            }}>
+            }} margin={index === 0 ? {bottom: 'small'} : null}>
               <Item index={index} items={items} setSize={(size) => setSize(index, size)} {...props} {...rest} />
               {/* <ResizeObserver onResize={({height}) => setSize(index, height)} /> */}
             </Box>
