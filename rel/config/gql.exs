@@ -30,7 +30,6 @@ config :core, :consumers, [
 ]
 
 config :gql, :giphy_secret, get_env("GIPHY_SECRET")
-config :gql, :start_thrift_server, true
 # config :core, :start_rtc_client, true
 
 config :core, :start_broker, true

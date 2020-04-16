@@ -36,7 +36,6 @@ config :core, :start_rtc_client, false
 
 config :cron, :run, false
 config :rtc, :start_client, false
-config :rtc, :start_thrift_server, false
 
 config :logger, level: :warn
 

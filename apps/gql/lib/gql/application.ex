@@ -22,13 +22,6 @@ defmodule Gql.Application do
     Supervisor.start_link(children, opts)
   end
 
-  # def start_server() do
-  #   case Application.get_env(:gql, :start_thrift_server) do
-  #     true -> [server_child_spec(9090)]
-  #     _ -> []
-  #   end
-  # end
-
   # Tell Phoenix to update the endpoint configuration
   # whenever the application is updated.
   def config_change(changed, _new, removed) do

@@ -162,7 +162,7 @@ function EmojiTarget({emojiRef, setEmojiPicker}) {
 const PLUGIN_TEMPLATES = [
   {trigger: /^@(\w+)$/, suggestions: fetchUsers},
   {trigger: /^\/(\w+)$/, begin: true, suggestions: fetchCommands},
-  {trigger: /:(\w+)$/, suggestions: fetchEmojis}
+  {trigger: /^:(\w+)$/, suggestions: fetchEmojis}
 ]
 
 const insertEmoji = (editor, emoji) => {

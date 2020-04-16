@@ -95,11 +95,12 @@ function FileInput({attachment, setAttachment}) {
   )
 }
 
-function MessageInputInner({editor, attachment, setAttachment, reply, setReply, conversation, setWaterline, typists, notifyTyping, dropRef}) {
+function MessageInputInner({editor, attachment, setAttachment, conversation, setWaterline, typists, notifyTyping, dropRef}) {
   const [editorState, setEditorState] = useState(plainDeserialize(''))
   const [uploadProgress, setUploadProgress] = useState(null)
   const [disableSubmit, setDisableSubmit] = useState(false)
   const {setEdited} = useContext(EditingMessageContext)
+  const {reply, setReply} = useContext(ReplyContext)
   const me = useContext(CurrentUserContext)
   const cache = useApolloClient()
 

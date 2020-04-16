@@ -192,7 +192,7 @@ function MessageBody({message, conversation, next, editing, setEditing, dialog, 
                 setPinnedHover={setPinnedHover} />
             )}
             {message.parent && (
-              <Box style={{borderLeft: '2px solid grey'}}>
+              <Box border={{side: 'left', color: 'dark-6', size: 'small'}} margin={{top: 'small'}}>
                 <Message noHover message={message.parent} />
               </Box>
             )}
@@ -311,7 +311,7 @@ const Message = React.memo(({noHover, selected, scrollTo, message, onClick, pos,
 
   return (
     <Box flex={false}>
-    <DateDivider message={message} next={props.next} waterline={props.waterline} />
+    {!noHover && <DateDivider message={message} next={props.next} waterline={props.waterline} />}
     <Box
       ref={msgRef}
       id={message.id}

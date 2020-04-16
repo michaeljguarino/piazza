@@ -120,8 +120,6 @@ config :goth,
 config :core, :rtc_host, "localhost"
 config :rtc,  :gql_host, "localhost"
 config :rtc,  :start_client, true
-config :gql,  :start_thrift_server, false
-config :rtc,  :start_thrift_server, true
 config :core, :start_rtc_client, false
 config :core, :default_workspace, "general"
 
