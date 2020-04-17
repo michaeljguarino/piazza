@@ -161,12 +161,17 @@ const DATE_PATTERN = 'h:mm a'
 function MessageBody({message, conversation, next, editing, setEditing, dialog, hover, setPinnedHover}) {
   const date = moment(message.insertedAt)
   const consecutive = isConsecutive(message, next)
+  const formattedDate = date.format(DATE_PATTERN)
   return (
     <Box fill='horizontal'>
       <PinHeader {...message} />
       <Box direction='row' pad={{vertical: 'xxsmall', horizontal: 'small'}}>
         {!consecutive && <Avatar user={message.creator} /> }
-        {consecutive && <Box width='45px'></Box>}
+        {consecutive && (
+          <Box width='45px' justify='center' align='center'>
+            <Text color='dark-2' size='10px' className='message-reactions'>{formattedDate}</Text>
+          </Box>
+        )}
         <Box margin={{left: '3px'}} fill={editing ? 'horizontal' : false}>
           {!consecutive && !editing && (
             <Box direction='row' align='center' margin={{bottom: 'xxsmall'}}>
@@ -175,7 +180,7 @@ function MessageBody({message, conversation, next, editing, setEditing, dialog, 
               <WithPresence id={message.creator.id}>
               {present => <PresenceIndicator present={present} />}
               </WithPresence>
-              <Text color='dark-2' size='10px'>{date.format(DATE_PATTERN)}</Text>
+              <Text color='dark-2' size='10px'>{formattedDate}</Text>
             </Box>
           )}
           <Box fill='horizontal'>

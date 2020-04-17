@@ -48,12 +48,10 @@ export default function Files({loading, data, fetchMore}) {
           pad={{bottom: 'small'}}
           margin={{bottom: 'small'}}>
           <Scroller
+            id='files'
             style={{
               overflow: 'auto',
-              maxHeight: '70%',
-              display: 'flex',
-              justifyContent: 'flex-start',
-              flexDirection: 'column'
+              maxHeight: '100%'
             }}
             edges={edges}
             emptyState={<NoFiles />}

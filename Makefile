@@ -37,14 +37,6 @@ uninstall: ## purge the current helm installation
 install: ## upgrade (or install if not present) the current helm installation
 	helm upgrade --install --namespace piazza -f charts/piazza/config.secrets.yaml piazza charts/piazza
 
-secretsup: ## uploads the current secret conf to kubernetes.  Retrieve with secretsdown
-	kubectl delete secret helm-secrets -n piazza || echo "Creating Secret"
-	kubectl create secret generic helm-secrets -n piazza --from-file charts/piazza/config.secrets.yaml
-
-secretsdown: ## downloads the current secret conf to the canonical yaml file
-	kubectl get secret helm-secrets -n piazza -o jsonpath="{.data['config\.secrets\.yaml']}" \
-		| base64 -D > charts/piazza/config.secrets.yaml
-
 test: ## run tests
 	export GOOGLE_APPLICATION_CREDENTIALS=`cat ~/gcp.json`
 	mix test
@@ -64,45 +56,6 @@ testdown: ## tear down test dependencies
 connectdb: ## proxies the db in kubernetes via kubectl
 	@echo "run psql -U piazza -h 127.0.0.1 piazza to connect"
 	kubectl port-forward statefulset/piazza-postgresql 5432 -n piazza
-
-cli:
-	@echo "Ensuring helm is installed..."
-	which helm || brew install kubernetes-helm || echo "Go to the helm website for better installation instructions"
-	which terraform || brew install terraform || echo "Install terraform for your system as well"
-	@echo "setting up your gcloud cli (follow the instructions from google to install first)..."
-	gcloud init
-	gcloud services enable container.googleapis.com
-	gcloud services enable storage-api.googleapis.com
-	gcloud services enable storage-component.googleapis.com
-	gcloud services enable dns.googleapis.com
-	gcloud services enable cloudresourcemanager.googleapis.com
-
-bootstrap: ## initialize your helm/kubernetes environment
-	# create service account for terraform
-	mkdir -p ~/.gcp
-	gcloud iam service-accounts create terraform
-	gcloud projects add-iam-policy-binding $(GCP_PROJECT) --member "serviceAccount:terraform@$(GCP_PROJECT).iam.gserviceaccount.com" --role "roles/owner"
-	gcloud projects add-iam-policy-binding $(GCP_PROJECT) --member "serviceAccount:terraform@$(GCP_PROJECT).iam.gserviceaccount.com" --role "roles/storage.admin"
-	gcloud iam service-accounts keys create ~/.gcp/key.json --iam-account terraform@$(GCP_PROJECT).iam.gserviceaccount.com
-	export GOOGLE_APPLICATION_CREDENTIALS="${HOME}/.gcp/key.json"
-
-	# create the cluster
-	cd terraform/gcp && \
-		terraform init && \
-		terraform validate && \
-		terraform apply
-
-	# prime kubeconfig so we can proceed
-	gcloud container clusters get-credentials piazza
-
-	# bootstrap the cluster
-	cd - && cd terraform/kube && \
-		terraform init && \
-		terraform validate && \
-		terraform apply
-
-	# initialize helm
-	helm init --service-account=tiller
 
 grpc:
 	protoc --elixir_out=plugins=grpc:./apps/core/lib/core proto/piazza.proto
