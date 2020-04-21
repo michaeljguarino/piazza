@@ -15,14 +15,14 @@ function VideoEmbed({url}) {
 
 function ImageEmbed({url}) {
   return (
-    <image style={{maxHeight: '100px', maxWidth: '100px'}} src={url} />
+    <img style={{maxHeight: '100px', maxWidth: '100px'}} src={url} />
   )
 }
 
 function SiteEmbed({image_url}) {
   return (image_url ?
     <img alt='' style={{maxHeight: '100px', maxWidth: '100px'}} src={image_url} fit='contain'/> :
-    <span></span>
+    null
   )
 }
 
@@ -36,7 +36,7 @@ function EmbedMedia(props) {
     case "SITE":
       return <SiteEmbed {...props} />
     default:
-      return (<div></div>)
+      return null
   }
 }
 

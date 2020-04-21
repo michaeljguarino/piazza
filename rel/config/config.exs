@@ -51,11 +51,11 @@ config :core, Core.Repo,
   hostname: "piazza-postgresql",
   pool_size: 10
 
-config :gql, :giphy_secret, get_env("GIPHY_SECRET")
-config :core, :rtc_host, "piazza-rtc"
+config :gql,   :giphy_secret, get_env("GIPHY_SECRET")
+config :core,  :rtc_host, "piazza-rtc"
 config :joken, invite_secret: get_env("INVITE_SECRET")
-config :gql, github_secret: get_env("GITHUB_SECRET")
-config :gql, github_incoming_webhook: get_env("GITHUB_INCOMING_WEBHOOK")
+config :gql,   github_secret: get_env("GITHUB_SECRET")
+config :gql,   github_incoming_webhook: get_env("GITHUB_INCOMING_WEBHOOK")
 
 config :core,
   license: get_env("LICENSE"),

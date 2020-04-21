@@ -111,9 +111,8 @@ function MessageEntity({entity}) {
 }
 
 function MessageSwitch({embed, structuredMessage, ...props}) {
-  if (embed) {
-    return <MessageEmbed {...embed} />
-  }
+  if (embed) return <MessageEmbed {...embed} />
+
   if (structuredMessage && structuredMessage._type === 'root') {
     return <StructuredMessage {...structuredMessage} />
   }
@@ -143,7 +142,7 @@ function isConsecutive(message, next) {
   const firstTime = moment(message.insertedAt)
   const secondTime = moment(next.insertedAt)
 
-  return (firstTime.add(-1, 'minutes').isBefore(secondTime))
+  return (firstTime.add(-5, 'minutes').isBefore(secondTime))
 }
 
 function sameDay(message, next) {
