@@ -90,6 +90,8 @@ export default function SmoothScroller({
       isItemLoaded={isItemLoaded}
       itemCount={itemCount}
       loadMoreItems={loadMoreItems}
+      minimumBatchSize={50}
+      threshold={75}
     >
     {({ onItemsRendered, ref }) => (
       <Autosizer>
