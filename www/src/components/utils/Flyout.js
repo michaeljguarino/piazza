@@ -46,6 +46,7 @@ export function FlyoutHeader(props) {
   const [hover, setHover] = useState(false)
   return (
     <Box
+      flex={false}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
       onClick={() => props.setOpen(false)}

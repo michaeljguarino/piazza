@@ -37,10 +37,11 @@ defmodule Core.Models.Embed do
     |> Map.put(:description, attrs["og:description"])
     |> ok()
   end
-  def from_furlex(%Furlex{facebook: %{"og:image" => url, "og:image:height" => height, "og:image:width" => width} = attrs}) do
-    %{type: :image, width: width, height: height, url: url}
+  def from_furlex(%Furlex{facebook: %{"og:image" => url} = attrs}) do
+    %{type: :image, width: attrs["og:image:height"], height: attrs["og:image:width"], url: url}
     |> Map.put(:title, attrs["og:title"])
     |> Map.put(:description, attrs["og:description"])
+    |> Map.put(:author, attrs["og:site_name"])
     |> ok()
   end
   def from_furlex(%Furlex{facebook: %{"og:url" => url} = attrs}) do
@@ -49,6 +50,11 @@ defmodule Core.Models.Embed do
     |> Map.put(:description, attrs["og:description"])
     |> Map.put(:author, attrs["og:site_name"])
     |> ok()
+  end
+  def from_furlex(%Furlex{twitter: attrs}) do
+    %{type: :other}
+    |> Map.put(:title, attrs["twitter:title"])
+    |> Map.put(:description, attrs["twitter:description"])
   end
   def from_furlex({:plain, url}), do: {:ok, %{type: type_from_ext(url), url: url}}
   def from_furlex(_), do: {:error, :noembed}

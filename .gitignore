@@ -29,3 +29,5 @@ terraform/**/.terraform
 charts/**/config.secrets.yaml
 www/node_modules
 www/build
+
+apps/*/log

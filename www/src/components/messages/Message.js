@@ -161,8 +161,9 @@ function MessageBody({message, conversation, next, editing, setEditing, dialog, 
   const date = moment(message.insertedAt)
   const consecutive = isConsecutive(message, next)
   const formattedDate = date.format(DATE_PATTERN)
+
   return (
-    <Box fill='horizontal'>
+    <Box fill='horizontal' margin={consecutive ? null : {top: 'xxsmall'}}>
       <PinHeader {...message} />
       <Box direction='row' pad={{vertical: 'xxsmall', horizontal: 'small'}}>
         {!consecutive && <Avatar user={message.creator} /> }
