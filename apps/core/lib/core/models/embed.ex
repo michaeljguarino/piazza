@@ -9,6 +9,7 @@ defmodule Core.Models.Embed do
     field :author,      :string
     field :url,         :string
     field :image_url,   :string
+    field :video_url,   :string
     field :description, :string
     field :title,       :string
     field :height,      :integer
@@ -23,41 +24,48 @@ defmodule Core.Models.Embed do
     |> validate_required([:type, :url])
   end
 
-  def from_furlex(%Furlex{facebook: %{"og:type" => "object"} = attrs}) do
-    %{type: :site}
+  def from_furlex(%Furlex{facebook: %{"og:type" => "object"} = attrs} = fr) do
+    base_attrs(fr, %{type: :site})
     |> Map.put(:title, attrs["og:title"])
     |> Map.put(:description, attrs["og:description"])
-    |> Map.put(:url, attrs["og:url"])
     |> Map.put(:image_url, attrs["og:image"])
     |> ok()
   end
-  def from_furlex(%Furlex{facebook: %{"og:video" => url, "og:video:height" => height, "og:video:width" => width} = attrs}) do
-    %{type: :video, width: width, height: height, url: url}
+  def from_furlex(
+    %Furlex{
+      facebook: %{"og:video" => url, "og:video:height" => height, "og:video:width" => width} = attrs
+    } = fr
+  ) do
+    base_attrs(fr, %{type: :video, width: width, height: height})
     |> Map.put(:title, attrs["og:title"])
     |> Map.put(:description, attrs["og:description"])
+    |> Map.put(:video_url, url)
     |> ok()
   end
-  def from_furlex(%Furlex{facebook: %{"og:image" => url} = attrs}) do
-    %{type: :image, width: attrs["og:image:height"], height: attrs["og:image:width"], url: url}
+  def from_furlex(%Furlex{facebook: %{"og:image" => url} = attrs} = fr) do
+    base_attrs(fr, %{type: :image, width: attrs["og:image:height"], height: attrs["og:image:width"]})
+    |> Map.put(:title, attrs["og:title"])
+    |> Map.put(:description, attrs["og:description"])
+    |> Map.put(:author, attrs["og:site_name"])
+    |> Map.put(:image_url, url)
+    |> ok()
+  end
+  def from_furlex(%Furlex{facebook: %{"og:url" => url} = attrs} = fr) do
+    base_attrs(fr, %{type: type(attrs["og:type"], url)})
     |> Map.put(:title, attrs["og:title"])
     |> Map.put(:description, attrs["og:description"])
     |> Map.put(:author, attrs["og:site_name"])
     |> ok()
   end
-  def from_furlex(%Furlex{facebook: %{"og:url" => url} = attrs}) do
-    %{type: type(attrs["og:type"], url), url: url}
-    |> Map.put(:title, attrs["og:title"])
-    |> Map.put(:description, attrs["og:description"])
-    |> Map.put(:author, attrs["og:site_name"])
-    |> ok()
-  end
-  def from_furlex(%Furlex{twitter: attrs}) do
-    %{type: :other}
+  def from_furlex(%Furlex{twitter: attrs} = fr) do
+    base_attrs(fr, %{type: :other})
     |> Map.put(:title, attrs["twitter:title"])
     |> Map.put(:description, attrs["twitter:description"])
   end
   def from_furlex({:plain, url}), do: {:ok, %{type: type_from_ext(url), url: url}}
   def from_furlex(_), do: {:error, :noembed}
+
+  defp base_attrs(%Furlex{canonical_url: url}, additional), do: Map.merge(%{url: url}, additional)
 
   def type(type, url) do
     case Path.extname(url) do

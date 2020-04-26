@@ -168,7 +168,7 @@ function MessageBody({message, conversation, next, editing, setEditing, dialog, 
       <Box direction='row' pad={{vertical: 'xxsmall', horizontal: 'small'}}>
         {!consecutive && <Avatar user={message.creator} /> }
         {consecutive && (
-          <Box width='45px' justify='center' align='center'>
+          <Box width='45px' justify='center' align='center' flex={false}>
             <Text color='dark-2' size='10px' className='message-reactions'>{formattedDate}</Text>
           </Box>
         )}

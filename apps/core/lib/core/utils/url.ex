@@ -11,7 +11,7 @@ defmodule Core.Utils.Url do
          {:ok, results}                      <- parse(body, Map.new(headers))
     do
       {:ok, %Furlex{
-        canonical_url: Furlex.Parser.extract_canonical(body),
+        canonical_url: canonical_url(body, url),
         facebook: results.facebook,
         twitter: results.twitter,
         json_ld: results.json_ld,
@@ -80,4 +80,11 @@ defmodule Core.Utils.Url do
     end
   end
   defp parse(_, _), do: :plain
+
+  defp canonical_url(body, url) do
+    case Furlex.Parser.extract_canonical(body) do
+      url when is_binary(url) -> url
+      _ -> url
+    end
+  end
 end

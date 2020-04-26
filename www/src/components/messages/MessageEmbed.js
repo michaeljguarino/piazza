@@ -9,7 +9,7 @@ function dimensions(props) {
 
 function VideoEmbed({url}) {
   return (
-    <video autoPlay controls src={url} style={{maxHeight: '200px', maxWidth: '200px'}}></video>
+    <video controls src={url} style={{maxHeight: '200px', maxWidth: '200px'}}></video>
   )
 }
 

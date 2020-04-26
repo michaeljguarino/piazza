@@ -66,6 +66,12 @@ export default function TypeaheadEditor({editor, value, setValue, style, onOpen,
     }
   }, [suggestions, editor, index, target])
 
+  // useEffect(() => {
+  //   if (editorRef && editorRef.current) {
+  //     editorRef.focus()
+  //   }
+  // }, [editorRef])
+
   return (
     <Slate
       editor={editor}
@@ -104,6 +110,7 @@ export default function TypeaheadEditor({editor, value, setValue, style, onOpen,
       }}
     >
       <Editable
+        autoFocus
         renderElement={renderElement}
         style={style}
         onKeyDown={onKeyDown}
