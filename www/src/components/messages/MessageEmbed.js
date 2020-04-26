@@ -9,7 +9,7 @@ function dimensions(props) {
 
 function VideoEmbed({url}) {
   return (
-    <video autoPlay loop controls src={url}></video>
+    <video autoPlay controls src={url} style={{maxHeight: '200px', maxWidth: '200px'}}></video>
   )
 }
 
@@ -44,7 +44,7 @@ export default function MessageEmbed(props) {
   let dims = dimensions(props)
   props = {...props, ...dims}
   return (
-    <Box direction='row' align='center' gap='small'>
+    <Box direction='row' align='center' gap='small' pad='small' border={{side: 'left', color: 'dark-3', width: '3px'}}>
       <EmbedMedia {...props} />
       <Box direction='column' align='start' gap='xsmall'>
         <Anchor _target='blank' href={props.url} weight='bold' size='medium'>{props.title}</Anchor>
