@@ -3,26 +3,27 @@ import { Box, Text } from 'grommet'
 import { Resources } from 'grommet-icons'
 import Scroller from '../utils/Scroller'
 import Flyout, { FlyoutHeader, FlyoutContainer } from '../utils/Flyout'
-import { mergeAppend } from '../../utils/array'
 import { HeaderIcon } from './ConversationHeader'
 import { FileEntry } from '../messages/File'
 import { Loader } from './utils'
+import { mergeAppend } from '../../utils/array'
+import { FILES_Q } from './queries'
+import { useQuery } from 'react-apollo'
+import Loading from '../utils/Loading'
 
 const doFetchMore = (prev, {fetchMoreResult}) => {
-  const edges = fetchMoreResult.conversation.files.edges
-  const pageInfo = fetchMoreResult.conversation.files.pageInfo
-
-  return edges.length ? {
+  const {edges, pageInfo} = fetchMoreResult.conversation.files
+  return {
     ...prev,
     conversation: {
       ...prev.conversation,
       files: {
         ...prev.conversation.files,
         pageInfo,
-        edges: mergeAppend(edges, prev.conversation.files.edges, (e) => e.node.id)
+        edges: mergeAppend(edges, prev.conversation.files.edges, ({node: {id}}) => id)
       }
     }
-  } : prev;
+  }
 }
 
 const NoFiles = () => {
@@ -35,36 +36,43 @@ const NoFiles = () => {
   )
 }
 
-export default function Files({loading, data, fetchMore}) {
-  if (loading) return <Loader />
-  const {files: {edges, pageInfo}, fileCount} = data.conversation
+function Content({conversationId, setOpen}) {
+  const {data, fetchMore} = useQuery(FILES_Q, {variables: {conversationId}})
+
+  if (!data) return <Loading width='40vw' />
+
+  const {edges, pageInfo} = data.conversation.files
 
   return (
-    <Flyout width='30vw' target={<HeaderIcon icon={Resources} count={fileCount} />}>
-    {setOpen => (
-      <FlyoutContainer width='40vw'>
-        <FlyoutHeader text='Files' setOpen={setOpen} />
-        <Box
-          pad={{bottom: 'small'}}
-          margin={{bottom: 'small'}}>
-          <Scroller
-            id='files'
-            style={{
-              overflow: 'auto',
-              maxHeight: '100%'
-            }}
-            edges={edges}
-            emptyState={<NoFiles />}
-            mapper={({node}, next) => (<FileEntry key={node.id} file={node} next={next} />)}
-            onLoadMore={() => {
-              pageInfo.hasNextPage && fetchMore({
-                variables: {fileCursor: pageInfo.endCursor},
-                updateQuery: doFetchMore
-              })
-            }} />
-        </Box>
-      </FlyoutContainer>
-    )}
+    <FlyoutContainer width='40vw'>
+      <FlyoutHeader text='Files' setOpen={setOpen} />
+      <Box
+        pad={{bottom: 'small'}}
+        margin={{bottom: 'small'}}>
+        <Scroller
+          id='files'
+          style={{overflow: 'auto', maxHeight: '100%'}}
+          edges={edges}
+          emptyState={<NoFiles />}
+          mapper={({node}, next) => (<FileEntry key={node.id} file={node} next={next} />)}
+          onLoadMore={() => pageInfo.hasNextPage && fetchMore({
+              variables: {conversationId, cursor: pageInfo.endCursor},
+              updateQuery: doFetchMore
+            })
+          } />
+      </Box>
+    </FlyoutContainer>
+  )
+}
+
+export default function Files({data, conversationId}) {
+  console.log(data)
+  if (!data) return <Loader />
+  const {conversation} = data
+
+  return (
+    <Flyout width='30vw' target={<HeaderIcon icon={Resources} count={conversation.fileCount} />}>
+    {setOpen => <Content conversationId={conversationId} setOpen={setOpen} />}
     </Flyout>
   )
 }

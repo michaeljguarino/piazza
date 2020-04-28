@@ -9,7 +9,7 @@ function Scroller({id, direction, edges, mapper, style, emptyState, offset, plac
 
   const updatePosition = useCallback(debounce((pos) => setPos(pos), 200, {leading: true}), [])
 
-  const handleOnScroll = useCallback(() => {
+  const handleOnScroll = () => {
     const dir = direction || 'down'
     const opt = offset || 0
     if (dir === 'down') {
@@ -26,7 +26,7 @@ function Scroller({id, direction, edges, mapper, style, emptyState, offset, plac
       updatePosition(elem.scrollTop)
     }
     onScroll && onScroll()
-  }, [])
+  }
 
 
   let entries = Array.from(lookahead(edges, (edge, next) => mapper(edge, next, scrollRef, pos)))

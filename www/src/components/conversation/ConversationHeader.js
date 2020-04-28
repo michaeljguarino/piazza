@@ -225,11 +225,9 @@ export default function ConversationHeader({setAnchor}) {
           subscribeToMore={subscribeToMore}
           conversation={currentConversation}  />
         <Files
-          data={data}
-          loading={loading}
-          fetchMore={fetchMore}
           subscribeToMore={subscribeToMore}
-          conversation={currentConversation} />
+          conversationId={currentConversation.id}
+          data={data} />
       </Box>
       <MessageSearch conversation={currentConversation} setAnchor={setAnchor} />
       <Box direction='row' align='center' flex={false} gap='small'>

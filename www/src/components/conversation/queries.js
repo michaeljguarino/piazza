@@ -48,7 +48,7 @@ export const CONVERSATIONS_Q = gql`
 `
 
 export const CONVERSATION_CONTEXT = gql`
-  query ConversationContext($id: ID!, $partCursor: String, $fileCursor: String, $pinCursor: String) {
+  query ConversationContext($id: ID!, $partCursor: String, $pinCursor: String) {
     conversation(id: $id) {
       id
       name
@@ -80,23 +80,13 @@ export const CONVERSATION_CONTEXT = gql`
           }
         }
       }
-      files(first: 25, after: $fileCursor) {
-        pageInfo {
-          endCursor
-          hasNextPage
-        }
-        edges {
-          node {
-            ...FileFragment
-          }
-        }
-      }
     }
   }
   ${MessageFragment}
-  ${FileFragment}
   ${ParticipantFragment}
 `;
+
+
 
 export const PARTICIPANTS_Q = gql`
   query ParticipantQ($conversationId: ID!, $cursor: String) {
@@ -122,26 +112,25 @@ export const PARTICIPANTS_Q = gql`
 `
 
 export const FILES_Q = gql`
-query Files($conversationId: ID!, $cursor: String) {
-  conversation(id: $conversationId) {
-    id
-    name
-    topic
-    fileCount
-    files(first: 25, after: $cursor) {
-      pageInfo {
-        endCursor
-        hasNextPage
-      }
-      edges {
-        node {
-          ...FileFragment
+  query Files($conversationId: ID!, $cursor: String) {
+    conversation(id: $conversationId) {
+      id
+      name
+      topic
+      files(first: 25, after: $cursor) {
+        pageInfo {
+          endCursor
+          hasNextPage
+        }
+        edges {
+          node {
+            ...FileFragment
+          }
         }
       }
     }
   }
-}
-${FileFragment}
+  ${FileFragment}
 `;
 
 export const DELETE_CONVERSATION = gql`

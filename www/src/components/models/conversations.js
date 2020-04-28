@@ -60,6 +60,7 @@ export const ReactionFragment = gql`
 
 export const FileFragment = gql`
   fragment FileFragment on File {
+    id
     filename
     filesize
     mediaType

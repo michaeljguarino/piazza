@@ -10,6 +10,9 @@ import { HeaderIcon } from './ConversationHeader'
 import Message from '../messages/Message'
 import { Loader } from './utils'
 import { useSubscription } from '../utils/hooks'
+import { useQuery } from 'react-apollo'
+import { CONVERSATION_CONTEXT } from './queries'
+import Loading from '../utils/Loading'
 
 const _subscribeToNewPins = (conversationId, subscribeToMore) => {
   return subscribeToMore({
@@ -48,54 +51,64 @@ const onLoadMore = (prev, {fetchMoreResult}) => {
   } : prev;
 }
 
-function PinnedMessages({loading, data, fetchMore, subscribeToMore, conversation}) {
+function FlyoutContent({conversation, setOpen}) {
+  const {data, fetchMore} = useQuery(CONVERSATION_CONTEXT, {variables: {id: conversation.id}})
+
+  if (!data) return <Loading width='50vw' />
+
+  const {pinnedMessages: {edges, pageInfo}} = data.conversation
+
+  return (
+    <FlyoutContainer width='50vw'>
+      <FlyoutHeader text='Pinned Messages' setOpen={setOpen} />
+      <Box pad='small'>
+        <Text size='small'>
+          <i>
+            Pinning messages is a good way to highlight or preserve important context
+            in a conversation.
+          </i>
+        </Text>
+      </Box>
+      <Scroller
+        id='pinned-messages'
+        edges={edges}
+        style={{
+          overflow: 'auto',
+          maxHeight: '100%',
+          display: 'flex',
+          justifyContent: 'flex-start',
+          flexDirection: 'column',
+        }}
+        mapper={({node}) => (
+          <Message
+            key={node.message.id}
+            nopin
+            conversation={conversation}
+            message={node.message}
+            next={null} />
+        )}
+        onLoadMore={() => {
+          pageInfo.hasNextPage && fetchMore({
+            variables: {conversationId: conversation.id, pinCursor: pageInfo.endCursor},
+            updateQuery: onLoadMore
+          })
+        }} />
+    </FlyoutContainer>
+  )
+}
+
+function PinnedMessages({loading, data, subscribeToMore, conversation}) {
   useSubscription(
     () => _subscribeToNewPins(conversation.id, subscribeToMore),
     conversation.id
   )
 
   if (loading) return <Loader />
-  const {pinnedMessages: {edges, pageInfo}, pinnedMessageCount} = data.conversation
+  const {pinnedMessageCount} = data.conversation
 
   return (
     <Flyout target={<HeaderIcon icon={Pin} count={pinnedMessageCount} />}>
-    {setOpen => (
-      <FlyoutContainer width='50vw'>
-        <FlyoutHeader text='Pinned Messages' setOpen={setOpen} />
-        <Box pad='small'>
-          <Text size='small'>
-            <i>
-              Pinning messages is a good way to highlight or preserve important context
-              in a conversation.
-            </i>
-          </Text>
-        </Box>
-        <Scroller
-          id='pinned-messages'
-          edges={edges}
-          style={{
-            overflow: 'auto',
-            maxHeight: '100%',
-            display: 'flex',
-            justifyContent: 'flex-start',
-            flexDirection: 'column',
-          }}
-          mapper={({node}) => (
-            <Message
-              key={node.message.id}
-              nopin
-              conversation={conversation}
-              message={node.message}
-              next={null} />
-          )}
-          onLoadMore={() => {
-            pageInfo.hasNextPage && fetchMore({
-              variables: {conversationId: conversation.id, pinCursor: pageInfo.endCursor},
-              updateQuery: onLoadMore
-            })
-          }} />
-      </FlyoutContainer>
-    )}
+    {setOpen => (<FlyoutContent conversation={conversation} setOpen={setOpen} />)}
     </Flyout>
   )
 }
