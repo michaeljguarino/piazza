@@ -28,31 +28,35 @@ export function AvatarContainer({background, img, text, size, rightMargin}) {
   )
 }
 
-export default function Avatar({withPresence, user, ...props}) {
-  if (withPresence) {
+export default class Avatar extends React.PureComponent {
+  render() {
+    const {withPresence, user, ...props} = this.props
+
+    if (withPresence) {
+      return (
+        <Stack anchor='top-right'>
+          <AvatarContainer
+            img={user.avatar}
+            text={user.handle}
+            background={user.backgroundColor}
+            {...props} />
+          <WithPresence id={user.id}>
+          {present => (
+            <Box margin={{top: '-2px', right: '-2px'}}>
+              <PresenceIndicator present={present} />
+            </Box>
+          )}
+          </WithPresence>
+        </Stack>
+      )
+    }
+
     return (
-      <Stack anchor='top-right'>
-        <AvatarContainer
-          img={user.avatar}
-          text={user.handle}
-          background={user.backgroundColor}
-          {...props} />
-        <WithPresence id={user.id}>
-        {present => (
-          <Box margin={{top: '-2px', right: '-2px'}}>
-            <PresenceIndicator present={present} />
-          </Box>
-        )}
-        </WithPresence>
-      </Stack>
+      <AvatarContainer
+        img={user.avatar}
+        text={user.handle}
+        background={user.backgroundColor}
+        {...props} />
     )
   }
-
-  return (
-    <AvatarContainer
-      img={user.avatar}
-      text={user.handle}
-      background={user.backgroundColor}
-      {...props} />
-  )
 }

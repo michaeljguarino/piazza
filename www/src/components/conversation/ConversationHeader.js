@@ -223,7 +223,7 @@ export default function ConversationHeader({setAnchor}) {
           loading={loading}
           fetchMore={fetchMore}
           subscribeToMore={subscribeToMore}
-          conversation={currentConversation}  />
+          conversation={currentConversation} />
         <Files
           subscribeToMore={subscribeToMore}
           conversationId={currentConversation.id}
