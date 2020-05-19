@@ -20,10 +20,10 @@ import { Emoji } from 'emoji-mart'
 import './message.css'
 
 
-function TextMessage(props) {
+function TextMessage({text, entities}) {
   return (
     <Text size='small'>
-      <WithEntities {...props} />
+      <WithEntities text={text} entities={entities} />
     </Text>
   )
 }
@@ -40,16 +40,16 @@ function MsgMarkdown(props) {
   )
 }
 
-function WithEntities(props) {
-  if (!props.entities || props.entities.length === 0) return (
-    <MsgMarkdown>{props.text}</MsgMarkdown>
+const WithEntities = React.memo(({text, entities}) => {
+  if (!entities || entities.length === 0) return (
+    <MsgMarkdown>{text}</MsgMarkdown>
   )
   return (
     <Box direction='row' align='center' gap='xsmall'>
-      {Array.from(splitText(props.text, props.entities))}
+      {Array.from(splitText(text, entities))}
     </Box>
   )
-}
+})
 
 function* splitText(text, entities) {
   let lastIndex = 0

@@ -3,15 +3,15 @@ import {socket} from '../../helpers/client'
 import TimedCache from '../utils/TimedCache'
 import HoveredBackground from '../utils/HoveredBackground'
 import { useMutation, useApolloClient } from 'react-apollo'
-import {Box, Text, Markdown, Layer, Keyboard, Drop} from 'grommet'
-import {Attachment} from 'grommet-icons'
-import {FilePicker} from 'react-file-picker'
+import { Box, Text, Markdown, Layer, Keyboard, Drop, ThemeContext } from 'grommet'
+import { Attachment } from 'grommet-icons'
+import { FilePicker } from 'react-file-picker'
 import debounce from 'lodash/debounce'
-import {CurrentUserContext} from '../login/EnsureLogin'
-import {MESSAGE_MUTATION, MESSAGES_Q} from './queries'
-import {applyNewMessage} from './utils'
+import { CurrentUserContext } from '../login/EnsureLogin'
+import { MESSAGE_MUTATION, MESSAGES_Q } from './queries'
+import { applyNewMessage } from './utils'
 import MentionManager from './MentionManager'
-import {ReplyGutter, ReplyContext} from './ReplyProvider'
+import { ReplyGutter, ReplyContext } from './ReplyProvider'
 import { Progress } from 'react-sweet-progress';
 import "react-sweet-progress/lib/style.css";
 import moment from 'moment'
@@ -20,6 +20,8 @@ import { EditingMessageContext } from './VisibleMessages'
 import { Conversations } from '../login/MyConversations'
 import { useEditor } from '../utils/hooks'
 import { Editor, Transforms } from 'slate'
+import { SyncLoader } from 'react-spinners'
+import { normalizeColor } from 'grommet/utils'
 
 
 const TEXT_SIZE='xsmall'
@@ -27,20 +29,30 @@ const TEXT_COLOR='dark-4'
 const SEND_COLOR='status-ok'
 
 function Typing({ignore, typists}) {
+  const theme = useContext(ThemeContext)
   let typing = typists.filter((handle) => handle !== ignore)
-  if (typing.length === 0) {
+  const len = typing.length
+  if (len === 0) {
     return null
   }
+  let text = `${len} people are typing`
 
-  if (typing.length === 1) {
-    return <Text color={TEXT_COLOR} size={TEXT_SIZE}>{typing[0]} is typing...</Text>
+  if (len === 1) {
+    text = `{typing[0]} is typing`
   }
 
-  if (typing.length <= 3) {
-    return <Text color={TEXT_COLOR} size={TEXT_SIZE}>{Array.join(typing, ", ")} are typing...</Text>
+  if (len <= 3) {
+    text = `${typing.join(", ")} are typing`
   }
 
-  return <Text color={TEXT_COLOR} size={TEXT_SIZE}>{typing.length} people are typing...</Text>
+  return (
+    <Box direction='row' align='center' gap='xsmall'>
+      <Text color={TEXT_COLOR} size={TEXT_SIZE}>{text}</Text>
+      <Box pad={{vertical: '2px'}}>
+        <SyncLoader size={2} color={normalizeColor('dark-4', theme)} />
+      </Box>
+    </Box>
+  )
 }
 
 function HelpDoc() {
