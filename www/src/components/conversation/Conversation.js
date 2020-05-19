@@ -98,7 +98,7 @@ function ConversationModifier({conversation, hover, ...props}) {
   return null
 }
 
-function Conversation({conversation, ...props}) {
+export default function Conversation({conversation, ...props}) {
   const [hover, setHover] = useState(false)
   const me = useContext(CurrentUserContext)
   let selected = conversation.id === props.currentConversation.id
@@ -115,7 +115,7 @@ function Conversation({conversation, ...props}) {
         direction='row'
         align='center'
         justify='end'
-        height='25px'
+        height='28px'
         style={{cursor: 'pointer'}}
         onClick={() => props.setCurrentConversation(conversation)}
         pad={props.pad}
@@ -129,5 +129,3 @@ function Conversation({conversation, ...props}) {
     </HoveredBackground>
   )
 }
-
-export default Conversation
