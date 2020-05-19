@@ -31,37 +31,35 @@ export class AvatarContainer extends React.PureComponent {
   }
 }
 
-export default class Avatar extends React.PureComponent {
-  render() {
-    const {withPresence, user, size, rightMargin} = this.props
-
-    if (withPresence) {
-      return (
-        <Stack anchor='top-right'>
-          <AvatarContainer
-            img={user.avatar}
-            text={user.handle}
-            background={user.backgroundColor}
-            size={size}
-            rightMargin={rightMargin} />
-          <WithPresence id={user.id}>
-          {present => (
-            <Box margin={{top: '-2px', right: '-2px'}}>
-              <PresenceIndicator present={present} />
-            </Box>
-          )}
-          </WithPresence>
-        </Stack>
-      )
-    }
-
+export default React.memo(({withPresence, user, size, rightMargin}) => {
+  if (withPresence) {
     return (
-      <AvatarContainer
-        img={user.avatar}
-        text={user.handle}
-        background={user.backgroundColor}
-        size={size}
-        rightMargin={rightMargin} />
+      <Stack anchor='top-right'>
+        <AvatarContainer
+          img={user.avatar}
+          text={user.handle}
+          background={user.backgroundColor}
+          size={size}
+          rightMargin={rightMargin} />
+        <WithPresence id={user.id}>
+        {present => (
+          <Box margin={{top: '-2px', right: '-2px'}}>
+            <PresenceIndicator present={present} />
+          </Box>
+        )}
+        </WithPresence>
+      </Stack>
     )
   }
-}
+
+  return (
+    <AvatarContainer
+      img={user.avatar}
+      text={user.handle}
+      background={user.backgroundColor}
+      size={size}
+      rightMargin={rightMargin} />
+  )
+}, ({user: {id, avatar, handle, background}, size, rightMargin, withPresence}, next) => (
+  next.user.id === id && next.user.avatar === avatar && next.user.handle === handle && next.user.background === background && size === next.size && rightMargin === next.rightMargin && withPresence === next.withPresence
+))
