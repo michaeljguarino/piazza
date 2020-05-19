@@ -73,7 +73,7 @@ const buildItemData = memoize((setSize, mapper, isItemLoaded, items, parentRef, 
 ))
 
 export default function SmoothScroller({
-  hasNextPage, scrollTo, placeholder, loading, items, loadNextPage, mapper, listRef, setListRef, handleScroll, refreshKey, ...props}) {
+  hasNextPage, scrollTo, placeholder, loading, items, loadNextPage, mapper, listRef, setListRef, handleScroll, refreshKey, keyFn, ...props}) {
   const sizeMap = useRef({});
   const setSize = useCallback((index, size) => {
     sizeMap.current = { ...sizeMap.current, [index]: size };
@@ -84,6 +84,7 @@ export default function SmoothScroller({
   const itemCount = hasNextPage ? count + 7 : count;
   const loadMoreItems = loading ? () => {} : loadNextPage;
   const isItemLoaded = useCallback(index => !hasNextPage || index < count, [hasNextPage, count])
+  const itemKey = keyFn ? (index) => (index < count ? keyFn(items[index]) : index) : (index) => index
 
   return (
     <InfiniteLoader
@@ -102,7 +103,7 @@ export default function SmoothScroller({
           width={width}
           itemCount={itemCount}
           itemSize={getSize}
-          itemKey={(index) => `${refreshKey}:${index}`}
+          itemKey={(index) => `${refreshKey}:${itemKey(index)}`}
           itemData={buildItemData(setSize, mapper, isItemLoaded, items, listRef, width, placeholder, refreshKey, props)}
           onScroll={({scrollOffset}) => handleScroll(scrollOffset > (height / 2))}
           onItemsRendered={(ctx) => {

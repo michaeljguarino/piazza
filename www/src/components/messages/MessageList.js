@@ -154,6 +154,7 @@ export default function MessageList() {
             items={pageInfo.hasNextPage ? edges : [...edges, 'PRELUDE']}
             sizeEstimate={({node}) => sizeEstimate(node)}
             refreshKey={currentConversation.id}
+            keyFn={(edge) => edge === 'PRELUDE' ? edge : edge.node.id}
             scrollTo='start'
             placeholder={(i) => <MessagePlaceholder index={i} />}
             onRendered={({visibleStopIndex}) => {
