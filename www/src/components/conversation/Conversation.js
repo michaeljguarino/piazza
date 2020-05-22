@@ -88,8 +88,8 @@ function ConversationName({conversation, me, textProps, textSize}) {
   )
 }
 
-function ConversationModifier({conversation, hover, ...props}) {
-  if (conversation.unreadNotifications > 0)
+function ConversationModifier({conversation, hover, selected, ...props}) {
+  if (conversation.unreadNotifications > 0 && !selected)
     return <NotificationBadge unread={conversation.unreadNotifications} />
 
   if (conversation.chat && hover)
@@ -124,7 +124,12 @@ export default function Conversation({conversation, ...props}) {
           <Icon me={me} textProps={textProps} conversation={conversation} {...props} />
           <ConversationName me={me} textProps={textProps} conversation={conversation} />
         </Box>
-        <ConversationModifier hover={hover} me={me} conversation={conversation} {...props} />
+        <ConversationModifier
+          hover={hover}
+          selected={selected}
+          me={me}
+          conversation={conversation}
+          {...props} />
       </Box>
     </HoveredBackground>
   )
