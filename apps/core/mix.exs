@@ -44,6 +44,7 @@ defmodule Core.MixProject do
       {:thrift, github: "pinterest/elixir-thrift"},
       {:ecto, "~> 3.2", override: true},
       {:plug_cowboy, "~> 2.1.0", override: true},
+      {:ex_image_info, "~> 0.2.4"},
       {:timex, "~> 3.5"},
       {:postgrex, ">= 0.0.0"},
       {:furlex, "~> 0.4.2"},

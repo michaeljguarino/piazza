@@ -12,6 +12,8 @@ defmodule Core.Models.File do
     field :media_type, MediaType
     field :filename, :string
     field :filesize, :integer
+    field :width,    :integer
+    field :height,   :integer
 
     belongs_to :message, Message
 
@@ -39,6 +41,7 @@ defmodule Core.Models.File do
     |> unique_constraint(:message_id)
     |> put_change(:filename, get_upload(attrs) |> filename())
     |> put_change(:filesize, get_upload(attrs) |> file_size())
+    |> add_dimensions(get_upload(attrs))
     |> add_media_type()
     |> validate_required([:object, :filename, :media_type])
   end
@@ -70,6 +73,19 @@ defmodule Core.Models.File do
   defp media_type_from_extname(".mp4"),  do: :video
   defp media_type_from_extname(".mp3"),  do: :audio
   defp media_type_from_extname(_), do: :other
+
+  defp add_dimentions(changeset, %{path: file}) do
+    File.read!(file)
+    |> ExImageInfo.info()
+    |> case do
+      {_, width, height, _} ->
+        changeset
+        |> put_change(:width, width)
+        |> put_change(:height, height)
+      _ -> changeset
+    end
+  end
+  defp add_dimensions(changeset, _), do: changeset
 
   def file_size(%Plug.Upload{path: path}) do
     case File.stat(path) do

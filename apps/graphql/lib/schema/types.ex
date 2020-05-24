@@ -255,15 +255,18 @@ defmodule GraphQl.Schema.Types do
   end
 
   object :file do
-    field :id, non_null(:id)
+    field :id,     non_null(:id)
     field :object, non_null(:string), resolve: fn
       file, _, _ -> {:ok, Core.Storage.url({file.object, file}, :original)}
     end
-    field :filename, non_null(:string)
-    field :filesize, :integer
-    field :media_type, :media_type
 
-    timestamps()
+    field :filename,   non_null(:string)
+    field :filesize,   :integer
+    field :media_type, :media_type
+    field :width,      :integer
+    field :height,     :integer
+
+    timestamps() 
   end
 
   enum :media_type do

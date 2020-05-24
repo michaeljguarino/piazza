@@ -31,19 +31,21 @@ function DownloadAffordance({object}) {
   )
 }
 
-function Image({object, filename}) {
+function Image({object, filename, height}) {
   const [hover, setHover] = useState(false)
 
-  return <Box onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}>
-    <Stack anchor='top-right'>
-      <img style={{maxHeight: 300, maxWidth: 300}} src={object} alt={filename} />
-      {hover && (<DownloadAffordance object={object} />)}
-    </Stack>
-  </Box>
+  return (
+    <Box onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}>
+      <Stack anchor='top-right'>
+        <img style={{height, maxHeight: 300, maxWidth: 300}} src={object} alt={filename} />
+        {hover && (<DownloadAffordance object={object} />)}
+      </Stack>
+    </Box>
+  )
 }
 
 function Video({object, filename}) {
-  return <video controls style={{maxHeight: 300, maxWidth: 500}} src={object} alt={filename} />
+  return <video controls style={{height: 300, maxWidth: 500}} src={object} alt={filename} />
 }
 
 function MediaFile({file}) {
