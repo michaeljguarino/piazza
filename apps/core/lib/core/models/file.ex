@@ -74,7 +74,7 @@ defmodule Core.Models.File do
   defp media_type_from_extname(".mp3"),  do: :audio
   defp media_type_from_extname(_), do: :other
 
-  defp add_dimentions(changeset, %{path: file}) do
+  defp add_dimensions(changeset, %{path: file}) do
     File.read!(file)
     |> ExImageInfo.info()
     |> case do

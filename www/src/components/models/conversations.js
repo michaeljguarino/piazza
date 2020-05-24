@@ -66,6 +66,8 @@ export const FileFragment = gql`
     mediaType
     object
     insertedAt
+    height
+    width
   }
 `;
 

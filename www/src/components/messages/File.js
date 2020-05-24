@@ -33,11 +33,12 @@ function DownloadAffordance({object}) {
 
 function Image({object, filename, height}) {
   const [hover, setHover] = useState(false)
+  console.log(height)
 
   return (
     <Box onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}>
       <Stack anchor='top-right'>
-        <img style={{height, maxHeight: 300, maxWidth: 300}} src={object} alt={filename} />
+        <img style={{height: !height ? null : height, maxHeight: 300, maxWidth: 300}} src={object} alt={filename} />
         {hover && (<DownloadAffordance object={object} />)}
       </Stack>
     </Box>
