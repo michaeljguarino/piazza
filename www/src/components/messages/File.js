@@ -1,11 +1,12 @@
 import React, {useState} from 'react'
-import {Box, Text, Stack} from 'grommet'
-import {Next, Down, Download} from 'grommet-icons'
-import FileIcon, {defaultStyles} from 'react-file-icon'
+import { Box, Text, Stack } from 'grommet'
+import { Next, Down, Download } from 'grommet-icons'
+import FileIcon, { defaultStyles } from 'react-file-icon'
 import Tooltip from '../utils/Tooltip'
 import HoveredBackground from '../utils/HoveredBackground'
 import moment from 'moment'
 import filesize from 'filesize'
+import FileViewer from './FileViewer'
 
 const extension = (file) => file.split('.').pop()
 
@@ -13,7 +14,7 @@ function DownloadAffordance({object}) {
   return (
     <Tooltip align={{bottom: 'top'}}>
       <HoveredBackground>
-        <Box accentable animation={{type: "fadeIn", duration: 200}} >
+        <Box accentable animation={{type: "fadeIn", duration: 200}} onClick={(e) => e.preventDefault()} >
           <a href={object} download>
             <Box
               margin={{right: 'xsmall', top: 'xsmall'}}
@@ -31,22 +32,27 @@ function DownloadAffordance({object}) {
   )
 }
 
-function Image({object, filename, height}) {
+function Image({...file}) {
   const [hover, setHover] = useState(false)
-  console.log(height)
+  const [open, setOpen] = useState(false)
 
   return (
+    <>
     <Box onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}>
       <Stack anchor='top-right'>
-        <img style={{height: !height ? null : height, maxHeight: 300, maxWidth: 300}} src={object} alt={filename} />
-        {hover && (<DownloadAffordance object={object} />)}
+        <Box style={{cursor: 'pointer'}} onClick={() => setOpen(true)}>
+          <img style={{height: !file.height ? null : file.height, maxHeight: 300}} src={file.object} alt={file.filename} />
+        </Box>
+        {hover && (<DownloadAffordance object={file.object} />)}
       </Stack>
     </Box>
+    {open && <FileViewer file={file} setOpen={setOpen} />}
+    </>
   )
 }
 
 function Video({object, filename}) {
-  return <video controls style={{height: 300, maxWidth: 500}} src={object} alt={filename} />
+  return <video controls style={{height: 300}} src={object} alt={filename} />
 }
 
 function MediaFile({file}) {

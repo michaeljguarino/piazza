@@ -4,7 +4,7 @@ defmodule Core.Models.File do
 
   alias Core.Models.Message
 
-  defenum MediaType, image: 0, video: 1, audio: 2, other: 3
+  defenum MediaType, image: 0, video: 1, audio: 2, other: 3, pdf: 4
 
   schema "files" do
     field :object_id, :binary_id
@@ -72,6 +72,7 @@ defmodule Core.Models.File do
   defp media_type_from_extname(".gif"),  do: :video
   defp media_type_from_extname(".mp4"),  do: :video
   defp media_type_from_extname(".mp3"),  do: :audio
+  defp media_type_from_extname(".pdf"),  do: :pdf
   defp media_type_from_extname(_), do: :other
 
   defp add_dimensions(changeset, %{path: file}) do
