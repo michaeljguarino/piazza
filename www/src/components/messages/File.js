@@ -7,6 +7,8 @@ import HoveredBackground from '../utils/HoveredBackground'
 import moment from 'moment'
 import filesize from 'filesize'
 import FileViewer from './FileViewer'
+import { Document, Page } from 'react-pdf'
+import { FileTypes } from './types'
 
 const extension = (file) => file.split('.').pop()
 
@@ -86,6 +88,18 @@ function MediaFile({file}) {
   )
 }
 
+function FileDetails({file}) {
+  return (
+    <Box width='100%'>
+      <Text size='small'>{file.filename}</Text>
+      <Box direction='row' gap='small'>
+        <Text size='xsmall' color='dark-5'>{filesize(file.filesize || 0)}</Text>
+        <Text size='xsmall'>{moment(file.insertedAt).fromNow()}</Text>
+      </Box>
+    </Box>
+  )
+}
+
 export function FileEntry({file: {filename, object, insertedAt, mediaType, ...file}, next}) {
   const [hover, setHover] = useState(false)
   const ext = extension(filename)
@@ -123,6 +137,19 @@ export function FileEntry({file: {filename, object, insertedAt, mediaType, ...fi
   )
 }
 
+function PdfFile({file}) {
+  const ext = extension(file.filename)
+  const styles = defaultStyles[ext] || {}
+  return (
+    <Box border round='small' background='white'>
+      <Box direction='row' align='center' gap='small'>
+        <FileIcon extension={ext} size={60} {...styles} />
+        <FileDetails file={file} />
+      </Box>
+    </Box>
+  )
+}
+
 export function StandardFile({file: {filename, object, insertedAt, ...file}}) {
   const [hover, setHover] = useState(false)
   const ext = extension(filename)
@@ -156,8 +183,10 @@ export function StandardFile({file: {filename, object, insertedAt, ...file}}) {
 
 export default function File({file}) {
   switch (file.mediaType) {
-    case "OTHER":
+    case FileTypes.OTHER:
       return <StandardFile file={file} />
+    case FileTypes.PDF:
+      return <PdfFile file={file} />
     default:
       return <MediaFile file={file} />
   }

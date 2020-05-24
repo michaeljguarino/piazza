@@ -1,4 +1,6 @@
-import React, { useState, useCallback, useContext } from 'react'
+import React, { useState, useContext } from 'react'
+import { DndProvider, useDrop } from 'react-dnd'
+import { HTML5Backend, NativeTypes } from 'react-dnd-html5-backend'
 import MessageList from './messages/MessageList'
 import AnchoredMessageList from './messages/AnchoredMessageList'
 import MessageInput from './messages/MessageInput'
@@ -10,7 +12,6 @@ import ConversationHeader from './conversation/ConversationHeader'
 import { Box, Grid, Text } from 'grommet'
 import { FlyoutProvider } from './utils/Flyout'
 import { formatDate } from './messages/Message'
-import { fromEvent } from 'file-selector'
 import AppContext from './login/AppContext'
 
 
@@ -41,28 +42,27 @@ const FILE_DROP_PROPS = {
   background: DROP_BACKGROUND
 }
 
-const cancel = (event) => { event.stopPropagation(); event.persist(); event.preventDefault() }
+function Dropzone({children, setAttachment}) {
+  const [{ canDrop, isOver }, drop] = useDrop({
+    accept: [NativeTypes.FILE],
+    drop: ({files}) => setAttachment(files[0]),
+    collect: (monitor) => ({
+      isOver: monitor.isOver(),
+      canDrop: monitor.canDrop(),
+    }),
+  })
+  const dragActive = canDrop && isOver
+
+  return (
+    <Box ref={drop} gridArea='msgs' {...(dragActive ? FILE_DROP_PROPS : {})}>
+      {children}
+    </Box>
+  )
+}
 
 const Piazza = () => {
   const [anchor, setAnchor] = useState(null)
   const [attachment, setAttachment] = useState(null)
-  const [dragActive, setDragActive] = useState(false)
-  const onDrop = useCallback((files) => {
-    setAttachment(files[0])
-  }, [setAttachment])
-
-  const dropProps = {
-    onDragEnter: (e) => { cancel(e); setDragActive(true) },
-    onDragOver: (e) => { cancel(e); setDragActive(true) },
-    onDragLeave: (e) => { cancel(e); setDragActive(false) },
-    onDrop: (event) => {
-      cancel(event)
-      Promise.resolve(fromEvent(event).then((files) => {
-        onDrop(files)
-      }));
-      setDragActive(false)
-    }
-  }
 
   return (
     <VisibleMessages>
@@ -81,7 +81,8 @@ const Piazza = () => {
               <Box gridArea='convs' background='sidebar' elevation='xsmall'>
                 <ConversationPanel />
               </Box>
-              <Box gridArea='msgs' {...(dragActive ? FILE_DROP_PROPS : {})} {...dropProps}>
+              <DndProvider backend={HTML5Backend}>
+              <Dropzone setAttachment={setAttachment}>
                 <Box height='60px' align='center'>
                   <ConversationHeader  setAnchor={setAnchor} />
                 </Box>
@@ -103,7 +104,8 @@ const Piazza = () => {
                     {flyoutContent}
                   </Box>
                 </ReplyProvider>
-              </Box>
+              </Dropzone>
+              </DndProvider>
             </MessageSubscription>
           </Grid>
         )}

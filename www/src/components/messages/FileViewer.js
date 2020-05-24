@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Layer, Box, Stack, Text } from 'grommet'
 import { FileTypes } from './types'
-import { Document, Page } from 'react-pdf/dist/entry.webpack'
+import { Document, Page } from 'react-pdf'
 import useDimensions from "react-use-dimensions"
 import { FormPrevious, FormNext, FormClose } from 'grommet-icons'
 import fs from 'filesize'

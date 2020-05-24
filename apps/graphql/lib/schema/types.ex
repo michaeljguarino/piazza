@@ -273,6 +273,7 @@ defmodule GraphQl.Schema.Types do
     value :image
     value :video
     value :audio
+    value :pdf
     value :other
   end
 
