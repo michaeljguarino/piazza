@@ -21,9 +21,8 @@ defmodule GqlWeb.WebhookControllerTest do
       {:ok, %{"_type" => "root", "children" => [
         %{"_type" => "box", "children" => [
           %{"_type" => "box", "children" => [
-            %{"_type" => "link", "children" => [
-              %{"_type" => "video", "attributes" => %{"url" => url}}
-            ]}
+            %{"_type" => "video", "attributes" => %{"url" => url}},
+            %{"_type" => "link"}
           ]},
           %{"_type" => "box", "children" => [
             %{"_type" => "button", "attributes" => %{"label" => "shuffle", "payload" => shuffle}},
@@ -58,9 +57,8 @@ defmodule GqlWeb.WebhookControllerTest do
       {:ok, %{"_type" => "root", "children" => [
         %{"_type" => "box", "children" => [
           %{"_type" => "box", "children" => [
-            %{"_type" => "link", "children" => [
-              %{"_type" => "video", "attributes" => %{"url" => url}}
-            ]}
+            %{"_type" => "video", "attributes" => %{"url" => url}},
+            %{"_type" => "link"}
           ]},
           %{"_type" => "box", "children" => [
             %{"_type" => "button", "attributes" => %{"label" => "shuffle", "payload" => shuffle}},
@@ -88,9 +86,8 @@ defmodule GqlWeb.WebhookControllerTest do
 
       {:ok, %{"_type" => "root", "children" => [
         %{"_type" => "box", "children" => [
-          %{"_type" => "link", "children" => [
-            %{"_type" => "video", "attributes" => %{"url" => url}}
-          ]}
+          %{"_type" => "video", "attributes" => %{"url" => url}},
+          %{"_type" => "link"}
         ]}
       ]} = result} = StructuredMessage.Xml.from_xml(result["structured_message"])
 

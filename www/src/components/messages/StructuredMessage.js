@@ -13,7 +13,7 @@ function recurse(children) {
 function video({key, attributes: {url, loop, autoPlay, width, height, ...rest}}) {
   return (
     <video
-      style={{maxWidth: '250px', maxHeight: '250px'}}
+      style={{maxHeight: '250px'}}
       width={width || '200px'}
       height={height || '250px'}
       key={key}

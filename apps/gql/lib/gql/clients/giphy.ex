@@ -3,7 +3,7 @@ defmodule Gql.Clients.Giphy do
   alias Gql.Giphy.{Response, Gif, Image, ImageContent}
 
   require Logger
-  @sample_size 15
+  @sample_size 30
 
   def random(search_query, interaction) do
     params = URI.encode_query(%{
@@ -57,8 +57,9 @@ defmodule Gql.Clients.Giphy do
     <root>
       <box pad="small" gap="small">
         <box>
+          <video url="#{pruned}" width="#{width}" height="#{height}" autoPlay="true" loop="true" />
           <link href="#{pruned}" target="_blank">
-            <video url="#{pruned}" width="#{width}" height="#{height}" autoPlay="true" loop="true" />
+            View on Giphy
           </link>
         </box>
         <box direction="row" gap="xsmall">
@@ -74,9 +75,10 @@ defmodule Gql.Clients.Giphy do
     pruned = prune_url(url)
     """
     <root>
-      <box pad="small">
-        <link href="#{pruned}" target="_blank">
-          <video url="#{pruned}" width="#{width}" height="#{height}" autoPlay="true" loop="true" />
+      <box pad="small" gap="xsmall">
+        <video url="#{pruned}" width="#{width}" height="#{height}" autoPlay="true" loop="true" />
+        <link href="#{pruned}" target="_blank" color="dark-3">
+          View on giphy
         </link>
       </box>
     </root>
