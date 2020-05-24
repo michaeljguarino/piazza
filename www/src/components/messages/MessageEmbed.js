@@ -9,21 +9,18 @@ function dimensions(props) {
 
 function VideoEmbed({url}) {
   return (
-    <video controls src={url} style={{maxHeight: '200px', maxWidth: '200px'}}></video>
+    <video controls src={url} style={{height: '200px'}}></video>
   )
 }
 
-function ImageEmbed({url}) {
+function ImageEmbed({imageUrl}) {
   return (
-    <img style={{maxHeight: '100px', maxWidth: '100px'}} src={url} />
+    <img style={{height: '50px'}} src={imageUrl} />
   )
 }
 
-function SiteEmbed({image_url}) {
-  return (image_url ?
-    <img alt='' style={{maxHeight: '100px', maxWidth: '100px'}} src={image_url} fit='contain'/> :
-    null
-  )
+function SiteEmbed({imageUrl}) {
+  return imageUrl && <img alt='' style={{maxHeight: '100px', maxWidth: '100px'}} src={imageUrl} fit='contain'/>
 }
 
 
@@ -47,7 +44,7 @@ export default function MessageEmbed(props) {
     <Box direction='row' align='center' gap='small' pad='small' border={{side: 'left', color: 'dark-3', width: '3px'}}>
       <EmbedMedia {...props} />
       <Box direction='column' align='start' gap='xsmall'>
-        <Anchor _target='blank' href={props.url} weight='bold' size='medium'>{props.title}</Anchor>
+        <Anchor size='small' _target='blank' href={props.url} size='medium'>{props.title}</Anchor>
         <Text size='small'>{props.description}</Text>
       </Box>
     </Box>

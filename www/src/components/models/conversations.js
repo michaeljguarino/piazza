@@ -39,7 +39,7 @@ export const EmbedFragment = gql`
   fragment EmbedFragment on Embed {
     type
     url
-    image_url
+    imageUrl
     title
     description
     width

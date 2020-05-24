@@ -266,7 +266,7 @@ defmodule GraphQl.Schema.Types do
     field :width,      :integer
     field :height,     :integer
 
-    timestamps() 
+    timestamps()
   end
 
   enum :media_type do
@@ -318,6 +318,7 @@ defmodule GraphQl.Schema.Types do
 
   object :embed do
     field :type,        :embed_type
+    field :video_type,  :video_type
     field :url,         :string
     field :image_url,   :string
     field :author,      :string
@@ -325,6 +326,8 @@ defmodule GraphQl.Schema.Types do
     field :description, :string
     field :height,      :integer
     field :width,       :integer
+    field :publisher,   :string
+    field :logo,        :string
   end
 
   enum :embed_type do
@@ -333,6 +336,11 @@ defmodule GraphQl.Schema.Types do
     value :attachment
     value :site
     value :other
+  end
+
+  enum :video_type do
+    value :raw
+    value :embed
   end
 
   object :notification do

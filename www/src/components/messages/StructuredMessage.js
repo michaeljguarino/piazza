@@ -10,12 +10,20 @@ function recurse(children) {
   return children.map(parse)
 }
 
+const toInt = (str) => `${str}`.replace('px', '')
+
+function aspectRatio(width, height) {
+  const w = parseInt(width)
+  const h = parseInt(height)
+  return {w, h, ratio: (w / h)}
+}
+
 function video({key, attributes: {url, loop, autoPlay, width, height, ...rest}}) {
   return (
     <video
       style={{maxHeight: '250px'}}
-      width={width || '200px'}
-      height={height || '250px'}
+      // width={width || '200px'}
+      height={height}
       key={key}
       loop={!!loop}
       autoPlay={!!autoPlay}

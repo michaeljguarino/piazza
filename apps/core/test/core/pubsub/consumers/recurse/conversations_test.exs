@@ -65,5 +65,23 @@ defmodule Core.PubSub.Consumers.Recurse.ConversationsTest do
       assert new_msg.embed.title
       assert new_msg.embed.description
     end
+
+    test "it can extract publisher info" do
+      message = insert(:message, text: "https://nypost.com/2020/02/26/cdc-warns-men-about-facial-hair-dangers-as-coronavirus-spreads/")
+      event = %PubSub.MessageCreated{item: message, actor: message.creator}
+      {:ok, new_msg} = Recurse.handle_event(event)
+
+      assert new_msg.embed.publisher
+      assert new_msg.embed.logo
+    end
+
+    test "It can properly handle youtube" do
+      message = insert(:message, text: "https://www.youtube.com/watch?v=fu6IOHZ3cfg")
+      event = %PubSub.MessageCreated{item: message, actor: message.creator}
+      {:ok, new_msg} = Recurse.handle_event(event)
+
+      assert new_msg.embed.video_url
+      assert new_msg.embed.video_type == :embed
+    end
   end
 end
