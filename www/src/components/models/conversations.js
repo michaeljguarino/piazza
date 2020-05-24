@@ -38,12 +38,15 @@ export const ConversationFragment = gql`
 export const EmbedFragment = gql`
   fragment EmbedFragment on Embed {
     type
+    videoType
     url
     imageUrl
     title
     description
     width
     height
+    publisher
+    logo
   }
 `;
 

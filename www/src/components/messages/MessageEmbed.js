@@ -7,10 +7,15 @@ function dimensions(props) {
   return {width, height}
 }
 
-function VideoEmbed({url}) {
-  return (
-    <video controls src={url} style={{height: '200px'}}></video>
-  )
+function VideoEmbed({title, videoUrl, videoType}) {
+  if (!videoUrl) return null
+
+  switch (videoType) {
+    case "EMBED":
+      return <iframe height='200px' src={videoUrl} frameborder="0" type='text/html' title={title} />
+    default:
+      return <video controls src={videoUrl} style={{height: '200px'}} />
+  }
 }
 
 function ImageEmbed({imageUrl}) {
@@ -37,15 +42,34 @@ function EmbedMedia(props) {
   }
 }
 
+function Publisher({publisher, logo}) {
+  if (!publisher) return null
+
+  return (
+    <Box direction='row' gap='small' align='center'>
+      {logo && <img height='15px' src={logo} />}
+      <Text size='xsmall' color='dark-3'>{publisher}</Text>
+    </Box>
+  )
+}
+
 export default function MessageEmbed(props) {
   let dims = dimensions(props)
   props = {...props, ...dims}
   return (
-    <Box direction='row' align='center' gap='small' pad='small' border={{side: 'left', color: 'dark-3', width: '3px'}}>
-      <EmbedMedia {...props} />
-      <Box direction='column' align='start' gap='xsmall'>
-        <Anchor size='small' _target='blank' href={props.url} size='medium'>{props.title}</Anchor>
-        <Text size='small'>{props.description}</Text>
+    <Box border background='white' margin={{vertical: 'xsmall'}}>
+      <Box
+        direction='row'
+        align='center'
+        gap='small'
+        pad='small'
+        border={{side: 'left', color: '#246BCE', size: '3px'}}>
+        <EmbedMedia {...props} />
+        <Box direction='column' align='start' gap='xsmall'>
+          <Publisher publisher={props.publisher} logo={props.logo} />
+          <Anchor size='small' _target='blank' href={props.url} size='medium'>{props.title}</Anchor>
+          <Text size='small'>{props.description}</Text>
+        </Box>
       </Box>
     </Box>
   )
