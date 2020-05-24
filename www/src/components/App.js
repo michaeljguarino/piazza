@@ -7,9 +7,11 @@ import Login from './Login'
 import StructuredMessageTester from './tools/StructuredMessageTester'
 import { ResetPassword, ChangePassword } from './ResetPassword';
 import Directory from './tools/Directory';
-
+import { pdfjs } from 'react-pdf';
 // import logo from './logo.svg';
 import '../styles/App.css';
+
+pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
 export default function App() {
   return (

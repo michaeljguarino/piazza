@@ -53,6 +53,13 @@ resource "google_storage_bucket" "piazza_bucket" {
   name = var.piazza_bucket
   project = var.gcp_project_id
   force_destroy = true
+
+  cors {
+    origin          = ["*"]
+    method          = ["GET", "HEAD"]
+    response_header = ["*"]
+    max_age_seconds = 3600
+  }
 }
 
 resource "google_storage_bucket_acl" "piazza_bucket_acl" {

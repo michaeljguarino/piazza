@@ -29,6 +29,8 @@ export const ConversationFragment = gql`
         id
         name
         handle
+        backgroundColor
+        avatar
       }
     }
   }

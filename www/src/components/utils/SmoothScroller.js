@@ -3,7 +3,6 @@ import { Box } from 'grommet'
 import InfiniteLoader from 'react-window-infinite-loader'
 import { VariableSizeList } from 'react-window-reversed'
 import Autosizer from 'react-virtualized-auto-sizer'
-import OnMediaLoaded from './OnMediaLoaded'
 import memoize from 'memoize-one'
 import CellMeasurer from './CellMeasurer'
 

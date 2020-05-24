@@ -14,6 +14,7 @@ import { MessageScrollContext } from './MessageSubscription'
 import { VisibleMessagesContext } from './VisibleMessages'
 import { conversationNameString } from '../conversation/Conversation'
 import { CurrentUserContext } from '../login/EnsureLogin'
+import Avatar from '../users/Avatar'
 
 export const DialogContext = React.createContext({
   dialog: null,
@@ -63,16 +64,31 @@ function sizeEstimate({embed, file, structuredMessage}) {
   return 75
 }
 
+function Pariticipants({participants}) {
+  const me = useContext(CurrentUserContext)
+  return (
+    <Box direction='row' gap='xsmall' margin={{bottom: 'small'}}>
+      {participants
+        .filter(({user: {id}}) => id !== me.id)
+        .map(({user}) => <Avatar user={user} size='40px' />)}
+    </Box>
+  )
+}
+
 function Prelude({conversation}) {
   const me = useContext(CurrentUserContext)
   const name = conversationNameString(conversation, me)
   const fullname = conversation.chat ? `your chat with ${name}` : `#${name}`
+
   return (
-    <Box fill='horizontal' gap='xsmall' justify='center' pad='large'>
-      <Text weight='bold'>This is the beginning of {fullname}</Text>
-      <Box>
-        <Text size='small'>You can invite other people by clicking the <User size='15px' /> icon above</Text>
-        <Text size='small'>Try typing a slash-command, like `/giphy hey`</Text>
+    <Box pad='medium'>
+      {conversation.chat && <Pariticipants participants={conversation.chatParticipants} />}
+      <Box fill='horizontal' gap='xsmall' justify='center'>
+        <Text weight='bold'>This is the beginning of {fullname}</Text>
+        <Box>
+          <Text size='small'>You can invite other people by clicking the <User size='15px' /> icon
+            above. Or you can try typing a slash-command, like `/giphy hey`</Text>
+        </Box>
       </Box>
     </Box>
   )

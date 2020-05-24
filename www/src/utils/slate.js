@@ -7,3 +7,9 @@ export const plainSerialize = nodes => {
 export const plainDeserialize = text => {
   return text.split('\n').map(line => ({children: [{ text: line }]}))
 }
+
+export function isEmpty(editorState) {
+  return (
+    editorState.length === 1 && editorState[0].children.length === 1 && editorState[0].children[0].text === ''
+  )
+}

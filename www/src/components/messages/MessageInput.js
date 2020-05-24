@@ -1,10 +1,10 @@
-import React, { useRef, useState, useContext, useEffect, useMemo } from 'react'
+import React, { useRef, useState, useContext, useEffect, useMemo, useCallback } from 'react'
 import {socket} from '../../helpers/client'
 import TimedCache from '../utils/TimedCache'
 import HoveredBackground from '../utils/HoveredBackground'
 import { useMutation, useApolloClient } from 'react-apollo'
 import { Box, Text, Markdown, Layer, Keyboard, Drop, ThemeContext } from 'grommet'
-import { Attachment } from 'grommet-icons'
+import { Attachment, Send } from 'grommet-icons'
 import { FilePicker } from 'react-file-picker'
 import debounce from 'lodash/debounce'
 import { CurrentUserContext } from '../login/EnsureLogin'
@@ -15,13 +15,14 @@ import { ReplyGutter, ReplyContext } from './ReplyProvider'
 import { Progress } from 'react-sweet-progress';
 import "react-sweet-progress/lib/style.css";
 import moment from 'moment'
-import { plainDeserialize, plainSerialize } from '../../utils/slate'
+import { plainDeserialize, plainSerialize, isEmpty } from '../../utils/slate'
 import { EditingMessageContext } from './VisibleMessages'
 import { Conversations } from '../login/MyConversations'
 import { useEditor } from '../utils/hooks'
 import { Editor, Transforms } from 'slate'
 import { SyncLoader } from 'react-spinners'
 import { normalizeColor } from 'grommet/utils'
+import { edit } from 'ace-builds'
 
 
 const TEXT_SIZE='xsmall'
@@ -111,6 +112,23 @@ function FileInput({attachment, setAttachment}) {
   )
 }
 
+function SendMsg({empty, onClick}) {
+  return (
+    <Box
+      style={empty ? null : {cursor: 'pointer'}}
+      height='40px'
+      width="40px"
+      pad='small'
+      round='xxsmall'
+      align='center'
+      justify='center'
+      onClick={empty ? null : onClick}
+      background={empty ? null : 'action'} >
+      <Send size='15px' color={empty ? 'light-3' : 'white'} />
+    </Box>
+  )
+}
+
 function MessageInputInner({editor, attachment, setAttachment, conversation, setWaterline, typists, notifyTyping, dropRef}) {
   const [editorState, setEditorState] = useState(plainDeserialize(''))
   const [uploadProgress, setUploadProgress] = useState(null)
@@ -141,6 +159,17 @@ function MessageInputInner({editor, attachment, setAttachment, conversation, set
 
   const boxRef = useRef()
   const parentId = reply && reply.id
+  const empty = isEmpty(editorState)
+
+  const sendMessage = useCallback(() => {
+    mutation({variables: {
+      conversationId: conversation.id,
+      attributes: {attachment, parentId, text: plainSerialize(editorState)}
+    }})
+    Transforms.select(editor, Editor.start(editor, []))
+    setEditorState(plainDeserialize(''))
+    setAttachment(null)
+  }, [mutation, parentId, editorState, conversation, attachment, setAttachment, editor, setEditorState])
 
   return (
     <Box
@@ -160,13 +189,7 @@ function MessageInputInner({editor, attachment, setAttachment, conversation, set
       <Keyboard
         onKeyDown={(e) => {
           if (e.key === 'Enter' && !e.shiftKey && !disableSubmit) {
-            mutation({variables: {
-              conversationId: conversation.id,
-              attributes: {attachment, parentId, text: plainSerialize(editorState)}
-            }})
-            Transforms.select(editor, Editor.start(editor, []))
-            setEditorState(plainDeserialize(''))
-            setAttachment(null)
+            sendMessage()
             e.preventDefault()
           }
         }}
@@ -190,6 +213,7 @@ function MessageInputInner({editor, attachment, setAttachment, conversation, set
             clearable={!disableSubmit}
             onChange={notifyTyping} />
           <FileInput attachment={attachment} setAttachment={setAttachment} />
+          <SendMsg empty={empty} onClick={sendMessage} />
         </Box>
       </Keyboard>
       <InputFooter typists={typists} me={me} />

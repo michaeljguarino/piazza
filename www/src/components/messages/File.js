@@ -7,8 +7,8 @@ import HoveredBackground from '../utils/HoveredBackground'
 import moment from 'moment'
 import filesize from 'filesize'
 import FileViewer from './FileViewer'
-import { Document, Page } from 'react-pdf'
 import { FileTypes } from './types'
+
 
 const extension = (file) => file.split('.').pop()
 
@@ -100,13 +100,28 @@ function FileDetails({file}) {
   )
 }
 
-export function FileEntry({file: {filename, object, insertedAt, mediaType, ...file}, next}) {
-  const [hover, setHover] = useState(false)
-  const ext = extension(filename)
+export function Icon({size, name}) {
+  const ext = extension(name)
   const styles = defaultStyles[ext] || {}
+  return <FileIcon extension={ext} size={size} {...styles} />
+}
+
+const viewableTypes = [FileTypes.IMAGE, FileTypes.VIDEO, FileTypes.PDF]
+
+export function FileEntry({file, next}) {
+  const [hover, setHover] = useState(false)
+  const [open, setOpen] = useState(false)
   const mediaStyles = {maxWidth: 50, maxHeight: 50}
+  const viewable = viewableTypes.find((type) => type === file.mediaType)
+
   return (
-    <Box onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}>
+    <>
+    <Box
+      flex={false}
+      style={viewable ? {cursor: 'pointer'} : null}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      onClick={viewable ? () => setOpen(true) : null}>
       <Stack anchor='top-right'>
         <Box
           direction='row'
@@ -117,36 +132,52 @@ export function FileEntry({file: {filename, object, insertedAt, mediaType, ...fi
           pad={{left: 'small'}}
           background={hover ? 'light-2' : null}>
           <Box width='60px' height='60px' align='center' justify='center'>
-            {mediaType === "VIDEO" ?
-              <video src={object} style={mediaStyles} alt={filename} /> :
-              mediaType === "OTHER" ?
-                <FileIcon extension={ext} size={60} {...styles} /> :
-                  <img src={object} style={mediaStyles} alt={filename} />}
+            {file.mediaType === FileTypes.VIDEO ?
+              <video src={file.object} style={mediaStyles} alt={file.filename} /> :
+              file.mediaType === FileTypes.IMAGE ?
+                <img src={file.object} style={mediaStyles} alt={file.filename} /> :
+                <Icon name={file.filename} size={40} />}
           </Box>
           <Box width='100%'>
-            <Text size='small'>{filename}</Text>
+            <Text size='small'>{file.filename}</Text>
             <Box direction='row' gap='small'>
               <Text size='xsmall' color='dark-5'>{filesize(file.filesize || 0)}</Text>
-              <Text size='xsmall'>{moment(insertedAt).fromNow()}</Text>
+              <Text size='xsmall'>{moment(file.insertedAt).fromNow()}</Text>
             </Box>
           </Box>
         </Box>
-        {hover && (<DownloadAffordance object={object} />)}
+        {hover && (<DownloadAffordance object={file.object} />)}
       </Stack>
     </Box>
+    {open && <FileViewer file={file} setOpen={setOpen} />}
+    </>
   )
 }
 
-function PdfFile({file}) {
+const PdfFile = ({file}) => {
+  const [open, setOpen] = useState(false)
+  const [hover, setHover] = useState(false)
   const ext = extension(file.filename)
   const styles = defaultStyles[ext] || {}
   return (
-    <Box border round='small' background='white'>
+    <>
+    <Box
+      margin={{vertical: 'xsmall'}}
+      style={{cursor: 'pointer'}}
+      border={hover ? {color: 'focus'} : true}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      round='xsmall'
+      background='white'
+      pad='small'
+      onClick={() => setOpen(true)}>
       <Box direction='row' align='center' gap='small'>
-        <FileIcon extension={ext} size={60} {...styles} />
+        <FileIcon extension={ext} size={40} {...styles} />
         <FileDetails file={file} />
       </Box>
     </Box>
+    {open && <FileViewer file={file} setOpen={setOpen} />}
+    </>
   )
 }
 
@@ -169,11 +200,11 @@ export function StandardFile({file: {filename, object, insertedAt, ...file}}) {
         gap='small'
         margin={{vertical: 'xsmall'}}>
         <FileIcon extension={ext} size={40} {...styles} />
-        <Box gap='xsmall'>
+        <Box>
           <Text size='small'>{filename}</Text>
-          <Box direction='row' gap='small'>
-            <Text size='small' color='dark-5'>{filesize(file.filesize || 0)}</Text>
-            <Text size='small'>{moment(insertedAt).fromNow()}</Text>
+          <Box direction='row' gap='small' align='center'>
+            <Text size='xsmall' color='dark-5'>{filesize(file.filesize || 0)}</Text>
+            <Text size='xsmall'>{moment(insertedAt).fromNow()}</Text>
           </Box>
         </Box>
       </Box>
