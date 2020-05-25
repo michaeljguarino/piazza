@@ -14,6 +14,14 @@
   display: none !important;
 }
 
+.message:hover .unread-badge {
+  display: none !important;
+}
+
+.message.hovered .unread-badge {
+  display: none !important;
+}
+
 .message.selected:hover {
   background: rgba(255, 229, 119, 0.5);
 }

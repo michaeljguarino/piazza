@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Layer, Box, Stack, Text } from 'grommet'
+import { Layer, Box, Stack, Text, ThemeContext } from 'grommet'
 import { FileTypes } from './types'
 import { FormPrevious, FormNext, FormClose } from 'grommet-icons'
 import { Document, Page } from 'react-pdf'
@@ -111,13 +111,15 @@ function Header({file, setOpen}) {
 
 export default function FileViewer({file, setOpen}) {
   return (
-    <Layer plain full onEsc={() => setOpen(false)}>
-      <Box fill background='white'>
-        <Header file={file} setOpen={setOpen} />
-        <Box fill pad='medium' align='center' justify='center'>
-          <FileViewerInner file={file} />
+    <ThemeContext.Extend value={{layer: {zIndex: 21}}}>
+      <Layer plain full onEsc={() => setOpen(false)}>
+        <Box fill background='white'>
+          <Header file={file} setOpen={setOpen} />
+          <Box fill pad='medium' align='center' justify='center'>
+            <FileViewerInner file={file} />
+          </Box>
         </Box>
-      </Box>
-    </Layer>
+      </Layer>
+    </ThemeContext.Extend>
   )
 }

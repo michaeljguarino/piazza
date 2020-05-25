@@ -163,7 +163,7 @@ function MessageBody({message, conversation, next, editing, setEditing, dialog, 
   const formattedDate = date.format(DATE_PATTERN)
 
   return (
-    <Box fill='horizontal' margin={consecutive ? null : {top: 'xxsmall'}}>
+    <Box fill='horizontal' margin={consecutive ? null : {vertical: 'xxsmall'}}>
       <PinHeader {...message} />
       <Box direction='row' pad={{vertical: 'xxsmall', horizontal: 'small'}}>
         {!consecutive && <Avatar user={message.creator} /> }
@@ -239,7 +239,6 @@ function DateDivider({waterline, message, next}) {
       <>
       <Box direction='row' justify='end' height='0px'>
         <Box
-          style={{zIndex: 5}}
           margin={{top: '-5px'}}
           pad='small'
           background='#ffffff'
@@ -252,7 +251,7 @@ function DateDivider({waterline, message, next}) {
     )
   }
 
-  if (unread) return <Waterline />
+  // if (unread) return <Waterline />
   if (!same) return <Divider text={formatDate(message.insertedAt)} />
 
   return null
@@ -294,6 +293,20 @@ export const MessagePlaceholder = ({index}) => {
   )
 }
 
+function UnreadBadge() {
+  return (
+    <Box
+      pad='xsmall'
+      className='unread-badge'
+      background='white'
+      margin={{top: '-15px'}}>
+      <Text size='xsmall' color='notif'>unread messages</Text>
+    </Box>
+  )
+}
+
+const firstUnread = (waterline, message, next) => sameDay(message, next) && isWaterline(waterline, message, next)
+
 const Message = React.memo(({noHover, selected, scrollTo, message, onClick, pos, nopin, setSize, ...props}) => {
   const msgRef = useRef()
   const [pinnedHover, setPinnedHover] = useState(false)
@@ -314,13 +327,16 @@ const Message = React.memo(({noHover, selected, scrollTo, message, onClick, pos,
     if (!editing) setEdited(null)
   }, [setPinnedHover, setEdited, setEditing])
 
+  const unread = firstUnread(props.waterline, message, props.next)
+
   return (
-    <Box flex={false}>
+    <Box flex={false} style={unread ? {zIndex: 5} : null}>
     {!noHover && <DateDivider message={message} next={props.next} waterline={props.waterline} />}
     <Box
       ref={msgRef}
       id={message.id}
       className={'message' + additionalClasses + (noHover ? ' nohover override' : '')}
+      border={unread ? {color: 'notif', side: 'top'} : null}
       onClick={onClick}
       flex={false}>
       <Stack fill anchor='top-right'>
@@ -330,11 +346,14 @@ const Message = React.memo(({noHover, selected, scrollTo, message, onClick, pos,
           setPinnedHover={setPinnedHover}
           message={message}
           {...props} />
+        <>
+        {unread && <UnreadBadge />}
         <MessageControls
           setEditing={wrappedSetEditing}
           setPinnedHover={setPinnedHover}
           message={message}
           {...props} />
+        </>
       </Stack>
     </Box>
     </Box>
