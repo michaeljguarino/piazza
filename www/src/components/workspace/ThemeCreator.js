@@ -11,27 +11,26 @@ import { addTheme } from './utils'
 import { CREATE_THEME, THEME_Q } from './queries'
 
 function ThemePicker({field, active, color, onChange}) {
-  const [hover, setHover] = useState(false)
-
   return (
-    <Box gap='xsmall'>
+    <Box gap='xsmall' width='33%'>
       <Text weight='bold' size='small'>{field}</Text>
-      <Box direction='row' round='xsmall' border={active ? {color: "focus", size: 'small'} : 'all'}>
-        <Box width='100%' pad='xsmall'>
+      <Box
+        align='center'
+        direction='row'
+        round='xsmall'
+        pad='xsmall'
+        gap='small'
+        border={active ? {color: "focus"} : {color: 'light-6'}}>
+        <Box width='100%'>
           {color}
         </Box>
         <Box
-          width='90px'
-          background='light-1'
-          style={{cursor: 'pointer', borderTopRightRadius: '6px', borderBottomRightRadius: '6px'}}
-          onMouseEnter={() => setHover(true)}
-          onMouseLeave={() => setHover(false)}
-          elevation={hover ? 'small' : null}
-          border='left'
-          pad='xsmall'
-          onClick={() => onChange(field)}>
-          Change
-        </Box>
+          flex={false}
+          width='20px'
+          height='20px'
+          background={color}
+          style={{cursor: 'pointer'}}
+          onClick={() => onChange(field)} />
       </Box>
     </Box>
   )
@@ -105,7 +104,7 @@ function ThemeForm({theme, cancel}) {
             {fieldChunk.map((field) => (
               <ThemePicker
                 key={field}
-                color={theme[field]}
+                color={themeAttrs[field]}
                 field={field}
                 active={field === active}
                 onChange={(value) => setActive(value)} />
@@ -132,7 +131,7 @@ function ThemeForm({theme, cancel}) {
       </Box>
       <ChromePicker
         disableAlpha
-        color={theme[active]}
+        color={themeAttrs[active]}
         onChangeComplete={(color) => wrappedSetTheme(active, color.hex)}
       />
     </Box>

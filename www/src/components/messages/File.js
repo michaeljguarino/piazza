@@ -164,7 +164,7 @@ const PdfFile = ({file}) => {
     <Box
       margin={{vertical: 'xsmall'}}
       style={{cursor: 'pointer'}}
-      border={hover ? {color: 'focus'} : true}
+      border={hover ? {color: 'focus'} : {color: 'light-5'}}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
       round='xsmall'
@@ -190,8 +190,7 @@ export function StandardFile({file: {filename, object, insertedAt, ...file}}) {
       <Box
         onMouseEnter={() => setHover(true)}
         onMouseLeave={() => setHover(false)}
-        border={hover ? {color: 'focus'} : true}
-        elevation={hover ? 'small' : 'xsmall'}
+        border={hover ? {color: 'focus'} : {color: 'light-5'}}
         background='#fff'
         round='xsmall'
         align="center"
