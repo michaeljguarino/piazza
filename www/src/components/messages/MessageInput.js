@@ -4,7 +4,7 @@ import TimedCache from '../utils/TimedCache'
 import HoveredBackground from '../utils/HoveredBackground'
 import { useMutation, useApolloClient } from 'react-apollo'
 import { Box, Text, Markdown, Layer, Keyboard, Drop, ThemeContext } from 'grommet'
-import { Attachment, Send } from 'grommet-icons'
+import { Attachment, Play } from 'grommet-icons'
 import { FilePicker } from 'react-file-picker'
 import debounce from 'lodash/debounce'
 import { CurrentUserContext } from '../login/EnsureLogin'
@@ -116,15 +116,15 @@ function SendMsg({empty, onClick}) {
   return (
     <Box
       style={empty ? null : {cursor: 'pointer'}}
-      height='40px'
-      width="40px"
-      pad='small'
+      margin={{horizontal: 'xsmall'}}
+      height='30px'
+      width="30px"
       round='xxsmall'
       align='center'
       justify='center'
       onClick={empty ? null : onClick}
       background={empty ? null : 'action'} >
-      <Send size='15px' color={empty ? 'light-3' : 'white'} />
+      <Play size='15px' color={empty ? 'light-3' : 'white'} />
     </Box>
   )
 }

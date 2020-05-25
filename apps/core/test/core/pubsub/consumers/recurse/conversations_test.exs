@@ -83,5 +83,13 @@ defmodule Core.PubSub.Consumers.Recurse.ConversationsTest do
       assert new_msg.embed.video_url
       assert new_msg.embed.video_type == :embed
     end
+
+    test "it can handle exotic urls" do
+      message = insert(:message, text: "https://www.dezeen.com/2020/05/22/christophe-gernigon-plex-eat-coronavirus-face-shield-dining-design/")
+      event = %PubSub.MessageCreated{item: message, actor: message.creator}
+      {:ok, new_msg} = Recurse.handle_event(event)
+
+      assert new_msg.embed.type == :image
+    end
   end
 end

@@ -43,7 +43,11 @@ function Image({...file}) {
     <Box onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}>
       <Stack anchor='top-right'>
         <Box style={{cursor: 'pointer'}} onClick={() => setOpen(true)}>
-          <img style={{height: !file.height ? null : file.height, maxHeight: 300}} src={file.object} alt={file.filename} />
+          <img style={{
+            height: !file.height ? null : file.height,
+            maxHeight: 300,
+            objectFit: 'contain'
+          }} src={file.object} alt={file.filename} />
         </Box>
         {hover && (<DownloadAffordance object={file.object} />)}
       </Stack>

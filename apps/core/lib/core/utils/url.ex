@@ -1,4 +1,6 @@
 defmodule Core.Utils.Url do
+  require Logger
+  alias Furlex.Oembed
   @url_regex ~r/((https|http):\/\/)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&\/\/=]*)/
 
   def find_urls(string) do
@@ -7,11 +9,12 @@ defmodule Core.Utils.Url do
   end
 
   def unfurl(url, opts \\ []) do
-    with {:ok, {body, headers, status_code}} <- fetch(url, opts),
-         {:ok, results}                      <- parse(body, Map.new(headers))
+    with {:ok, {body, headers, status_code}, oembed} <- fetch(url, opts),
+         {:ok, results} <- parse(body, Map.new(headers))
     do
       {:ok, %Furlex{
         canonical_url: canonical_url(body, url),
+        oembed: oembed,
         facebook: results.facebook,
         twitter: results.twitter,
         json_ld: results.json_ld,
@@ -20,15 +23,18 @@ defmodule Core.Utils.Url do
       }}
     else
       :plain -> {:ok, {:plain, url}}
-      error -> error
+      {:ok, _, oembed} when not is_nil(oembed) -> {:ok, %Furlex{oembed: oembed}}
+      _ -> {:error, :parse_error}
     end
   end
 
   defp fetch(url, opts) do
     fetch        = Task.async(fn -> intelligent_fetch(url, opts) end)
+    # fetch_oembed = Task.async(fn -> fetch_oembed(url, opts) end)
 
-    with {:ok, {:ok, body, headers, status_code}} <- Task.yield(fetch, 10_000) do
-      {:ok, {body, headers, status_code}}
+    with [fetch] <- Task.yield_many([fetch], 30_000),
+         {_fetch, {:ok, {:ok, body, headers, status_code}}} <- fetch do
+      {:ok, {body, headers, status_code}, nil}
     else
       _ -> {:error, :fetch_error}
     end
@@ -48,6 +54,26 @@ defmodule Core.Utils.Url do
     case Mojito.get(url, [], [pool: false] ++ opts) do
       {:ok, %{body: body, headers: headers, status_code: status_code}} -> {:ok, body, headers, status_code}
       other -> other
+    end
+  end
+
+  def fetch_oembed(url, opts \\ []) do
+    with {:ok, endpoint} <- Oembed.endpoint_from_url(url) |> IO.inspect(),
+         params           = %{"url" => url},
+         opts             = Keyword.put(opts, :params, params),
+         {:ok, {body, _, _}} <- do_fetch(endpoint, opts),
+         {:ok, body}     <- Jason.decode(body)
+    do
+      {:ok, body}
+    else
+      {:error, :no_oembed_provider} ->
+        {:ok, nil}
+
+      other ->
+        "Could not fetch oembed for #{inspect url}: #{inspect other}"
+        |> Logger.error()
+
+        {:ok, nil}
     end
   end
 

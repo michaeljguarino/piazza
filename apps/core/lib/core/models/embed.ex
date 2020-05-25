@@ -70,10 +70,11 @@ defmodule Core.Models.Embed do
     |> Map.put(:author, attrs["og:site_name"])
     |> ok()
   end
-  def from_furlex(%Furlex{twitter: attrs} = fr) do
+  def from_furlex(%Furlex{twitter: %{"twitter:title" => _} = attrs} = fr) do
     base_attrs(fr, %{type: :other})
     |> Map.put(:title, attrs["twitter:title"])
     |> Map.put(:description, attrs["twitter:description"])
+    |> ok()
   end
   def from_furlex({:plain, url}), do: {:ok, %{type: type_from_ext(url), url: url}}
   def from_furlex(_), do: {:error, :noembed}
