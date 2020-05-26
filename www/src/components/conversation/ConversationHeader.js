@@ -210,7 +210,7 @@ export default function ConversationHeader({setAnchor}) {
   })
 
   return (
-    <Box fill='horizontal' direction='row' align='center' pad={{left: '20px', vertical: '7px'}}>
+    <Box fill='horizontal' background='white' direction='row' align='center' pad={{left: '20px', vertical: '7px'}}>
       <Box fill='horizontal' direction='column'>
         <ConversationDropdown me={me} conversation={currentConversation} setAnchor={setAnchor} />
         <Box height='25px' direction='row' align='end' justify='start' pad={{vertical: '5px',}}>

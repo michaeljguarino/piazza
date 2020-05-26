@@ -21,7 +21,9 @@ export const DEFAULT_COLOR_THEME = {
   highlightDark: '#a4acb7',
   notif: '#EB4D5C',
   lightHover: '#EDEDED',
-  presence: '#006633'
+  presence: '#006633',
+  background: '#fffdfd',
+  backgroundWhite: '#fffdfd'
 }
 
 export const DEFAULT_THEME = {
