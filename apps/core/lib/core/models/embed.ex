@@ -84,9 +84,9 @@ defmodule Core.Models.Embed do
     |> Map.merge(maybe_find_publisher(fr))
   end
 
-  defp maybe_find_publisher(%Furlex{json_ld: [
-    %{"publisher" => %{"logo" => %{"url" => url}, "name" => name}}
-  ]}) do
+  defp maybe_find_publisher(%Furlex{
+    json_ld: [%{"publisher" => %{"logo" => %{"url" => url}, "name" => name}} | _]
+  }) do
     %{publisher: name, logo: url}
   end
   defp maybe_find_publisher(%Furlex{facebook: %{"og:site_name" => pub}}), do: %{publisher: pub}

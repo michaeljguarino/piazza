@@ -63,7 +63,7 @@ export default function MessageEmbed(props) {
         direction='column'
         align='start'
         pad={{horizontal: 'small', vertical: 'xsmall'}}
-        border={{side: 'left', color: 'dark-6', size: '2px'}}>
+        border={{side: 'left', color: 'light-6', size: '3px'}}>
         <Publisher publisher={props.publisher} logo={props.logo} />
         <Anchor
           size='small'

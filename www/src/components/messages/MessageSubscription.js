@@ -6,7 +6,7 @@ import { applyNewMessage, updateMessage, removeMessage } from './utils'
 import { CurrentUserContext } from '../login/EnsureLogin'
 import { Conversations } from '../login/MyConversations'
 
-function applyDelta({client, subscriptionData}, currentConversation, workspaceId, me, setScrollTo) {
+function applyDelta({client, subscriptionData}, currentConversation, workspaceId, setScrollTo) {
   if (!subscriptionData.data) return
   const messageDelta = subscriptionData.data.messageDelta
   const message = messageDelta.payload
@@ -19,8 +19,6 @@ function applyDelta({client, subscriptionData}, currentConversation, workspaceId
   } else {
     setScrollTo(message.id)
   }
-
-  if (message.creator.id === me.id) return
 
   try {
     const query = {query: MESSAGES_Q, variables: {conversationId: convId}}
@@ -49,13 +47,12 @@ export const MessageScrollContext = React.createContext({scrollTo: null, setScro
 
 function MessageSubscription({children}) {
   const [scrollTo, setScrollTo] = useState(null)
-  const me = useContext(CurrentUserContext)
   const {currentConversation, workspaceId} = useContext(Conversations)
 
   return (
     <MessageScrollContext.Provider value={{scrollTo, setScrollTo}}>
       <Subscription subscription={MESSAGES_SUB} onSubscriptionData={(data) =>
-        applyDelta(data, currentConversation, workspaceId, me, setScrollTo)
+        applyDelta(data, currentConversation, workspaceId, setScrollTo)
       }>
       {() => children}
       </Subscription>
