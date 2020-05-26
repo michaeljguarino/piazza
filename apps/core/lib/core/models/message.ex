@@ -89,7 +89,7 @@ defmodule Core.Models.Message do
     |> foreign_key_constraint(:creator_id)
     |> foreign_key_constraint(:conversation_id)
     |> foreign_key_constraint(:parent_id)
-    |> validate_length(:text, max: 255)
+    |> validate_length(:text, max: 10_000)
     |> validate_change(:structured_message, fn _, message ->
       case StructuredMessage.validate(message) do
         :pass -> []

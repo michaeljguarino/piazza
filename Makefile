@@ -44,6 +44,9 @@ test: ## run tests
 serve: ## run as a local server (gql is on port 4001, rtc on 4000)
 	mix phx.server
 
+localdb:
+	psql -U postgres -h localhost piazza_test
+
 web: ## starts a local webserver
 	cd www && npm start
 

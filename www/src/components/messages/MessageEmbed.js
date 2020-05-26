@@ -57,12 +57,12 @@ export default function MessageEmbed(props) {
   let dims = dimensions(props)
   props = {...props, ...dims}
   return (
-    <Box border background='white' margin={{vertical: 'xsmall'}} round='xxsmall' >
+    <Box margin={{vertical: 'xxsmall'}}>
       <Box
         round='xxsmall'
         direction='column'
         align='start'
-        pad='small'
+        pad={{horizontal: 'small', vertical: 'xsmall'}}
         border={{side: 'left', color: 'dark-6', size: '2px'}}>
         <Publisher publisher={props.publisher} logo={props.logo} />
         <Anchor
