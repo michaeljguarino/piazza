@@ -40,9 +40,7 @@ function Typing({ignore, typists}) {
 
   if (len === 1) {
     text = `{typing[0]} is typing`
-  }
-
-  if (len <= 3) {
+  } else if (len <= 3) {
     text = `${typing.join(", ")} are typing`
   }
 
