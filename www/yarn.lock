@@ -3426,9 +3426,9 @@ core-js@2.6.0:
   integrity sha512-kLRC6ncVpuEW/1kwrOXYX6KQASCVtrh1gQr/UiaVgFlf9WE5Vp+lNe5+h3LuMr5PAucWnnEXwH0nQHRH/gpGtw==
 
 core-js@3:
-  version "3.2.1"
-  resolved "https://registry.yarnpkg.com/core-js/-/core-js-3.2.1.tgz#cd41f38534da6cc59f7db050fe67307de9868b09"
-  integrity sha512-Qa5XSVefSVPRxy2XfUC13WbvqkxhkwB3ve+pgCQveNgYzbM/UxZeu1dcOX/xr4UmfUd+muuvsaxilQzCyUurMw==
+  version "3.6.5"
+  resolved "https://registry.yarnpkg.com/core-js/-/core-js-3.6.5.tgz#7395dc273af37fb2e50e9bd3d9fe841285231d1a"
+  integrity sha512-vZVEEwZoIsI+vPEuoF9Iqf5H7/M3eeQqWlQnYa8FSKKePuYTf5MWnxb5SDAzCa60b3JBRS5g9b+Dq7b1y/RCrA==
 
 core-js@3.0.1:
   version "3.0.1"
@@ -9717,10 +9717,9 @@ react-visibility-sensor@^5.1.1:
   dependencies:
     prop-types "^15.7.2"
 
-react-web-notification@^0.6.1:
-  version "0.6.1"
-  resolved "https://registry.yarnpkg.com/react-web-notification/-/react-web-notification-0.6.1.tgz#ff811c4067ccccbeaa7698b576fc4c7426eaea90"
-  integrity sha512-OVHIG/E9k+bdg+HS7VH/DnMNdyxm5LPRcSg9ubj/l0F0nOjGZOVo2KpNR7NF7KS/NN/cLrxHgPQF1j02PmCKDA==
+"react-web-notification@https://github.com/mobilusoss/react-web-notification":
+  version "0.8.0"
+  resolved "https://github.com/mobilusoss/react-web-notification#26b8f84df34283a7b873c1008e4791f63b81300c"
   dependencies:
     core-js "3"
 

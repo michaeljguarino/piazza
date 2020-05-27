@@ -64,7 +64,7 @@
     "react-use-dimensions": "^1.2.1",
     "react-virtualized-auto-sizer": "^1.0.2",
     "react-visibility-sensor": "^5.1.1",
-    "react-web-notification": "^0.6.1",
+    "react-web-notification": "https://github.com/mobilusoss/react-web-notification",
     "react-window-infinite-loader": "^1.0.5",
     "react-window-reversed": "^1.4.1",
     "react-with-styles-interface-aphrodite": "^6.0.1",

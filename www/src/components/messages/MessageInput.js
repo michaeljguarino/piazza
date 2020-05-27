@@ -39,7 +39,7 @@ function Typing({ignore, typists}) {
   let text = `${len} people are typing`
 
   if (len === 1) {
-    text = `{typing[0]} is typing`
+    text = `${typing[0]} is typing`
   } else if (len <= 3) {
     text = `${typing.join(", ")} are typing`
   }

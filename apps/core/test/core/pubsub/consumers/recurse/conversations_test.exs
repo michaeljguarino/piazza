@@ -84,7 +84,8 @@ defmodule Core.PubSub.Consumers.Recurse.ConversationsTest do
       assert new_msg.embed.video_type == :embed
     end
 
-    test "it can handle bloomber urls" do
+    @tag :skip
+    test "it can handle bloomberg urls" do
       message = insert(:message, text: "https://www.bloomberg.com/news/articles/2020-05-26/u-s-weighs-sanctions-on-chinese-officials-firms-over-hong-kong-kaobpsbv?srnd=premium")
       event = %PubSub.MessageCreated{item: message, actor: message.creator}
       {:ok, new_msg} = Recurse.handle_event(event)

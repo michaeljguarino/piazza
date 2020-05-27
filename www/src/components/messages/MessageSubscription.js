@@ -3,7 +3,6 @@ import { Subscription } from 'react-apollo'
 import { MESSAGES_SUB, MESSAGES_Q } from './queries'
 import { updateConversations } from '../conversation/utils'
 import { applyNewMessage, updateMessage, removeMessage } from './utils'
-import { CurrentUserContext } from '../login/EnsureLogin'
 import { Conversations } from '../login/MyConversations'
 
 function applyDelta({client, subscriptionData}, currentConversation, workspaceId, setScrollTo) {
