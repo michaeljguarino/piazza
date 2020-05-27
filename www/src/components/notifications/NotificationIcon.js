@@ -85,6 +85,7 @@ function BrowserNotif({me, setCurrentNotification, audioRef, ...notif}) {
     <>
     <WebNotification
       title={title}
+      disableActiveWindow
       onClose={() => setCurrentNotification(null)}
       onShow={() => audioRef.current && audioRef.current.play()}
       options={{

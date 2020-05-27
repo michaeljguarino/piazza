@@ -23,6 +23,7 @@ import { Editor, Transforms } from 'slate'
 import { SyncLoader } from 'react-spinners'
 import { normalizeColor } from 'grommet/utils'
 import { edit } from 'ace-builds'
+import { Send } from '../utils/icons'
 
 
 const TEXT_SIZE='xsmall'
@@ -122,7 +123,7 @@ function SendMsg({empty, onClick}) {
       justify='center'
       onClick={empty ? null : onClick}
       background={empty ? null : 'action'} >
-      <Play size='15px' color={empty ? 'light-3' : 'white'} />
+      <Send size='15px' color={empty ? 'light-3' : 'white'} />
     </Box>
   )
 }
