@@ -66,7 +66,6 @@ function Content({conversationId, setOpen}) {
 }
 
 export default function Files({data, conversationId}) {
-  console.log(data)
   if (!data) return <Loader />
   const {conversation} = data
 

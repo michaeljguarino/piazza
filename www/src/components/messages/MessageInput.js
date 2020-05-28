@@ -22,7 +22,6 @@ import { useEditor } from '../utils/hooks'
 import { Editor, Transforms } from 'slate'
 import { SyncLoader } from 'react-spinners'
 import { normalizeColor } from 'grommet/utils'
-import { edit } from 'ace-builds'
 import { Send } from '../utils/icons'
 
 
@@ -37,17 +36,18 @@ function Typing({ignore, typists}) {
   if (len === 0) {
     return null
   }
-  let text = `${len} people are typing`
+  let text = {users: `${len}`, suffix: 'people are typing'}
 
   if (len === 1) {
-    text = `${typing[0]} is typing`
+    text = {users: typing[0], suffix: 'is typing'}
   } else if (len <= 3) {
-    text = `${typing.join(", ")} are typing`
+    text = {users: typing.join(", "), suffix: 'are typing'}
   }
 
   return (
     <Box direction='row' align='center' gap='xsmall'>
-      <Text color={TEXT_COLOR} size={TEXT_SIZE}>{text}</Text>
+      <Text color={TEXT_COLOR} size={TEXT_SIZE} weight={500}>{text.users}</Text>
+      <Text color={TEXT_COLOR} size={TEXT_SIZE}>{text.suffix}</Text>
       <Box pad={{vertical: '2px'}}>
         <SyncLoader size={2} color={normalizeColor('dark-4', theme)} />
       </Box>
@@ -117,7 +117,7 @@ function SendMsg({empty, onClick}) {
       style={empty ? null : {cursor: 'pointer'}}
       margin={{horizontal: 'xsmall'}}
       height='30px'
-      width="30px"
+      width="35px"
       round='xxsmall'
       align='center'
       justify='center'

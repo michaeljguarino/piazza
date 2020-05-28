@@ -76,16 +76,18 @@ function getTitle(notif, me) {
   }
 }
 
-function BrowserNotif({me, setCurrentNotification, audioRef, ...notif}) {
+function BrowserNotif({me, setCurrentNotification, conversation, audioRef, notif}) {
   const {message, actor} = notif
   const title = getTitle(notif, me)
   if (!title) return null
+  console.log(message)
+  console.log(conversation)
 
   return (
     <>
     <WebNotification
       title={title}
-      disableActiveWindow
+      disableActiveWindow={message.conversation.id === conversation.id}
       onClose={() => setCurrentNotification(null)}
       onShow={() => audioRef.current && audioRef.current.play()}
       options={{
@@ -110,7 +112,7 @@ export default function NotificationIcon({me, setCurrentConversation}) {
   const client = useApolloClient()
   const [currentNotification, setCurrentNotification] = useState(introduction())
   const {data, loading, fetchMore, subscribeToMore} = useQuery(NOTIFICATIONS_Q)
-  const {workspaceId} = useContext(Conversations)
+  const {workspaceId, currentConversation} = useContext(Conversations)
 
   const unseen = me.unseenNotifications || 0
   const [mutation] = useMutation(VIEW_NOTIFICATIONS, {
@@ -150,8 +152,9 @@ export default function NotificationIcon({me, setCurrentConversation}) {
       <BrowserNotif
         audioRef={audioRef}
         me={me}
+        conversation={currentConversation}
         setCurrentNotification={setCurrentNotification}
-        {...currentNotification} />
+        notif={currentNotification} />
     )}
     <HoveredBackground>
       <Box
