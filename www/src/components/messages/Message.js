@@ -236,18 +236,14 @@ function DateDivider({waterline, message, next}) {
 
   if (!same && unread) {
     return (
-      <>
-      <Box direction='row' justify='end' height='0px'>
-        <Box
-          margin={{top: '-5px'}}
-          pad='small'
-          background='#ffffff'
-          align='center'>
-          <Text color='notif' size='small'>unread messages</Text>
+      <Stack anchor='top-right'>
+        <Divider text={formatDate(message.insertedAt)} color='notif' />
+        <Box direction='row' justify='end' height='0px'>
+          <Box margin={{top: '5px'}} pad='small' background='white' align='center' justify='center'>
+            <Text color='notif' size='small'>unread messages</Text>
+          </Box>
         </Box>
-      </Box>
-      <Divider text={formatDate(message.insertedAt)} color='notif' />
-      </>
+      </Stack>
     )
   }
 
