@@ -80,14 +80,11 @@ function BrowserNotif({me, setCurrentNotification, conversation, audioRef, notif
   const {message, actor} = notif
   const title = getTitle(notif, me)
   if (!title) return null
-  console.log(message)
-  console.log(conversation)
 
   return (
     <>
     <WebNotification
       title={title}
-      disableActiveWindow={message.conversation.id === conversation.id}
       onClose={() => setCurrentNotification(null)}
       onShow={() => audioRef.current && audioRef.current.play()}
       options={{
