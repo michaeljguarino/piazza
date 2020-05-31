@@ -1,7 +1,8 @@
-import React, {useState} from 'react'
-import {Box, Stack} from 'grommet'
-import {Close} from 'grommet-icons'
+import React, { useState } from 'react'
+import { Box, Stack } from 'grommet'
+import { Close } from 'grommet-icons'
 import Message from './Message'
+import { ScrollContext } from '../utils/SmoothScroller'
 
 export const ReplyContext = React.createContext({
   reply: null,
@@ -16,7 +17,9 @@ export function ReplyGutter({reply, setReply, ...props}) {
     <Box pad='small' border='top'>
       <Box style={{borderLeft: "2px solid gray"}}>
         <Stack anchor='top-right'>
-          <Message noHover message={reply} next={{}} {...props} />
+          <ScrollContext.Provider value={{setSize: () => null}}>
+            <Message noHover message={reply} next={{}} {...props} />
+          </ScrollContext.Provider>
           <Box
             width='25px'
             height='25px'

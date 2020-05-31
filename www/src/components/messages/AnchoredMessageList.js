@@ -9,6 +9,7 @@ import {reverse, mergeAppend} from '../../utils/array'
 import {ANCHORED_MESSAGES} from './queries'
 import { Conversations } from '../login/MyConversations'
 import { ReplyContext } from './ReplyProvider'
+import { ScrollContext } from '../utils/SmoothScroller'
 
 function RecentItemsOverlay({setAnchor}) {
   return (
@@ -67,42 +68,44 @@ function AnchoredMessageList({anchor, setAnchor, ...props}) {
 
   return (
     <Stack anchor="bottom" fill>
-      <DualScroller
-        id='message-viewport'
-        edges={Array.from(reverse(allEdges))}
-        scrollTo={scrollTo}
-        overlay={<RecentItemsOverlay setAnchor={setAnchor} />}
-        style={{
-          overflow: 'auto',
-          height: '100%',
-          width: '100%',
-          display: 'flex',
-          justifyContent: 'flex-start',
-          flexDirection: 'column-reverse',
-        }}
-        mapper={({node}, next, ref, pos) => (
-          <Message
-            parentRef={ref}
-            pos={pos}
-            selected={node.id === anchor.id}
-            key={node.id}
-            conversation={currentConversation}
-            message={node}
-            setReply={setReply}
-            next={next.node} />
-        )}
-        onLoadMore={(direction) => {
-          const pageInfo = results[direction].pageInfo
-          if (!pageInfo.hasNextPage) return
-          let vars = direction === 'before' ?
-            {beforeCursor: pageInfo.endCursor} : {afterCursor: pageInfo.endCursor}
+      <ScrollContext.Provider value={{setSize: () => null}}>
+        <DualScroller
+          id='message-viewport'
+          edges={Array.from(reverse(allEdges))}
+          scrollTo={scrollTo}
+          overlay={<RecentItemsOverlay setAnchor={setAnchor} />}
+          style={{
+            overflow: 'auto',
+            height: '100%',
+            width: '100%',
+            display: 'flex',
+            justifyContent: 'flex-start',
+            flexDirection: 'column-reverse',
+          }}
+          mapper={({node}, next, ref, pos) => (
+            <Message
+              parentRef={ref}
+              pos={pos}
+              selected={node.id === anchor.id}
+              key={node.id}
+              conversation={currentConversation}
+              message={node}
+              setReply={setReply}
+              next={next.node} />
+          )}
+          onLoadMore={(direction) => {
+            const pageInfo = results[direction].pageInfo
+            if (!pageInfo.hasNextPage) return
+            let vars = direction === 'before' ?
+              {beforeCursor: pageInfo.endCursor} : {afterCursor: pageInfo.endCursor}
 
-          fetchMore({
-            variables: {...defaultVars, ...vars},
-            updateQuery: (prev, result) => onFetchMore(direction, prev, result)
-          })
-        }}
-      />
+            fetchMore({
+              variables: {...defaultVars, ...vars},
+              updateQuery: (prev, result) => onFetchMore(direction, prev, result)
+            })
+          }}
+        />
+      </ScrollContext.Provider>
       <RecentItemsOverlay setAnchor={setAnchor} />
     </Stack>
   )

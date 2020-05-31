@@ -45,7 +45,7 @@ function Typing({ignore, typists}) {
   }
 
   return (
-    <Box direction='row' align='center' gap='xsmall'>
+    <Box direction='row' align='center' gap='xxsmall'>
       <Text color={TEXT_COLOR} size={TEXT_SIZE} weight={500}>{text.users}</Text>
       <Text color={TEXT_COLOR} size={TEXT_SIZE}>{text.suffix}</Text>
       <Box pad={{vertical: '2px'}}>

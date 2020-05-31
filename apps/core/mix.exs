@@ -61,6 +61,7 @@ defmodule Core.MixProject do
       {:gen_stage, "~> 0.14.2"},
       {:bourne, "~> 1.1"},
       {:flow, "~> 0.14.3"},
+      {:mime, "~> 1.2"},
       {:ex_machina, "~> 2.3", only: :test},
       {:mojito, "~> 0.3.0"},
       {:zstream, "~> 0.5.0"},

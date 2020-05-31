@@ -6,6 +6,8 @@ import Autosizer from 'react-virtualized-auto-sizer'
 import memoize from 'memoize-one'
 import CellMeasurer from './CellMeasurer'
 
+export const ScrollContext = React.createContext({setSize: () => null})
+
 function shallowDiffers(prev, next) {
   for (let attribute in prev) {
     if (!(attribute in next)) {
@@ -40,30 +42,37 @@ const Item = ({ index, mapper, parentRef, isItemLoaded, placeholder, items, styl
 const ItemWrapper = React.memo(({data: {setSize, width, refreshKey, items, ...rest}, style, index, ...props}) => {
   const [rowRef, setRowRef] = useState(null)
   const item = items[index]
+
+  const sizeCallback = useCallback(() => {
+    rowRef && setSize(index, rowRef.getBoundingClientRect().height)
+  }, [rowRef, index])
+
   useEffect(() => {
-    if (!rowRef) return
-    setSize(index, rowRef.getBoundingClientRect().height)
-  }, [rowRef, width, item, index]);
+    sizeCallback()
+  }, [sizeCallback, width, item, index]);
+
 
   return (
-    <CellMeasurer refreshKey={refreshKey} index={index} setSize={setSize}>
-      {({registerChild}) => (
-        <div style={style}>
-          <Box classNames={refreshKey} ref={(ref) => {
-              registerChild(ref)
-              setRowRef(ref)
-          }} margin={index === 0 ? {bottom: 'small'} : null}>
-            <Item
-              index={index}
-              items={items}
-              setSize={(size) => setSize(index, size)}
-              {...props}
-              {...rest} />
-            {/* <ResizeObserver onResize={({height}) => setSize(index, height)} /> */}
-          </Box>
-        </div>
-      )}
-    </CellMeasurer>
+    <ScrollContext.Provider value={{setSize: sizeCallback}}>
+      <CellMeasurer refreshKey={refreshKey} index={index} setSize={setSize}>
+        {({registerChild}) => (
+          <div style={style}>
+            <Box classNames={refreshKey} ref={(ref) => {
+                registerChild(ref)
+                setRowRef(ref)
+            }} margin={index === 0 ? {bottom: 'small'} : null}>
+              <Item
+                index={index}
+                items={items}
+                setSize={(size) => setSize(index, size)}
+                {...props}
+                {...rest} />
+              {/* <ResizeObserver onResize={({height}) => setSize(index, height)} /> */}
+            </Box>
+          </div>
+        )}
+      </CellMeasurer>
+    </ScrollContext.Provider>
   )
 }, areEqual)
 

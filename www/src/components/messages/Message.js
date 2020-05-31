@@ -17,6 +17,7 @@ import StructuredMessage from './StructuredMessage'
 import File from './File'
 import Divider from '../utils/Divider'
 import { Emoji } from 'emoji-mart'
+import { ScrollContext } from '../utils/SmoothScroller'
 import './message.css'
 
 
@@ -266,16 +267,6 @@ function isWaterline(waterline, message, next) {
   return true
 }
 
-function Waterline() {
-  return (
-    <Box direction='row' border={{color: 'notif', side: 'bottom'}} justify='end' margin={{vertical: 'small'}}>
-      <Box background='#fff' pad='small' align='center' margin={{bottom: '-22px'}}>
-        <Text color='notif' size='small'>unread messages</Text>
-      </Box>
-    </Box>
-  )
-}
-
 export const MessagePlaceholder = ({index}) => {
   return (
     <Box margin='small' direction='row' align='center' height='70px' width='100%' gap='small' pad='small'>
@@ -303,25 +294,24 @@ function UnreadBadge() {
 
 const firstUnread = (waterline, message, next) => sameDay(message, next) && isWaterline(waterline, message, next)
 
-const Message = React.memo(({noHover, selected, scrollTo, message, onClick, pos, nopin, setSize, ...props}) => {
+const Message = React.memo(({noHover, selected, scrollTo, message, onClick, pos, nopin, ...props}) => {
   const msgRef = useRef()
   const [pinnedHover, setPinnedHover] = useState(false)
+  const { setSize } = useContext(ScrollContext)
   const [editing, setEditing] = useState(false)
   const {edited, setEdited} = useContext(EditingMessageContext)
   const isEditing = editing || (edited === message.id)
   const additionalClasses = '' + (message.pin && !nopin ? ' pin' : '') + (selected ? ' selected' : '') + (pinnedHover ? ' hovered' : '')
-
-  useEffect(() => {
-    if (msgRef && setSize) {
-      msgRef.current && setSize(msgRef.current.getBoundingClientRect().height)
-    }
-  }, [msgRef, setSize, message.id])
 
   const wrappedSetEditing = useCallback((editing) => {
     setPinnedHover(false)
     setEditing(editing)
     if (!editing) setEdited(null)
   }, [setPinnedHover, setEdited, setEditing])
+
+  useEffect(() => {
+    if (editing === false) setSize() // only when explicitly disabled
+  }, [editing, setSize])
 
   const unread = firstUnread(props.waterline, message, props.next)
 

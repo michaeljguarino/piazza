@@ -1,15 +1,19 @@
-import React, {useState} from 'react'
-import {useMutation} from 'react-apollo'
-import {Box} from 'grommet'
+import React, { useState, useContext, useEffect, useRef } from 'react'
+import { useMutation } from 'react-apollo'
+import { Return } from 'grommet-icons'
+import { Box, Text } from 'grommet'
 import MentionManager from './MentionManager'
 import Button, {SecondaryButton} from '../utils/Button'
 import {EDIT_MESSAGE, MESSAGES_Q} from './queries'
 import {updateMessage} from './utils'
 import {plainDeserialize, plainSerialize} from '../../utils/slate'
 import { useEditor } from '../utils/hooks'
+import { ScrollContext } from '../utils/SmoothScroller'
 
 function MessageEdit(props) {
+  const editRef = useRef()
   const [editorState, setEditorState] = useState(plainDeserialize(props.message.text))
+  const { setSize } = useContext(ScrollContext)
   const editor = useEditor()
   const [mutation] = useMutation(EDIT_MESSAGE, {
     update: (cache, {data: {editMessage}}) => {
@@ -24,8 +28,12 @@ function MessageEdit(props) {
     }
   })
 
+  useEffect(() => {
+   setSize()
+  }, [editRef])
+
   return (
-    <Box pad={{right: 'small'}} gap='xsmall'>
+    <Box ref={editRef} pad={{right: 'small'}} gap='xsmall'>
       <Box direction='row' fill='horizontal' round='xsmall' pad='xsmall' border>
         <MentionManager
           submitDisabled
@@ -36,10 +44,10 @@ function MessageEdit(props) {
           disableSubmit={() => null} />
       </Box>
       <Box direction='row' gap='xsmall'>
-        <Button label='Update' round='xsmall' onClick={() => (
+        <SecondaryButton label='cancel' round='xsmall' onClick={() => props.setEditing(false)} />
+        <Button icon={<Return size='small' />} label='update' round='xsmall' onClick={() => (
           mutation({variables: {id: props.message.id, attributes: {text: plainSerialize(editorState)}}})
         )} />
-        <SecondaryButton label='Cancel' round='xsmall' onClick={() => props.setEditing(false)} />
       </Box>
     </Box>
   )

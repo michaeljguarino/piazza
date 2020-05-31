@@ -5,7 +5,7 @@ import {Box, TextInput} from 'grommet'
 import {Search} from 'grommet-icons'
 import {SEARCH_MESSAGES} from '../messages/queries'
 import Message from '../messages/Message'
-
+import { ScrollContext } from '../utils/SmoothScroller'
 
 const animation = {
   transition: 'width 0.75s cubic-bezier(0.000, 0.795, 0.000, 1.000)'
@@ -18,7 +18,11 @@ function performSearch(client, query, conversationId, callback, setAnchor) {
   }).then(({data}) => (
     data.conversation.searchMessages.edges.map(({node}) => ({
       value: node,
-      label: <Message onClick={() => setAnchor({timestamp: node.insertedAt, id: node.id})} message={node} />
+      label: (
+        <ScrollContext.Provider value={{setSize: () => null}}>
+          <Message onClick={() => setAnchor({timestamp: node.insertedAt, id: node.id})} message={node} />
+        </ScrollContext.Provider>
+      )
     }))
   )).then(callback)
 }

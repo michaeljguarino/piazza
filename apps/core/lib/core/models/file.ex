@@ -55,8 +55,9 @@ defmodule Core.Models.File do
   def filename(_), do: nil
 
   def media_type(name) do
-    Path.extname(name)
-    |> media_type_from_extname()
+    MIME.from_path(name)
+    |> String.split("/")
+    |> infer_media_type()
   end
 
   defp add_media_type(changeset) do
@@ -66,14 +67,10 @@ defmodule Core.Models.File do
     end
   end
 
-  defp media_type_from_extname(".jpg"),  do: :image
-  defp media_type_from_extname(".png"),  do: :image
-  defp media_type_from_extname(".jpeg"), do: :image
-  defp media_type_from_extname(".gif"),  do: :video
-  defp media_type_from_extname(".mp4"),  do: :video
-  defp media_type_from_extname(".mp3"),  do: :audio
-  defp media_type_from_extname(".pdf"),  do: :pdf
-  defp media_type_from_extname(_), do: :other
+  defp infer_media_type(["image", _]),  do: :image
+  defp infer_media_type(["video", _]), do: :video
+  defp infer_media_type([_, "pdf"]), do: :pdf
+  defp infer_media_type(_), do: :other
 
   defp add_dimensions(changeset, %{path: file}) do
     File.read!(file)

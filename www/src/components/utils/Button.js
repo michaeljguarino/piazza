@@ -26,7 +26,7 @@ export function SecondaryButton(props) {
   )
 }
 
-function Button(props) {
+function Button({icon, ...props}) {
   const [hover, setHover] = useState(false)
   return (
     <Box
@@ -46,6 +46,7 @@ function Button(props) {
       height={props.height}
       round={props.round}>
       {props.loading && <BeatLoader color='white' size={8} />}
+      {icon}
       <Text size={props.textSize || 'small'}>{props.label}</Text>
     </Box>
   )
