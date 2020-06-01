@@ -8,16 +8,14 @@ import {EDIT_MESSAGE, MESSAGES_Q} from './queries'
 import {updateMessage} from './utils'
 import {plainDeserialize, plainSerialize} from '../../utils/slate'
 import { useEditor } from '../utils/hooks'
-import { ScrollContext } from '../utils/SmoothScroller'
 
-function MessageEdit(props) {
+function MessageEdit({setSize, message, ...props}) {
   const editRef = useRef()
-  const [editorState, setEditorState] = useState(plainDeserialize(props.message.text))
-  const { setSize } = useContext(ScrollContext)
+  const [editorState, setEditorState] = useState(plainDeserialize(message.text))
   const editor = useEditor()
   const [mutation] = useMutation(EDIT_MESSAGE, {
     update: (cache, {data: {editMessage}}) => {
-      const convId = props.message.conversationId
+      const convId = message.conversationId
       const data = cache.readQuery({query: MESSAGES_Q, variables: {conversationId: convId}})
       cache.writeQuery({
         query: MESSAGES_Q,
@@ -46,7 +44,7 @@ function MessageEdit(props) {
       <Box direction='row' gap='xsmall'>
         <SecondaryButton label='cancel' round='xsmall' onClick={() => props.setEditing(false)} />
         <Button icon={<Return size='small' />} label='update' round='xsmall' onClick={() => (
-          mutation({variables: {id: props.message.id, attributes: {text: plainSerialize(editorState)}}})
+          mutation({variables: {id: message.id, attributes: {text: plainSerialize(editorState)}}})
         )} />
       </Box>
     </Box>

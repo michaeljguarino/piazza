@@ -177,7 +177,7 @@ export default function MessageList() {
               const edge = edges[visibleStopIndex]
               setLastMessage(edge && edge.node)
             }}
-            mapper={(edge, next) => {
+            mapper={(edge, next, props) => {
               if (edge === 'PRELUDE') return <Prelude conversation={currentConversation} />
               return (
                 <Message
@@ -188,7 +188,8 @@ export default function MessageList() {
                   message={edge.node}
                   setReply={setReply}
                   dialog={dialog}
-                  next={next.node} />)
+                  next={next.node}
+                  {...props} />)
             }}
             loadNextPage={() => fetchMore({
                 variables: {conversationId: currentConversation.id, cursor: pageInfo.endCursor},

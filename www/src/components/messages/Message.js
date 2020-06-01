@@ -158,7 +158,7 @@ function sameDay(message, next) {
 
 const DATE_PATTERN = 'h:mm a'
 
-function MessageBody({message, conversation, next, editing, setEditing, dialog, hover, setPinnedHover}) {
+function MessageBody({message, conversation, next, editing, setEditing, dialog, hover, setPinnedHover, setSize}) {
   const date = moment(message.insertedAt)
   const consecutive = isConsecutive(message, next)
   const formattedDate = date.format(DATE_PATTERN)
@@ -186,7 +186,7 @@ function MessageBody({message, conversation, next, editing, setEditing, dialog, 
           )}
           <Box fill='horizontal'>
             {editing ?
-              <MessageEdit message={message} setEditing={setEditing} /> :
+              <MessageEdit message={message} setEditing={setEditing} setSize={setSize} /> :
               <MessageSwitch {...message} />
             }
             {message.file && (<File file={message.file} />)}
@@ -294,11 +294,10 @@ function UnreadBadge() {
 
 const firstUnread = (waterline, message, next) => sameDay(message, next) && isWaterline(waterline, message, next)
 
-const Message = React.memo(({noHover, selected, scrollTo, message, onClick, pos, nopin, ...props}) => {
+const Message = React.memo(({noHover, selected, scrollTo, message, onClick, pos, nopin, setSize, ...props}) => {
   const msgRef = useRef()
   const [pinnedHover, setPinnedHover] = useState(false)
-  const { setSize } = useContext(ScrollContext)
-  const [editing, setEditing] = useState(false)
+  const [editing, setEditing] = useState(null)
   const {edited, setEdited} = useContext(EditingMessageContext)
   const isEditing = editing || (edited === message.id)
   const additionalClasses = '' + (message.pin && !nopin ? ' pin' : '') + (selected ? ' selected' : '') + (pinnedHover ? ' hovered' : '')
@@ -310,8 +309,8 @@ const Message = React.memo(({noHover, selected, scrollTo, message, onClick, pos,
   }, [setPinnedHover, setEdited, setEditing])
 
   useEffect(() => {
-    if (editing === false) setSize() // only when explicitly disabled
-  }, [editing, setSize])
+    if (editing === false) setSize && setSize() // only when explicitly disabled
+  }, [editing])
 
   const unread = firstUnread(props.waterline, message, props.next)
 
@@ -331,6 +330,7 @@ const Message = React.memo(({noHover, selected, scrollTo, message, onClick, pos,
           setEditing={wrappedSetEditing}
           setPinnedHover={setPinnedHover}
           message={message}
+          setSize={setSize}
           {...props} />
         <>
         {unread && <UnreadBadge />}

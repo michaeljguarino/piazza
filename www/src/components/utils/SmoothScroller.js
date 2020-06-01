@@ -31,15 +31,15 @@ function areEqual(prevProps, nextProps) {
   );
 }
 
-const Item = ({ index, mapper, parentRef, isItemLoaded, placeholder, items, style }) => {
+const Item = ({ index, mapper, isItemLoaded, placeholder, items, setSize }) => {
   if (!isItemLoaded(index)) {
     return placeholder && placeholder(index)
   }
 
-  return mapper(items[index], items[index + 1] || {}, parentRef, style);
+  return mapper(items[index], items[index + 1] || {}, {setSize});
 };
 
-const ItemWrapper = React.memo(({data: {setSize, width, refreshKey, items, ...rest}, style, index, ...props}) => {
+const ItemWrapper = React.memo(({data: {setSize, width, refreshKey, items, isItemLoaded, placeholder, mapper}, style, index}) => {
   const [rowRef, setRowRef] = useState(null)
   const item = items[index]
 
@@ -51,28 +51,26 @@ const ItemWrapper = React.memo(({data: {setSize, width, refreshKey, items, ...re
     sizeCallback()
   }, [sizeCallback, width, item, index]);
 
-
   return (
-    <ScrollContext.Provider value={{setSize: sizeCallback}}>
-      <CellMeasurer refreshKey={refreshKey} index={index} setSize={setSize}>
-        {({registerChild}) => (
-          <div style={style}>
-            <Box classNames={refreshKey} ref={(ref) => {
-                registerChild(ref)
-                setRowRef(ref)
-            }} margin={index === 0 ? {bottom: 'small'} : null}>
-              <Item
-                index={index}
-                items={items}
-                setSize={(size) => setSize(index, size)}
-                {...props}
-                {...rest} />
-              {/* <ResizeObserver onResize={({height}) => setSize(index, height)} /> */}
-            </Box>
-          </div>
-        )}
-      </CellMeasurer>
-    </ScrollContext.Provider>
+    <CellMeasurer refreshKey={refreshKey} index={index} setSize={setSize}>
+      {({registerChild}) => (
+        <div style={style}>
+          <Box classNames={refreshKey} ref={(ref) => {
+              registerChild(ref)
+              setRowRef(ref)
+          }} margin={index === 0 ? {bottom: 'small'} : null}>
+            <Item
+              index={index}
+              items={items}
+              setSize={sizeCallback}
+              isItemLoaded={isItemLoaded}
+              placeholder={placeholder}
+              mapper={mapper} />
+            {/* <ResizeObserver onResize={({height}) => setSize(index, height)} /> */}
+          </Box>
+        </div>
+      )}
+    </CellMeasurer>
   )
 }, areEqual)
 
