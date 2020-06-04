@@ -114,9 +114,10 @@ function FileInput({attachment, setAttachment}) {
 function SendMsg({empty, onClick}) {
   return (
     <Box
+      flex={false}
       style={empty ? null : {cursor: 'pointer'}}
-      margin={{horizontal: 'xsmall'}}
-      height='30px'
+      margin='4px'
+      height='35px'
       width="35px"
       round='xxsmall'
       align='center'
