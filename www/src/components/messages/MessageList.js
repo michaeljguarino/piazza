@@ -103,7 +103,8 @@ function ReturnToBeginning({listRef}) {
           direction='row'
           align='center'
           width='25vw'
-          round='small'
+          round='xsmall'
+          margin={{top: '5px'}}
           pad={{horizontal: 'small', vertical: 'xsmall'}}
           gap='small'
           background='brand'>

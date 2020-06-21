@@ -73,13 +73,10 @@ export const DEFAULT_THEME = {
       fontWeight: 400
     }
   },
+  drop: {border: {radius: '4px'}},
   global: {
     colors: DEFAULT_COLOR_THEME,
-    drop: {
-      border: {
-        radius: '2px'
-      }
-    },
+    drop: {border: {radius: '4px'}},
     font: {
       family: 'Roboto',
       size: '14px',

@@ -164,7 +164,7 @@ function MessageBody({message, conversation, next, editing, setEditing, dialog, 
   const formattedDate = date.format(DATE_PATTERN)
 
   return (
-    <Box fill='horizontal' margin={consecutive ? null : {vertical: 'xxsmall'}}>
+    <Box fill='horizontal' margin={{vertical: '2px'}}>
       <PinHeader {...message} />
       <Box direction='row' pad={{vertical: 'xxsmall', horizontal: 'small'}}>
         {!consecutive && <Avatar user={message.creator} /> }

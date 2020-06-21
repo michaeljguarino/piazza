@@ -6,6 +6,7 @@ export function ModalHeader({big, ...props}) {
   const [hover, setHover] = useState(false)
   return (
     <Box
+      flex={false}
       direction='row'
       border='bottom'
       elevation='xxsmall'
