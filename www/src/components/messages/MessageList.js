@@ -98,20 +98,12 @@ function ReturnToBeginning({listRef}) {
   return (
     <Layer position='top' modal={false} plain>
       <Box pad={{top: '5px'}}>
-        <Box
-          style={{minWidth: '100px'}}
-          direction='row'
-          align='center'
-          width='25vw'
-          round='xsmall'
-          margin={{top: '5px'}}
-          pad={{horizontal: 'small', vertical: 'xsmall'}}
-          gap='small'
-          background='brand'>
+        <Box direction='row' align='center' round='small' gap='small' background='brand'
+          margin={{top: '5px'}} pad={{horizontal: 'medium', vertical: 'xsmall'}}>
           <Box direction='row' fill='horizontal' justify='center'>
             <Text size='small'>go to most recent</Text>
           </Box>
-          <Box pad={{right: 'small'}}>
+          <Box flex={false}>
             <Down style={{cursor: 'pointer'}} onClick={() => listRef.scrollToItem(0)} size='15px' />
           </Box>
         </Box>
