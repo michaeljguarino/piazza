@@ -1,13 +1,14 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { Mutation} from 'react-apollo'
-import { Box, Text, Markdown, Anchor } from 'grommet'
+import { Box, Text, Markdown, Anchor, ThemeContext } from 'grommet'
 import Button, { SecondaryButton } from '../utils/Button'
 import { INTERACTION } from './queries'
 import { DialogContext } from './MessageList'
+import { normalizeColor } from 'grommet/utils'
 
-function recurse(children) {
+function recurse(children, theme) {
   if (!children) return null
-  return children.map(parse)
+  return children.map((c, i) => parse(c, i, theme))
 }
 
 const toInt = (str) => `${str}`.replace('px', '')
@@ -41,14 +42,15 @@ function box({children, attributes, key}) {
   )
 }
 
-function attachment({children, attributes, key}, i) {
+function attachment({children, attributes, key, theme}, i) {
+
   const {accent, margin, ...rest} = attributes || {}
   return (
     <Box key={key} margin={margin} border background='white'>
       <Box {...rest} style={{
         borderLeftStyle: 'solid',
         borderLeftWidth: '2px',
-        borderLeftColor: accent || 'rgba(35, 137, 215, 0.5)'}}>
+        borderLeftColor: accent ? normalizeColor(accent, theme) : 'rgba(35, 137, 215, 0.5)'}}>
         {recurse(children)}
       </Box>
     </Box>
@@ -113,8 +115,8 @@ function buttonComponent({primary, key, ...props}) {
   return <SecondaryButton key={key} round='xsmall' {...props} />
 }
 
-function parse(struct, index) {
-  const props = {...struct, key: index}
+function parse(struct, index, theme) {
+  const props = {...struct, key: index, theme}
   switch (struct._type) {
     case "box":
       return box(props)
@@ -138,9 +140,10 @@ function parse(struct, index) {
 }
 
 export default React.memo(function StructuredMessage({children, attributes}) {
+  const theme = useContext(ThemeContext)
   return (
     <Box gap='xsmall' {...(attributes || {})}>
-      {recurse(children)}
+      {recurse(children, theme)}
     </Box>
   )
 })

@@ -63,7 +63,7 @@ export default function StructuredMessageTester() {
               highlightActiveLine
               editorProps={{ $blockScrolling: true }}
               onChange={(text) =>  {
-                setMessage(message)
+                setMessage(text)
                 const parsed = parseMessage(text)
                 if (parsed) {
                   setParsed(parsed)
