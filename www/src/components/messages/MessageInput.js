@@ -81,9 +81,9 @@ function InputFooter({typists, me: {handle}}) {
       align='center'
       direction='row'
       fill='horizontal'>
-      <div style={{width: 'calc(100% - 600px)'}}>
+      <Box flex={false} width='calc(100% - 600px)' margin={{left: 'small'}}>
         <Typing typists={typists} ignore={handle} />
-      </div>
+      </Box>
       <HelpDoc/>
     </Box>
   )

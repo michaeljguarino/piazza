@@ -43,7 +43,7 @@ defmodule Core.Models.StructuredMessage do
     end
 
     component "link" do
-      attributes ~w(href target value color)
+      attributes ~w(href target value color weight)
       parents ~w(text box attachment)
     end
   end
