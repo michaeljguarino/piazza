@@ -3,12 +3,12 @@ defmodule GqlWeb.IncomingWebhookController do
   alias Core.Services.Platform
 
   def dispatch(conn, %{"secure_id" => id} = params) do
-    with {:ok, %{id: id}} <- Platform.dispatch_incoming_webhook(params, id),
+    IO.inspect(params)
+    with {:ok, %{id: id}} <- Platform.dispatch_incoming_webhook(params, id) |> IO.inspect(),
       do: json(conn, %{id: id})
   end
 
   def slack_dispatch(conn, %{"secure_id" => id} = params) do
-    IO.inspect(params)
     with {:ok, %{id: id}} <- translate_from_slack(params, id),
       do: json(conn, %{id: id})
   end
