@@ -201,8 +201,8 @@ function MentionManager({editor, editorState, setEditorState, onChange, disableS
         width: '100%',
         maxHeight: '160px',
         paddingLeft: '10px',
-        paddingTop: '3px',
-        paddingBottom: '3px'
+        paddingTop: '10px',
+        paddingBottom: '10px'
       }} />
     <EmojiTarget emojiRef={emojiRef} setEmojiPicker={setEmojiPicker} />
     {emojiPicker && (
