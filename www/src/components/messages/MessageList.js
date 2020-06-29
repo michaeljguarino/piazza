@@ -37,7 +37,7 @@ function OnlineInner({online, text}) {
   if (!open) return null
 
   return (
-    <Pill background='sidebar' onClose={() => setOpen(false)}>
+    <Pill margin={{top: 'small'}} background='sidebar' onClose={() => setOpen(false)}>
       <Box direction='row' align='center' gap='small'>
         <Wifi size='14px' color={online ? 'status-ok' : 'status-critical'} />
         <Text size='small' color='focusText'>{text}</Text>
@@ -99,7 +99,7 @@ function ReturnToBeginning({listRef}) {
     <Layer position='top' modal={false} plain>
       <Box pad={{top: '5px'}}>
         <Box direction='row' align='center' round='small' gap='small' background='brand'
-          margin={{top: '5px'}} pad={{horizontal: 'medium', vertical: 'xsmall'}}>
+          margin={{top: '5px'}} pad={{horizontal: 'small', vertical: 'xsmall'}}>
           <Box direction='row' fill='horizontal' justify='center'>
             <Text size='small'>go to most recent</Text>
           </Box>

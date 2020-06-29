@@ -17,7 +17,6 @@ import StructuredMessage from './StructuredMessage'
 import File from './File'
 import Divider from '../utils/Divider'
 import { Emoji } from 'emoji-mart'
-import { ScrollContext } from '../utils/SmoothScroller'
 import './message.css'
 
 

@@ -8,7 +8,7 @@ import moment from 'moment'
 import filesize from 'filesize'
 import FileViewer from './FileViewer'
 import { FileTypes } from './types'
-
+import { download } from '../../utils/file'
 
 const extension = (file) => file.split('.').pop()
 
@@ -16,17 +16,13 @@ function DownloadAffordance({object}) {
   return (
     <Tooltip align={{bottom: 'top'}}>
       <HoveredBackground>
-        <Box accentable animation={{type: "fadeIn", duration: 200}} onClick={(e) => e.preventDefault()} >
-          <a href={object} download>
-            <Box
-              margin={{right: 'xsmall', top: 'xsmall'}}
-              style={{cursor: 'pointer'}}
-              background='#fff'
-              round='xsmall'
-              pad='small'>
-              <Download size='15px' />
-            </Box>
-          </a>
+        <Box accentable margin={{right: 'xsmall', top: 'xsmall'}} style={{cursor: 'pointer'}}
+          background='#fff' round='xsmall' pad='small' animation={{type: "fadeIn", duration: 200}}
+          onClick={(e) => {
+            e.preventDefault()
+            download(object)
+          }}>
+          <Download size='15px' />
         </Box>
       </HoveredBackground>
       <Text size='small'>download</Text>

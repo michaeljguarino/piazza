@@ -1,18 +1,18 @@
 import React from 'react'
 import {Layer, Box} from 'grommet'
 
-function Pill(props) {
+function Pill({pad, margin, onClose, background, children}) {
   return (
-    <Layer plain modal={false} position='top' onEsc={props.onClose} onClickOutside={props.onClose}>
+    <Layer plain modal={false} position='top' onEsc={onClose} onClickOutside={onClose}>
       <Box
         direction='row'
         align='center'
         elevation='medium'
         round='small'
-        margin={{top: 'medium'}}
-        pad={props.pad || {vertical: 'xsmall', horizontal: 'medium'}}
-        background={props.background}>
-        {props.children}
+        margin={margin ||  {top: 'medium'}}
+        pad={pad || {vertical: 'xsmall', horizontal: 'medium'}}
+        background={background}>
+        {children}
       </Box>
     </Layer>
   )
