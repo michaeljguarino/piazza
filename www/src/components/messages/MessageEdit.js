@@ -32,7 +32,7 @@ function MessageEdit({setSize, message, ...props}) {
 
   return (
     <Box ref={editRef} pad={{right: 'small'}} gap='xsmall'>
-      <Box direction='row' fill='horizontal' round='xsmall' pad='xsmall' border>
+      <Box direction='row' fill='horizontal' round='xsmall' border>
         <MentionManager
           submitDisabled
           editor={editor}
