@@ -1,0 +1,11 @@
+description: Notifies you of things going on in your silo
+icon: https://silo.piazza.app/silo.png
+name: silo
+sourceUrl: https://github.com/michaeljguarino/silo
+tags:
+- tag: silo
+- tag: storage
+spec:
+  description: Notifies you of things going on in your silo projects
+  documentation: "* /silo **subscribe** _project_ - Configures silo notifications for _project_ to go into this conversation"
+  webhook: http://silo-api:4000/webhooks/piazza
