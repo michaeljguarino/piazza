@@ -170,8 +170,8 @@ export default function NotificationIcon({me, setCurrentConversation}) {
                 height='15px'
                 width='15px'
                 round>
-                <Text color='white' size='10px'>{unseen}</Text>
-              </Box> : <span></span>
+                <Text color='white' size='10px'>{unseen > 10 ? '!!' : unseen}</Text>
+              </Box> : null
             }
           </Stack>
           <Box style={{minWidth: '300px'}} pad='small' align='center' justify='center'>

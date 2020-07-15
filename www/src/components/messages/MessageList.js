@@ -95,18 +95,21 @@ function Prelude({conversation}) {
 }
 
 function ReturnToBeginning({listRef}) {
+  const [hover, setHover] = useState(false)
+
   return (
-    <Layer position='top' modal={false} plain>
-      <Box pad={{top: '5px'}}>
-        <Box direction='row' align='center' round='small' gap='small' background='brand'
-          margin={{top: '5px'}} pad={{horizontal: 'small', vertical: 'xsmall'}}>
-          <Box direction='row' fill='horizontal' justify='center'>
-            <Text size='small'>go to most recent</Text>
-          </Box>
-          <Box flex={false}>
-            <Down style={{cursor: 'pointer'}} onClick={() => listRef.scrollToItem(0)} size='15px' />
-          </Box>
+    <Layer position='top-right' modal={false} plain>
+      <Box direction='row' align='center' round='xsmall' gap='small' background={hover ? 'dark-1' : 'dark-2'}
+        margin={{top: '70px', right: '10px'}}
+        pad={{horizontal: 'small', vertical: 'xsmall'}}
+        style={{cursor: 'pointer'}}
+        onClick={() => listRef.scrollToItem(0)}
+        onMouseEnter={() => setHover(true)}
+        onMouseLeave={() => setHover(false)}>
+        <Box direction='row' fill='horizontal' justify='center'>
+          <Text size='small'>go to most recent</Text>
         </Box>
+        <Down size='15px' />
       </Box>
     </Layer>
   )
