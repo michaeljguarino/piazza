@@ -38,7 +38,7 @@ function FlyoutContent() {
     <>
       {!expanded && (
         <>
-        <Box pad='small'>
+        <Box pad='small' flex={false}>
           <Text size='small'>
             <i>
               Commands can automate basic tasks.  They support a message webhook, and
@@ -46,11 +46,11 @@ function FlyoutContent() {
             </i>
           </Text>
         </Box>
-        <Box>
+        <Box fill>
           <Scroller
             id='commands-viewport'
             edges={edges}
-            style={{overflow: 'auto', maxHeight: '80%'}}
+            style={{overflow: 'auto', maxHeight: '100%'}}
             mapper={({node}) => (
               <CommandListEntry
                 key={node.id} pad={{vertical: 'xsmall', horizontal: 'small'}} command={node} />
@@ -61,14 +61,14 @@ function FlyoutContent() {
             })}
           />
         </Box>
-        <Box margin={{top: 'xsmall'}} pad='small' border='top'>
+        <Box flex={false} margin={{top: 'xsmall'}} pad='small' border='top'>
           <Modal target={<SecondaryButton round='xsmall' label='Create more' />}>
           {setOpen => (<CommandCreator setOpen={setOpen} />)}
           </Modal>
         </Box>
         </>
       )}
-      <Box>
+      <Box flex={false}>
         <Box onClick={() => setExpanded(!expanded)}>
           <Expander text='Browse installable commands' expanded={expanded} />
         </Box>
