@@ -8,4 +8,4 @@ tags:
 spec:
   description: Notifies you of things going on in your silo projects
   documentation: "* /silo **subscribe** _project_ - Configures silo notifications for _project_ to go into this conversation"
-  webhook: http://silo-api:4000/webhooks/piazza
+  webhook: http://silo-api.silo:4000/webhooks/piazza
