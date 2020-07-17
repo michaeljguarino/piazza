@@ -1,9 +1,11 @@
 defmodule Core.PubSub.Consumers.Recurse.ConversationsTest do
   use Core.DataCase
+  use Mimic
   alias Core.PubSub
   alias PubSub.Consumers.Recurse
   alias Core.Services.Conversations
 
+  setup :set_mimic_global
 
   describe "ConversationCreated" do
     test "It will add all users the conversation if it was global" do
@@ -37,6 +39,30 @@ defmodule Core.PubSub.Consumers.Recurse.ConversationsTest do
       assert new_message.embed.description
       assert new_message.embed.title
       assert new_message.embed.author
+    end
+
+    test "It will process custom unfurlers" do
+      Core.Cache.Replicated.delete(:unfurlers)
+      cmd = insert(:command, name: "giffy", webhook: build(:webhook, url: "https://my.giffy.com/webhook"))
+      insert(:unfurler, command: cmd, regex: "<gif:\\w+>")
+      message = insert(:message, text: "doggos <gif:some_gif>")
+      expect(Mojito, :post, fn "https://my.giffy.com/webhook/unfurl", _, payload ->
+        %{"matches" => [match]} = Jason.decode!(payload)
+        {:ok, %Mojito.Response{body: Jason.encode!(%{text: "here's a #{match}"}), status_code: 200}}
+      end)
+
+      with_mailbox fn ->
+        event = %PubSub.MessageCreated{item: message, actor: message.creator}
+        Recurse.handle_event(event)
+
+        assert_receive {:event, %PubSub.MessageCreated{item: response_message}}
+
+        assert response_message.conversation_id == message.conversation_id
+        assert response_message.creator_id == message.creator_id
+        assert response_message.text == "here's a <gif:some_gif>"
+      end
+
+      Core.Cache.Replicated.delete(:unfurlers)
     end
 
     test "It will handle non-html content" do

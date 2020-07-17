@@ -58,7 +58,7 @@ defmodule Core.Utils.Url do
   end
 
   def fetch_oembed(url, opts \\ []) do
-    with {:ok, endpoint} <- Oembed.endpoint_from_url(url) |> IO.inspect(),
+    with {:ok, endpoint} <- Oembed.endpoint_from_url(url),
          params           = %{"url" => url},
          opts             = Keyword.put(opts, :params, params),
          {:ok, {body, _, _}} <- do_fetch(endpoint, opts),

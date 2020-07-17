@@ -1,5 +1,6 @@
 defmodule Core.Services.Platform do
   use Core.Services.Base
+  use Nebulex.Caching.Decorators
   alias Core.PubSub
   alias Core.Services.Conversations
   alias Core.Models.{
@@ -10,7 +11,8 @@ defmodule Core.Services.Platform do
     WebhookRoute,
     InstallableCommand,
     Message,
-    Interaction
+    Interaction,
+    Unfurler
   }
   import Core.Policies.Platform
 
@@ -30,6 +32,15 @@ defmodule Core.Services.Platform do
   @spec get_incoming_webhook(binary) :: IncomingWebhook.t | nil
   def get_incoming_webhook(secure_id),
     do: Core.Repo.get_by(IncomingWebhook, secure_id: secure_id)
+
+  @spec get_unfurlers() :: [Unfurler.t]
+  @decorate cache(cache: Core.Cache.Replicated, key: :unfurlers)
+  def get_unfurlers() do
+    Unfurler
+    |> Core.Repo.all()
+    |> Core.Repo.preload([command: :webhook])
+    |> Enum.map(&Unfurler.compile/1)
+  end
 
   @doc """
   Creates a new command in this instance, including an associated webhook,
@@ -74,6 +85,7 @@ defmodule Core.Services.Platform do
     start_transaction()
     |> add_operation(:command, fn _ ->
       Core.Repo.get_by!(Command, name: name)
+      |> Core.Repo.preload([:unfurlers])
       |> Command.changeset(args)
       |> allow(user, :update)
       |> when_ok(:update)

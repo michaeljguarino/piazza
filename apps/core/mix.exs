@@ -71,7 +71,7 @@ defmodule Core.MixProject do
       {:prometheus_ex, "~> 3.0"},
       {:parallax, "~> 1.0"},
       {:poison, "~> 3.1"},
-      {:nebulex, "~> 1.1"},
+      {:nebulex, "~> 1.2"},
       {:libring, "~> 1.0"},
       {:csv, "~> 2.3"},
       {:grpc, github: "elixir-grpc/grpc"},

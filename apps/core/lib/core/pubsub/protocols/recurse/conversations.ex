@@ -1,15 +1,10 @@
 defimpl Core.Recurse.Traversable, for: Core.PubSub.MessageCreated do
-  @moduledoc """
-  The call path is a little complex for this.  Basically we do:
-
-  1. Ensure it's actually a valid command (preceded by "/", not a bot sender)
-  2. Fetch the command and preload everything
-  3. Send it to the webhook q
-  4. Core.Aquaduct.WebhookSubscriber picks it up, and calls Core.Services.Platform.Webhooks.send_hook
-  """
   alias Core.Utils.Url
+  alias Core.Services.Platform
 
   def traverse(%{item: %{text: text} = message, actor: actor}) do
+    custom_unfurlers(message, actor)
+
     Url.find_urls(text)
     |> unfurl_urls(message, actor)
   end
@@ -26,6 +21,16 @@ defimpl Core.Recurse.Traversable, for: Core.PubSub.MessageCreated do
     end
   end
   def unfurl_urls(_, _, _), do: :ok
+
+  defp custom_unfurlers(%{embed: %{url: u, title: t}}, _) when not is_nil(u) or not is_nil(t), do: :ok
+  defp custom_unfurlers(%{text: text} = message, actor) do
+    Platform.get_unfurlers()
+    |> Enum.filter(fn %{compiled: compiled} -> Regex.match?(compiled, text) end)
+    |> Enum.each(fn %{compiled: compiled, command: command} ->
+      matches = Regex.scan(compiled, text) |> Enum.concat()
+      Core.Aquaduct.Broker.publish(%Conduit.Message{body: {message, matches, command, actor}}, :unfurl)
+    end)
+  end
 
   defp text(%{title: title}), do: title
   defp text(%{description: description}), do: description

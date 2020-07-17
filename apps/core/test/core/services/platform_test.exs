@@ -10,7 +10,8 @@ defmodule Core.Services.PlatformTest do
       {:ok, command} = Platform.create_command(%{
         bot: %{},
         name: "giffy",
-        webhook: %{url: "https://my.webhook.com"}
+        webhook: %{url: "https://my.webhook.com"},
+        unfurlers: [%{regex: ".*"}]
       }, user)
 
       preloaded = Core.Repo.preload(command, [:bot, :webhook])
@@ -18,6 +19,11 @@ defmodule Core.Services.PlatformTest do
       assert preloaded.creator_id == user.id
 
       assert preloaded.webhook.url == "https://my.webhook.com"
+
+      [unfurler] = preloaded.unfurlers
+
+      assert unfurler.command_id == preloaded.id
+      assert unfurler.regex == ".*"
 
       assert preloaded.bot.name == "giffy"
       assert preloaded.bot.handle == "giffy"

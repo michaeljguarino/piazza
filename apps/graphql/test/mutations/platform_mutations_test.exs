@@ -10,7 +10,8 @@ defmodule GraphQl.PlatformMutationsTest do
           createCommand(attributes: {
             name: "giphy",
             documentation: "Sends you gifs",
-            webhook: {url: "https://api.giphy.com"}
+            webhook: {url: "https://api.giphy.com"},
+            unfurlers: [{regex: ".*"}]
           }) {
             name
             documentation
@@ -23,6 +24,9 @@ defmodule GraphQl.PlatformMutationsTest do
             bot {
               email
             }
+            unfurlers {
+              regex
+            }
           }
         }
       """, %{}, %{current_user: user})
@@ -32,6 +36,7 @@ defmodule GraphQl.PlatformMutationsTest do
       assert command["webhook"]["url"] == "https://api.giphy.com"
       assert command["creator"]["name"]
       assert command["bot"]["email"]
+      [%{"regex" => ".*"}] = command["unfurlers"]
     end
 
     test "A user can create a command with incoming webhooks" do

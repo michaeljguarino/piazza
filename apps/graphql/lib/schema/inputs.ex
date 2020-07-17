@@ -53,9 +53,15 @@ defmodule GraphQl.Schema.Inputs do
     field :documentation, :string
     field :description,   :string
 
+    field :unfurlers,        list_of(:unfurler_attributes)
     field :webhook,          non_null(:webhook_attributes)
     field :incoming_webhook, :incoming_webhook_attributes
     field :bot,              :bot_attributes
+  end
+
+  input_object :unfurler_attributes do
+    field :regex, non_null(:string)
+    field :value, :string
   end
 
   input_object :command_update_attributes do

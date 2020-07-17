@@ -8,6 +8,9 @@ defmodule Aquaduct.Topology do
         queue "piazza.rtc", from: ["piazza.rtc"], exchange: "piazza.topic", durable: true
         queue "zzz.piazza.rtc", from: ["zzz.piazza.rtc"], exchange: "piazza.topic", durable: true
 
+        queue "piazza.unfurl", from: ["piazza.unfurl"], exchange: "piazza.topic", durable: true
+        queue "zzz.piazza.unfurl", from: ["zzz.piazza.unfurl"], exchange: "piazza.topic", durable: true
+
         queue "piazza.webhook", from: ["piazza.webhook"], exchange: "piazza.topic", durable: true
         queue "zzz.piazza.webhook", from: ["zzz.piazza.webhook"], exchange: "piazza.topic", durable: true
 
@@ -36,6 +39,7 @@ defmodule Aquaduct.Topology do
         publish :rtc, exchange: "piazza.topic", to: "piazza.rtc"
         publish :webhook, exchange: "piazza.topic", to: "piazza.webhook"
         publish :interaction, exchange: "piazza.topic", to: "piazza.interaction"
+        publish :unfurl, exchange: "piazza.topic", to: "piazza.unfurl"
       end
 
       outgoing do

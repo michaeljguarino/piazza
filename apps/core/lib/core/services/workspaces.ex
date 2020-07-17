@@ -1,6 +1,6 @@
 defmodule Core.Services.Workspaces do
   use Core.Services.Base
-  import Nebulex.Caching
+  use Nebulex.Caching.Decorators
   import Core.Policies.Workspace, only: [allow: 3]
   alias Core.Models.{Workspace}
 
@@ -13,7 +13,8 @@ defmodule Core.Services.Workspaces do
   Fetches a workspace by name (with read-through caching)
   """
   @spec get_by_name!(binary) :: Workspace.t
-  defcacheable get_by_name!(name), cache: Core.Cache, key: {Workspace, name} do
+  @decorate cache(cache: Core.Cache, key: {Workspace, name})
+  def get_by_name!(name) do
     Core.Repo.get_by!(Workspace, name: name)
   end
 

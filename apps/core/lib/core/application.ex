@@ -9,6 +9,7 @@ defmodule Core.Application do
       Core.Repo,
       Core.PubSub.Broadcaster,
       Core.Cache.Local,
+      Core.Cache.Replicated,
       Core.Cache,
       worker(Piazza.Crypto.License, [conf(:license), conf(:public_key), &License.invalid/1, &License.validate/1]),
       worker(Core.RtcClient, [])

@@ -58,6 +58,13 @@ defmodule Core.Factory do
     }
   end
 
+  def unfurler_factory do
+    %Models.Unfurler{
+      command: build(:command),
+      regex: ".*"
+    }
+  end
+
   def message_entity_factory do
     %Models.MessageEntity{
       type: :mention,

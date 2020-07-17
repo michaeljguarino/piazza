@@ -6,12 +6,20 @@ defmodule Core.Cache do
   """
   use Nebulex.Cache,
     otp_app: :core,
-    adapter: Nebulex.Adapters.Dist
+    adapter: Nebulex.Adapters.Partitioned,
+    primary: Core.Cache.Local
 
   defmodule Local do
     use Nebulex.Cache,
       otp_app: :core,
       adapter: Nebulex.Adapters.Local
+  end
+
+  defmodule Replicated do
+    use Nebulex.Cache,
+      otp_app: :core,
+      adapter: Nebulex.Adapters.Replicated,
+      primary: Core.Cache.Local
   end
 
   @max_list_cache 1000

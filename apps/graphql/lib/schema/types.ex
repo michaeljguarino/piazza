@@ -389,6 +389,15 @@ defmodule GraphQl.Schema.Types do
     field :creator, :user, resolve: dataloader(User)
     field :webhook, :webhook, resolve: dataloader(Platform)
     field :incoming_webhook, :incoming_webhook, resolve: dataloader(Platform)
+    field :unfurlers, list_of(:unfurler), resolve: dataloader(Platform)
+
+    timestamps()
+  end
+
+  object :unfurler do
+    field :id,    non_null(:id)
+    field :regex, non_null(:string)
+    field :value, :string
 
     timestamps()
   end

@@ -1,6 +1,6 @@
 defmodule Core.Models.Command do
   use Piazza.Ecto.Schema
-  alias Core.Models.{User, Webhook, IncomingWebhook}
+  alias Core.Models.{User, Webhook, IncomingWebhook, Unfurler}
 
   schema "commands" do
     field :name, :string
@@ -12,6 +12,7 @@ defmodule Core.Models.Command do
     belongs_to :webhook, Webhook
 
     has_one :incoming_webhook, IncomingWebhook
+    has_many :unfurlers, Unfurler, on_replace: :delete
 
     timestamps()
   end
@@ -28,6 +29,7 @@ defmodule Core.Models.Command do
   def changeset(schema, attrs \\ %{}) do
     schema
     |> cast(attrs, @valid)
+    |> cast_assoc(:unfurlers)
     |> validate_required([:name, :bot_id, :webhook_id])
     |> validate_format(:name, ~r/[a-zA-Z0-9]/)
     |> foreign_key_constraint(:bot_id)

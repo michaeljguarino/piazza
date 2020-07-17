@@ -132,6 +132,7 @@ config :grpc, start_server: true
 config :core, Core.Cache.Local,
   gc_interval: 86_400,
   allocated_memory: 1_000_000,
+  n_shards: 3,
   gc_cleanup_interval: 100
 
 config :core, Core.Cache,
