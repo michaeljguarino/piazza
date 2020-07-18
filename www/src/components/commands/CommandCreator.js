@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Box, Select, Text } from 'grommet'
+import { Box, Select, Text, TextInput } from 'grommet'
 import { useApolloClient, useMutation } from 'react-apollo'
 import { ModalHeader } from '../utils/Modal'
 import CommandListEntry from './CommandListEntry'
@@ -14,6 +14,8 @@ import {
 } from 'slate-react'
 import {plainSerialize, plainDeserialize} from '../../utils/slate'
 import { useEditor } from '../utils/hooks'
+import Expander from '../utils/Expander'
+import { FormClose } from 'grommet-icons'
 
 const LABEL_WIDTH = '100px'
 
@@ -43,19 +45,56 @@ export function ConversationSelector({onSelect}) {
   )
 }
 
-export function CommandForm({formState, setFormState, vars, mutation, setOpen, action}) {
+function Unfurlers({formState: {unfurlers, ...formState}, unfurler, setFormState}) {
+  const [editState, setEditState] = useState(unfurler || {regex: '', value: null})
+  return (
+    <Box gap='small' pad='small'>
+      {unfurlers.map(({regex, name}) => (
+        <Box direction='row' gap='xsmall' align='center'>
+          <Text size='small'>{regex}</Text>
+          <FormClose style={{cursor: 'pointer'}} size='14px' onClick={() => setFormState({
+            ...formState, unfurlers: unfurlers.filter((f) => regex !== f.regex)}
+          )} />
+        </Box>
+      ))}
+      <Box direction='row' gap='small' flex={false} margin={{top: 'small'}}>
+        <TextInput
+          name='regex'
+          value={editState.regex}
+          onChange={({target: {value}}) => setEditState({...editState, regex: value})}
+          placeholder='enter a regex to match a url against' />
+        <TextInput
+          name='regex'
+          value={editState.value || ''}
+          onChange={({target: {value}}) => setEditState({...editState, value})}
+          placeholder='a value to interpolate into a prebaked regex' />
+      </Box>
+      <Box direction='row' gap='small' align='center' flex={false}>
+        <Box fill='horizontal'>
+          <Text size='small' color='dark-3'>{editState.value ? editState.regex.replace('{:value}', editState.value) : editState.regex}</Text>
+        </Box>
+        <Button label='add' round='xsmall' onClick={() => setFormState({...formState, unfurlers: [editState, ...unfurlers]})} />
+      </Box>
+    </Box>
+  )
+}
+
+export function CommandForm({formState, setFormState, vars, mutation, setOpen, action, unfurler}) {
   const editor = useEditor()
   const [editorState, setEditorState] = useState(plainDeserialize(formState.documentation))
   const additionalVars = vars || {}
   const {incomingWebhook, ...form} = formState
   const finalVars = incomingWebhook ? {...additionalVars, ...form, incomingWebhook} : {...additionalVars, ...form}
   const [loading, setLoading] = useState(false)
+  const [expanded, setExpanded] = useState(formState.unfurlers && formState.unfurlers.length > 0)
   const [mut] = useMutation(mutation || CREATE_COMMAND, {
     variables: {...finalVars, documentation: plainSerialize(editorState)},
     update: (cache, {data}) => {
-      setLoading(false)
       const prev = cache.readQuery({ query: COMMANDS_Q })
       cache.writeQuery({query: COMMANDS_Q, data: addCommand(prev, data.createCommand || data.updateCommand)})
+    },
+    onCompleted: () => {
+      setLoading(false)
       setOpen(false)
     }
   })
@@ -85,6 +124,10 @@ export function CommandForm({formState, setFormState, vars, mutation, setOpen, a
           setFormState({...formState, incomingWebhook: {name: conv.name}})
         }} />
       </Box>
+      <Box onClick={() => setExpanded(!expanded)}>
+        <Expander text='configure unfurlers' expanded={expanded} />
+      </Box>
+      {expanded && (<Unfurlers formState={formState} setFormState={setFormState} unfurler={unfurler} />)}
       <Box style={{minHeight: '150px'}} pad='small' border round='xsmall'>
         <Slate
           editor={editor}
@@ -96,7 +139,6 @@ export function CommandForm({formState, setFormState, vars, mutation, setOpen, a
       <Box direction='row' justify='end' align='center' gap='xsmall'>
         <SecondaryButton round='xsmall' label='Cancel' onClick={() => setOpen(false)} />
         <Button
-          width='100px'
           loading={loading}
           onClick={() => {
             setLoading(true)

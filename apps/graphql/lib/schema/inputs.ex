@@ -69,6 +69,7 @@ defmodule GraphQl.Schema.Inputs do
     field :documentation, :string
     field :description,   :string
 
+    field :unfurlers,        list_of(:unfurler_attributes)
     field :webhook,          :webhook_attributes
     field :incoming_webhook, :incoming_webhook_attributes
   end

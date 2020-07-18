@@ -85,11 +85,10 @@ defmodule Core.Services.Platform do
     start_transaction()
     |> add_operation(:command, fn _ ->
       Core.Repo.get_by!(Command, name: name)
-      |> Core.Repo.preload([:unfurlers])
+      |> Core.Repo.preload([:unfurlers, :webhook, :bot, :incoming_webhook])
       |> Command.changeset(args)
       |> allow(user, :update)
       |> when_ok(:update)
-      |> when_ok(&Core.Repo.preload(&1, [:webhook, :bot, :incoming_webhook]))
     end)
     |> add_operation(:bot, fn %{command: %{bot: bot}} ->
       bot

@@ -1,7 +1,14 @@
 import gql from 'graphql-tag'
-import {UserFragment} from './users'
+import { UserFragment } from './users'
 
-export const CommandFragment=gql`
+export const UnfurlerFragment = gql`
+  fragment UnfurlerFragment on Unfurler {
+    regex
+    value
+  }
+`;
+
+export const CommandFragment = gql`
   fragment CommandFragment on Command {
     id
     name
@@ -13,6 +20,9 @@ export const CommandFragment=gql`
     webhook {
       url
     }
+    unfurlers {
+      ...UnfurlerFragment
+    }
     incomingWebhook {
       conversation {
         name
@@ -21,4 +31,5 @@ export const CommandFragment=gql`
     }
   }
   ${UserFragment}
+  ${UnfurlerFragment}
 `;

@@ -4,7 +4,7 @@ import TimedCache from '../utils/TimedCache'
 import HoveredBackground from '../utils/HoveredBackground'
 import { useMutation, useApolloClient } from 'react-apollo'
 import { Box, Text, Markdown, Layer, Keyboard, Drop, ThemeContext } from 'grommet'
-import { Attachment, Play } from 'grommet-icons'
+import { Attachment } from 'grommet-icons'
 import { FilePicker } from 'react-file-picker'
 import debounce from 'lodash/debounce'
 import { CurrentUserContext } from '../login/EnsureLogin'
@@ -98,11 +98,7 @@ function FileInput({attachment, setAttachment}) {
           maxSize={2000}
           onError={(msg) => console.log(msg)}
         >
-          <Box
-            align='center'
-            justify='center'
-            height='40px'
-            width="30px">
+          <Box align='center' justify='center' height='40px' width="30px">
             <Attachment color={attachment ? SEND_COLOR : null} size='15px' />
           </Box>
         </FilePicker>

@@ -38,6 +38,7 @@ export const CREATE_COMMAND = gql`
       $description: String,
       $incomingWebhook: IncomingWebhookAttributes,
       $url: String!,
+      $unfurlers: [UnfurlerAttributes],
       $bot: BotAttributes) {
     createCommand(attributes: {
       name: $name,
@@ -45,6 +46,7 @@ export const CREATE_COMMAND = gql`
       description: $description,
       webhook: {url: $url},
       incomingWebhook: $incomingWebhook,
+      unfurlers: $unfurlers,
       bot: $bot
     }) {
       ...CommandFragment
@@ -60,12 +62,14 @@ export const UPDATE_COMMAND = gql`
     $documentation: String,
     $description: String,
     $incomingWebhook: IncomingWebhookAttributes,
+    $unfurlers: [UnfurlerAttributes],
     $url: String!) {
     updateCommand(name: $commandName, attributes: {
       name: $name,
       documentation: $documentation,
       description: $description,
       webhook: {url: $url},
+      unfurlers: $unfurlers,
       incomingWebhook: $incomingWebhook
     }) {
       ...CommandFragment

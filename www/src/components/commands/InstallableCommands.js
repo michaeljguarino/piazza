@@ -1,13 +1,13 @@
 import React, {useState} from 'react'
-import {useQuery} from 'react-apollo'
-import {Box, Text} from 'grommet'
-import {INSTALLABLE_COMMANDS, CREATE_COMMAND} from './queries'
-import Modal, {ModalHeader} from '../utils/Modal'
-import {formStateFromCommand} from './CommandEditor'
+import { useQuery } from 'react-apollo'
+import { Box, Text } from 'grommet'
+import { INSTALLABLE_COMMANDS, CREATE_COMMAND } from './queries'
+import Modal, { ModalHeader } from '../utils/Modal'
+import { formStateFromCommand } from './CommandEditor'
+import { CommandForm } from './CommandCreator'
+import { mergeAppend } from '../../utils/array'
 import CommandListEntry from './CommandListEntry'
-import {CommandForm} from './CommandCreator'
 import Scroller from '../utils/Scroller'
-import {mergeAppend} from '../../utils/array'
 
 function InstallableCommand({installable}) {
   const [hover, setHover] = useState(false)
@@ -81,7 +81,8 @@ function WrappedInstallableCommand({installable}) {
         setOpen={setOpen}
         command={toCommand(installable)}
         additionalVars={{bot: {avatar: installable.avatar}}}
-      />)}
+      />
+    )}
     </Modal>
   )
 }

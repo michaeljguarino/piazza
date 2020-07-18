@@ -5,11 +5,9 @@ import {CommandForm} from './CommandCreator'
 import {ModalHeader} from '../utils/Modal'
 import {UPDATE_COMMAND} from './queries'
 
-export function formStateFromCommand({name, description, documentation, webhook, incomingWebhook}) {
+export function formStateFromCommand({name, description, documentation, webhook, unfurlers}) {
   let formState = {name, description, documentation, url: webhook && webhook.url}
-  if (incomingWebhook) {
-    formState.incomingWebhook = {name: incomingWebhook.conversation.name}
-  }
+  formState.unfurlers = unfurlers ? unfurlers.map(({regex, value}) => ({regex, value})) : []
 
   return formState
 }
