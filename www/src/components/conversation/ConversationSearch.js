@@ -96,6 +96,7 @@ export default function ConversationSearch({onSearchClose}) {
     _addConversation(client, conv, workspaceId)
     onSearchClose()
     setCurrentConversation(conv)
+// eslint-disable-next-line react-hooks/exhaustive-deps
   }, [onSearchClose, setCurrentConversation, workspaceId])
 
   return (

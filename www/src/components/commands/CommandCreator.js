@@ -46,7 +46,6 @@ export function ConversationSelector({onSelect}) {
 }
 
 function Unfurlers({formState: {unfurlers, ...formState}, unfurler, setFormState}) {
-  console.log(unfurler)
   const [editState, setEditState] = useState(unfurler || {regex: '', value: null})
 
   return (
@@ -160,7 +159,8 @@ export default function CommandCreator({setOpen}) {
     name: 'my-new-command',
     description: '',
     documentation: '',
-    url: 'https://my.command.com/webhook'
+    url: 'https://my.command.com/webhook',
+    unfurlers: []
   })
   return (
     <Box width="600px" pad={{bottom: 'small'}} round='small'>

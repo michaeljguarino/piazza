@@ -45,6 +45,7 @@ const ItemWrapper = React.memo(({data: {setSize, width, refreshKey, items, isIte
 
   const sizeCallback = useCallback(() => {
     rowRef && setSize(index, rowRef.getBoundingClientRect().height)
+// eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rowRef, index])
 
   useEffect(() => {
@@ -84,6 +85,7 @@ export default function SmoothScroller({
   const setSize = useCallback((index, size) => {
     sizeMap.current = { ...sizeMap.current, [index]: size };
     listRef && listRef.resetAfterIndex(index, true)
+// eslint-disable-next-line react-hooks/exhaustive-deps
   }, [listRef]);
   const getSize = useCallback(index => sizeMap.current[index] || 50, []);
   const count = items.length

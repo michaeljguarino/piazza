@@ -36,6 +36,7 @@ export default function AppContext({children, sideEffects}) {
     variables: {workspaceId}
   })
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => subscribeToNewConversations(subscribeToMore, workspaceId, client), [workspaceId])
 
   if (loading) return <Box height='100vh'><Loading/></Box>

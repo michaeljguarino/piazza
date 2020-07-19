@@ -134,6 +134,7 @@ export default function NotificationIcon({me, setCurrentConversation}) {
       updateConversations,
       workspaceId
     )
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   if (loading) return (

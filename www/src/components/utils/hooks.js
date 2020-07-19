@@ -13,12 +13,10 @@ export function useSubscription(start, id) {
       console.log(`unsubscribing to ${id}`)
       unsubscribe()
     }
+// eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id])
 }
 
 export function useEditor() {
-  return useMemo(
-    () => withMentions(withReact(withHistory(createEditor()))),
-    []
-  )
+  return useMemo(() => withMentions(withReact(withHistory(createEditor()))), [])
 }

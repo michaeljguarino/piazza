@@ -309,6 +309,7 @@ const Message = React.memo(({noHover, selected, scrollTo, message, onClick, pos,
 
   useEffect(() => {
     if (editing === false) setSize && setSize() // only when explicitly disabled
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editing])
 
   const unread = firstUnread(props.waterline, message, props.next)

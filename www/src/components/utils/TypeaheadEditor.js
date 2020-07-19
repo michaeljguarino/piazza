@@ -21,7 +21,6 @@ export default function TypeaheadEditor({editor, value, setValue, style, onOpen,
   const [suggestions, setSuggestions] = useState([])
   const renderElement = useCallback(props => <Element {...props} />, [])
 
-
   const onKeyDown = useCallback(
     event => {
       if (target) {
@@ -53,6 +52,7 @@ export default function TypeaheadEditor({editor, value, setValue, style, onOpen,
         }
       }
     },
+// eslint-disable-next-line react-hooks/exhaustive-deps
     [index, suggestions, target]
   )
 

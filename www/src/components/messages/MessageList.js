@@ -50,6 +50,7 @@ function OnlineInner({online, text}) {
 function BackOnline({refetch, status}) {
   useEffect(() => {
     refetch()
+// eslint-disable-next-line react-hooks/exhaustive-deps
   }, [status])
   return <OnlineInner online text='connection reestablished' />
 }
@@ -132,6 +133,7 @@ export default function MessageList() {
 
   useEffect(() => {
     listRef && !scrolled && listRef.scrollToItem(0)
+// eslint-disable-next-line react-hooks/exhaustive-deps
   }, [scrolled, scrollTo])
 
   if (loading && !data) return <Loading height='calc(100vh - 135px)' width='100%' />

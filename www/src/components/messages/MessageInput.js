@@ -23,7 +23,7 @@ import { Editor, Transforms } from 'slate'
 import { SyncLoader } from 'react-spinners'
 import { normalizeColor } from 'grommet/utils'
 import { Send } from '../utils/icons'
-
+import fs from 'filesize'
 
 const TEXT_SIZE='xsmall'
 const TEXT_COLOR='dark-4'
@@ -147,8 +147,11 @@ function MessageInputInner({editor, attachment, setAttachment, conversation, set
         variables: {conversationId: conversation.id},
         data: applyNewMessage(data, createMessage)
       })
+    },
+    onCompleted: () => {
       setUploadProgress(null)
       setReply(null)
+      setAttachment(null)
       setWaterline(moment().add(5, 'minutes').toISOString())
     }
   })
@@ -164,7 +167,7 @@ function MessageInputInner({editor, attachment, setAttachment, conversation, set
     }})
     Transforms.select(editor, Editor.start(editor, []))
     setEditorState(plainDeserialize(''))
-    setAttachment(null)
+// eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mutation, parentId, editorState, conversation, attachment, setAttachment, editor, setEditorState])
 
   return (
@@ -174,8 +177,20 @@ function MessageInputInner({editor, attachment, setAttachment, conversation, set
       fill='horizontal'
       pad={{horizontal: '10px'}}>
       {uploadProgress && (
-        <Layer plain modal={false} position='bottom'>
-          <Box width='400px'>
+        <Layer plain modal={false} position='top-right'>
+          <Box
+            width='400px'
+            gap='xsmall'
+            pad='small'
+            round='xsmall'
+            margin={{right: 'small', top: '70px'}}
+            background='dark-1'>
+            {attachment && (
+              <Box>
+                <Text size='small' weight={500}>{attachment.name}</Text>
+                <Text size='small' color='dark-3'>{fs(attachment.size)}</Text>
+              </Box>
+            )}
             <Progress
               percent={uploadProgress}
               status={uploadProgress === 100 ? 'success' : 'active'} />
@@ -226,6 +241,7 @@ export default function MessageInput(props) {
   const cache = useMemo(() => new TimedCache(2000, setTypists), [])
   const id = currentConversation.id
   const editor = useEditor()
+
   useEffect(() => {
     const channel = socket.channel(`conversation:${id}`)
     setChannel(channel)
@@ -233,6 +249,7 @@ export default function MessageInput(props) {
     channel.on("typing", (msg) => cache.add(msg.handle))
 
     return () => channel.leave()
+// eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id])
 
   const notifyTyping = debounce(() => {

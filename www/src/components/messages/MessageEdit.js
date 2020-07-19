@@ -1,7 +1,7 @@
-import React, { useState, useContext, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { useMutation } from 'react-apollo'
 import { Return } from 'grommet-icons'
-import { Box, Text } from 'grommet'
+import { Box } from 'grommet'
 import MentionManager from './MentionManager'
 import Button, {SecondaryButton} from '../utils/Button'
 import {EDIT_MESSAGE, MESSAGES_Q} from './queries'
@@ -27,7 +27,8 @@ function MessageEdit({setSize, message, ...props}) {
   })
 
   useEffect(() => {
-   setSize()
+    setSize()
+// eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editRef])
 
   return (

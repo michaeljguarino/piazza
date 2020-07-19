@@ -19,6 +19,7 @@ function ToggleIgnore({current, setIgnore}) {
 
   useEffect(() => {
     if (initial !== current) setIgnore(false)
+// eslint-disable-next-line react-hooks/exhaustive-deps
   }, [current, initial])
 
   return null
