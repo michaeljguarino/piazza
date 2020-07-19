@@ -3,7 +3,7 @@ defmodule Core.Models.StructuredMessage do
 
   schema do
     component "box" do
-      attributes ~w(direction width height pad margin align justify gap fill color)
+      attributes ~w(direction width height pad margin align justify gap fill color border borderSide borderSize)
       parents ~w(root box attachment)
     end
 
@@ -45,6 +45,11 @@ defmodule Core.Models.StructuredMessage do
     component "link" do
       attributes ~w(href target value color weight)
       parents ~w(text box attachment)
+    end
+
+    component "thumb" do
+      attributes ~w(name size)
+      parents ~w(box attachment)
     end
   end
 

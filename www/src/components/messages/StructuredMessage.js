@@ -5,6 +5,7 @@ import Button, { SecondaryButton } from '../utils/Button'
 import { INTERACTION } from './queries'
 import { DialogContext } from './MessageList'
 import { normalizeColor } from 'grommet/utils'
+import { Icon } from './File'
 
 function recurse(children, theme) {
   if (!children) return null
@@ -34,9 +35,13 @@ function video({key, attributes: {url, loop, autoPlay, width, height, ...rest}})
   )
 }
 
+const border = ({borderSize, borderSide, border}) => (
+  (borderSize || borderSide) ? {side: borderSide, color: border, size: borderSize} : border
+)
+
 function box({children, attributes, key}) {
   return (
-    <Box key={key} {...(attributes || {})}>
+    <Box key={key} {...(attributes || {})} border={border(attributes)}>
       {recurse(children)}
     </Box>
   )
@@ -83,8 +88,14 @@ function image({key, attributes: {url, width, height, ...rest}}) {
 
 function link({value, attributes, children, key}) {
   const val = value || attributes.value
-  return <Anchor key={key} {...attributes}>{val ? val :  recurse(children)}</Anchor>
+  return (
+    <Anchor key={key} {...attributes}>
+      <Text size='small' {...attributes}>{val ? val :  recurse(children)}</Text>
+    </Anchor>
+  )
 }
+
+const thumb = ({attributes: {name, size}, key}) => <Icon key={key} name={name} size={parseInt(size)} />
 
 function button({attributes: {interaction, payload, ...rest}}) {
   if (interaction) {
@@ -134,6 +145,8 @@ function parse(struct, index, theme) {
       return link(props)
     case "button":
       return button(props)
+    case "thumb":
+      return thumb(props)
     default:
       return null
   }
