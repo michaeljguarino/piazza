@@ -1,5 +1,5 @@
 import React from 'react'
-import { Box, Text, Anchor } from 'grommet'
+import { Box, Text, Anchor, Markdown } from 'grommet'
 
 function dimensions(props) {
   let width = props.width || '100px'
@@ -53,7 +53,7 @@ function Publisher({publisher, logo}) {
   )
 }
 
-export default function MessageEmbed(props) {
+export default function MessageEmbed({title, description, publisher, logo, url, ...props}) {
   let dims = dimensions(props)
   props = {...props, ...dims}
   return (
@@ -64,14 +64,14 @@ export default function MessageEmbed(props) {
         align='start'
         pad={{horizontal: 'small', vertical: 'xsmall'}}
         border={{side: 'left', color: 'light-6', size: '3px'}}>
-        <Publisher publisher={props.publisher} logo={props.logo} />
+        <Publisher publisher={publisher} logo={logo} />
         <Anchor
           size='small'
           _target='blank'
           style={{fontWeight: 500}}
-          href={props.url}
-          margin={props.publisher ? {top: 'xxsmall'} : null}>{props.title}</Anchor>
-        <Text size='small' margin={{top: 'xxsmall', bottom: 'small'}}>{props.description}</Text>
+          href={url}
+          margin={publisher ? {top: 'xxsmall'} : null}>{title}</Anchor>
+        <Markdown size='small' margin={{top: 'xxsmall', bottom: 'small'}}>{(description || '').trim()}</Markdown>
         <EmbedMedia {...props} />
       </Box>
     </Box>

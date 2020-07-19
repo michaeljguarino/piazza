@@ -31,11 +31,11 @@ function TextMessage({text, entities}) {
 const PINNED_BACKGROUND='rgba(var(--sk_secondary_highlight,242,199,68),.1)'
 const PIN_COLOR='rgb(242,199,68)'
 
-function MsgMarkdown(props) {
+function MsgMarkdown({children}) {
   return (
     <Markdown
       components={{p: {props: {size: 'small', margin: {top: 'xsmall', bottom: 'xsmall'}}}}}>
-    {props.children}
+    {children}
     </Markdown>
   )
 }

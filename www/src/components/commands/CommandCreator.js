@@ -47,14 +47,17 @@ export function ConversationSelector({onSelect}) {
 
 function Unfurlers({formState: {unfurlers, ...formState}, unfurler, setFormState}) {
   const [editState, setEditState] = useState(unfurler || {regex: '', value: null})
+  console.log(unfurlers)
   return (
     <Box gap='small' pad='small'>
       {unfurlers.map(({regex, name}) => (
-        <Box direction='row' gap='xsmall' align='center'>
+        <Box style={{cursor: 'pointer'}} direction='row' gap='xsmall' align='center' onClick={() => setFormState({
+          ...formState, unfurlers: unfurlers.filter((f) => regex !== f.regex)}
+        )}>
           <Text size='small'>{regex}</Text>
-          <FormClose style={{cursor: 'pointer'}} size='14px' onClick={() => setFormState({
-            ...formState, unfurlers: unfurlers.filter((f) => regex !== f.regex)}
-          )} />
+          <Box  pad='xsmall'>
+            <FormClose size='14px' />
+          </Box>
         </Box>
       ))}
       <Box direction='row' gap='small' flex={false} margin={{top: 'small'}}>
