@@ -38,6 +38,7 @@ defmodule GraphQl.Proxy.Forge do
           description: node["description"],
           documentation: node["spec"]["documentation"],
           webhook: node["spec"]["webhook"],
+          regex: node["spec"]["unfurlerRegex"],
           avatar: node["icon"]
         }
       }

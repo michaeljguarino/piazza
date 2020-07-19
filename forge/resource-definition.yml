@@ -8,4 +8,5 @@ spec:
   required: true
 - type: STRING
   name: documentation
-
+- type: STRING
+  name: unfurlerRegex

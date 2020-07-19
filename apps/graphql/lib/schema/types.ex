@@ -425,12 +425,13 @@ defmodule GraphQl.Schema.Types do
   end
 
   object :installable_command do
-    field :id, :id
-    field :name, :string
-    field :description, :string
+    field :id,            :id
+    field :name,          :string
+    field :description,   :string
     field :documentation, :string
-    field :webhook, :string
-    field :avatar, :string
+    field :webhook,       :string
+    field :avatar,        :string
+    field :regex,         :string
   end
 
   connection node_type: :command

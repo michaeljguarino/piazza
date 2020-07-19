@@ -58,19 +58,13 @@ export default function MessageEmbed({title, description, publisher, logo, url, 
   props = {...props, ...dims}
   return (
     <Box margin={{vertical: 'xxsmall'}}>
-      <Box
-        round='xxsmall'
-        direction='column'
-        align='start'
-        pad={{horizontal: 'small', vertical: 'xsmall'}}
-        border={{side: 'left', color: 'light-6', size: '3px'}}>
+      <Box round='xxsmall' direction='column' align='start' pad={{horizontal: 'small', vertical: 'xsmall'}}
+           border={{side: 'left', color: 'light-6', size: '3px'}}>
         <Publisher publisher={publisher} logo={logo} />
-        <Anchor
-          size='small'
-          _target='blank'
-          style={{fontWeight: 500}}
-          href={url}
-          margin={publisher ? {top: 'xxsmall'} : null}>{title}</Anchor>
+        <Anchor size='small' _target='blank' style={{fontWeight: 500}} href={url}
+           margin={publisher ? {top: 'xxsmall'} : null}>
+          {title}
+        </Anchor>
         <Markdown size='small' margin={{top: 'xxsmall', bottom: 'small'}}>{(description || '').trim()}</Markdown>
         <EmbedMedia {...props} />
       </Box>

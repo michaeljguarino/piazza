@@ -9,3 +9,4 @@ spec:
   description: Notifies you of things going on in your silo projects
   documentation: "* /silo **subscribe** _project_ - Configures silo notifications for _project_ to go into this conversation"
   webhook: http://silo-api.silo:4000/webhooks/piazza
+  unfurlerRegex: https://{:value}/f/[a-zA-Z0-9]{8}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{12}
