@@ -102,6 +102,7 @@ export const INSTALLABLE_COMMANDS = gql`
           documentation
           webhook
           avatar
+          regex
         }
       }
     }

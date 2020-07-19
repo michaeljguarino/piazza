@@ -46,8 +46,9 @@ export function ConversationSelector({onSelect}) {
 }
 
 function Unfurlers({formState: {unfurlers, ...formState}, unfurler, setFormState}) {
+  console.log(unfurler)
   const [editState, setEditState] = useState(unfurler || {regex: '', value: null})
-  console.log(unfurlers)
+
   return (
     <Box gap='small' pad='small'>
       {unfurlers.map(({regex, name}) => (
@@ -89,7 +90,7 @@ export function CommandForm({formState, setFormState, vars, mutation, setOpen, a
   const {incomingWebhook, ...form} = formState
   const finalVars = incomingWebhook ? {...additionalVars, ...form, incomingWebhook} : {...additionalVars, ...form}
   const [loading, setLoading] = useState(false)
-  const [expanded, setExpanded] = useState(formState.unfurlers && formState.unfurlers.length > 0)
+  const [expanded, setExpanded] = useState((unfurler && unfurler.regex) || (formState.unfurlers && formState.unfurlers.length > 0))
   const [mut] = useMutation(mutation || CREATE_COMMAND, {
     variables: {...finalVars, documentation: plainSerialize(editorState)},
     update: (cache, {data}) => {

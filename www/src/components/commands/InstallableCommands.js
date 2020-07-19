@@ -45,7 +45,7 @@ function toCommand(builtin) {
   }
 }
 
-function InstallableCommandCreator({additionalVars, command, setOpen}) {
+function InstallableCommandCreator({additionalVars, command, setOpen, regex}) {
   const [formState, setFormState] = useState(formStateFromCommand(command))
   return (
     <Box width="600px" pad={{bottom: 'small'}} round='small'>
@@ -64,6 +64,7 @@ function InstallableCommandCreator({additionalVars, command, setOpen}) {
           action='Create'
           mutation={CREATE_COMMAND}
           vars={{...(additionalVars || {}), commandName: command.name}}
+          unfurler={{regex}}
           setOpen={setOpen}
           formState={formState}
           setFormState={setFormState} />
@@ -80,6 +81,7 @@ function WrappedInstallableCommand({installable}) {
       <InstallableCommandCreator
         setOpen={setOpen}
         command={toCommand(installable)}
+        regex={installable.regex}
         additionalVars={{bot: {avatar: installable.avatar}}}
       />
     )}
