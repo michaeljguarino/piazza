@@ -90,7 +90,7 @@ const Piazza = () => {
                   <Box
                     direction='row'
                     style={{height: '100%', width: '100%', maxHeight: 'calc(100vh - 60px)'}}
-                    border='top'>
+                    border={{side: 'top', color: 'light-6'}}>
                     <Box width='100%' height='100%' align='center'>
                       <DividerText />
                       <Box id='msg-view' width='100%' height='100%'>

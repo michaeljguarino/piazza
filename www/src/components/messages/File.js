@@ -21,7 +21,7 @@ function DownloadAffordance({object}) {
           onClick={(e) => {
             e.preventDefault()
             download(object)
-          }}>
+          }} border={{color: 'light-3'}}>
           <Download size='15px' />
         </Box>
       </HoveredBackground>

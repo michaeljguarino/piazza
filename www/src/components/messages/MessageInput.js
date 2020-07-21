@@ -27,7 +27,6 @@ import fs from 'filesize'
 
 const TEXT_SIZE='xsmall'
 const TEXT_COLOR='dark-4'
-const SEND_COLOR='status-ok'
 
 function Typing({ignore, typists}) {
   const theme = useContext(ThemeContext)
@@ -76,11 +75,7 @@ function fetchRecentMessage(cache, setEdited, me, conversation) {
 
 function InputFooter({typists, me: {handle}}) {
   return (
-    <Box
-      style={{height: '25px'}} pad={{top: '2px', bottom: '2px'}}
-      align='center'
-      direction='row'
-      fill='horizontal'>
+    <Box style={{height: '25px'}} pad={{top: '2px', bottom: '2px'}} align='center' direction='row' fill='horizontal'>
       <Box flex={false} width='calc(100% - 600px)' margin={{left: 'small'}}>
         <Typing typists={typists} ignore={handle} />
       </Box>
@@ -93,13 +88,9 @@ function FileInput({attachment, setAttachment}) {
   return (
     <HoveredBackground>
       <Box accentable style={{cursor: "pointer"}}>
-        <FilePicker
-          onChange={(file) => setAttachment(file)}
-          maxSize={2000}
-          onError={(msg) => console.log(msg)}
-        >
+        <FilePicker onChange={(file) => setAttachment(file)} maxSize={2000} onError={(msg) => console.log(msg)}>
           <Box align='center' justify='center' height='40px' width="30px">
-            <Attachment color={attachment ? SEND_COLOR : null} size='15px' />
+            <Attachment color={attachment ? 'action' : null} size='15px' />
           </Box>
         </FilePicker>
       </Box>
@@ -109,17 +100,9 @@ function FileInput({attachment, setAttachment}) {
 
 function SendMsg({empty, onClick}) {
   return (
-    <Box
-      flex={false}
-      style={empty ? null : {cursor: 'pointer'}}
-      margin='4px'
-      height='35px'
-      width="35px"
-      round='xxsmall'
-      align='center'
-      justify='center'
-      onClick={empty ? null : onClick}
-      background={empty ? null : 'action'} >
+    <Box flex={false} style={empty ? null : {cursor: 'pointer'}} margin='4px' height='35px'
+      width="35px" round='xxsmall' align='center' justify='center'
+      onClick={empty ? null : onClick} background={empty ? null : 'action'} >
       <Send size='15px' color={empty ? 'light-3' : 'white'} />
     </Box>
   )
@@ -171,29 +154,21 @@ function MessageInputInner({editor, attachment, setAttachment, conversation, set
   }, [mutation, parentId, editorState, conversation, attachment, setAttachment, editor, setEditorState])
 
   return (
-    <Box
-      ref={dropRef}
-      style={{maxHeight: '210px', minHeight: 'auto'}}
-      fill='horizontal'
-      pad={{horizontal: '10px'}}>
-      {uploadProgress && (
+    <Box ref={dropRef} style={{maxHeight: '210px', minHeight: 'auto'}} fill='horizontal' pad={{horizontal: '10px'}}>
+      {(attachment || uploadProgress) && (
         <Layer plain modal={false} position='top-right'>
-          <Box
-            width='400px'
-            gap='xsmall'
-            pad='small'
-            round='xsmall'
-            margin={{right: 'small', top: '70px'}}
-            background='dark-1'>
+          <Box width='400px' gap='xsmall' pad='small' round='xsmall'
+            margin={{right: 'small', top: '70px'}} background='dark-1'>
             {attachment && (
               <Box>
                 <Text size='small' weight={500}>{attachment.name}</Text>
                 <Text size='small' color='dark-3'>{fs(attachment.size)}</Text>
               </Box>
             )}
-            <Progress
-              percent={uploadProgress}
-              status={uploadProgress === 100 ? 'success' : 'active'} />
+            {!uploadProgress ?
+              <Text size='small'>add a message and upload</Text> :
+              <Progress percent={uploadProgress} status={uploadProgress === 100 ? 'success' : 'active'} />
+            }
           </Box>
         </Layer>
       )}
@@ -208,13 +183,8 @@ function MessageInputInner({editor, attachment, setAttachment, conversation, set
           plainSerialize(editorState) === '' && fetchRecentMessage(
             cache,  setEdited, me, conversation)
         )}>
-        <Box
-          border
-          fill='horizontal'
-          height='calc(100%-20px)'
-          direction="row"
-          align="center"
-          round='xsmall'>
+        <Box border={{color: 'dark-3'}} fill='horizontal' height='calc(100%-20px)'
+             direction="row" align="center" round='xsmall'>
           <MentionManager
             parentRef={boxRef}
             editor={editor}
@@ -252,9 +222,9 @@ export default function MessageInput(props) {
 // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id])
 
-  const notifyTyping = debounce(() => {
+  const notifyTyping = useCallback(debounce(() => {
     channel && channel.push("typing", {who: "cares"})
-  }, 500, {leading: true})
+  }, 1000, {leading: true}), [channel])
 
   return (
     <>

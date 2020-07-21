@@ -136,6 +136,7 @@ function MessageControls(props) {
   return (
     <Box
       className='message-controls'
+      border={{color: 'light-3'}}
       elevation='xsmall'
       background='white'
       direction='row'
