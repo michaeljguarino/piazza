@@ -20,7 +20,7 @@ function VideoEmbed({title, videoUrl, videoType}) {
 
 function ImageEmbed({imageUrl}) {
   return (
-    <img style={{height: '200px'}} src={imageUrl} />
+    <img alt='' style={{height: '200px'}} src={imageUrl} />
   )
 }
 
@@ -47,7 +47,7 @@ function Publisher({publisher, logo}) {
 
   return (
     <Box direction='row' gap='small' align='center'>
-      {logo && <img height='15px' src={logo} />}
+      {logo && <img alt='' height='15px' src={logo} />}
       <Text size='xsmall' color='dark-3'>{publisher}</Text>
     </Box>
   )
@@ -65,7 +65,9 @@ export default function MessageEmbed({title, description, publisher, logo, url, 
            margin={publisher ? {top: 'xxsmall'} : null}>
           {title}
         </Anchor>
-        <Markdown size='small' margin={{top: 'xxsmall', bottom: 'small'}}>{(description || '').trim()}</Markdown>
+        <Box margin={{top: 'xxsmall', bottom: 'small'}}>
+          <Markdown size='small'>{(description || '').trim()}</Markdown>
+        </Box>
         <EmbedMedia {...props} />
       </Box>
     </Box>
