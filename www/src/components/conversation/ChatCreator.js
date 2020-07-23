@@ -91,7 +91,7 @@ function ChatCreator({padding, setCurrentConversation}) {
             pad={{bottom: 'small'}}
             round='small'>
             <ModalHeader text='Start a chat' setOpen={setOpen} />
-            <Box style={{minHeight: '60px'}} border='bottom' margin={{bottom: 'small'}}>
+            <Box style={{minHeight: '60px'}} margin={{bottom: 'small'}}>
               <ParticipantInvite
                 direction='row'
                 onAddParticipant={addParticipant}

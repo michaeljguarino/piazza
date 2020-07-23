@@ -8,7 +8,7 @@ export function ModalHeader({big, ...props}) {
     <Box
       flex={false}
       direction='row'
-      border='bottom'
+      border={{side:'bottom', color: 'light-5'}}
       elevation='xxsmall'
       round={props.round || {size: '4px', corner: 'top'}}
       pad='small'>
