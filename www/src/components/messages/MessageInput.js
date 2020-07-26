@@ -1,7 +1,7 @@
 import React, { useRef, useState, useContext, useEffect, useMemo, useCallback } from 'react'
-import {socket} from '../../helpers/client'
+import { HoveredBackground } from 'forge-core'
+import { socket } from '../../helpers/client'
 import TimedCache from '../utils/TimedCache'
-import HoveredBackground from '../utils/HoveredBackground'
 import { useMutation, useApolloClient } from 'react-apollo'
 import { Box, Text, Markdown, Layer, Keyboard, Drop, ThemeContext } from 'grommet'
 import { Attachment } from 'grommet-icons'
@@ -100,7 +100,7 @@ function FileInput({attachment, setAttachment}) {
 
 function SendMsg({empty, onClick}) {
   return (
-    <Box flex={false} style={empty ? null : {cursor: 'pointer'}} margin='4px' height='35px'
+    <Box flex={false} focusIndicator={false} margin='4px' height='35px'
       width="35px" round='xxsmall' align='center' justify='center'
       onClick={empty ? null : onClick} background={empty ? null : 'action'} >
       <Send size='15px' color={empty ? 'light-3' : 'white'} />

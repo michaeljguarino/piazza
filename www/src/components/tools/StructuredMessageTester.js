@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
 import { Box } from 'grommet'
 import { useHistory } from 'react-router-dom'
+import { ModalHeader } from 'forge-core'
 import StructuredMessage from '../messages/StructuredMessage'
-import { ModalHeader } from '../utils/Modal'
 import AceEditor from "react-ace"
 import "ace-builds/src-noconflict/mode-xml"
 import "ace-builds/src-noconflict/theme-terminal"

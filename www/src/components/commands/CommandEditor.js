@@ -1,9 +1,9 @@
-import React, {useState} from 'react'
-import {Box} from 'grommet'
+import React, { useState } from 'react'
+import { Box } from 'grommet'
+import { ModalHeader } from 'forge-core'
 import CommandListEntry from './CommandListEntry'
-import {CommandForm} from './CommandCreator'
-import {ModalHeader} from '../utils/Modal'
-import {UPDATE_COMMAND} from './queries'
+import { CommandForm } from './CommandCreator'
+import { UPDATE_COMMAND } from './queries'
 
 export function formStateFromCommand({name, description, documentation, webhook, unfurlers}) {
   let formState = {name, description, documentation, url: webhook && webhook.url}

@@ -1,13 +1,12 @@
 import React, {useState} from 'react'
 import { useQuery } from 'react-apollo'
 import { Box, Text } from 'grommet'
+import { Modal, ModalHeader, Scroller } from 'forge-core'
 import { INSTALLABLE_COMMANDS, CREATE_COMMAND } from './queries'
-import Modal, { ModalHeader } from '../utils/Modal'
 import { formStateFromCommand } from './CommandEditor'
 import { CommandForm } from './CommandCreator'
 import { mergeAppend } from '../../utils/array'
 import CommandListEntry from './CommandListEntry'
-import Scroller from '../utils/Scroller'
 
 function InstallableCommand({installable}) {
   const [hover, setHover] = useState(false)

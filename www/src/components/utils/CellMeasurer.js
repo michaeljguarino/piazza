@@ -6,7 +6,7 @@ import {findDOMNode} from 'react-dom';
  * Measurements are stored in a per-cell cache.
  * Cached-content is not be re-measured.
  */
-export default class CellMeasurer extends React.PureComponent {
+export class CellMeasurer extends React.PureComponent {
   static __internalCellMeasurerFlag = false;
 
   _child = null

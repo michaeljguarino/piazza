@@ -2,8 +2,7 @@ import React, { useState, useContext } from 'react'
 import { useMutation, useQuery } from 'react-apollo'
 import { Box, Text, Markdown, Anchor, Calendar } from 'grommet'
 import { Down } from 'grommet-icons'
-import CloseableDropdown from '../utils/CloseableDropdown'
-import Modal, { ModalHeader } from '../utils/Modal'
+import { CloseableDropdown, Modal, ModalHeader, InterchangeableBox, MenuItem, SubMenu, HoveredBackground } from 'forge-core'
 import { UPDATE_CONVERSATION, UPDATE_PARTICIPANT, DELETE_PARTICIPANT, CONVERSATION_CONTEXT } from './queries'
 import ConversationEditForm from './ConversationEditForm'
 import NotificationIcon from '../notifications/NotificationIcon'
@@ -16,9 +15,6 @@ import NotificationsPreferences, { DEFAULT_PREFS } from '../users/NotificationPr
 import { updateConversation } from './utils'
 import { conversationNameString, Icon } from './Conversation'
 import pick from 'lodash/pick'
-import InterchangeableBox from '../utils/InterchangeableBox'
-import MenuItem, { SubMenu } from '../utils/MenuItem'
-import HoveredBackground from '../utils/HoveredBackground'
 import { Conversations } from '../login/MyConversations'
 import { CONTEXT_Q } from '../login/queries'
 import { ICON_HEIGHT } from '../Piazza'
@@ -144,11 +140,12 @@ function ConversationDropdown({setAnchor, ...props}) {
       align={{left: 'left', top: "bottom"}}
       target={<ConversationName me={props.me} conversation={props.conversation} />}>
       {setOpen => (
-        <InterchangeableBox width={DROP_WIDTH} round='small' pad={{vertical: 'xxsmall'}}>
+        <InterchangeableBox width={DROP_WIDTH} round='small' pad={{vertical: 'xxsmall'}} hover='focus'>
         {setAlternate => (
           <>
           <SubMenu
             text='Notification Preferences'
+            hover='focus'
             setAlternate={setAlternate}>
             <Box width={DROP_WIDTH} pad='small'>
               <NotificationsPreferences
@@ -159,6 +156,7 @@ function ConversationDropdown({setAnchor, ...props}) {
           </SubMenu>
           <SubMenu
             text='Jump to date'
+            hover='focus'
             setAlternate={setAlternate}>
             <Box width={DROP_WIDTH} pad={{top: 'small'}} align='center' justify='center'>
               <Calendar
@@ -171,7 +169,7 @@ function ConversationDropdown({setAnchor, ...props}) {
                 }} />
             </Box>
           </SubMenu>
-          <MenuItem>
+          <MenuItem hover='focus'>
             <LeaveConversation setOpen={setOpen} {...props} />
           </MenuItem>
           </>

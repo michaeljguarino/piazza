@@ -1,7 +1,7 @@
 import React from 'react'
 import { Box } from 'grommet'
 import { Query } from 'react-apollo'
-import Loading from '../utils/Loading'
+import { Loading } from 'forge-core'
 import { EMOJI_Q } from './queries'
 
 export const EmojiContext = React.createContext({})

@@ -1,10 +1,8 @@
 import React, { useState } from 'react'
 import { Box, Select, Text, TextInput } from 'grommet'
 import { useApolloClient, useMutation } from 'react-apollo'
-import { ModalHeader } from '../utils/Modal'
+import { ModalHeader, InputField, Button, SecondaryButton, Expander } from 'forge-core'
 import CommandListEntry from './CommandListEntry'
-import InputField from '../utils/InputField'
-import Button, { SecondaryButton } from '../utils/Button'
 import { CREATE_COMMAND, COMMANDS_Q } from './queries'
 import { addCommand } from './utils'
 import { searchConversations } from '../conversation/ConversationSearch'
@@ -14,7 +12,6 @@ import {
 } from 'slate-react'
 import {plainSerialize, plainDeserialize} from '../../utils/slate'
 import { useEditor } from '../utils/hooks'
-import Expander from '../utils/Expander'
 import { FormClose } from 'grommet-icons'
 
 const LABEL_WIDTH = '100px'
@@ -51,7 +48,7 @@ function Unfurlers({formState: {unfurlers, ...formState}, unfurler, setFormState
   return (
     <Box gap='small' pad='small'>
       {unfurlers.map(({regex, name}) => (
-        <Box style={{cursor: 'pointer'}} direction='row' gap='xsmall' align='center' onClick={() => setFormState({
+        <Box focusIndicator={false} direction='row' gap='xsmall' align='center' onClick={() => setFormState({
           ...formState, unfurlers: unfurlers.filter((f) => regex !== f.regex)}
         )}>
           <Text size='small'>{regex}</Text>

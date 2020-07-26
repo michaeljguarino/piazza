@@ -3,12 +3,8 @@ import { Box, Text, ThemeContext, Meter, Stack } from 'grommet'
 import { User, Lock, Logout, Iteration } from 'grommet-icons'
 import Avatar from './Avatar'
 import { useMutation, useQuery } from 'react-apollo'
-import CloseableDropdown from '../utils/CloseableDropdown'
-import Modal, { ModalHeader } from '../utils/Modal'
+import { CloseableDropdown, Modal, ModalHeader, MenuItem, SubMenu, InterchangeableBox, HoveredBackground, Tooltip } from 'forge-core'
 import { AUTH_TOKEN } from '../../constants'
-import MenuItem, { SubMenu } from '../utils/MenuItem'
-import InterchangeableBox from '../utils/InterchangeableBox'
-import HoveredBackground from '../utils/HoveredBackground'
 import { FilePicker } from 'react-file-picker'
 import { ME_Q, UPDATE_USER, PLAN_Q } from './queries'
 import { CurrentUserContext } from '../login/EnsureLogin'
@@ -19,12 +15,11 @@ import AdminTools from '../tools/AdminTools'
 import Themes from '../workspace/Themes'
 import WithPresence from '../utils/presence'
 import PresenceIndicator from './PresenceIndicator'
-import Tooltip from '../utils/Tooltip'
 
 export function DropdownItem(props) {
   const {onClick, ...rest} = props
   return (
-    <MenuItem onClick={() => onClick && onClick()} {...rest}>
+    <MenuItem hover='focus' onClick={() => onClick && onClick()} {...rest}>
       <Box direction='row' align='center' gap='xsmall'>
         {props.icon && React.createElement(props.icon, {size: '12px'})}
         <Text size='small'>{props.text}</Text>
@@ -93,7 +88,7 @@ function MeDropdown({me}) {
         <Avatar user={me} rightMargin='10px' />
         <Text size="small" weight='bold'>{me.name}</Text>
       </Box>
-      <InterchangeableBox>
+      <InterchangeableBox hover='focus'>
       {setAlternate => (
         <>
         <Box pad={{bottom: 'xxsmall'}}>
@@ -120,18 +115,18 @@ function MeDropdown({me}) {
           <Modal target={<DropdownItem icon={Iteration} text='theme selector' />}>
             {setOpen => (<Themes setOpen={setOpen} />)}
           </Modal>
-          <SubMenu text='developer tools' setAlternate={setAlternate}>
+          <SubMenu text='developer tools' hover='focus' setAlternate={setAlternate}>
             <Tools />
           </SubMenu>
           {isAdmin && (
-            <SubMenu text='admin tools' setAlternate={setAlternate}>
+            <SubMenu text='admin tools' hover='focus' setAlternate={setAlternate}>
               <AdminTools me={me} />
             </SubMenu>
           )}
           {isAdmin && (<PlanDetails />)}
         </Box>
         <Box border='top' pad={{vertical: 'xxsmall'}}>
-          <MenuItem onClick={_logout}>
+          <MenuItem hover='focus' onClick={_logout}>
             <Box direction='row' align='center'>
               <Box width='100%'>
                 <Text size='small'>logout</Text>

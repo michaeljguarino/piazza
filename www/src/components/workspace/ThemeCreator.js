@@ -1,9 +1,8 @@
 import React, { useState } from 'react'
 import { useMutation } from 'react-apollo'
 import { Box, Text, TextInput } from 'grommet'
+import { Button, SecondaryButton, InputField } from 'forge-core'
 import { THEME_FIELDS, SLACK_THEME_FIELDS, LINK_DEFAULT, BUTTON_DEFAULT } from './constants'
-import Button, {SecondaryButton} from '../utils/Button'
-import InputField from '../utils/InputField'
 import { chunk } from '../../utils/array'
 import { ThemeContext } from '../Workspace'
 import { ChromePicker } from 'react-color'
@@ -29,7 +28,7 @@ function ThemePicker({field, active, color, onChange}) {
           width='20px'
           height='20px'
           background={color}
-          style={{cursor: 'pointer'}}
+          focusIndicator={false}
           onClick={() => onChange(field)} />
       </Box>
     </Box>

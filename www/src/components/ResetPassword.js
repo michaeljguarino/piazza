@@ -1,11 +1,9 @@
 import React, { useState } from 'react'
 import gql from 'graphql-tag'
 import { FormField, Box, Text, Form } from 'grommet'
-import Button from './utils/Button'
+import { Button, Pill, Error } from 'forge-core'
 import { useMutation } from 'react-apollo'
-import Pill from './utils/Pill'
 import { Close } from 'grommet-icons'
-import { Error } from './utils/Error'
 
 const RESET_EMAIL = gql`
   mutation ResetEmail($email: String!) {

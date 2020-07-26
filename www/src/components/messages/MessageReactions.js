@@ -1,7 +1,7 @@
 import React, { useContext } from 'react'
 import { useMutation } from 'react-apollo'
 import { Box, Text } from 'grommet'
-import Tooltip from '../utils/Tooltip'
+import { Tooltip } from 'forge-core'
 import 'emoji-mart/css/emoji-mart.css'
 import { Emoji } from 'emoji-mart'
 import { DELETE_REACTION, CREATE_REACTION, MESSAGES_Q } from './queries'
@@ -13,7 +13,7 @@ import { MessageReaction } from './MessageControls'
 const BOX_ATTRS={
   pad:'3px',
   direction: 'row',
-  style: {cursor: 'pointer'},
+  focusIndicator: false,
   height: '25px',
   round: 'xsmall',
   align: 'center',

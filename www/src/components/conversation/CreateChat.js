@@ -2,7 +2,7 @@ import React, { useState, useContext } from 'react'
 import { ChatOption } from 'grommet-icons'
 import { useMutation } from 'react-apollo'
 import { CREATE_CHAT } from './queries'
-import {addConversation} from './utils'
+import { addConversation } from './utils'
 import { Conversations } from '../login/MyConversations'
 import { CONTEXT_Q } from '../login/queries'
 

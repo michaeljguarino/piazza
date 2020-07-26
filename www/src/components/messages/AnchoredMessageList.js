@@ -3,8 +3,7 @@ import {Box, Text, Stack} from 'grommet'
 import {Down} from 'grommet-icons'
 import Message from './Message'
 import { useQuery } from 'react-apollo'
-import DualScroller from '../utils/DualScroller'
-import Loading from '../utils/Loading'
+import { DualScroller, Loading } from 'forge-core'
 import {reverse, mergeAppend} from '../../utils/array'
 import {ANCHORED_MESSAGES} from './queries'
 import { Conversations } from '../login/MyConversations'
@@ -14,7 +13,7 @@ import { ScrollContext } from '../utils/SmoothScroller'
 function RecentItemsOverlay({setAnchor}) {
   return (
     <Box
-      style={{cursor: 'pointer'}}
+      focusIndicator={false}
       onClick={() => setAnchor(null)}
       direction='row'
       align='center'

@@ -1,14 +1,13 @@
 import React, { useState, useContext, useEffect, useRef } from 'react'
 import { Box, Text, Layer } from 'grommet'
+import { Loading, Pill } from 'forge-core'
 import { Wifi, Close, User, Down } from 'grommet-icons'
 import Message, { MessagePlaceholder } from './Message'
 import { Subscription, useQuery } from 'react-apollo'
 import SmoothScroller from '../utils/SmoothScroller'
-import Loading from '../utils/Loading'
 import { MESSAGES_Q, DIALOG_SUB } from './queries'
 import { Conversations } from '../login/MyConversations'
 import { ReplyContext } from './ReplyProvider'
-import Pill from '../utils/Pill'
 import AvailabilityDetector, { OFFLINE } from '../utils/AvailabilityDetector'
 import { MessageScrollContext } from './MessageSubscription'
 import { VisibleMessagesContext } from './VisibleMessages'
@@ -96,17 +95,14 @@ function Prelude({conversation}) {
 }
 
 function ReturnToBeginning({listRef}) {
-  const [hover, setHover] = useState(false)
 
   return (
     <Layer position='top-right' modal={false} plain>
-      <Box direction='row' align='center' round='xsmall' gap='small' background={hover ? 'dark-1' : 'dark-2'}
+      <Box direction='row' align='center' round='xsmall' gap='small' hoverIndicator='dark-1' background='dark-2'
         margin={{top: '70px', right: '10px'}}
         pad={{horizontal: 'small', vertical: 'xsmall'}}
-        style={{cursor: 'pointer'}}
-        onClick={() => listRef.scrollToItem(0)}
-        onMouseEnter={() => setHover(true)}
-        onMouseLeave={() => setHover(false)}>
+        focusIndicator={false}
+        onClick={() => listRef.scrollToItem(0)}>
         <Box direction='row' fill='horizontal' justify='center'>
           <Text size='small'>go to most recent</Text>
         </Box>

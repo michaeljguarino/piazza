@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Box, Text } from 'grommet';
+import { HoveredBackground } from 'forge-core'
 import Conversation from './Conversation';
-import HoveredBackground from '../utils/HoveredBackground';
 import { mergeAppend } from '../../utils/array';
 import { PADDING } from './ConversationPanel';
 
@@ -32,7 +32,7 @@ function NextPage({pageInfo: {hasNextPage, endCursor}, type, fetchMore}) {
         direction='row'
         align='center'
         height='24px'
-        style={{cursor: 'pointer'}}
+        focusIndicator={false}
         onClick={() => hasNextPage && fetchMore({
           variables: {cursor: endCursor},
           updateQuery: (prev, res) => appendConversations(type, prev, res)

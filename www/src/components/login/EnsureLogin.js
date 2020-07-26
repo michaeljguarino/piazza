@@ -1,10 +1,10 @@
 import React from 'react'
-import {Redirect} from 'react-router-dom'
-import {Box} from 'grommet'
-import {useQuery} from 'react-apollo'
-import Loading from '../utils/Loading'
-import {ME_Q} from '../users/queries'
-import {wipeToken} from '../../helpers/authentication'
+import { Redirect } from 'react-router-dom'
+import { Box } from 'grommet'
+import { useQuery } from 'react-apollo'
+import { Loading } from 'forge-core'
+import { ME_Q } from '../users/queries'
+import { wipeToken } from '../../helpers/authentication'
 
 // const POLL_INTERVAL=30000
 export const CurrentUserContext = React.createContext({})

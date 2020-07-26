@@ -1,14 +1,11 @@
 import React, { useContext, useState, useRef } from 'react'
-import HoveredBackground from '../utils/HoveredBackground'
 import { Box, Text, Drop, ThemeContext } from 'grommet'
+import { Modal, ModalHeader, Button, InputField, HoveredBackground } from 'forge-core'
 import { WorkspaceContext } from '../Workspace'
 import { Conversations } from '../login/MyConversations'
 import { Edit, Add } from 'grommet-icons'
-import Modal, { ModalHeader } from '../utils/Modal'
 import { useMutation } from 'react-apollo'
 import { UPDATE_WORKSPACE, CREATE_WORKSPACE } from './queries'
-import Button from '../utils/Button'
-import InputField from '../utils/InputField'
 import { CurrentUserContext } from '../login/EnsureLogin'
 import { NotificationBadge } from '../conversation/Conversation'
 import { addWorkspace } from './utils'
@@ -119,11 +116,14 @@ function Workspace({workspace, workspaceId, me, setWorkspace}) {
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}>
       <UploadableIcon workspace={workspace} />
-      <Box width='100%' onClick={() => !selected && setWorkspace(workspace)}>
-        <Text size='small' style={{fontWeight: 500}}>{workspace.name}</Text>
-        {workspace.description && <Text size='small'><i>{workspace.description}</i></Text>}
+      <Box fill='horizontal' direction='row' align='center' justify='end' gap='small'
+           onClick={() => !selected && setWorkspace(workspace)}>
+        <Box fill='horizontal' justify='center'>
+          <Text size='small' weight={500} truncate>{workspace.name}</Text>
+          {workspace.description && <Text size='small' truncate><i>{workspace.description}</i></Text>}
+        </Box>
+        {workspace.unreadNotifications > 0 && !hover && (<NotificationBadge unread={workspace.unreadNotifications} />)}
       </Box>
-      {workspace.unreadNotifications > 0 && !hover && (<NotificationBadge unread={workspace.unreadNotifications} />)}
       {hover && admin && (
         <Modal disableClickOutside target={
           <HoveredBackground>
@@ -206,7 +206,7 @@ export default function Workspaces({pad}) {
           sidebarHover
           accentText
           height={`${FOOTER_HEIGHT}px`}
-          style={{cursor: 'pointer'}}
+          focusIndicator={false}
           pad={{...pad, right: 'small', vertical: 'small'}}
           align='center'
           justify='end'

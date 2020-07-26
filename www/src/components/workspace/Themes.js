@@ -1,10 +1,8 @@
 import React, { useState } from 'react'
 import { Box, Text } from 'grommet'
+import { InterchangeableBox, ModalHeader, Button, SecondaryButton } from 'forge-core'
 import ThemeSelector from './ThemeSelector'
 import ThemeCreator from './ThemeCreator'
-import InterchangeableBox from '../utils/InterchangeableBox'
-import {ModalHeader} from '../utils/Modal'
-import Button, { SecondaryButton } from '../utils/Button'
 
 export default function Themes({setOpen, brand}) {
   const [header, setHeader] = useState('Select a theme')

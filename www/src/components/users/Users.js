@@ -2,16 +2,12 @@ import React from 'react'
 import { Box } from 'grommet'
 import { User } from 'grommet-icons'
 import { useQuery } from 'react-apollo'
-import Scroller from '../utils/Scroller'
-import Flyout, { FlyoutHeader, FlyoutContainer } from '../utils/Flyout'
-import HoveredBackground from '../utils/HoveredBackground'
+import { Scroller, Flyout, FlyoutHeader, FlyoutContainer, HoveredBackground, useSubscription, Loading } from 'forge-core'
 import UserListEntry from './UserListEntry'
 import { mergeAppend } from '../../utils/array'
 import { USERS_Q, USER_SUB } from './queries'
 import { updateUser, addUser } from './utils'
 import { ICON_HEIGHT, ICON_SPREAD } from '../Piazza'
-import { useSubscription } from '../utils/hooks'
-import Loading from '../utils/Loading'
 
 export function UserFlyout({setOpen}) {
   return (

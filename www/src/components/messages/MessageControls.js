@@ -2,8 +2,7 @@ import React, { useState, useRef, useContext} from 'react'
 import { useMutation, useApolloClient, ApolloProvider } from 'react-apollo'
 import { Box, Drop, Text } from 'grommet'
 import { More, Emoji, Pin, Trash, BlockQuote, Edit } from 'grommet-icons'
-import HoveredBackground from '../utils/HoveredBackground'
-import MenuItem from '../utils/MenuItem'
+import { HoveredBackground, MenuItem } from 'forge-core'
 import Popover from 'react-tiny-popover'
 import { DELETE_MESSAGE, CREATE_REACTION, MESSAGES_Q, PIN_MESSAGE, PINNED_MESSAGES } from './queries'
 import { removeMessage, updateMessage, addPinnedMessage, removePinnedMessage } from './utils'
@@ -12,7 +11,7 @@ import { CurrentUserContext } from '../login/EnsureLogin'
 
 const BORDER = {side: 'right', color: 'light-6'}
 const CONTROL_ATTRS = {
-  style: {cursor: 'pointer'},
+  focusIndicator: false,
   align: 'center',
   justify: 'center',
   border: BORDER,
@@ -33,7 +32,7 @@ function DeleteMessage({message, conversation}) {
   })
 
   return (
-    <MenuItem>
+    <MenuItem hover='focus'>
       <Box direction='row' align='center' gap='small'>
         <Trash size='12px' />
         <Text size='small' onClick={mutation}>delete message</Text>
@@ -169,7 +168,7 @@ function MessageControls(props) {
             onClickOutside={() => toggleOpen(false)}
             onEsc={() => toggleOpen(false)}>
             <Box style={{minWidth: '140px'}} pad={{vertical: 'xxsmall'}}>
-              <MenuItem>
+              <MenuItem hover='focus'>
                 <Box direction='row' align='center' gap='small'>
                   <Edit size='12px' />
                   <Text size='small' onClick={() => props.setEditing(true)}>edit message</Text>

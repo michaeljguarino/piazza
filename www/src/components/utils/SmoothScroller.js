@@ -4,7 +4,7 @@ import InfiniteLoader from 'react-window-infinite-loader'
 import { VariableSizeList } from 'react-window-reversed'
 import Autosizer from 'react-virtualized-auto-sizer'
 import memoize from 'memoize-one'
-import CellMeasurer from './CellMeasurer'
+import { CellMeasurer } from './CellMeasurer'
 
 export const ScrollContext = React.createContext({setSize: () => null})
 

@@ -1,7 +1,6 @@
 import React from 'react'
-import {Keyboard, Box, CheckBox} from 'grommet'
-import Button, {SecondaryButton} from '../utils/Button'
-import InputField from '../utils/InputField'
+import { Keyboard, Box, CheckBox } from 'grommet'
+import { Button, SecondaryButton, InputField } from 'forge-core'
 
 export default function ConversationEditForm({loading, mutation, state, onStateChange, action, cancel}) {
   return (

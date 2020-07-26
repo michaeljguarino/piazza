@@ -1,13 +1,12 @@
-import React, {useState} from 'react'
-import {useMutation, useApolloClient} from 'react-apollo'
-import {Box} from 'grommet'
+import React, { useState } from 'react'
+import { useMutation, useApolloClient } from 'react-apollo'
+import { Box } from 'grommet'
 import uniqBy from 'lodash/uniqBy'
-import {CREATE_PARTICIPANTS, PARTICIPANTS_Q} from './queries'
-import TagInput from '../utils/TagInput'
-import {mergeAppend} from '../../utils/array'
-import {SEARCH_USERS} from '../messages/queries'
-import {userSuggestion} from '../messages/MentionManager'
-import Button from '../utils/Button'
+import { TagInput, Button } from 'forge-core'
+import { CREATE_PARTICIPANTS, PARTICIPANTS_Q } from './queries'
+import { mergeAppend } from '../../utils/array'
+import { SEARCH_USERS } from '../messages/queries'
+import { userSuggestion } from '../messages/MentionManager'
 
 function fetchUsers(client, query, callback) {
   if (!query) return

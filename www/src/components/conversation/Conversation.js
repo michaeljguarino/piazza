@@ -1,8 +1,8 @@
 import React, { useState, useContext } from 'react'
 import { Box, Text } from 'grommet'
 import { Lock, Close } from 'grommet-icons'
+import { HoveredBackground } from 'forge-core'
 import {WithAnyPresent} from '../utils/presence'
-import HoveredBackground from '../utils/HoveredBackground'
 import PresenceIndicator, { EmptyPresenceIndicator } from '../users/PresenceIndicator'
 import { CurrentUserContext } from '../login/EnsureLogin'
 import { useMutation } from 'react-apollo'
@@ -108,6 +108,7 @@ export default function Conversation({conversation, ...props}) {
   return (
     <HoveredBackground>
       <Box
+        style={{outline: 'none'}}
         onMouseEnter={() => setHover(true)}
         onMouseLeave={() => setHover(false)}
         sidebarHover={!selected}
@@ -116,7 +117,7 @@ export default function Conversation({conversation, ...props}) {
         align='center'
         justify='end'
         height='28px'
-        style={{cursor: 'pointer'}}
+        focusIndicator={false}
         onClick={() => props.setCurrentConversation(conversation)}
         pad={props.pad}
         background={selected ? 'focus' : null}>

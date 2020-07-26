@@ -1,13 +1,12 @@
-import React, {useState, useRef} from 'react'
-import {Mutation} from 'react-apollo'
-import {Box, Text, Anchor, Markdown, Table, TableBody, TableRow, TableCell, Drop} from 'grommet'
-import {Edit} from 'grommet-icons'
+import React, { useState, useRef } from 'react'
+import { Mutation } from 'react-apollo'
+import { Box, Text, Anchor, Markdown, Table, TableBody, TableRow, TableCell, Drop } from 'grommet'
+import { Edit } from 'grommet-icons'
 import Avatar from '../users/Avatar'
 import { FilePicker } from 'react-file-picker'
-import {UPDATE_USER, USERS_Q} from '../users/queries'
-import {updateUser} from '../users/utils'
-import Modal from '../utils/Modal'
-import Copyable from '../utils/Copyable'
+import { UPDATE_USER, USERS_Q } from '../users/queries'
+import { Modal, Copyable } from 'forge-core'
+import { updateUser } from '../users/utils'
 import CommandEditor from './CommandEditor'
 
 
@@ -83,7 +82,7 @@ function EditableAvatar({user}) {
 function BotDisplay({user, pad, onClick, disableEdit}) {
   return (
     <Box
-      style={{cursor: 'pointer'}}
+      focusIndicator={false}
       direction='row'
       align='center'
       gap='xsmall'

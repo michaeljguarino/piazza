@@ -1,9 +1,9 @@
 import React, { useContext } from 'react'
 import { Box, Text } from 'grommet'
+import { FlyoutHeader, FlyoutContainer } from 'forge-core'
 import Avatar from './Avatar'
 import CreateChat from '../conversation/CreateChat'
 import { CurrentUserContext } from '../login/EnsureLogin'
-import { FlyoutHeader, FlyoutContainer } from '../utils/Flyout'
 
 export default function UserDetail({user, onChat, setOpen}) {
   const me = useContext(CurrentUserContext)

@@ -1,10 +1,10 @@
 import React from 'react'
-import {Box} from 'grommet'
-import {useHistory} from 'react-router-dom'
-import {Emoji, Keyboard} from 'grommet-icons'
-import {DropdownItem} from '../users/Me'
-import Modal, {ModalHeader} from '../utils/Modal'
-import {EmojiForm} from '../emoji/EmojiCreator'
+import { Box } from 'grommet'
+import { useHistory } from 'react-router-dom'
+import { Emoji, Keyboard } from 'grommet-icons'
+import { Modal, ModalHeader } from 'forge-core'
+import { DropdownItem } from '../users/Me'
+import { EmojiForm } from '../emoji/EmojiCreator'
 
 export default function Tools() {
   let history = useHistory()

@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import {Box} from 'grommet'
+import { Box } from 'grommet'
 
 export default class OnMediaLoaded extends Component {
 	constructor(props) {

@@ -1,12 +1,10 @@
 import React, { useState } from 'react'
 import { useHistory } from 'react-router-dom'
 import { Box, TextInput, Text, CheckBox } from 'grommet'
-import { ModalHeader } from '../utils/Modal'
+import { ModalHeader, Loading, Scroller } from 'forge-core'
 import { useQuery, useMutation } from 'react-apollo'
 import { USERS_Q, UPDATE_USER, TOGGLE_ACTIVE } from '../users/queries'
 import { SEARCH_USERS } from '../messages/queries'
-import Loading from '../utils/Loading'
-import Scroller from '../utils/Scroller'
 import { mergeAppend } from '../../utils/array'
 import Avatar from '../users/Avatar'
 

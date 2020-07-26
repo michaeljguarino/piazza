@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react'
 import { useApolloClient } from 'react-apollo'
+import { HoveredBackground } from 'forge-core'
 import Avatar from '../users/Avatar'
 import UserHandle from '../users/UserHandle'
 import { Box, Text, Drop } from 'grommet'
@@ -7,7 +8,6 @@ import { Emoji } from 'grommet-icons'
 import { SEARCH_USERS } from './queries'
 import { SEARCH_COMMANDS } from '../commands/queries'
 import { EMOJI_Q } from '../emoji/queries'
-import HoveredBackground from '../utils/HoveredBackground'
 import EmojiPicker from '../emoji/EmojiPicker'
 import { emojiIndex } from 'emoji-mart'
 import './MentionManager.css'
@@ -152,7 +152,7 @@ function EmojiTarget({emojiRef, setEmojiPicker}) {
         ref={emojiRef}
         width='40px'
         onClick={() => setEmojiPicker(true)}
-        style={{cursor: 'pointer'}}>
+        focusIndicator={false}>
         <Emoji size='25px' color='dark-6' />
       </Box>
     </HoveredBackground>

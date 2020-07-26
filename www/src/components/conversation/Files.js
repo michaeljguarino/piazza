@@ -1,15 +1,13 @@
 import React from 'react'
 import { Box, Text } from 'grommet'
 import { Resources } from 'grommet-icons'
-import Scroller from '../utils/Scroller'
-import Flyout, { FlyoutHeader, FlyoutContainer } from '../utils/Flyout'
+import { Scroller, Flyout, FlyoutHeader, FlyoutContainer, Loading } from 'forge-core'
 import { HeaderIcon } from './ConversationHeader'
 import { FileEntry } from '../messages/File'
 import { Loader } from './utils'
 import { mergeAppend } from '../../utils/array'
 import { FILES_Q } from './queries'
 import { useQuery } from 'react-apollo'
-import Loading from '../utils/Loading'
 
 const doFetchMore = (prev, {fetchMoreResult}) => {
   const {edges, pageInfo} = fetchMoreResult.conversation.files

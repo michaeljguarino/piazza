@@ -1,9 +1,9 @@
-import React, {useState} from 'react'
+import React, { useState } from 'react'
 import {Box} from 'grommet'
-import Loading from '../utils/Loading'
-import {useQuery, useApolloClient} from 'react-apollo'
+import { Loading } from 'forge-core'
+import { useQuery, useApolloClient } from 'react-apollo'
 import { subscribeToNewConversations, updateConversations } from '../conversation/utils'
-import {CONVERSATIONS_Q} from '../conversation/queries'
+import { CONVERSATIONS_Q } from '../conversation/queries'
 
 export const Conversations = React.createContext({
                                 currentConversation: null,

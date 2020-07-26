@@ -15,14 +15,11 @@ function ImageViewer({file: {filename, object}}) {
 }
 
 function HoverContainer({children, ...props}) {
-  const [hover, setHover] = useState(false)
   return (
     <Box
-      style={{cursor: 'pointer'}}
+      focusIndicator={false}
       pad='small'
-      background={hover ? 'light-3' : null}
-      onMouseLeave={() => setHover(false)}
-      onMouseEnter={() => setHover(true)}
+      hoverIndicator='light-3'
       {...props}>
       {children}
     </Box>
@@ -82,7 +79,6 @@ function FileViewerInner({file}) {
 }
 
 function Header({file, setOpen}) {
-  const [hover, setHover] = useState(false)
   return (
     <Box flex={false} direction='row' align='center' pad='small' border='bottom'>
       <Box direction='row' gap='small' fill='horizontal' align='center'>
@@ -93,10 +89,8 @@ function Header({file, setOpen}) {
         </Box>
       </Box>
       <Box
-        style={{cursor: 'pointer'}}
-        onMouseEnter={() => setHover(true)}
-        onMouseLeave={() => setHover(false)}
-        background={hover ? 'light-3' : null}
+        focusIndicator={false}
+        hoverIndicator='light-3'
         round='xsmall'
         flex={false}
         pad='xsmall'

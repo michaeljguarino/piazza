@@ -1,5 +1,5 @@
 import React from 'react'
-import Scroller from '../utils/Scroller'
+import { Scroller } from 'forge-core'
 import Notification from './Notification'
 import { mergeAppend } from '../../utils/array'
 

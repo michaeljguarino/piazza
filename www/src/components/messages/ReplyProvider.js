@@ -10,7 +10,6 @@ export const ReplyContext = React.createContext({
 })
 
 export function ReplyGutter({reply, setReply, ...props}) {
-  const [hover, setHover] = useState(false)
   if (!reply) return null
 
   return (
@@ -25,11 +24,9 @@ export function ReplyGutter({reply, setReply, ...props}) {
             height='25px'
             align='center'
             justify='center'
-            style={{cursor: 'pointer'}}
-            onClick={() => setReply(null)}
-            onMouseEnter={() => setHover(true)}
-            onMouseLeave={() => setHover(false)}
-            background={hover ? 'light-3' : null}>
+            focusIndicator={false}
+            hoverIndicator='light-3'
+            onClick={() => setReply(null)}>
             <Close size='15px' />
           </Box>
         </Stack>

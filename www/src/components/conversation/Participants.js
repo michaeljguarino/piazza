@@ -1,8 +1,7 @@
 import React from 'react'
 import { Box, Text } from 'grommet'
 import { User } from 'grommet-icons'
-import Scroller from '../utils/Scroller'
-import Flyout, { FlyoutHeader, FlyoutContainer } from '../utils/Flyout'
+import { Scroller, Flyout, FlyoutHeader, FlyoutContainer, useSubscription, Loading } from 'forge-core'
 import Avatar from '../users/Avatar'
 import UserHandle from '../users/UserHandle'
 import { PARTICIPANT_SUB, CONVERSATION_CONTEXT } from './queries'
@@ -13,9 +12,7 @@ import PresenceIndicator from '../users/PresenceIndicator'
 import ParticipantInvite, { ParticipantInviteButton } from './ParticipantInvite'
 import MagicLinkInvite from './MagicLinkInvite'
 import { Loader } from './utils'
-import { useSubscription } from '../utils/hooks'
 import { useQuery } from 'react-apollo'
-import Loading from '../utils/Loading'
 
 function addParticipant(participant, prev) {
   const participants = prev.conversation.participants.edges

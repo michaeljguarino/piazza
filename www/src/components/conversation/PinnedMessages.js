@@ -1,18 +1,15 @@
 import React from 'react'
-import {Box, Text} from 'grommet'
-import {Pin} from 'grommet-icons'
-import Scroller from '../utils/Scroller'
-import Flyout, { FlyoutHeader, FlyoutContainer } from '../utils/Flyout'
+import { Box, Text } from 'grommet'
+import { Pin } from 'grommet-icons'
+import { Scroller, Flyout, FlyoutHeader, FlyoutContainer, useSubscription, Loading } from 'forge-core'
 import { PINNED_MESSAGE_SUB } from '../messages/queries'
 import { addPinnedMessage, removePinnedMessage } from '../messages/utils'
 import { mergeAppend } from '../../utils/array'
 import { HeaderIcon } from './ConversationHeader'
 import Message from '../messages/Message'
 import { Loader } from './utils'
-import { useSubscription } from '../utils/hooks'
 import { useQuery } from 'react-apollo'
 import { CONVERSATION_CONTEXT } from './queries'
-import Loading from '../utils/Loading'
 
 const _subscribeToNewPins = (conversationId, subscribeToMore) => {
   return subscribeToMore({

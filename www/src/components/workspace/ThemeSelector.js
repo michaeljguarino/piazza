@@ -1,12 +1,11 @@
 import React, { useState, useContext } from 'react'
 import { useMutation, useQuery } from 'react-apollo'
 import { Box, Text } from 'grommet'
+import { Scroller, Loading } from 'forge-core'
 import { THEME_Q, SET_THEME, UPDATE_BRAND } from './queries'
-import Scroller from '../utils/Scroller'
 import { ThemeContext } from '../Workspace'
 import { mergeAppend, chunk } from '../../utils/array'
 import { THEME_FIELDS } from './constants'
-import Loading from '../utils/Loading'
 
 function ThemeColors({theme}) {
   return (
@@ -40,7 +39,7 @@ function ThemeChoice({onClick, theme, current}) {
     <Box
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
-      style={selected ? null : {cursor: 'pointer'}}
+      focusIndicator={false}
       border={selected ? true : (hover ? {color: 'focus'} : false)}
       onClick={selected ? null : onClick}
       gap='xsmall'

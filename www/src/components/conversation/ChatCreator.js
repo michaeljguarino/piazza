@@ -2,13 +2,11 @@ import React, { useState, useContext } from 'react'
 import { Box, Text } from 'grommet'
 import { Add } from 'grommet-icons'
 import { useMutation } from 'react-apollo'
-import Modal, { ModalHeader } from '../utils/Modal'
-import HoveredBackground from '../utils/HoveredBackground'
+import { Modal, ModalHeader, HoveredBackground, Button } from 'forge-core'
 import { CREATE_CHAT } from './queries'
 import { addConversation } from './utils'
 import ParticipantInvite from './ParticipantInvite'
 import Users from '../users/Users'
-import Button from '../utils/Button'
 import { CurrentUserContext } from '../login/EnsureLogin'
 import { CONTEXT_Q } from '../login/queries'
 import { Conversations } from '../login/MyConversations'
@@ -34,6 +32,7 @@ function ChatButton({setCurrentConversation, setOpen, participants}) {
       size='small'
       onClick={mutation}
       margin={{left: 'xsmall'}}
+      round='xxxsmall'
       label='Go'
       height='100%'
       width='50px' />
@@ -44,9 +43,9 @@ function Header({padding}) {
   return (
     <Box pad={padding} fill='horizontal' direction="row" align="center" margin={{bottom: '5px'}}>
       <HoveredBackground>
-        <Box highlight width='100%'>
+        <Box highlight width='100%' style={{cursor: 'pointer'}}>
           <Text
-            style={{cursor: 'pointer', fontWeight: 500}}
+            weight={500}
             size='15px'
             width='100%'
             color='sidebarText'>

@@ -2,13 +2,12 @@ import React, { useState, useRef, useContext, useCallback } from 'react'
 import { useApolloClient, useQuery } from 'react-apollo'
 import { TextInput, Box, Text } from 'grommet'
 import { Return, Search } from 'grommet-icons'
+import { Loading, Scroller } from 'forge-core'
 import { SEARCH_Q, PUBLIC_CONVERSATIONS } from './queries'
 import { addConversation } from './utils'
-import Scroller from '../utils/Scroller'
 import { mergeAppend } from '../../utils/array'
 import moment from 'moment'
 import { CONTEXT_Q } from '../login/queries'
-import Loading from '../utils/Loading'
 import { Conversations } from '../login/MyConversations'
 
 function _addConversation(client, conversation, workspaceId) {
@@ -48,7 +47,7 @@ function ConversationRow({conversation, setCurrentConversation}) {
     <Box
       direction="row"
       align='center'
-      style={{cursor: 'pointer'}}
+      focusIndicator={false}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
       pad={{vertical: "xsmall", horizontal: 'small'}}

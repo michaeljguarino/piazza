@@ -1,8 +1,7 @@
 import React, { useState } from 'react'
 import { Keyboard, Box } from 'grommet'
 import { useMutation } from 'react-apollo'
-import Button, { SecondaryButton } from '../utils/Button'
-import InputField from '../utils/InputField'
+import { Button, SecondaryButton, InputField } from 'forge-core'
 import { UPDATE_USER } from './queries'
 import {
   Slate,

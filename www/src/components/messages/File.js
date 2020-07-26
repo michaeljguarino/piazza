@@ -2,8 +2,7 @@ import React, {useState} from 'react'
 import { Box, Text, Stack } from 'grommet'
 import { Next, Down, Download } from 'grommet-icons'
 import FileIcon, { defaultStyles } from 'react-file-icon'
-import Tooltip from '../utils/Tooltip'
-import HoveredBackground from '../utils/HoveredBackground'
+import { Tooltip, HoveredBackground } from 'forge-core'
 import moment from 'moment'
 import filesize from 'filesize'
 import FileViewer from './FileViewer'
@@ -16,7 +15,7 @@ function DownloadAffordance({object}) {
   return (
     <Tooltip align={{bottom: 'top'}}>
       <HoveredBackground>
-        <Box accentable margin={{right: 'xsmall', top: 'xsmall'}} style={{cursor: 'pointer'}}
+        <Box accentable margin={{right: 'xsmall', top: 'xsmall'}} focusIndicator={false}
           background='#fff' round='xsmall' pad='small' animation={{type: "fadeIn", duration: 200}}
           onClick={(e) => {
             e.preventDefault()
@@ -38,7 +37,7 @@ function Image({...file}) {
     <>
     <Box onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}>
       <Stack anchor='top-right'>
-        <Box style={{cursor: 'pointer'}} onClick={() => setOpen(true)}>
+        <Box focusindicator={false} onClick={() => setOpen(true)}>
           <img style={{
             height: !file.height ? null : file.height,
             maxHeight: 300,
@@ -65,7 +64,7 @@ function MediaFile({file}) {
   return (
     <Box gap='xsmall'>
       <Box
-        style={{cursor: 'pointer'}}
+        focusindicator={false}
         direction='row'
         align='center'
         onMouseEnter={() => setHover(true)}
@@ -118,7 +117,7 @@ export function FileEntry({file, next}) {
     <>
     <Box
       flex={false}
-      style={viewable ? {cursor: 'pointer'} : null}
+      focusIndicator={false}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
       onClick={viewable ? () => setOpen(true) : null}>
@@ -163,7 +162,7 @@ const PdfFile = ({file}) => {
     <>
     <Box
       margin={{vertical: 'xsmall'}}
-      style={{cursor: 'pointer'}}
+      focusIndicator={false}
       border={hover ? {color: 'focus'} : {color: 'light-5'}}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}

@@ -1,7 +1,7 @@
 import React, {useState, createRef, Component, createContext} from 'react';
 import { css } from 'styled-components';
 import { Box, ThemeContext, TextInput } from 'grommet';
-import {normalizeColor} from './colors'
+import { normalizeColor } from 'grommet/utils'
 
 const searchingStyle = css`
   position: relative;

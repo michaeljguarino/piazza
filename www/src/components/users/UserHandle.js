@@ -1,7 +1,7 @@
 import React from 'react'
 import { Anchor, Text } from 'grommet'
+import { Flyout } from 'forge-core'
 import UserDetail from './UserDetail'
-import Flyout from '../utils/Flyout'
 import WithPresence from '../utils/presence'
 import PresenceIndicator from './PresenceIndicator'
 
@@ -10,9 +10,7 @@ function WithFlyout({noFlyout, children, onChat, user}) {
 
   return (
     <Flyout target={children}>
-    {setOpen => (
-      <UserDetail user={user} setOpen={setOpen} onChat={onChat} />
-    )}
+    {setOpen => (<UserDetail user={user} setOpen={setOpen} onChat={onChat} />)}
     </Flyout>
   )
 }

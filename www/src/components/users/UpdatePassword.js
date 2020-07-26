@@ -2,9 +2,7 @@ import React, { useState } from 'react'
 import { Box } from 'grommet'
 import { useMutation } from 'react-apollo'
 import { UPDATE_USER } from './queries'
-import Errors, { Error } from '../utils/Error'
-import InputField from '../utils/InputField'
-import Button, { SecondaryButton } from '../utils/Button'
+import { Errors, Error, Button, SecondaryButton, InputField } from 'forge-core'
 
 export default function UpdatePassword({me, callback}) {
   const [password, setPassword] = useState('')

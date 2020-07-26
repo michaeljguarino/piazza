@@ -1,7 +1,7 @@
 import React, { useContext } from 'react'
 import { Mutation} from 'react-apollo'
 import { Box, Text, Markdown, Anchor, ThemeContext } from 'grommet'
-import Button, { SecondaryButton } from '../utils/Button'
+import { Button, SecondaryButton } from 'forge-core'
 import { INTERACTION } from './queries'
 import { DialogContext } from './MessageList'
 import { normalizeColor } from 'grommet/utils'

@@ -1,8 +1,13 @@
 import React from 'react'
 import { useQuery } from 'react-apollo'
-import { SearchInput } from './utils/SelectSearchInput'
-import Loading from './utils/Loading'
+import { Loading } from 'forge-core'
+import { SearchInput } from 'forge-core'
 import { WORKSPACE_Q } from './workspace/queries'
+import { css } from 'styled-components'
+
+const boxStyle = css`
+  outline: none !important;
+`;
 
 export const DEFAULT_COLOR_THEME = {
   brand: '#2F415B',
@@ -82,6 +87,9 @@ export const DEFAULT_THEME = {
       size: '14px',
       height: '20px',
     },
+    box: {
+      extend: boxStyle
+    }
   },
 }
 

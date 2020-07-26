@@ -1,12 +1,10 @@
 import React, { useState } from 'react'
 import { useMutation } from 'react-apollo'
 import { Box, Anchor, Text } from 'grommet'
+import { Copyable, Modal, ModalHeader, Button } from 'forge-core'
 import { CREATE_INVITE } from './queries'
 import { localized } from '../../helpers/hostname'
-import Copyable from '../utils/Copyable'
-import Modal, { ModalHeader } from '../utils/Modal'
 import { ConversationSelector } from '../commands/CommandCreator'
-import Button from '../utils/Button'
 
 export function ExternalInvite({children}) {
   const [conversation, setConversation] = useState(null)
