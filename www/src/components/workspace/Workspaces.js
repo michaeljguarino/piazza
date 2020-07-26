@@ -211,20 +211,12 @@ export default function Workspaces({pad}) {
           setOpen={setOpen} />
       )}
       <HoveredBackground>
-        <Box
-          ref={dropRef}
-          onClick={() => setOpen(!open)}
-          sidebarHover
-          accentText
-          height={`${FOOTER_HEIGHT}px`}
-          focusIndicator={false}
-          pad={{...pad, right: 'small', vertical: 'small'}}
-          align='center'
-          justify='end'
-          direction='row'>
+        <Box ref={dropRef} sidebarHover accentText onClick={() => setOpen(!open)}
+             height={`${FOOTER_HEIGHT}px`} focusIndicator={false} pad={{...pad, right: 'small', vertical: 'small'}}
+             align='center' justify='end' direction='row'>
           <Box direction='row' gap='small' width='100%' align='center'>
             <WorkspaceIcon workspace={current} />
-            <Text size='small' weight='bold'>{current.name}</Text>
+            <Text size='small' weight={500}>{current.name}</Text>
           </Box>
           {notifs > 0 && <NotificationBadge unread={notifs} />}
         </Box>

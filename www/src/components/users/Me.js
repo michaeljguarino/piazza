@@ -1,9 +1,9 @@
-import React, { useContext } from 'react'
-import { Box, Text, ThemeContext, Meter, Stack } from 'grommet'
+import React, { useContext, useCallback, useState } from 'react'
+import { Box, Text, ThemeContext, Meter, Stack, Layer } from 'grommet'
 import { User, Lock, Logout, Iteration } from 'grommet-icons'
 import Avatar from './Avatar'
 import { useMutation, useQuery } from 'react-apollo'
-import { CloseableDropdown, Modal, ModalHeader, MenuItem, SubMenu, InterchangeableBox, HoveredBackground, Tooltip } from 'forge-core'
+import { CloseableDropdown, ModalHeader, MenuItem, SubMenu, InterchangeableBox, HoveredBackground, Tooltip } from 'forge-core'
 import { AUTH_TOKEN } from '../../constants'
 import { FilePicker } from 'react-file-picker'
 import { ME_Q, UPDATE_USER, PLAN_Q } from './queries'
@@ -16,13 +16,12 @@ import Themes from '../workspace/Themes'
 import WithPresence from '../utils/presence'
 import PresenceIndicator from './PresenceIndicator'
 
-export function DropdownItem(props) {
-  const {onClick, ...rest} = props
+export function DropdownItem({onClick, icon, text, ...rest}) {
   return (
     <MenuItem hover='focus' onClick={() => onClick && onClick()} {...rest}>
       <Box direction='row' align='center' gap='xsmall'>
-        {props.icon && React.createElement(props.icon, {size: '12px'})}
-        <Text size='small'>{props.text}</Text>
+        {icon && React.createElement(icon, {size: '12px'})}
+        <Text size='small'>{text}</Text>
       </Box>
     </MenuItem>
   )
@@ -79,8 +78,12 @@ function PlanDetails() {
   )
 }
 
-function MeDropdown({me}) {
+function MeDropdown({me, setModal, setOpen}) {
   const isAdmin = me.roles && me.roles.admin
+  const openModal = useCallback((modal) => {
+    setModal(modal)
+    setOpen(false)
+  }, [setModal, setOpen])
 
   return (
     <Box width="225px">
@@ -92,29 +95,25 @@ function MeDropdown({me}) {
       {setAlternate => (
         <>
         <Box pad={{bottom: 'xxsmall'}}>
-          <Modal target={<DropdownItem icon={User} text='update profile' />}>
-          {setOpen => (
+          <DropdownItem icon={User} text='update profile' onClick={() => openModal(
             <Box>
               <ModalHeader text='Update Profile' setOpen={setOpen} />
               <Box gap='small' pad="medium" style={{minWidth: '400px'}}>
                 <UpdateProfile callback={() => setOpen(false)} me={me} />
               </Box>
             </Box>
-          )}
-          </Modal>
-          <Modal target={<DropdownItem icon={Lock} text='change password' />}>
-            {setOpen => (
-              <Box width='400px'>
-                <ModalHeader text='Update Password' setOpen={setOpen} />
-                <Box gap='small' pad="medium">
-                  <UpdatePassword callback={() => setOpen(false)} me={me} />
-                </Box>
+          )} />
+          <DropdownItem icon={Lock} text='change password' onClick={() => openModal(
+            <Box width='400px'>
+              <ModalHeader text='Update Password' setOpen={setOpen} />
+              <Box gap='small' pad="medium">
+                <UpdatePassword callback={() => setOpen(false)} me={me} />
               </Box>
-            )}
-          </Modal>
-          <Modal target={<DropdownItem icon={Iteration} text='theme selector' />}>
-            {setOpen => (<Themes setOpen={setOpen} />)}
-          </Modal>
+            </Box>
+          )} />
+          <DropdownItem icon={Iteration} text='theme selector' onClick={() => openModal(
+            <Themes setOpen={setOpen} />
+          )} />
           <SubMenu text='developer tools' hover='focus' setAlternate={setAlternate}>
             <Tools />
           </SubMenu>
@@ -159,6 +158,7 @@ function MeHeader({me: {id, handle, name}}) {
 }
 
 export default function Me({pad}) {
+  const [modal, setModal] = useState(null)
   const [mutation] = useMutation(UPDATE_USER, {
     update: (cache, { data: { updateUser } }) => {
       const {me} = cache.readQuery({ query: ME_Q });
@@ -168,6 +168,7 @@ export default function Me({pad}) {
   const me = useContext(CurrentUserContext)
 
   return (
+    <>
     <ThemeContext.Extend value={{layer: {zIndex: 25}}}>
       <HoveredBackground>
         <Box
@@ -187,11 +188,17 @@ export default function Me({pad}) {
               <span><Avatar user={me} rightMargin='10px' /></span>
             </FilePicker>
             <CloseableDropdown target={<MeHeader me={me} />}>
-            {() => (<MeDropdown me={me} />)}
+            {(setOpen) => (<MeDropdown me={me} setModal={setModal} setOpen={setOpen} />)}
             </CloseableDropdown>
           </Box>
         </Box>
       </HoveredBackground>
     </ThemeContext.Extend>
+    {modal && (
+      <Layer modal>
+        {modal}
+      </Layer>
+    )}
+    </>
   )
 }

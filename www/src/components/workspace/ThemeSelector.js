@@ -54,7 +54,7 @@ export default function ThemeSelector({brand}) {
   const {id, brand: {themeId}} = useContext(ThemeContext)
   const {loading, data, fetchMore} = useQuery(THEME_Q)
   const [mutation] = useMutation(brand ? UPDATE_BRAND : SET_THEME, {
-    update: () => window.location.reload(false)
+    onCompleted: () => window.location.reload(false)
   })
 
   if (loading) return (<Box fill='horizontal' height='40vh'><Loading /></Box>)
