@@ -1,10 +1,14 @@
 description: Notifies you of build success/failure
-icon: https://storage.googleapis.com/piazza-assets/uploads/avatars/bd8190a0-2a06-4a35-9951-082594f701a7/200425_watch-01.png?v=63755342999
+icon: https://watchman.piazza.app/watchman.png
 name: watchman
 sourceUrl: https://github.com/michaeljguarino/forge
 tags:
 - tag: CI/CD
 spec:
   description: Notifies you of build success/failure
-  documentation: Will post build statuses into the configured incoming webhook conversation
-  webhook: http://piazza-gql:4000/null
+  documentation: |
+    Will post build statuses into the configured incoming webhook conversation
+
+    * /watchman **deploy** application
+      * manually redeploys deploys _application_
+  webhook: http://watchman.bootstra:4000/webhooks/piazza

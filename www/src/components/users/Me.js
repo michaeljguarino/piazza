@@ -183,8 +183,7 @@ export default function Me({pad}) {
             <FilePicker
               extensions={['jpg', 'jpeg', 'png']}
               dims={{minWidth: 100, maxWidth: 500, minHeight: 100, maxHeight: 500}}
-              onChange={ (file) => mutation({variables: {id: me.id, attributes: {avatar: file}}})}
-            >
+              onChange={ (file) => mutation({variables: {id: me.id, attributes: {avatar: file}}})}>
               <span><Avatar user={me} rightMargin='10px' /></span>
             </FilePicker>
             <CloseableDropdown target={<MeHeader me={me} />}>

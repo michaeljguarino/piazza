@@ -43,7 +43,7 @@ function CommandDisplay({disableEdit, pad, command, color}) {
         </Box>
         {dropOpen && (
           <Drop
-            align={{right: 'left', top: 'top'}}
+            align={{right: 'left'}}
             margin={{top: '5px'}}
             target={dropRef.current}
             onClickOutside={() => setDropOpen(false)}
@@ -100,17 +100,17 @@ function BotDisplay({user, pad, onClick, disableEdit}) {
 
 function CommandDetail({command, disableEdit}) {
   return (
-    <Box pad='small' style={{minWidth: '450px'}}>
-      <Box direction='row' align='center'>
-        <Box width='100%' direction='row'>
-          <Text weight="bold" size='small' margin='5px'>/{command.name}</Text>
-          <Text size='small' margin={{vertical: '5px'}}>help</Text>
+    <Box flex={false} pad='small' style={{minWidth: '450px'}}>
+      <Box flex={false} direction='row' align='center'>
+        <Box width='100%' direction='row' gap='5px' margin={{vertical: '5px'}}>
+          <Text weight="bold" size='small'>/{command.name}</Text>
+          <Text size='small'>help</Text>
         </Box>
       </Box>
-      <Box direction='row' align='center'>
+      <Box flex={false} direction='row' align='center'>
         <Markdown>{command.documentation || 'Someone needs to write their docs'}</Markdown>
       </Box>
-      <Box border="bottom" direction="row" margin={{top: 'small'}} pad='small'>
+      <Box flex={false} border="bottom" direction="row" margin={{top: 'small'}} pad='small'>
         <Text>Attributes</Text>
       </Box>
       <Table caption='Attributes'>
