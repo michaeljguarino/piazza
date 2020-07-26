@@ -1,5 +1,5 @@
 import React, { useContext, useState, useRef } from 'react'
-import { Box, Text, Drop, ThemeContext } from 'grommet'
+import { Box, Text, Drop, ThemeContext, Layer } from 'grommet'
 import { Modal, ModalHeader, Button, InputField, HoveredBackground } from 'forge-core'
 import { WorkspaceContext } from '../Workspace'
 import { Conversations } from '../login/MyConversations'
@@ -100,42 +100,53 @@ function UploadableIcon({workspace}) {
 
 function Workspace({workspace, workspaceId, me, setWorkspace}) {
   const [hover, setHover] = useState(false)
+  const [open, setOpen] = useState(false)
   const selected = workspace.id === workspaceId
   const admin = me.roles && me.roles.admin
 
   return (
+    <>
     <Box
       direction='row'
       justify='end'
       align='center'
-      style={!selected ? {cursor: 'pointer'} : null}
+      focusIndicator={false}
       pad='small'
       gap='small'
       background={(hover && !selected) ? 'light-3' : null}
       border={selected ? {side: 'right', size: '2px', color: 'focus'} : null}
       onMouseEnter={() => setHover(true)}
-      onMouseLeave={() => setHover(false)}>
-      <UploadableIcon workspace={workspace} />
-      <Box fill='horizontal' direction='row' align='center' justify='end' gap='small'
-           onClick={() => !selected && setWorkspace(workspace)}>
-        <Box fill='horizontal' justify='center'>
+      onMouseLeave={() => setHover(false)}
+      onClick={selected ? null : () => setWorkspace(workspace)}>
+      <Box flex={false} onClick={(e) => {e.stopPropagation();}}>
+        <UploadableIcon workspace={workspace} />
+      </Box>
+      <Box fill direction='row' align='center' gap='small'>
+        <Box fill justify='center'>
           <Text size='small' weight={500} truncate>{workspace.name}</Text>
           {workspace.description && <Text size='small' truncate><i>{workspace.description}</i></Text>}
         </Box>
         {workspace.unreadNotifications > 0 && !hover && (<NotificationBadge unread={workspace.unreadNotifications} />)}
       </Box>
       {hover && admin && (
-        <Modal disableClickOutside target={
-          <HoveredBackground>
-            <Box style={{cursor: 'pointer'}} accentable width='40px' align='center' justify='center'>
-              <Edit size='14px' />
-            </Box>
-          </HoveredBackground>
-        }>
-        {setOpen => (<EditWorkspace workspace={workspace} setOpen={setOpen} />)}
-        </Modal>
+        <HoveredBackground>
+          <Box flex={false} focusIndicator={false} accentable width='40px' align='center' justify='center'
+            onClick={(e) => {
+              e.preventDefault()
+              e.stopPropagation()
+              setOpen(true)
+            }}>
+            <Edit size='14px' />
+          </Box>
+        </HoveredBackground>
       )}
     </Box>
+    {open && (
+      <Layer modal onClickOutside={() => setOpen(false)}>
+        <EditWorkspace workspace={workspace} setOpen={setOpen} />
+      </Layer>
+    )}
+    </>
   )
 }
 
