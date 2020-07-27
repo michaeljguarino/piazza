@@ -84,13 +84,9 @@ function ChatCreator({padding, setCurrentConversation}) {
     <Box fill='horizontal' pad={{right: '12px'}}>
       <Modal round='small' target={<Header padding={padding} />}>
         {setOpen => (
-          <Box
-            width="50vw"
-            style={{maxHeight: '65vh'}}
-            pad={{bottom: 'small'}}
-            round='small'>
+          <Box width="50vw"  style={{maxHeight: '65vh'}} pad={{bottom: 'small'}} round='small'>
             <ModalHeader text='Start a chat' setOpen={setOpen} />
-            <Box style={{minHeight: '60px'}} margin={{bottom: 'small'}}>
+            <Box style={{minHeight: '60px'}}>
               <ParticipantInvite
                 direction='row'
                 onAddParticipant={addParticipant}
@@ -106,14 +102,8 @@ function ChatCreator({padding, setCurrentConversation}) {
               )}
               </ParticipantInvite>
             </Box>
-            <Users
-              noFlyout
-              showLoading
-              onClick={addParticipant}
-              ignore={new Set([me.id, ...participants.map((u) => u.id)])}
-              pad={{horizontal: 'small', vertical: 'xxsmall'}}
-              margin={{bottom: 'xxsmall'}}
-              onChat={() => setOpen(false)} />
+            <Users noFlyout showLoading onClick={addParticipant} pad={{horizontal: 'small', vertical: 'xxsmall'}}
+              ignore={new Set([me.id, ...participants.map((u) => u.id)])} onChat={() => setOpen(false)} />
           </Box>
         )}
       </Modal>

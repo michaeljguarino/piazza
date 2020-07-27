@@ -12,16 +12,9 @@ export class AvatarContainer extends React.PureComponent {
     const boxSize = size || DEFAULT_SIZE
 
     return (
-      <Box
-        border={{style: 'hidden'}}
-        style={{minWidth: '40px'}}
-        round='xsmall'
+      <Box border={{style: 'hidden'}} round='xsmall' align='center' justify='center'
         background={img ? null : (background || DEFAULT_BACKGROUND)}
-        align='center'
-        justify='center'
-        width={boxSize}
-        height={boxSize}
-        margin={{right: rightMargin || '5px'}}>
+        width={boxSize} height={boxSize} margin={{right: rightMargin || '5px'}}>
         {img ?
           <img alt='' height={boxSize} width={boxSize} style={{borderRadius: '6px'}} src={img}/> :
           <Text>{text.charAt(0).toUpperCase()}</Text>

@@ -18,20 +18,18 @@ function WithFlyout({noFlyout, children, onChat, user}) {
 export default function UserHandle({user, color, weight, size, margin, includePresence, ...props}) {
   return (
     <WithFlyout user={user} {...props}>
-      <Anchor>
-        <Text
-          size={size || 'small'}
-          weight={weight}
-          color={color || 'black'}
-          margin={margin || {right: '5px'}}>
-          @{user.handle}
-        </Text>
-        {includePresence && (
-          <WithPresence id={user.id}>
-          {present => <PresenceIndicator present={present} />}
-          </WithPresence>
-        )}
-      </Anchor>
+      <Text
+        style={{cursor: 'pointer'}}
+        size={size || 'small'}
+        weight={weight || 500}
+        margin={margin || {right: '5px'}}>
+        @{user.handle}
+      </Text>
+      {includePresence && (
+        <WithPresence id={user.id}>
+        {present => <PresenceIndicator present={present} />}
+        </WithPresence>
+      )}
     </WithFlyout>
   )
 }

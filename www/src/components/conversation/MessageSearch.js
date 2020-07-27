@@ -8,6 +8,7 @@ import Message from '../messages/Message'
 import { ScrollContext } from '../utils/SmoothScroller'
 
 const animation = {
+  outline: 'none',
   transition: 'width 0.75s cubic-bezier(0.000, 0.795, 0.000, 1.000)'
 };
 
@@ -39,27 +40,16 @@ function MessageSearch(props) {
   const client = useApolloClient()
 
   return (
-    <Box
-      onClick={() => setExpanded(true)}
-      direction='row'
-      height='35px'
-      style={animation}
-      width={expanded ? '90%' : '300px'}
-      margin={{horizontal: '10px'}}
+    <Box onClick={() => setExpanded(true)} focusIndicator={false} direction='row'
+      height='35px' style={animation}  width={expanded ? '90%' : '300px'} margin={{horizontal: '10px'}}
       border='all' align='center' justify='center' round='xsmall' pad='xsmall'>
       <Search size='20px' />
-      <TextInput
-        plain
-        size='small'
-        style={animation}
-        value={value}
-        suggestions={suggestions}
+      <TextInput plain size='small' style={animation} value={value} suggestions={suggestions}
         onChange={(e) => {
           const text = e.target.value
           setValue(text)
           performSearch(client, text, props.conversation.id, setSuggestions, props.setAnchor)
-        }}
-        placeholder='this is for searching' />
+        }} placeholder='this is for searching' />
   </Box>
   )
 }

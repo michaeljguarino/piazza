@@ -13,6 +13,7 @@ import ParticipantInvite, { ParticipantInviteButton } from './ParticipantInvite'
 import MagicLinkInvite from './MagicLinkInvite'
 import { Loader } from './utils'
 import { useQuery } from 'react-apollo'
+import UserListEntry from '../users/UserListEntry'
 
 function addParticipant(participant, prev) {
   const participants = prev.conversation.participants.edges
@@ -143,7 +144,7 @@ function FlyoutContent({conversationId, setOpen}) {
             flexDirection: 'column',
           }}
           edges={edges}
-          mapper={(p) => (<Participant key={p.node.id} user={p.node.user} />)}
+          mapper={(p) => (<UserListEntry key={p.node.id} user={p.node.user} />)}
           onLoadMore={() => {
             pageInfo.hasNextPage && fetchMore({
               variables: {partCursor: pageInfo.endCursor},
