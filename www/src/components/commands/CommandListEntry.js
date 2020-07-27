@@ -1,11 +1,11 @@
 import React, { useState, useRef } from 'react'
 import { Mutation } from 'react-apollo'
 import { Box, Text, Anchor, Markdown, Table, TableBody, TableRow, TableCell, Drop } from 'grommet'
-import { Edit } from 'grommet-icons'
+import { Edit, Copy } from 'grommet-icons'
 import Avatar from '../users/Avatar'
 import { FilePicker } from 'react-file-picker'
 import { UPDATE_USER, USERS_Q } from '../users/queries'
-import { Modal, Copyable } from 'forge-core'
+import { Modal, Copyable, WithCopy } from 'forge-core'
 import { updateUser } from '../users/utils'
 import CommandEditor from './CommandEditor'
 
@@ -113,7 +113,7 @@ function CommandDetail({command, disableEdit}) {
       <Box flex={false} border="bottom" direction="row" margin={{top: 'small'}} pad='small'>
         <Text>Attributes</Text>
       </Box>
-      <Table caption='Attributes'>
+      <Table>
         <TableBody>
           <TableRow>
             <TableCell><strong>Bot User</strong></TableCell>
@@ -121,7 +121,14 @@ function CommandDetail({command, disableEdit}) {
           </TableRow>
           <TableRow>
             <TableCell><strong>Webhook Url</strong></TableCell>
-            <TableCell>{command.webhook.url}</TableCell>
+            <TableCell>
+              <Box direction='row' gap='xsmall' align='center'>
+                <Text size='small'>{command.webhook.url}</Text>
+                <WithCopy text={command.webhook.secret} pillText='Copied webhook secret'>
+                  <Copy size='small' />
+                </WithCopy>
+              </Box>
+            </TableCell>
           </TableRow>
           {command.incomingWebhook && command.incomingWebhook.conversation && (
             <TableRow>

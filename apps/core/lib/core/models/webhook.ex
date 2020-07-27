@@ -14,6 +14,13 @@ defmodule Core.Models.Webhook do
   def changeset(schema, attrs \\ %{}) do
     schema
     |> cast(attrs, @valid)
+    |> put_new_change(:secret, &gen_secret/0)
     |> validate_required([:url])
+  end
+
+  defp gen_secret() do
+    :crypto.strong_rand_bytes(64)
+    |> Base.url_encode64()
+    |> String.replace("/", "")
   end
 end

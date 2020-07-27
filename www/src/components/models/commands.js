@@ -19,6 +19,7 @@ export const CommandFragment = gql`
     }
     webhook {
       url
+      secret
     }
     unfurlers {
       ...UnfurlerFragment

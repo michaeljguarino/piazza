@@ -7,8 +7,6 @@ tags:
 spec:
   description: Notifies you of build success/failure
   documentation: |
-    Will post build statuses into the configured incoming webhook conversation
-
     * /watchman **deploy** application
       * manually redeploys deploys _application_
-  webhook: http://watchman.bootstra:4000/webhooks/piazza
+  webhook: http://watchman.bootstra:4000/v1/webhooks/piazza

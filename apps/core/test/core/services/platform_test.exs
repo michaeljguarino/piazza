@@ -19,6 +19,7 @@ defmodule Core.Services.PlatformTest do
       assert preloaded.creator_id == user.id
 
       assert preloaded.webhook.url == "https://my.webhook.com"
+      assert preloaded.webhook.secret
 
       [unfurler] = preloaded.unfurlers
 
