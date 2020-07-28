@@ -8,6 +8,7 @@ import { DELETE_MESSAGE, CREATE_REACTION, MESSAGES_Q, PIN_MESSAGE, PINNED_MESSAG
 import { removeMessage, updateMessage, addPinnedMessage, removePinnedMessage } from './utils'
 import EmojiPicker from '../emoji/EmojiPicker'
 import { CurrentUserContext } from '../login/EnsureLogin'
+import { useCallback } from 'react'
 
 const BORDER = {side: 'right', color: 'light-6'}
 const CONTROL_ATTRS = {
@@ -18,7 +19,7 @@ const CONTROL_ATTRS = {
   width: '40px'
 }
 
-function DeleteMessage({message, conversation}) {
+function DeleteMessage({message, conversation, setOpen}) {
   const [mutation] = useMutation(DELETE_MESSAGE, {
     variables: {messageId: message.id},
     update: (cache, {data: {deleteMessage}}) => {
@@ -28,7 +29,8 @@ function DeleteMessage({message, conversation}) {
         variables: {conversationId: conversation.id},
         data: removeMessage(data, deleteMessage)
       })
-    }
+    },
+    onCompleted: () => setOpen(false)
   })
 
   return (
@@ -123,14 +125,18 @@ function PinMessage({message, conversation}) {
   )
 }
 
-function MessageControls(props) {
+function MessageControls({setPinnedHover, setEditing, ...props}) {
   const me = useContext(CurrentUserContext)
   const dropRef = useRef()
   const [moreOpen, setMoreOpen] = useState(false)
-  function toggleOpen(value) {
-    props.setPinnedHover(value)
-    setMoreOpen(value)
-  }
+  const toggleOpen = useCallback((val) => {
+    setPinnedHover(val)
+    setMoreOpen(val)
+  }, [setPinnedHover, setMoreOpen])
+  const editing = useCallback((open) => {
+    setEditing(open)
+    setMoreOpen(false)
+  }, [setEditing, setMoreOpen])
 
   return (
     <Box
@@ -171,10 +177,10 @@ function MessageControls(props) {
               <MenuItem hover='focus'>
                 <Box direction='row' align='center' gap='small'>
                   <Edit size='12px' />
-                  <Text size='small' onClick={() => props.setEditing(true)}>edit message</Text>
+                  <Text size='small' onClick={() => editing(true)}>edit message</Text>
                 </Box>
               </MenuItem>
-              <DeleteMessage {...props} />
+              <DeleteMessage setOpen={toggleOpen} {...props} />
             </Box>
           </Drop>
         )}

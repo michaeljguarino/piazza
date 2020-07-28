@@ -111,11 +111,7 @@ function FlyoutContent({conversationId, setOpen}) {
   return (
     <FlyoutContainer width='40vw'>
       <FlyoutHeader text='Participants' setOpen={setOpen} />
-      <Box
-        pad={{left: "small", right: 'small', bottom: 'small'}}
-        gap='small'
-        margin={{bottom: 'small'}}
-        border='bottom'>
+      <Box margin={{bottom: 'small'}} pad={{bottom: 'small'}} border='bottom'>
         <Scroller
           style={{
             overflow: 'auto',

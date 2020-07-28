@@ -184,21 +184,23 @@ function MessageBody({message, conversation, next, editing, setEditing, dialog, 
           <Box fill='horizontal'>
             {editing ?
               <MessageEdit message={message} setEditing={setEditing} setSize={setSize} /> :
+              <>
               <MessageSwitch {...message} />
+              {message.file && (<File file={message.file} />)}
+              {message.reactions && message.reactions.length > 0 && (
+                <MessageReactions
+                  message={message}
+                  conversation={conversation}
+                  hover={hover}
+                  setPinnedHover={setPinnedHover} />
+              )}
+              {message.parent && (
+                <Box border={{side: 'left', color: 'dark-6', size: 'small'}} margin={{top: 'small'}}>
+                  <Message noHover message={message.parent} />
+                </Box>
+              )}
+              </>
             }
-            {message.file && (<File file={message.file} />)}
-            {message.reactions && message.reactions.length > 0 && (
-              <MessageReactions
-                message={message}
-                conversation={conversation}
-                hover={hover}
-                setPinnedHover={setPinnedHover} />
-            )}
-            {message.parent && (
-              <Box border={{side: 'left', color: 'dark-6', size: 'small'}} margin={{top: 'small'}}>
-                <Message noHover message={message.parent} />
-              </Box>
-            )}
           </Box>
         </Box>
       </Box>
@@ -219,13 +221,13 @@ function Dialog({dialog: {structuredMessage}}) {
 }
 
 export function formatDate(dt) {
-return moment(dt).calendar(null, {
-  sameDay: '[Today]',
-  nextDay: '[Tomorrow]',
-  lastDay: '[Yesterday]',
-  lastWeek: 'dddd',
-  sameElse: 'dddd, MMMM Do'
-});
+  return moment(dt).calendar(null, {
+    sameDay: '[Today]',
+    nextDay: '[Tomorrow]',
+    lastDay: '[Yesterday]',
+    lastWeek: 'dddd',
+    sameElse: 'dddd, MMMM Do'
+  });
 }
 
 function DateDivider({waterline, message, next}) {
@@ -297,7 +299,7 @@ const Message = React.memo(({noHover, selected, scrollTo, message, onClick, pos,
   const [editing, setEditing] = useState(null)
   const {edited, setEdited} = useContext(EditingMessageContext)
   const isEditing = editing || (edited === message.id)
-  const additionalClasses = '' + (message.pin && !nopin ? ' pin' : '') + (selected ? ' selected' : '') + (pinnedHover ? ' hovered' : '')
+  const additionalClasses = '' + ((message.pin || isEditing) && !nopin ? ' pin' : '') + (selected ? ' selected' : '') + (pinnedHover ? ' hovered' : '')
 
   const wrappedSetEditing = useCallback((editing) => {
     setPinnedHover(false)
@@ -332,11 +334,13 @@ const Message = React.memo(({noHover, selected, scrollTo, message, onClick, pos,
           {...props} />
         <>
         {unread && <UnreadBadge />}
-        <MessageControls
-          setEditing={wrappedSetEditing}
-          setPinnedHover={setPinnedHover}
-          message={message}
-          {...props} />
+        {!isEditing && (
+          <MessageControls
+            setEditing={wrappedSetEditing}
+            setPinnedHover={setPinnedHover}
+            message={message}
+            {...props} />
+        )}
         </>
       </Stack>
     </Box>
