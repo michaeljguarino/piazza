@@ -20,7 +20,7 @@
     "eslint-utils": "1.4.1",
     "fast-xml-parser": "^3.12.20",
     "filesize": "^5.0.3",
-    "forge-core": "^1.1.1",
+    "forge-core": "^1.1.4",
     "graphql": "^14.4.2",
     "grommet": "^2.14.0",
     "grommet-icons": "^4.4.0",

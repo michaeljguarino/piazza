@@ -1,5 +1,5 @@
 import React from 'react'
-import { Anchor, Text } from 'grommet'
+import { Text } from 'grommet'
 import { Flyout } from 'forge-core'
 import UserDetail from './UserDetail'
 import WithPresence from '../utils/presence'

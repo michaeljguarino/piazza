@@ -2,13 +2,9 @@ import React from 'react'
 import { Box, Text } from 'grommet'
 import { User } from 'grommet-icons'
 import { Scroller, Flyout, FlyoutHeader, FlyoutContainer, useSubscription, Loading } from 'forge-core'
-import Avatar from '../users/Avatar'
-import UserHandle from '../users/UserHandle'
 import { PARTICIPANT_SUB, CONVERSATION_CONTEXT } from './queries'
 import { mergeAppend } from '../../utils/array'
 import { HeaderIcon } from './ConversationHeader'
-import WithPresence from '../utils/presence'
-import PresenceIndicator from '../users/PresenceIndicator'
 import ParticipantInvite, { ParticipantInviteButton } from './ParticipantInvite'
 import MagicLinkInvite from './MagicLinkInvite'
 import { Loader } from './utils'
@@ -68,7 +64,7 @@ const doFetchMore = (prev, {fetchMoreResult}) => {
   const edges = fetchMoreResult.conversation.participants.edges
   const pageInfo = fetchMoreResult.conversation.participants.pageInfo
 
-  return edges.length ? {
+  return {
     ...prev,
     conversation: {
       ...prev.conversation,
@@ -78,22 +74,7 @@ const doFetchMore = (prev, {fetchMoreResult}) => {
         edges: mergeAppend(edges, prev.conversation.participants.edges, (e) => e.node.id)
       }
     }
-  } : prev;
-}
-
-
-function Participant(props) {
-  return (
-    <Box width='300px' direction='row' align='center' pad='xsmall'>
-      <Avatar user={props.user} />
-      <Box>
-        <WithPresence id={props.user.id} >
-          {present => (<Text size='small'>{props.user.name} <PresenceIndicator present={present} /></Text>)}
-        </WithPresence>
-        <Text size='small'><UserHandle user={props.user} align={{right: 'left'}}/></Text>
-      </Box>
-    </Box>
-  )
+  }
 }
 
 const _subscribeToParticipantDeltas = (props, subscribeToMore) => {

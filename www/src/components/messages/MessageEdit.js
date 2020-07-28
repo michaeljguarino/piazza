@@ -1,5 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { useMutation } from 'react-apollo'
+import { Keyboard } from 'grommet'
 import { Return } from 'grommet-icons'
 import { Button, SecondaryButton } from 'forge-core'
 import { Box } from 'grommet'
@@ -9,7 +10,7 @@ import { updateMessage } from './utils'
 import { plainDeserialize, plainSerialize } from '../../utils/slate'
 import { useEditor } from '../utils/hooks'
 
-function MessageEdit({setSize, message, ...props}) {
+function MessageEdit({setSize, message, setEditing, ...props}) {
   const editRef = useRef()
   const [editorState, setEditorState] = useState(plainDeserialize(message.text))
   const editor = useEditor()
@@ -22,8 +23,8 @@ function MessageEdit({setSize, message, ...props}) {
         variables: {conversationId: convId},
         data: updateMessage(data, editMessage)
       })
-      props.setEditing(false)
-    }
+    },
+    onCompleted: () => setEditing(false)
   })
 
   useEffect(() => {
@@ -31,22 +32,31 @@ function MessageEdit({setSize, message, ...props}) {
 // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editRef])
 
+  const send = useCallback(() => (
+    mutation({variables: {id: message.id, attributes: {text: plainSerialize(editorState)}}})
+  ), [mutation, message, editorState])
+
   return (
     <Box ref={editRef} pad={{right: 'small'}} gap='xsmall'>
-      <Box direction='row' fill='horizontal' round='xsmall' border>
-        <MentionManager
-          submitDisabled
-          editor={editor}
-          editorState={editorState}
-          setEditorState={setEditorState}
-          onChange={() => null}
-          disableSubmit={() => null} />
-      </Box>
+      <Keyboard onKeyDown={(e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          send()
+          e.preventDefault()
+        }
+      }}>
+        <Box direction='row' fill='horizontal' round='xsmall' background='white' border>
+          <MentionManager
+            submitDisabled
+            editor={editor}
+            editorState={editorState}
+            setEditorState={setEditorState}
+            onChange={() => null}
+            disableSubmit={() => null} />
+        </Box>
+      </Keyboard>
       <Box direction='row' gap='xsmall'>
-        <SecondaryButton label='cancel' round='xsmall' onClick={() => props.setEditing(false)} />
-        <Button icon={<Return size='small' />} label='update' round='xsmall' onClick={() => (
-          mutation({variables: {id: message.id, attributes: {text: plainSerialize(editorState)}}})
-        )} />
+        <SecondaryButton label='cancel' round='xsmall' onClick={() => setEditing(false)} />
+        <Button icon={<Return size='small' />} label='update' round='xsmall' onClick={send} />
       </Box>
     </Box>
   )

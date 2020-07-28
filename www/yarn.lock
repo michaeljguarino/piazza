@@ -5893,10 +5893,10 @@ forever-agent@~0.6.1:
   resolved "https://registry.yarnpkg.com/forever-agent/-/forever-agent-0.6.1.tgz#fbc71f0c41adeb37f96c577ad1ed42d8fdacca91"
   integrity sha1-+8cfDEGt6zf5bFd60e1C2P2sypE=
 
-forge-core@^1.1.1:
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/forge-core/-/forge-core-1.1.1.tgz#44b727bbf93ea64de029f1fc67ef92ad07e9d6df"
-  integrity sha512-10uR/RM2oCvJr5nRZsSac3FXSAq8dOS/L1nXTPVVbGHgQTFSl2haqrUJhkadfSu75zGRlvObCps0JdPbgKfiPA==
+forge-core@^1.1.4:
+  version "1.1.4"
+  resolved "https://registry.yarnpkg.com/forge-core/-/forge-core-1.1.4.tgz#a495d6347b26dde2beddefe4283491facebf5893"
+  integrity sha512-lFep5cnx/qrqwl2LqU67bERCTziLwikIljWCqNkmLVswhV98LL3McNnbz8xTyL8DxaIGyDOoluC6NOEO65PQow==
   dependencies:
     "@babel/plugin-proposal-class-properties" "^7.10.4"
     babel-plugin-module-resolver "^4.0.0"
