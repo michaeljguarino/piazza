@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useRef, useContext } from 'react'
+import React, { useState, useEffect, useRef, useContext, useCallback } from 'react'
 import { Box, Stack, Text } from 'grommet'
 import { useQuery, useMutation, useApolloClient } from 'react-apollo'
 import { Notification } from 'grommet-icons'
-import { Dropdown, HoveredBackground } from 'forge-core'
+import { HoveredBackground, FlyoutContext, FlyoutContainer, FlyoutHeader } from 'forge-core'
 import NotificationList from './NotificationList'
 import { NOTIFICATIONS_Q, NEW_NOTIFICATIONS_SUB, VIEW_NOTIFICATIONS } from './queries'
 import { updateConversations } from '../conversation/utils'
@@ -103,14 +103,8 @@ function introduction() {
   return {type: 'WELCOME', message: {text: 'Welcome to Piazza!'}}
 }
 
-export default function NotificationIcon({me, setCurrentConversation}) {
-  const audioRef = useRef()
-  const client = useApolloClient()
-  const [currentNotification, setCurrentNotification] = useState(introduction())
-  const {data, loading, fetchMore, subscribeToMore} = useQuery(NOTIFICATIONS_Q)
-  const {workspaceId, currentConversation} = useContext(Conversations)
-
-  const unseen = me.unseenNotifications || 0
+function FlyoutContent({edges, fetchMore, unseen, pageInfo, setFlyoutContent}) {
+  const {setCurrentConversation, workspaceId} = useContext(Conversations)
   const [mutation] = useMutation(VIEW_NOTIFICATIONS, {
     update: (cache, {data: {viewNotifications}}) => {
       const {notifications} = cache.readQuery({ query: NOTIFICATIONS_Q });
@@ -124,6 +118,34 @@ export default function NotificationIcon({me, setCurrentConversation}) {
       updateNotifications(cache, () => true, ({node, ...edge}) => ({...edge, node: {...node, unreadNotifications: 0}}))
     }
   })
+
+  const setOpen = useCallback(() => {
+    setFlyoutContent(null)
+    mutation()
+  }, [setFlyoutContent, mutation])
+
+  return (
+    <FlyoutContainer width='40vw'>
+      <FlyoutHeader text='Notifications' setOpen={setOpen} />
+      <Box fill pad={{bottom: 'small'}}>
+        <NotificationList
+          edges={edges}
+          fetchMore={fetchMore}
+          pageInfo={pageInfo}
+          setCurrentConversation={setCurrentConversation} />
+      </Box>
+    </FlyoutContainer>
+  )
+}
+
+export default function NotificationIcon({me}) {
+  const audioRef = useRef()
+  const client = useApolloClient()
+  const [currentNotification, setCurrentNotification] = useState(introduction())
+  const {data, loading, fetchMore, subscribeToMore} = useQuery(NOTIFICATIONS_Q)
+  const {workspaceId, currentConversation} = useContext(Conversations)
+  const {setFlyoutContent} = useContext(FlyoutContext)
+  const unseen = me.unseenNotifications || 0
 
   useEffect(() => {
     return _subscribeToNewNotifications(
@@ -159,29 +181,27 @@ export default function NotificationIcon({me, setCurrentConversation}) {
         margin={{right: '15px'}}
         align='center'
         justify='center'>
-        <Dropdown onClose={mutation}>
-          <Stack anchor="top-right" style={{cursor: 'pointer'}}>
-            <Notification size={ICON_HEIGHT} />
-            {(unseen && unseen > 0) ?
-              <Box
-                background='notif'
-                align='center'
-                justify='center'
-                height='15px'
-                width='15px'
-                round>
-                <Text color='white' size='10px'>{unseen > 10 ? '!!' : unseen}</Text>
-              </Box> : null
-            }
-          </Stack>
-          <Box style={{minWidth: '300px'}} pad='small' align='center' justify='center'>
-            <NotificationList
-              edges={edges}
-              fetchMore={fetchMore}
-              pageInfo={pageInfo}
-              setCurrentConversation={setCurrentConversation} />
-          </Box>
-        </Dropdown>
+        <Stack anchor="top-right" style={{cursor: 'pointer'}} onClick={() => setFlyoutContent(
+          <FlyoutContent
+            setFlyoutContent={setFlyoutContent}
+            edges={edges}
+            unseen={unseen}
+            pageInfo={pageInfo}
+            fetchMore={fetchMore} />
+        )}>
+          <Notification size={ICON_HEIGHT} />
+          {(unseen && unseen > 0) ?
+            <Box
+              background='notif'
+              align='center'
+              justify='center'
+              height='15px'
+              width='15px'
+              round>
+              <Text color='white' size='10px'>{unseen > 10 ? '!!' : unseen}</Text>
+            </Box> : null
+          }
+        </Stack>
       </Box>
     </HoveredBackground>
     <audio ref={audioRef} id='sound' preload='auto'>

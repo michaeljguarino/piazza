@@ -8,7 +8,7 @@ export default function NotificationList({edges, pageInfo, setCurrentConversatio
     <Scroller
       id='notifications-list'
       edges={edges}
-      style={{maxHeight: '400px', overflow: 'auto'}}
+      style={{height: '100%', overflow: 'auto'}}
       mapper={({node}) => (
         <Notification
           key={node.id}

@@ -46,7 +46,8 @@ export default function Notification({notification}) {
   }
 
   return (
-    <Box direction='row' align='center' gap='small' margin={{bottom: 'small'}}>
+    <Box direction='row'  align='center'  gap='small' pad={{horizontal: 'small', vertical: 'xsmall'}}
+         onClick={() => null} hoverIndicator='lightHover'>
       <Avatar user={notification.actor} size='40px' />
       <Box>
         <NotifInner notification={notification} setCurrentConversation={setCurrentConversation} />
