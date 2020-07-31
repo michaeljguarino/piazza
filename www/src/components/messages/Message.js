@@ -1,5 +1,5 @@
 import React, { useState, useRef, useContext, useCallback, useEffect } from 'react'
-import { Box, Text, Markdown, Stack } from 'grommet'
+import { Box, Text, Markdown, Stack, Anchor } from 'grommet'
 import { Pin } from 'grommet-icons'
 import { TooltipContent, Divider, BotIcon } from 'forge-core'
 import Avatar from '../users/Avatar'
@@ -32,7 +32,10 @@ const PIN_COLOR='rgb(242,199,68)'
 function MsgMarkdown({children}) {
   return (
     <Markdown
-      components={{p: {props: {size: 'small', margin: {top: 'xsmall', bottom: 'xsmall'}}}}}>
+      components={{
+        p: {props: {size: 'small', margin: {top: 'xsmall', bottom: 'xsmall'}}},
+        a: {props: {size: 'small', target: '_blank'}, component: Anchor}
+      }}>
     {children}
     </Markdown>
   )
@@ -123,10 +126,7 @@ function PinHeader({pin, nopin}) {
 
   return (
     <Box justify='center'>
-      <Text
-        size='xsmall'
-        color='dark-3'
-        margin={{top: '2px', left: '30px'}}>
+      <Text size='xsmall' color='dark-3' margin={{top: '2px', left: '30px'}}>
         <Pin color={PIN_COLOR} size='small'/> pinned by @{pin.user.handle}
       </Text>
     </Box>

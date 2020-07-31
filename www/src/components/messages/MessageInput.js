@@ -166,7 +166,8 @@ function MessageInputInner({editor, attachment, setAttachment, conversation, set
               </Box>
             )}
             {!uploadProgress ?
-              <Text size='small'>add a message and upload</Text> :
+              <Text size='small'>{plainSerialize(editorState) == '' ?
+                'add a message and upload' : 'press enter to upload'}</Text> :
               <Progress percent={uploadProgress} status={uploadProgress === 100 ? 'success' : 'active'} />
             }
           </Box>

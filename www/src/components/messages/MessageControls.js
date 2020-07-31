@@ -1,14 +1,12 @@
-import React, { useState, useRef, useContext} from 'react'
-import { useMutation, useApolloClient, ApolloProvider } from 'react-apollo'
+import React, { useState, useRef, useContext, useCallback } from 'react'
+import { useMutation } from 'react-apollo'
 import { Box, Drop, Text } from 'grommet'
 import { More, Emoji, Pin, Trash, BlockQuote, Edit } from 'grommet-icons'
 import { HoveredBackground, MenuItem } from 'forge-core'
-import Popover from 'react-tiny-popover'
 import { DELETE_MESSAGE, CREATE_REACTION, MESSAGES_Q, PIN_MESSAGE, PINNED_MESSAGES } from './queries'
 import { removeMessage, updateMessage, addPinnedMessage, removePinnedMessage } from './utils'
 import EmojiPicker from '../emoji/EmojiPicker'
 import { CurrentUserContext } from '../login/EnsureLogin'
-import { useCallback } from 'react'
 
 const BORDER = {side: 'right', color: 'light-6'}
 const CONTROL_ATTRS = {
@@ -44,7 +42,7 @@ function DeleteMessage({message, conversation, setOpen}) {
 }
 
 export function MessageReaction({conversation, setPinnedHover, boxAttrs, position, label, onSelect, message}) {
-  const client = useApolloClient()
+  const ref = useRef()
   const [open, setOpen] = useState(false)
   const [mutation] = useMutation(CREATE_REACTION, {
     update: (cache, {data: {createReaction}}) => {
@@ -57,35 +55,29 @@ export function MessageReaction({conversation, setPinnedHover, boxAttrs, positio
     }
   })
 
-  function toggleOpen(value) {
+  const toggleOpen = useCallback((value) => {
     setOpen(value)
     setPinnedHover && setPinnedHover(value)
-  }
+  }, [setOpen, setPinnedHover])
 
   return (
-    <Popover
-      isOpen={open}
-      position={position || ['left', 'top', 'bottom']}
-      onClickOutside={() => toggleOpen(false)}
-      containerStyle={{zIndex: '100'}}
-      content={
-        <ApolloProvider client={client}>
-          <EmojiPicker onSelect={(emoji) => {
-            mutation({variables: {messageId: message.id, name: emoji.id}})
-            onSelect && onSelect()
-          }} />
-        </ApolloProvider>
-      }>
-      <HoveredBackground>
-        <Box
-          accentable
-          onClick={() => toggleOpen(!open)}
-          {...(boxAttrs || CONTROL_ATTRS)}>
-          <Emoji size='15px'  />
-          {label && (<Text size='xsmall' margin={{left: '2px'}}>{label}</Text>)}
-        </Box>
-      </HoveredBackground>
-    </Popover>
+    <>
+    <HoveredBackground>
+      <Box ref={ref} accentable onClick={() => toggleOpen(!open)} {...(boxAttrs || CONTROL_ATTRS)}>
+        <Emoji size='15px'  />
+        {label && (<Text size='xsmall' margin={{left: '2px'}}>{label}</Text>)}
+      </Box>
+    </HoveredBackground>
+    {open && (
+      <Drop target={ref.current} align={{right: 'left'}}
+        onClickOutside={() => toggleOpen(false)} onEsc={() => toggleOpen(false)}>
+        <EmojiPicker onSelect={(emoji) => {
+          mutation({variables: {messageId: message.id, name: emoji.id}})
+          onSelect && onSelect()
+        }} />
+     </Drop>
+    )}
+    </>
   )
 }
 
@@ -125,37 +117,29 @@ function PinMessage({message, conversation}) {
   )
 }
 
-function MessageControls({setPinnedHover, setEditing, ...props}) {
+export default function MessageControls({setPinnedHover, setEditing, ...props}) {
   const me = useContext(CurrentUserContext)
   const dropRef = useRef()
   const [moreOpen, setMoreOpen] = useState(false)
+
   const toggleOpen = useCallback((val) => {
     setPinnedHover(val)
     setMoreOpen(val)
   }, [setPinnedHover, setMoreOpen])
+
   const editing = useCallback((open) => {
     setEditing(open)
     setMoreOpen(false)
   }, [setEditing, setMoreOpen])
 
   return (
-    <Box
-      className='message-controls'
-      border={{color: 'light-3'}}
-      elevation='xsmall'
-      background='white'
-      direction='row'
-      height='35px'
-      round='xsmall'
-      margin={{right: '10px', top: '-10px'}}>
-      <MessageReaction {...props} />
+    <Box className='message-controls' border={{color: 'light-3'}} elevation='xsmall' background='white'
+      direction='row' height='35px' round='xsmall' margin={{right: '10px', top: '-10px'}}>
+      <MessageReaction setPinnedHover={setPinnedHover} {...props} />
       <PinMessage {...props} />
       <HoveredBackground>
-        <Box
-          accentable
-          onClick={() => props.setReply(props.message)}
-          {...CONTROL_ATTRS}
-          border={props.message.creator.id === me.id ? BORDER : null}>
+        <Box accentable onClick={() => props.setReply(props.message)}
+          {...CONTROL_ATTRS} border={props.message.creator.id === me.id ? BORDER : null}>
           <BlockQuote size='15px' />
         </Box>
       </HoveredBackground>
@@ -167,12 +151,8 @@ function MessageControls({setPinnedHover, setEditing, ...props}) {
           </Box>
         </HoveredBackground>
         {moreOpen && (
-          <Drop
-            target={dropRef.current}
-            align={{top: 'bottom'}}
-            margin={{top: '4px'}}
-            onClickOutside={() => toggleOpen(false)}
-            onEsc={() => toggleOpen(false)}>
+          <Drop target={dropRef.current} align={{top: 'bottom'}} margin={{top: '4px'}}
+            onClickOutside={() => toggleOpen(false)} onEsc={() => toggleOpen(false)}>
             <Box style={{minWidth: '140px'}} pad={{vertical: 'xxsmall'}}>
               <MenuItem hover='focus'>
                 <Box direction='row' align='center' gap='small'>
@@ -189,5 +169,3 @@ function MessageControls({setPinnedHover, setEditing, ...props}) {
     </Box>
   )
 }
-
-export default MessageControls
