@@ -3,8 +3,8 @@ import { HoveredBackground } from 'forge-core'
 import { socket } from '../../helpers/client'
 import TimedCache from '../utils/TimedCache'
 import { useMutation, useApolloClient } from 'react-apollo'
-import { Box, Text, Markdown, Layer, Keyboard, Drop, ThemeContext } from 'grommet'
-import { Attachment } from 'grommet-icons'
+import { Box, Text, Markdown, Layer, Keyboard, Drop, ThemeContext, Stack } from 'grommet'
+import { Attachment, Close } from 'grommet-icons'
 import { FilePicker } from 'react-file-picker'
 import debounce from 'lodash/debounce'
 import { CurrentUserContext } from '../login/EnsureLogin'
@@ -157,20 +157,25 @@ function MessageInputInner({editor, attachment, setAttachment, conversation, set
     <Box ref={dropRef} style={{maxHeight: '210px', minHeight: 'auto'}} fill='horizontal' pad={{horizontal: '10px'}}>
       {(attachment || uploadProgress) && (
         <Layer plain modal={false} position='top-right'>
-          <Box width='400px' gap='xsmall' pad='small' round='xsmall'
-            margin={{right: 'small', top: '70px'}} background='dark-1'>
-            {attachment && (
-              <Box>
-                <Text size='small' weight={500}>{attachment.name}</Text>
-                <Text size='small' color='dark-3'>{fs(attachment.size)}</Text>
-              </Box>
-            )}
-            {!uploadProgress ?
-              <Text size='small'>{plainSerialize(editorState) == '' ?
-                'add a message and upload' : 'press enter to upload'}</Text> :
-              <Progress percent={uploadProgress} status={uploadProgress === 100 ? 'success' : 'active'} />
-            }
-          </Box>
+          <Stack width='400px' margin={{right: 'small', top: '70px'}} anchor='top-right'>
+            <Box width='400px' gap='xsmall' pad='small' round='xsmall' background='dark-1'>
+              {attachment && (
+                <Box>
+                  <Text size='small' weight={500}>{attachment.name}</Text>
+                  <Text size='small' color='dark-3'>{fs(attachment.size)}</Text>
+                </Box>
+              )}
+              {!uploadProgress ?
+                <Text size='small'>{plainSerialize(editorState) === '' ?
+                  'add a message and upload' : 'press enter to upload'}</Text> :
+                <Progress percent={uploadProgress} status={uploadProgress === 100 ? 'success' : 'active'} />
+              }
+            </Box>
+            <Box flex={false} pad='xsmall' round='xsmall' focusIndicator={false} margin={{top: 'xsmall', right: 'xsmall'}}
+                 hoverIndicator='dark-2' onClick={() => setAttachment(null)}>
+              <Close size='12px' color='white' />
+            </Box>
+          </Stack>
         </Layer>
       )}
       <Keyboard
