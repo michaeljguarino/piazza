@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect, useRef } from 'react'
+import React, { useState, useContext, useCallback, useEffect, useRef } from 'react'
 import { Box, Text, Layer } from 'grommet'
 import { Loading, Pill } from 'forge-core'
 import { Wifi, Close, User, Down } from 'grommet-icons'
@@ -126,6 +126,10 @@ export default function MessageList() {
   useEffect(() => {
     setScrolled(false)
   }, [currentConversation.id])
+  const refreshList = useCallback(() => {
+    console.log(listRef)
+    listRef && listRef.resetAfterIndex(0, true)
+  }, [listRef])
 
   useEffect(() => {
     listRef && !scrolled && listRef.scrollToItem(0)
@@ -183,6 +187,7 @@ export default function MessageList() {
                   setReply={setReply}
                   dialog={dialog}
                   next={next.node}
+                  refreshList={refreshList}
                   {...props} />)
             }}
             loadNextPage={() => fetchMore({

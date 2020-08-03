@@ -17,7 +17,7 @@ const CONTROL_ATTRS = {
   width: '40px'
 }
 
-function DeleteMessage({message, conversation, setOpen}) {
+function DeleteMessage({message, conversation, setOpen, refreshList}) {
   const [mutation] = useMutation(DELETE_MESSAGE, {
     variables: {messageId: message.id},
     update: (cache, {data: {deleteMessage}}) => {

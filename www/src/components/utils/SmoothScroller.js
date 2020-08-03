@@ -36,7 +36,7 @@ const Item = ({ index, mapper, isItemLoaded, placeholder, items, setSize }) => {
     return placeholder && placeholder(index)
   }
 
-  return mapper(items[index], items[index + 1] || {}, {setSize});
+  return mapper(items[index], items[index + 1] || {}, {setSize, index});
 };
 
 const ItemWrapper = React.memo(({data: {setSize, width, refreshKey, items, isItemLoaded, placeholder, mapper}, style, index}) => {
@@ -75,8 +75,8 @@ const ItemWrapper = React.memo(({data: {setSize, width, refreshKey, items, isIte
   )
 }, areEqual)
 
-const buildItemData = memoize((setSize, mapper, isItemLoaded, items, parentRef, width, placeholder, refreshKey, props) => (
-  {setSize, mapper, isItemLoaded, items, parentRef, width, placeholder, refreshKey, ...props}
+const buildItemData = memoize((setSize, mapper, isItemLoaded, items, listRef, width, placeholder, refreshKey, props) => (
+  {setSize, mapper, isItemLoaded, items, listRef, width, placeholder, refreshKey, ...props}
 ))
 
 export default function SmoothScroller({

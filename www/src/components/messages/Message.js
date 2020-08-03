@@ -140,7 +140,7 @@ function isConsecutive(message, next) {
   const firstTime = moment(message.insertedAt)
   const secondTime = moment(next.insertedAt)
 
-  return (firstTime.add(-5, 'minutes').isBefore(secondTime))
+  return (firstTime.add(-1, 'minutes').isBefore(secondTime))
 }
 
 function sameDay(message, next) {
@@ -158,7 +158,15 @@ const DATE_PATTERN = 'h:mm a'
 function MessageBody({message, conversation, next, editing, setEditing, dialog, hover, setPinnedHover, setSize}) {
   const date = moment(message.insertedAt)
   const consecutive = isConsecutive(message, next)
+  const [painted, setPainted] = useState(consecutive)
   const formattedDate = date.format(DATE_PATTERN)
+
+  useEffect(() => {
+    if (!consecutive && painted) {
+      setSize()
+    }
+    setPainted(consecutive)
+  }, [painted, setPainted, consecutive])
 
   return (
     <Box fill='horizontal' margin={{vertical: '2px'}}>
@@ -230,9 +238,18 @@ export function formatDate(dt) {
   });
 }
 
-function DateDivider({waterline, message, next}) {
+function DateDivider({waterline, message, next, setSize}) {
   const same = sameDay(message, next)
   const unread = isWaterline(waterline, message, next)
+  const [painted, setPainted] = useState(!same)
+
+  useEffect(() => {
+    if (!same && painted) {
+      setSize()
+    }
+    setPainted(!same)
+  }, [painted, setPainted, same])
+
 
   if (!same && unread) {
     return (
@@ -316,7 +333,7 @@ const Message = React.memo(({noHover, selected, scrollTo, message, onClick, pos,
 
   return (
     <Box flex={false} style={unread ? {zIndex: 5} : null}>
-    {!noHover && <DateDivider message={message} next={props.next} waterline={props.waterline} />}
+    {!noHover && <DateDivider message={message} next={props.next} waterline={props.waterline} setSize={setSize} />}
     <Box
       ref={msgRef}
       id={message.id}

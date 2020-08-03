@@ -22,11 +22,8 @@ export function applyNewMessage(prev, message) {
 
 export function updateMessage(prev, message) {
   return replaceEdges(
-    prev, prev.conversation.messages.edges.map((e) => {
-      if (e.node.id !== message.id) return e
-
-      return {...e, node: message}
-    }))
+    prev, prev.conversation.messages.edges.map((e) => e.node.id === message.id ? {...e, node: message} : e)
+  )
 }
 
 export function removeMessage(prev, message) {
