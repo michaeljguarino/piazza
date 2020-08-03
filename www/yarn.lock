@@ -3670,6 +3670,11 @@ center-align@^0.1.1:
     align-text "^0.1.3"
     lazy-cache "^1.0.3"
 
+chained-function@^0.5.0:
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/chained-function/-/chained-function-0.5.0.tgz#2564bbdfdf7803194bebf75a6b2bd041ede23b3a"
+  integrity sha1-JWS73994AxlL6/daayvQQe3iOzo=
+
 chalk@2.4.2, chalk@^2.0.0, chalk@^2.0.1, chalk@^2.1.0, chalk@^2.4.1, chalk@^2.4.2:
   version "2.4.2"
   resolved "https://registry.yarnpkg.com/chalk/-/chalk-2.4.2.tgz#cd42541677a54333cf541a49108c1432b44c9424"
@@ -10913,6 +10918,14 @@ react-portal@^4.1.5:
   integrity sha512-Zf+vGQ/VEAb5XAy+muKEn48yhdCNYPZaB1BWg1xc8sAZWD8pXTgPtQT4ihBdmWzsfCq8p8/kqf0GWydSBqc+Eg==
   dependencies:
     prop-types "^15.5.8"
+
+react-repeatable@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/react-repeatable/-/react-repeatable-2.0.1.tgz#0f063742ebefd97e073eb77e8223e53d856e7530"
+  integrity sha512-i4IA2s+1Fo59VtVN3lPi2sYUv3etug846YbT2gXBPNo+qfoAmoi2kDWY/truOqAxxza67wR67wqGEQYHVctDWw==
+  dependencies:
+    chained-function "^0.5.0"
+    prop-types "^15.6.0"
 
 react-resize-observer@^1.1.1:
   version "1.1.1"

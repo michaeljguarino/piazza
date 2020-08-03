@@ -1,9 +1,10 @@
-import React, { useState } from 'react'
+import React, { useState, useCallback } from 'react'
 import { Layer, Box, Stack, Text, ThemeContext } from 'grommet'
 import { FileTypes } from './types'
-import { FormPrevious, FormNext, FormClose } from 'grommet-icons'
+import { FormPrevious, FormNext, FormClose, FormAdd, FormSubtract } from 'grommet-icons'
 import { Document, Page } from 'react-pdf'
 import fs from 'filesize'
+import Repeatable from 'react-repeatable'
 import { Icon } from './File'
 
 function VideoViewer({file: {filename, object}}) {
@@ -26,38 +27,71 @@ function HoverContainer({children, ...props}) {
   )
 }
 
+function RepeatButton({onClick, children}) {
+  return (
+    <Repeatable
+      tag={Box}
+      repeatDelay={100}
+      repeatInterval={32}
+      hoverIndicator='dark-2'
+      focusIndicator={false}
+      onHold={onClick}
+      onClick={onClick}>
+      {children}
+    </Repeatable>
+  )
+}
+
+function PdfControls({page, pages, scale, setPage, setScale}) {
+  return (
+    <Box flex={false} direction='row' pad='xsmall' border={{side: 'between', color: 'light-5'}} background='dark-1'
+             elevation='small' round='xsmall' gap='xsmall'>
+      <Box direction='row' gap='xsmall' align='center' pad={{horizontal: 'xsmall'}}>
+        <Box hoverIndicator='dark-2' focusIndicator={false} onClick={page !== 1 ? () => setPage(page - 1) : null}>
+          <FormPrevious color={page === 1 ? 'dark-3' : null} />
+        </Box>
+        <Box flex={false}>
+          <Text size='small'>{page} of {pages}</Text>
+        </Box>
+        <Box hoverIndicator='dark-2' focusIndicator={false} onClick={page < pages ? () => setPage(page + 1) : null}>
+          <FormNext color={page === pages ? 'dark-3' : null} />
+        </Box>
+      </Box>
+      <Box direction='row' gap='xsmall' align='center' pad={{horizontal: 'xsmall'}}>
+        <RepeatButton onClick={() => setScale(scale - 10)}>
+          <FormSubtract />
+        </RepeatButton>
+        <Box flex={false}>
+          <Text size='small'>{scale}%</Text>
+        </Box>
+        <RepeatButton onClick={() => setScale(scale + 10)}>
+          <FormAdd />
+        </RepeatButton>
+      </Box>
+    </Box>
+  )
+}
+
 function PdfViewer({file}) {
   const [pages, setPages] = useState(null)
   const [page, setPage] = useState(1)
+  const [scale, setScale] = useState(100)
+  const boundedSetScale = useCallback((scale) => setScale(Math.max(Math.min(scale, 250), 10)), [setScale])
+
   return (
-    <Box fill align='center' justify='center'>
-      <Stack anchor='top-right'>
-        <Box fill style={{overflow: 'auto'}}>
-          <Document
-            file={file.object}
-            onLoadSuccess={({numPages}) => setPages(numPages)}
-            onLoadError={console.log}>
-            <Page pageNumber={page} />
+    <Box flex={false} fill pad='24px'>
+      <Stack fill anchor='top-left'>
+        <Box style={{overflow: 'auto'}} fill flex={false} justify={scale < 100 ? 'center' : null} align='center'>
+          <Document file={file.object} onLoadSuccess={({numPages}) => setPages(numPages)}>
+            <Page pageNumber={page} scale={scale / 100} />
           </Document>
         </Box>
-        <Box
-          flex={false}
-          margin={{bottom: '-25px'}}
-          direction='row'
-          align='center'
-          background='white'
-          border={{color: 'light-3'}}
-          elevation='small'>
-          <HoverContainer onClick={page !== 1 ? () => setPage(page - 1) : null}>
-            <FormPrevious color={page === 1 ? 'dark-3' : null} />
-          </HoverContainer>
-          <Box pad='small' flex={false}>
-            <Text size='small'>{page} of {pages}</Text>
-          </Box>
-          <HoverContainer onClick={page < pages ? () => setPage(page + 1) : null}>
-            <FormNext color={page === pages ? 'dark-3' : null} />
-          </HoverContainer>
-        </Box>
+        <PdfControls
+          page={page}
+          pages={pages}
+          setPage={setPage}
+          scale={scale}
+          setScale={boundedSetScale} />
       </Stack>
     </Box>
   )
