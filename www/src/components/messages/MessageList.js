@@ -75,13 +75,13 @@ function Pariticipants({participants}) {
   )
 }
 
-function Prelude({conversation}) {
+export function Prelude({conversation}) {
   const me = useContext(CurrentUserContext)
   const name = conversationNameString(conversation, me)
   const fullname = conversation.chat ? `your chat with ${name}` : `#${name}`
 
   return (
-    <Box pad='medium'>
+    <Box pad='medium' flex={false}>
       {conversation.chat && <Pariticipants participants={conversation.chatParticipants} />}
       <Box fill='horizontal' gap='xsmall' justify='center'>
         <Text weight='bold'>This is the beginning of {fullname}</Text>

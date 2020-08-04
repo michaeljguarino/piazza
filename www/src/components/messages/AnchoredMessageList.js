@@ -9,6 +9,7 @@ import {ANCHORED_MESSAGES} from './queries'
 import { Conversations } from '../login/MyConversations'
 import { ReplyContext } from './ReplyProvider'
 import { ScrollContext } from '../utils/SmoothScroller'
+import { Prelude } from './MessageList'
 
 function RecentItemsOverlay({setAnchor}) {
   return (
@@ -51,19 +52,21 @@ const onFetchMore = (direction, prev, {fetchMoreResult}) => {
   }
 }
 
-function AnchoredMessageList({anchor, setAnchor, ...props}) {
+function AnchoredMessageList({anchor, setAnchor}) {
   const { currentConversation } = useContext(Conversations)
   const { setReply } = useContext(ReplyContext)
   const defaultVars = {conversationId: currentConversation.id, anchor: anchor.timestamp}
-  const {loading, error, data, fetchMore} = useQuery(ANCHORED_MESSAGES, {
+  const {data, fetchMore} = useQuery(ANCHORED_MESSAGES, {
     variables: defaultVars,
     fetchPolicy: 'cache-and-network'
   })
-  if (loading) return <Loading height='calc(100vh - 135px)' width='100%' />
-  if (error) return <div>wtf</div>
+  if (!data) return <Loading height='calc(100vh - 135px)' width='100%' />
   let results = data.conversation
   let allEdges = [...Array.from(reverse(results.before.edges)), ...results.after.edges]
   const scrollTo = anchor.id ? anchor.id : (results.after.edges[0] && results.after.edges[0].node.id)
+  if (!results.before.pageInfo.hasNextPage) {
+    allEdges.unshift("PRELUDE")
+  }
 
   return (
     <Stack anchor="bottom" fill>
@@ -81,17 +84,22 @@ function AnchoredMessageList({anchor, setAnchor, ...props}) {
             justifyContent: 'flex-start',
             flexDirection: 'column-reverse',
           }}
-          mapper={({node}, next, ref, pos) => (
-            <Message
-              parentRef={ref}
-              pos={pos}
-              selected={node.id === anchor.id}
-              key={node.id}
-              conversation={currentConversation}
-              message={node}
-              setReply={setReply}
-              next={next.node} />
-          )}
+          mapper={(e, next, ref, pos) => {
+            if (e === 'PRELUDE') return <Prelude conversation={currentConversation} />
+            const {node} = e
+            return (
+              <Message
+                parentRef={ref}
+                pos={pos}
+                selected={node.id === anchor.id}
+                key={node.id}
+                conversation={currentConversation}
+                message={node}
+                setReply={setReply}
+                setSize={() => null}
+                next={next.node} />
+            )
+          }}
           onLoadMore={(direction) => {
             const pageInfo = results[direction].pageInfo
             if (!pageInfo.hasNextPage) return
