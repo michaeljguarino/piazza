@@ -111,35 +111,31 @@ function FlyoutContent({conversationId, setOpen}) {
   return (
     <FlyoutContainer width='40vw'>
       <FlyoutHeader text='Participants' setOpen={setOpen} />
-      <Box margin={{bottom: 'small'}} pad={{bottom: 'small'}} border='bottom'>
+      <Box fill margin={{bottom: 'small'}} border='bottom'>
         <Scroller
-          style={{
-            overflow: 'auto',
-            maxHeight: '70%',
-            display: 'flex',
-            justifyContent: 'flex-start',
-            flexDirection: 'column',
-          }}
+          style={{overflow: 'auto', height: '100%'}}
           edges={edges}
-          mapper={(p) => (<UserListEntry key={p.node.id} user={p.node.user} />)}
+          mapper={(p) => (<UserListEntry key={p.node.id} margin={{bottom: 'xsmall'}} user={p.node.user} />)}
           onLoadMore={() => {
             pageInfo.hasNextPage && fetchMore({
               variables: {partCursor: pageInfo.endCursor},
               updateQuery: doFetchMore})
           }} />
       </Box>
-      <Text margin={{left: '10px', bottom: 'small'}}>Add more:</Text>
-      <ParticipantInvite
-        direction='row'
-        conversation={conversation}>
-      {(participants, clearInput) => (
-        <ParticipantInviteButton
-          participants={participants}
-          conversation={conversation}
-          close={clearInput} />
-      )}
-      </ParticipantInvite>
-      <MagicLinkInvite conversation={conversation} />
+      <Box flex={false}>
+        <Text margin={{left: '10px', bottom: 'small'}}>Add more:</Text>
+        <ParticipantInvite
+          direction='row'
+          conversation={conversation}>
+        {(participants, clearInput) => (
+          <ParticipantInviteButton
+            participants={participants}
+            conversation={conversation}
+            close={clearInput} />
+        )}
+        </ParticipantInvite>
+        <MagicLinkInvite conversation={conversation} />
+      </Box>
     </FlyoutContainer>
   )
 }
