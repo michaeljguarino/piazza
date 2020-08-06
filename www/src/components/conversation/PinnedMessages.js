@@ -82,6 +82,7 @@ function FlyoutContent({conversation, setOpen}) {
             nopin
             conversation={conversation}
             message={node.message}
+            setSize={() => null}
             next={null} />
         )}
         onLoadMore={() => {

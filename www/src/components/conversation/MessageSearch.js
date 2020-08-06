@@ -21,7 +21,10 @@ function performSearch(client, query, conversationId, callback, setAnchor) {
       value: node,
       label: (
         <ScrollContext.Provider value={{setSize: () => null}}>
-          <Message onClick={() => setAnchor({timestamp: node.insertedAt, id: node.id})} message={node} />
+          <Message
+            onClick={() => setAnchor({timestamp: node.insertedAt, id: node.id})}
+            message={node}
+            setSize={() => null} />
         </ScrollContext.Provider>
       )
     }))
