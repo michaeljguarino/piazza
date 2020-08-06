@@ -3,11 +3,12 @@ import { Layer, Box, Stack, Text, ThemeContext } from 'grommet'
 import { Loading } from 'forge-core'
 import useDimensions from "react-use-dimensions"
 import { FileTypes } from './types'
-import { FormPrevious, FormNext, FormClose, FormAdd, FormSubtract, Add, Subtract } from 'grommet-icons'
+import { FormPrevious, FormNext, FormClose, FormAdd, FormSubtract, Add, Subtract, Download } from 'grommet-icons'
 import { Document, Page } from 'react-pdf'
 import fs from 'filesize'
 import Repeatable from 'react-repeatable'
 import { Icon } from './File'
+import { download } from '../../utils/file'
 
 function VideoViewer({file: {filename, object}}) {
   return <video alt={filename} src={object} style={{maxHeight: '100%'}} />
@@ -36,12 +37,12 @@ function ZoomControls({zoomIn, zoomOut, scale}) {
 }
 
 function preserveAspectRatio(dims, width, height) {
-  if (dims.width < width && dims.height < height) {
+  if (dims.width < width && dims.height <= height) {
     return dims
   }
 
   const ratio = dims.width / dims.height
-  if (dims.width < width && width / ratio) {
+  if (dims.width < width && width / ratio <= height) {
     return {width, height: width / ratio}
   }
 
@@ -60,10 +61,11 @@ function ImageInner({url, width, height, dims}) {
   const w = imgDims.width * mult
   const h = imgDims.height * mult
   const maxScale = Math.max(100, Math.min(Math.ceil((width / imgDims.width) * 200), Math.ceil((height / imgDims.height) * 200), 200))
+  const centered = imgDims.width * mult < width && imgDims.height * mult < height ? 'center' : null
 
   return (
     <Stack fill anchor='top-left'>
-      <Box fill flex={false} style={{overflow: 'auto'}} align='center' justify='center'>
+      <Box fill flex={false} style={{overflow: 'auto'}} align='center' justify={centered}>
         <img
           alt=''
           src={url}
@@ -195,6 +197,17 @@ function Header({file, setOpen}) {
         </Box>
       </Box>
       <Box
+        flex={false}
+        focusIndicator={false}
+        onClick={() => download(file.object)}
+        pad='small'
+        hoverIndicator='light-3'
+        align='center'
+        justify='center'
+        round='xsmall'>
+        <Download size='20px' />
+      </Box>
+      <Box
         focusIndicator={false}
         hoverIndicator='light-3'
         round='xsmall'
@@ -215,7 +228,7 @@ export default function FileViewer({file, setOpen}) {
       <Layer plain full onEsc={() => setOpen(false)}>
         <Box fill background='white'>
           <Header file={file} setOpen={setOpen} />
-          <Box fill pad='medium' align='center' justify='center'>
+          <Box fill pad='small' align='center' justify='center'>
             <FileViewerInner file={file} />
           </Box>
         </Box>
