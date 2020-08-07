@@ -56,22 +56,17 @@ function preserveAspectRatio(dims, width, height) {
 
 function ImageInner({url, width, height, dims}) {
   const [scale, setScale] = useState(100)
-  const imgDims  = preserveAspectRatio(dims, width - 24, height - 24)
+  const {width: w, height: h}  = preserveAspectRatio(dims, width - 24, height - 24)
   const mult = scale / 100
-  const w = imgDims.width * mult
-  const h = imgDims.height * mult
-  const maxScale = Math.max(100, Math.min(Math.ceil((width / imgDims.width) * 200), Math.ceil((height / imgDims.height) * 200), 200))
-  const centered = imgDims.width * mult < width && imgDims.height * mult < height ? 'center' : null
+  const ws = w * mult
+  const hs = h * mult
+  const maxScale = Math.max(100, Math.min(Math.ceil((width / w) * 200), Math.ceil((height / h) * 200), 200))
+  const centered = ws < width && hs < height ? 'center' : null
 
   return (
     <Stack fill anchor='top-left'>
       <Box fill flex={false} style={{overflow: 'auto'}} align='center' justify={centered}>
-        <img
-          alt=''
-          src={url}
-          onDoubleClick={() => setScale(100)}
-          height={`${h}`}
-          width={`${w}`} />
+        <img alt='' src={url} onDoubleClick={() => setScale(100)} height={`${hs}`} width={`${ws}`} />
       </Box>
       <ZoomControls
         zoomIn={() => setScale(Math.min(maxScale, scale + 10))}
@@ -108,6 +103,9 @@ function RepeatButton({onClick, children}) {
       repeatDelay={100}
       repeatInterval={32}
       hoverIndicator='dark-2'
+      align='center'
+      justify='center'
+      pad='xxsmall'
       focusIndicator={false}
       onHold={onClick}
       onClick={onClick}>
@@ -118,8 +116,9 @@ function RepeatButton({onClick, children}) {
 
 function PdfControls({page, pages, scale, setPage, setScale}) {
   return (
-    <Box flex={false} direction='row' pad='xsmall' border={{side: 'between', color: 'light-5'}} background='dark-1'
-             elevation='small' round='xsmall' gap='xsmall'>
+    <Box flex={false} direction='row' pad={{vertical: 'xsmall', horizontal: 'small'}}
+      border={{side: 'between', color: 'dark-3'}} background='dark-1'
+      elevation='small' round='xsmall' gap='xsmall'>
       <Box direction='row' gap='xsmall' align='center' pad={{horizontal: 'xsmall'}}>
         <Box hoverIndicator='dark-2' focusIndicator={false} onClick={page !== 1 ? () => setPage(page - 1) : null}>
           <FormPrevious color={page === 1 ? 'dark-3' : null} />

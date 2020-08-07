@@ -80,6 +80,20 @@ defmodule Core.Services.UsersTest do
       assert_receive {:event, %PubSub.UserUpdated{item: ^updated}}
     end
 
+    test "A user can update statuses" do
+      user = build(:user) |> with_password(@pwd)
+      {:ok, updated} = Users.update_user(user.id, %{status: %{text: "status"}}, user)
+
+      assert updated.status.text == "status"
+    end
+
+    test "A user can clear statuses" do
+      user = build(:user, status: %{text: "status"}) |> with_password(@pwd)
+      {:ok, updated} = Users.update_user(user.id, %{status: nil}, user)
+
+      refute updated.status
+    end
+
     @tag :skip
     test "A user can add avatars" do
       user = build(:user) |> with_password(@pwd)

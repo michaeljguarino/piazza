@@ -43,6 +43,9 @@ defmodule GraphQl.Schema.Types do
     field :creator,    :user, resolve: dataloader(Conversation)
     field :notification_preferences, :notification_preferences
 
+    field :status, :status
+    field :status_expires_at, :datetime
+
     field :jwt, :string, resolve: fn
       %{jwt: jwt, id: id}, _, %{context: %{current_user: %{id: id}}} ->
         {:ok, jwt}
@@ -71,6 +74,11 @@ defmodule GraphQl.Schema.Types do
     end
 
     timestamps()
+  end
+
+  object :status do
+    field :text,  non_null(:string)
+    field :emoji, :string
   end
 
   delta :user

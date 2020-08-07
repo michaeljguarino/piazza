@@ -15,10 +15,18 @@ defmodule GraphQl.Schema.Inputs do
     field :title,    :string
     field :phone,    :string
     field :notification_preferences, :notification_prefs
+
+    field :status,            :status_attributes
+    field :status_expires_at, :datetime
   end
 
   input_object :role_attributes do
     field :admin, :boolean
+  end
+
+  input_object :status_attributes do
+    field :text, non_null(:string)
+    field :emoji, :string
   end
 
   input_object :workspace_attributes do

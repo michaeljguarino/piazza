@@ -97,6 +97,12 @@ crons:
   - name: RETENTION_POLICY
     value: 1
 
+sweepStatus:
+  cronName: piazza-sweep-userstatus
+  cronModule: Sweep.UserStatus
+  crontab: "0,15,30,45 * * * *"
+  envVars: []
+
 dbPasswordSecret: piazza-postgresql
 rabbitPasswordSecret: piazza-rabbitmq
 

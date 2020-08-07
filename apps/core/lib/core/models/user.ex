@@ -21,9 +21,15 @@ defmodule Core.Models.User do
 
     field :profile_img,   :map
     field :deleted_at,    :utc_datetime_usec
+    field :status_expires_at,    :utc_datetime_usec
 
     embeds_one :roles, Roles, on_replace: :update do
       field :admin, :boolean, default: false
+    end
+
+    embeds_one :status, Status, on_replace: :update do
+      field :emoji, :string
+      field :text,  :string
     end
 
     embeds_one :notification_preferences, NotificationPreferences, on_replace: :update
@@ -39,7 +45,7 @@ defmodule Core.Models.User do
     end
   end
 
-  @valid ~w(email name handle password bio bot phone title)a
+  @valid ~w(email name handle password bio bot phone title status_expires_at)a
 
   def ordered(query \\ __MODULE__, order \\ [asc: :email]), do: from(u in query, order_by: ^order)
 
@@ -53,6 +59,11 @@ defmodule Core.Models.User do
     from(u in query, where: u.handle in ^handles)
   end
 
+  def with_expired_status(query \\ __MODULE__) do
+    now = Timex.now()
+    from(u in query, where: u.status_expires_at <= ^now)
+  end
+
   def search(query \\ __MODULE__, handle) do
     from(u in query,
       where: like(u.handle, ^"#{handle}%")
@@ -63,6 +74,8 @@ defmodule Core.Models.User do
     model
     |> cast(attrs, @valid)
     |> cast_embed(:notification_preferences)
+    |> cast_embed(:status, with: &status_changeset/2)
+    |> cast_embed(:roles,  with: &role_changeset/2)
     |> validate_required([:email, :name, :handle])
     |> unique_constraint(:email)
     |> unique_constraint(:handle)
@@ -73,13 +86,18 @@ defmodule Core.Models.User do
     |> validate_format(:email, @email_re)
     |> generate_uuid(:avatar_id)
     |> cast_attachments(attrs, [:avatar], allow_urls: true)
-    |> cast_embed(:roles, with: &role_changeset/2)
     |> hash_password()
   end
 
   defp role_changeset(schema, params) do
     schema
     |> cast(params, [:admin])
+  end
+
+  defp status_changeset(schema, params) do
+    schema
+    |> cast(params, [:emoji, :text])
+    |> validate_required([:text])
   end
 
   defp hash_password(%Ecto.Changeset{valid?: true, changes: %{password: password}} = changeset) do
