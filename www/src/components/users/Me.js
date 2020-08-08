@@ -15,6 +15,7 @@ import AdminTools from '../tools/AdminTools'
 import Themes from '../workspace/Themes'
 import WithPresence from '../utils/presence'
 import PresenceIndicator from './PresenceIndicator'
+import UserStatus from './UserStatus'
 
 export function DropdownItem({onClick, icon, text, ...rest}) {
   return (
@@ -95,6 +96,7 @@ function MeDropdown({me, setModal, setOpen}) {
       {setAlternate => (
         <>
         <Box pad={{bottom: 'xxsmall'}}>
+          <UserStatus user={me} setModal={openModal} />
           <DropdownItem icon={User} text='update profile' onClick={() => openModal(
             <Box>
               <ModalHeader text='Update Profile' setOpen={setOpen} />

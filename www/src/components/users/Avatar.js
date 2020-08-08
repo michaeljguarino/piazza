@@ -4,7 +4,8 @@ import WithPresence from '../utils/presence'
 import PresenceIndicator from './PresenceIndicator'
 
 const DEFAULT_BACKGROUND = '#103A50'
-const DEFAULT_SIZE = '40px'
+const DEFAULT_SIZE = '38px'
+const RADIUS = '3px'
 
 export class AvatarContainer extends React.PureComponent {
   render() {
@@ -12,11 +13,11 @@ export class AvatarContainer extends React.PureComponent {
     const boxSize = size || DEFAULT_SIZE
 
     return (
-      <Box border={{style: 'hidden'}} round='xsmall' align='center' justify='center'
+      <Box border={{style: 'hidden'}} round={RADIUS} align='center' justify='center'
         background={img ? null : (background || DEFAULT_BACKGROUND)}
         width={boxSize} height={boxSize} margin={{right: rightMargin || '5px'}}>
         {img ?
-          <img alt='' height={boxSize} width={boxSize} style={{borderRadius: '6px'}} src={img}/> :
+          <img alt='' height={boxSize} width={boxSize} style={{borderRadius: RADIUS}} src={img}/> :
           <Text>{text.charAt(0).toUpperCase()}</Text>
         }
       </Box>

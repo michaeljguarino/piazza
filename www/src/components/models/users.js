@@ -12,6 +12,11 @@ export const UserFragment = gql`
     avatar
     phone
     title
+    status {
+      text
+      emoji
+    }
+    statusExpiresAt
   }
 `;
 

@@ -8,6 +8,7 @@ import { CurrentUserContext } from '../login/EnsureLogin'
 import { useMutation } from 'react-apollo'
 import { DELETE_PARTICIPANT } from './queries'
 import { removeConversation } from './ConversationHeader'
+import { Status } from '../users/UserStatus'
 
 export function Icon({me, conversation, emptyColor, textProps}) {
   if (conversation.chat) {
@@ -25,9 +26,9 @@ export function Icon({me, conversation, emptyColor, textProps}) {
     )
   }
   if (conversation.public)
-    return (<Text margin={{right: '5px'}} {...textProps}>#</Text>)
+    return (<Text {...textProps}>#</Text>)
 
-  return <Lock style={{marginRight: '5px'}} size='14px' {...textProps} />
+  return <Lock size='14px' {...textProps} />
 }
 
 export function NotificationBadge({unread}) {
@@ -121,9 +122,12 @@ export default function Conversation({conversation, ...props}) {
         onClick={() => props.setCurrentConversation(conversation)}
         pad={props.pad}
         background={selected ? 'focus' : null}>
-        <Box direction='row' width='100%' align='center'>
+        <Box direction='row' width='100%' align='center' gap='xsmall'>
           <Icon me={me} textProps={textProps} conversation={conversation} {...props} />
           <ConversationName me={me} textProps={textProps} conversation={conversation} />
+          {conversation.chat && conversation.chatParticipants.length === 1 && (
+            <Status user={conversation.chatParticipants[0].user} />
+          )}
         </Box>
         <ConversationModifier
           hover={hover}

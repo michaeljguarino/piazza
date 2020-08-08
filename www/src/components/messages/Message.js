@@ -16,6 +16,7 @@ import StructuredMessage from './StructuredMessage'
 import File from './File'
 import { Emoji } from 'emoji-mart'
 import './message.css'
+import { Status } from '../users/UserStatus'
 
 
 function TextMessage({text, entities}) {
@@ -102,7 +103,7 @@ function MessageEntity({entity}) {
       const emoji = entity.emoji
       return (emoji.imageUrl ?
         <CustomEmoji emoji={emoji} size={17} /> :
-        <Emoji tooltip emoji={emoji.name} size={17} />
+        <Emoji tooltip set='google' emoji={emoji.name} size={17} />
       )
     case "CHANNEL_MENTION":
       return <Text style={{background: PINNED_BACKGROUND}} size='small' weight='bold'>{"@" + entity.text}</Text>
@@ -180,12 +181,15 @@ function MessageBody({message, conversation, next, editing, setEditing, dialog, 
         )}
         <Box margin={{left: '3px'}} fill={editing ? 'horizontal' : false}>
           {!consecutive && !editing && (
-            <Box direction='row' align='center' margin={{bottom: 'xxsmall'}}>
-              <Text weight='bold' size='14px' margin={{right: 'xsmall'}}>{message.creator.name}</Text>
-              {message.creator.bot && (<BotIcon margin={{right: 'xsmall'}} />)}
-              <WithPresence id={message.creator.id}>
-              {present => <PresenceIndicator present={present} />}
-              </WithPresence>
+            <Box direction='row' align='center' margin={{bottom: 'xxsmall'}} gap='xsmall'>
+              <Text weight='bold' size='14px'>{message.creator.name}</Text>
+              {message.creator.bot && (<BotIcon />)}
+              {message.creator.status && (<Status user={message.creator} size='15px' />)}
+              {!message.creator.status && (
+                <WithPresence id={message.creator.id}>
+                {present => <PresenceIndicator present={present} />}
+                </WithPresence>
+              )}
               <Text color='dark-2' size='10px'>{formattedDate}</Text>
             </Box>
           )}

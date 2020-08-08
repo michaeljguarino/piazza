@@ -9,8 +9,7 @@ export function EmptyPresenceIndicator({emptyColor}) {
       borderRadius: '50%',
       border: '1px solid',
       borderColor: emptyColor || '#EDEDED',
-      display: 'inline-block',
-      marginRight: '5px'
+      display: 'inline-block'
     }} />
   )
 }
@@ -27,8 +26,7 @@ export default function PresenceIndicator({present}) {
       border: '1px solid',
       borderColor: theme.global.colors.presence,
       borderRadius: '50%',
-      display: 'inline-block',
-      marginRight: '5px'
+      display: 'inline-block'
     }} />
   )
 }

@@ -4984,11 +4984,12 @@ elliptic@^6.0.0:
     minimalistic-assert "^1.0.0"
     minimalistic-crypto-utils "^1.0.0"
 
-emoji-mart@^2.11.1:
-  version "2.11.1"
-  resolved "https://registry.yarnpkg.com/emoji-mart/-/emoji-mart-2.11.1.tgz#fc9330b513803c17b98c9ad289c12ab61ff05f8f"
-  integrity sha512-Hr4N56YEkaPtmojO2dfgnMLLE/d5HpnhH0+M8cw9LRHpG2EgQQaCelRad3d5qQAPHI5+K0wMc/rwM0eRo0FnUA==
+emoji-mart@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/emoji-mart/-/emoji-mart-3.0.0.tgz#eca24a04881e27752a6921e09f65a86ce8539a50"
+  integrity sha512-r5DXyzOLJttdwRYfJmPq/XL3W5tiAE/VsRnS0Hqyn27SqPA/GOYwVUSx50px/dXdJyDSnvmoPbuJ/zzhwSaU4A==
   dependencies:
+    "@babel/runtime" "^7.0.0"
     prop-types "^15.6.0"
 
 emoji-regex@^7.0.1, emoji-regex@^7.0.2:
@@ -5898,10 +5899,10 @@ forever-agent@~0.6.1:
   resolved "https://registry.yarnpkg.com/forever-agent/-/forever-agent-0.6.1.tgz#fbc71f0c41adeb37f96c577ad1ed42d8fdacca91"
   integrity sha1-+8cfDEGt6zf5bFd60e1C2P2sypE=
 
-forge-core@^1.1.4:
-  version "1.1.4"
-  resolved "https://registry.yarnpkg.com/forge-core/-/forge-core-1.1.4.tgz#a495d6347b26dde2beddefe4283491facebf5893"
-  integrity sha512-lFep5cnx/qrqwl2LqU67bERCTziLwikIljWCqNkmLVswhV98LL3McNnbz8xTyL8DxaIGyDOoluC6NOEO65PQow==
+forge-core@^1.1.6:
+  version "1.1.6"
+  resolved "https://registry.yarnpkg.com/forge-core/-/forge-core-1.1.6.tgz#8b07e2d16b830fa46286085647dc040ce28461db"
+  integrity sha512-2UsePPMsFnmiVfV2ycnaMQ4tC1T3K1MgBKld0DR09KIDjcMPb061esa1z+tgUr48+Wm4JVsMd+l2S4xk9whXEA==
   dependencies:
     "@babel/plugin-proposal-class-properties" "^7.10.4"
     babel-plugin-module-resolver "^4.0.0"

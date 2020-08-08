@@ -1,8 +1,8 @@
 import React, { useState, useContext } from 'react'
 import { useMutation, useQuery } from 'react-apollo'
-import { Box, Text, Markdown, Anchor, Calendar } from 'grommet'
+import { Box, Text, Markdown, Anchor, Calendar, Drop } from 'grommet'
 import { Down } from 'grommet-icons'
-import { CloseableDropdown, Modal, ModalHeader, InterchangeableBox, MenuItem, SubMenu, HoveredBackground } from 'forge-core'
+import { Modal, ModalHeader, InterchangeableBox, MenuItem, SubMenu, HoveredBackground } from 'forge-core'
 import { UPDATE_CONVERSATION, UPDATE_PARTICIPANT, DELETE_PARTICIPANT, CONVERSATION_CONTEXT } from './queries'
 import ConversationEditForm from './ConversationEditForm'
 import NotificationIcon from '../notifications/NotificationIcon'
@@ -18,6 +18,7 @@ import pick from 'lodash/pick'
 import { Conversations } from '../login/MyConversations'
 import { CONTEXT_Q } from '../login/queries'
 import { ICON_HEIGHT } from '../Piazza'
+import { useRef } from 'react'
 
 export function removeConversation(cache, conversationId, workspaceId) {
   const {conversations, chats, ...prev} = cache.readQuery({ query: CONTEXT_Q, variables: {workspaceId} });
@@ -84,29 +85,18 @@ function ConversationUpdate(props) {
   )
 }
 
-function ConversationName(props) {
-  const [hover, setHover] = useState(false)
-  const color = hover ? 'focus' : null
+const ConversationName = React.forwardRef(({onClick, ...props}, ref) => {
   const emptyColor = '#DADADA'
   return (
-    <HoveredBackground>
-      <Text
-        accentable
-        onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}
-        style={{cursor: "pointer"}}
-        weight='bold'
-        margin={{bottom: '5px'}}
-        color={color}>
-        <Icon
-          textProps={{color: color}}
-          emptyColor={emptyColor}
-          me={props.me}
-          conversation={props.conversation} />
-        {conversationNameString(props.conversation, props.me)} <Down margin={{left: 'xsmall'}} color={color} size='12px'/>
+    <Box ref={ref} direction='row' gap='xsmall' align='center'>
+      <Icon emptyColor={emptyColor} me={props.me} conversation={props.conversation} />
+      <Text style={{cursor: "pointer"}} weight='bold' onClick={onClick}>
+        {conversationNameString(props.conversation, props.me)}
       </Text>
-    </HoveredBackground>
+      <Down size='12px' />
+    </Box>
   )
-}
+})
 
 const DROP_WIDTH = '240px'
 
@@ -125,6 +115,8 @@ function LeaveConversation(props) {
 }
 
 function ConversationDropdown({setAnchor, ...props}) {
+  const ref = useRef()
+  const [open, setOpen] = useState(false)
   const [notifMutation] = useMutation(UPDATE_PARTICIPANT)
   const currentParticipant = props.conversation.currentParticipant || {}
   const variables = {
@@ -134,12 +126,15 @@ function ConversationDropdown({setAnchor, ...props}) {
   const preferences = currentParticipant.notificationPreferences || DEFAULT_PREFS
 
   return (
-    <CloseableDropdown
-      dropProps={{stretch: false}}
-      style={{marginBottom: '5px'}}
-      align={{left: 'left', top: "bottom"}}
-      target={<ConversationName me={props.me} conversation={props.conversation} />}>
-      {setOpen => (
+    <>
+    <ConversationName
+      ref={ref}
+      me={props.me}
+      conversation={props.conversation}
+      margin={{bottom: 'small'}}
+      onClick={() => setOpen(true)} />
+    {open && (
+      <Drop stretch={false} target={ref.current} align={{left: 'left', top: 'bottom'}} onClickOutside={() => setOpen(false)}>
         <InterchangeableBox width={DROP_WIDTH} round='small' pad={{vertical: 'xxsmall'}} hover='focus'>
         {setAlternate => (
           <>
@@ -175,8 +170,9 @@ function ConversationDropdown({setAnchor, ...props}) {
           </>
         )}
         </InterchangeableBox>
-      )}
-    </CloseableDropdown>
+      </Drop>
+    )}
+    </>
   )
 }
 
