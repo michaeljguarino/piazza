@@ -1,5 +1,5 @@
 import React from 'react'
-import { Text } from 'grommet'
+import { Text, Box } from 'grommet'
 import { Flyout } from 'forge-core'
 import UserDetail from './UserDetail'
 import WithPresence from '../utils/presence'
@@ -19,19 +19,21 @@ function WithFlyout({noFlyout, children, onChat, user}) {
 export default function UserHandle({user, color, weight, size, margin, includePresence, ...props}) {
   return (
     <WithFlyout user={user} {...props}>
-      <Text
-        style={{cursor: 'pointer'}}
-        size={size || 'small'}
-        weight={weight || 500}
-        margin={margin || {right: '5px'}}>
-        @{user.handle}
-      </Text>
-      {user.status && <Status user={user} size={18} />}
-      {includePresence && !user.status && (
-        <WithPresence id={user.id}>
-        {present => <PresenceIndicator present={present} />}
-        </WithPresence>
-      )}
+      <Box direction='row' align='center'>
+        <Text
+          style={{cursor: 'pointer'}}
+          size={size || 'small'}
+          weight={weight || 500}
+          margin={margin || {right: '5px'}}>
+          @{user.handle}
+        </Text>
+        {user.status && <Status user={user} size={18} />}
+        {includePresence && !user.status && (
+          <WithPresence id={user.id}>
+          {present => <PresenceIndicator present={present} />}
+          </WithPresence>
+        )}
+      </Box>
     </WithFlyout>
   )
 }

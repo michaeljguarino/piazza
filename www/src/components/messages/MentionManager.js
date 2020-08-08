@@ -91,11 +91,9 @@ function fetchEmojis(client, query) {
 export function userSuggestion(user) {
   return (
     <Box direction='row' align='center' pad='xsmall' gap='xsmall' justify='end'>
-      <Box style={{minWidth: '200px'}} direction='row'>
+      <Box flex={false} direction='row' align='center'>
         <Avatar user={user} />
-        <Box justify='center'>
-          <UserHandle user={user} />
-        </Box>
+        <UserHandle user={user} />
       </Box>
       <Box width='100%' direction='row' justify='end'>
         <Text size='small'>{user.name}</Text>

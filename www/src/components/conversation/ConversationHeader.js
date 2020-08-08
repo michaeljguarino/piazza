@@ -13,12 +13,13 @@ import Files from './Files'
 import MessageSearch from './MessageSearch'
 import NotificationsPreferences, { DEFAULT_PREFS } from '../users/NotificationPreferences'
 import { updateConversation } from './utils'
-import { conversationNameString, Icon } from './Conversation'
+import { conversationNameString, Icon, otherUser } from './Conversation'
 import pick from 'lodash/pick'
 import { Conversations } from '../login/MyConversations'
 import { CONTEXT_Q } from '../login/queries'
 import { ICON_HEIGHT } from '../Piazza'
 import { useRef } from 'react'
+import { StatusEmoji } from '../users/UserStatus'
 
 export function removeConversation(cache, conversationId, workspaceId) {
   const {conversations, chats, ...prev} = cache.readQuery({ query: CONTEXT_Q, variables: {workspaceId} });
@@ -73,14 +74,27 @@ function ConversationUpdateForm({conversation, setOpen}) {
   )
 }
 
-function ConversationUpdate(props) {
+function UpdateTarget({conversation, me}) {
+  const other = otherUser(conversation, me)
+
+  if (!other || !other.status) return (
+    <Anchor color= 'black' size='xsmall' margin={{right: '3px'}}>
+      <Markdown>{conversation.topic || "Add a description"}</Markdown>
+    </Anchor>
+  )
+
   return (
-    <Modal target={
-      <Anchor color= 'black' size='xsmall' margin={{right: '3px'}}>
-        <Markdown>{props.conversation.topic || "Add a description"}</Markdown>
-      </Anchor>
-    }>
-    {setOpen => (<ConversationUpdateForm conversation={props.conversation} setOpen={setOpen} />)}
+    <Box direction='row' align='center' gap='xsmall'>
+      <StatusEmoji emoji={other.status.emoji} />
+      <Anchor color='black' size='xsmall'>{other.status.text}</Anchor>
+    </Box>
+  )
+}
+
+function ConversationUpdate({conversation, me}) {
+  return (
+    <Modal target={<UpdateTarget conversation={conversation} me={me} />}>
+    {setOpen => (<ConversationUpdateForm conversation={conversation} setOpen={setOpen} />)}
     </Modal>
   )
 }
@@ -88,7 +102,7 @@ function ConversationUpdate(props) {
 const ConversationName = React.forwardRef(({onClick, ...props}, ref) => {
   const emptyColor = '#DADADA'
   return (
-    <Box ref={ref} direction='row' gap='xsmall' align='center'>
+    <Box ref={ref} direction='row' gap='xsmall' align='center' margin={{bottom: 'xsmall'}}>
       <Icon emptyColor={emptyColor} me={props.me} conversation={props.conversation} />
       <Text style={{cursor: "pointer"}} weight='bold' onClick={onClick}>
         {conversationNameString(props.conversation, props.me)}
@@ -131,7 +145,6 @@ function ConversationDropdown({setAnchor, ...props}) {
       ref={ref}
       me={props.me}
       conversation={props.conversation}
-      margin={{bottom: 'small'}}
       onClick={() => setOpen(true)} />
     {open && (
       <Drop stretch={false} target={ref.current} align={{left: 'left', top: 'bottom'}} onClickOutside={() => setOpen(false)}>
@@ -207,7 +220,7 @@ export default function ConversationHeader({setAnchor}) {
       <Box fill='horizontal' direction='column'>
         <ConversationDropdown me={me} conversation={currentConversation} setAnchor={setAnchor} />
         <Box height='25px' direction='row' align='end' justify='start' pad={{vertical: '5px',}}>
-          <ConversationUpdate conversation={currentConversation} />
+          <ConversationUpdate conversation={currentConversation} me={me} />
         </Box>
       </Box>
       <Box direction='row' align='center' flex={false} gap='small'>

@@ -99,8 +99,10 @@ function ConversationModifier({conversation, hover, selected, ...props}) {
   return null
 }
 
-function otherUser(conversation, me) {
+export function otherUser(conversation, me) {
   if (!conversation.chat || conversation.chatParticipants.length > 2) return null
+  if (conversation.chatParticipants.length === 1) return conversation.chatParticipants[0].user
+
   const other = conversation.chatParticipants.find(({user}) => user.id !== me.id)
   return other && other.user
 }
