@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react'
 import { Box, TextInput, Text, Drop, MaskedInput, Calendar, Anchor } from 'grommet'
-import { Emoji as EmojiIcon, Edit, Calendar as  CalendarIcon, Clock } from 'grommet-icons'
+import { Emoji as EmojiIcon, Edit, Calendar as  CalendarIcon, Clock, FormDown } from 'grommet-icons'
 import { HoveredBackground, ModalHeader, Button, SecondaryButton, TooltipContent } from 'forge-core'
 import { Emoji } from 'emoji-mart'
 import EmojiPicker from '../emoji/EmojiPicker'
@@ -39,7 +39,7 @@ export const StatusEmoji = React.forwardRef(({emoji, size, ...props}, ref) => (
 
 const extractStatus = ({status}) => status ? {text: status.text, emoji: status.emoji} : {text: null, status: null}
 
-function ClearForm({setExpiry}) {
+function ClearForm({setExpiry, close}) {
   const ref = useRef()
   const [open, setOpen] = useState(false)
   const [date, setDate] = useState(null)
@@ -52,18 +52,20 @@ function ClearForm({setExpiry}) {
       if  (!t) return
       day.hour(t.hour())
       day.minute(t.minute())
-      setExpiry({expiry: day.format(), display: day.format('MMM DD hh:mm')})
+      setExpiry({expiry: day.format(), display: day.format('MMM DD hh:mm a')})
+      close()
     }
   }, [date, time])
 
   return (
     <Box direction='row' align='center' gap='small'>
-      <Box ref={ref} height='35px' direction='row' align='center' border gap='xsmall' pad='small' round='xsmall'
-           onClick={() => setOpen(true)}>
+      <Box ref={ref} flex={false} height='35px' direction='row' align='center' border gap='xsmall'
+           pad='small' round='xsmall' onClick={() => setOpen(true)}>
         <CalendarIcon size='small' />
         <Text size='small' weight={500}>{date ? date.format('MMM D') : 'click to select'}</Text>
       </Box>
-      <Box border height='35px' direction='row' align='center' gap='xsmall' pad='small' round='xsmall'>
+      <Box border fill='horizontal' height='35px' direction='row' align='center'
+           gap='xsmall' pad='small' round='xsmall'>
         <Clock size='small' />
         <MaskedInput
           plain
@@ -117,22 +119,34 @@ const EXPIRY_DEFAULTS = [
   {display: '15 minutes', offset: {minutes: 15}},
   {display: '30 minutes', offset: {minutes: 30}},
   {display: '1 hour', offset: {hours: 1}},
+  {display: '3 houra', offset: {hours: 2}},
   {display: '1 day', offset: {days: 1}},
   {display: '1 week', offset: {days: 7}}
 ]
 
 const getExpiry = (duration) => moment().add(moment.duration(duration))
 
+const ITEM_PAD = {horizontal: 'small',  vertical: '4px'}
+
 function ExpiryDropdown({close, setForm, setExpiry}) {
+  const updateExpiry = useCallback((expiry) => {
+    setExpiry(expiry)
+    close()
+  }, [setExpiry, close])
+
   return (
     <Box pad={{vertical: 'xsmall'}}>
+      <DropdownItem
+        pad={ITEM_PAD}
+        text="don't clear"
+        onClick={() => updateExpiry({expiry: null, display: "Don't clear"})} />
       {EXPIRY_DEFAULTS.map(({display, offset}) => (
-        <DropdownItem text={display} onClick={() => {
-          setExpiry({expiry: getExpiry(offset), display})
-          close()
-        }} />
+        <DropdownItem
+          pad={ITEM_PAD}
+          text={display}
+          onClick={() => updateExpiry({expiry: getExpiry(offset), display})} />
       ))}
-      <DropdownItem text='choose date and time' onClick={() => {
+      <DropdownItem pad={ITEM_PAD} text='choose date and time' onClick={() => {
         setForm(true)
         close()
       }} />
@@ -143,7 +157,7 @@ function ExpiryDropdown({close, setForm, setExpiry}) {
 export function UpdateStatus({user, setOpen}) {
   const ref = useRef()
   const dropRef = useRef()
-  const [{ref: target, drop}, setDrop] = useState({drop: null})
+  const [{ref: target, drop, anchor}, setDrop] = useState({drop: null})
   const [status, setStatus] = useState(extractStatus(user))
   const [{expiry, display}, setExpiry] = useState({expiry: getExpiry({hours: 1}), display: '1 hour'})
   const [form, setForm] = useState(false)
@@ -155,7 +169,7 @@ export function UpdateStatus({user, setOpen}) {
 
   return (
     <>
-    <Box width='40vw'>
+    <Box width='400px'>
       <ModalHeader text='Update Status' setOpen={setOpen} />
       <Box pad='small' gap='small'>
         <Box pad={PAD} height='40px' border={{color: 'dark-3'}} align='center' direction='row' round='xsmall'>
@@ -191,14 +205,16 @@ export function UpdateStatus({user, setOpen}) {
             ))}
           </Box>
         )}
-        {status.emoji && form && <ClearForm setExpiry={setExpiry} />}
+        {status.emoji && form && <ClearForm setExpiry={setExpiry} close={() => setForm(false)} />}
         {status.emoji && !form && (
-          <Box focusIndicator={false} direction='row' align='center' gap='xsmall' >
-            <Text size='small' weight={500}>Clear after: </Text>
-            <Anchor ref={dropRef} size='small' onClick={() => setDrop({
+          <Box ref={dropRef} focusIndicator={false} direction='row' align='center' gap='xsmall' >
+            <Text size='small' weight='bold'>Clear after: </Text>
+            <Anchor  size='small' color='black' onClick={() => setDrop({
               ref: dropRef,
-              drop: <ExpiryDropdown close={close} setForm={setForm} setExpiry={setExpiry} />
+              drop: <ExpiryDropdown close={close} setForm={setForm} setExpiry={setExpiry} />,
+              anchor: {top: 'bottom'}
             })}>{display}</Anchor>
+            <FormDown size='small' />
           </Box>
         )}
         <Box direction='row' justify='end' align='center' gap='small'>
@@ -215,7 +231,7 @@ export function UpdateStatus({user, setOpen}) {
       </Box>
     </Box>
     {drop && (
-      <Drop target={target.current} align={{left: 'right'}} onClickOutside={close}>
+      <Drop target={target.current} align={anchor || {left: 'right'}} onClickOutside={close}>
         {drop}
       </Drop>
     )}

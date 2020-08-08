@@ -68,7 +68,6 @@ export const DEFAULT_THEME = {
   calendar: {
     day: {
       extend: {
-        borderRadius: '5px',
         fontWeight: 'normal'
       }
     }

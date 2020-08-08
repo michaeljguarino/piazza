@@ -98,7 +98,7 @@ const ConversationName = React.forwardRef(({onClick, ...props}, ref) => {
   )
 })
 
-const DROP_WIDTH = '240px'
+const DROP_WIDTH = '260px'
 
 function LeaveConversation(props) {
   const {workspaceId} = useContext(Conversations)
@@ -153,11 +153,10 @@ function ConversationDropdown({setAnchor, ...props}) {
             text='Jump to date'
             hover='focus'
             setAlternate={setAlternate}>
-            <Box width={DROP_WIDTH} pad={{top: 'small'}} align='center' justify='center'>
+            <Box width={DROP_WIDTH} pad={{vertical: 'small'}} align='center' justify='center'>
               <Calendar
                 date={(new Date()).toISOString()}
                 size='small'
-                showAdjacentDays={false}
                 onSelect={(date) => {
                   setOpen(false)
                   setAnchor({timestamp: date})
