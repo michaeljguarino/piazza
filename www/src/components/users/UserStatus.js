@@ -253,7 +253,7 @@ export function Status({user: {status}, ...props}) {
       onMouseLeave={() => setOpen(false)}
       {...props} />
     {open && (
-      <TooltipContent targetRef={ref}>
+      <TooltipContent targetRef={ref} margin={{bottom: 'xsmall'}}>
         <Text size='xsmall'>{status.text}</Text>
       </TooltipContent>
     )}

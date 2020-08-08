@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react'
+import React, { useState, useContext, useMemo } from 'react'
 import { Box, Text } from 'grommet'
 import { Lock, Close } from 'grommet-icons'
 import { HoveredBackground } from 'forge-core'
@@ -99,12 +99,19 @@ function ConversationModifier({conversation, hover, selected, ...props}) {
   return null
 }
 
+function otherUser(conversation, me) {
+  if (!conversation.chat || conversation.chatParticipants.length > 2) return null
+  const other = conversation.chatParticipants.find(({user}) => user.id !== me.id)
+  return other && other.user
+}
+
 export default function Conversation({conversation, ...props}) {
   const [hover, setHover] = useState(false)
   const me = useContext(CurrentUserContext)
   let selected = conversation.id === props.currentConversation.id
   let unread = (conversation.unreadMessages > 0 && !selected)
   let textProps = {color: (unread ? 'focusText' : (selected ? 'activeText' : 'sidebarText'))}
+  const other = useMemo(() => otherUser(conversation, me), [conversation, me])
 
   return (
     <HoveredBackground>
@@ -125,9 +132,7 @@ export default function Conversation({conversation, ...props}) {
         <Box direction='row' width='100%' align='center' gap='xsmall'>
           <Icon me={me} textProps={textProps} conversation={conversation} {...props} />
           <ConversationName me={me} textProps={textProps} conversation={conversation} />
-          {conversation.chat && conversation.chatParticipants.length === 1 && (
-            <Status user={conversation.chatParticipants[0].user} />
-          )}
+          {other && (<Status user={other} size={17} />)}
         </Box>
         <ConversationModifier
           hover={hover}

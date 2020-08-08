@@ -26,15 +26,12 @@ export const ConversationFragment = gql`
     }
     chatParticipants {
       user {
-        id
-        name
-        handle
-        backgroundColor
-        avatar
+        ...UserFragment
       }
     }
   }
   ${WorkspaceFragment}
+  ${UserFragment}
 `;
 
 export const EmbedFragment = gql`

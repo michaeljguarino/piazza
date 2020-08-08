@@ -4,6 +4,7 @@ import { Flyout } from 'forge-core'
 import UserDetail from './UserDetail'
 import WithPresence from '../utils/presence'
 import PresenceIndicator from './PresenceIndicator'
+import { Status } from './UserStatus'
 
 function WithFlyout({noFlyout, children, onChat, user}) {
   if (noFlyout) return children
@@ -25,7 +26,8 @@ export default function UserHandle({user, color, weight, size, margin, includePr
         margin={margin || {right: '5px'}}>
         @{user.handle}
       </Text>
-      {includePresence && (
+      {user.status && <Status user={user} size={18} />}
+      {includePresence && !user.status && (
         <WithPresence id={user.id}>
         {present => <PresenceIndicator present={present} />}
         </WithPresence>
