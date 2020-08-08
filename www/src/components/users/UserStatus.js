@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react'
+import React, { useRef, useState, useEffect, useCallback } from 'react'
 import { Box, TextInput, Text, Drop, MaskedInput, Calendar, Anchor } from 'grommet'
 import { Emoji as EmojiIcon, Edit, Calendar as  CalendarIcon, Clock } from 'grommet-icons'
 import { HoveredBackground, ModalHeader, Button, SecondaryButton, TooltipContent } from 'forge-core'
@@ -6,6 +6,7 @@ import { Emoji } from 'emoji-mart'
 import EmojiPicker from '../emoji/EmojiPicker'
 import { useMutation } from 'react-apollo'
 import { UPDATE_USER } from './queries'
+import { DropdownItem } from './Me'
 import moment from 'moment'
 
 const ICON_SIZE = 20
@@ -112,19 +113,45 @@ const PRE_BAKED = [
   {status: {emoji: "telephone_receiver", text: "On a call"}, expiry: {offset: {minutes: 30}, display: '30 minutes'}}
 ]
 
-function getExpiry(duration) {
-  return moment().add(moment.duration(duration))
+const EXPIRY_DEFAULTS = [
+  {display: '15 minutes', offset: {minutes: 15}},
+  {display: '30 minutes', offset: {minutes: 30}},
+  {display: '1 hour', offset: {hours: 1}},
+  {display: '1 day', offset: {days: 1}},
+  {display: '1 week', offset: {days: 7}}
+]
+
+const getExpiry = (duration) => moment().add(moment.duration(duration))
+
+function ExpiryDropdown({close, setForm, setExpiry}) {
+  return (
+    <Box pad={{vertical: 'xsmall'}}>
+      {EXPIRY_DEFAULTS.map(({display, offset}) => (
+        <DropdownItem text={display} onClick={() => {
+          setExpiry({expiry: getExpiry(offset), display})
+          close()
+        }} />
+      ))}
+      <DropdownItem text='choose date and time' onClick={() => {
+        setForm(true)
+        close()
+      }} />
+    </Box>
+  )
 }
 
 export function UpdateStatus({user, setOpen}) {
   const ref = useRef()
-  const [drop, setDrop] = useState(null)
+  const dropRef = useRef()
+  const [{ref: target, drop}, setDrop] = useState({drop: null})
   const [status, setStatus] = useState(extractStatus(user))
-  const [{expiry, display}, setExpiry] = useState({expiry: null, display: null})
+  const [{expiry, display}, setExpiry] = useState({expiry: getExpiry({hours: 1}), display: '1 hour'})
+  const [form, setForm] = useState(false)
   const [mutation] = useMutation(UPDATE_USER, {
     variables: {id: user.id, attributes: {status, statusExpiresAt: expiry}},
     onCompleted: () => setOpen(null)
   })
+  const close = useCallback(() => setDrop({drop: null}), [setDrop])
 
   return (
     <>
@@ -132,14 +159,14 @@ export function UpdateStatus({user, setOpen}) {
       <ModalHeader text='Update Status' setOpen={setOpen} />
       <Box pad='small' gap='small'>
         <Box pad={PAD} height='40px' border={{color: 'dark-3'}} align='center' direction='row' round='xsmall'>
-          <Box ref={ref} onClick={() => setDrop(
+          <Box ref={ref} onClick={() => setDrop({ref, drop: (
             <Box>
               <EmojiPicker onSelect={({short_names}) => {
                 setStatus({...status, emoji: short_names[0]})
-                setDrop(null)
+                close()
               }} />
             </Box>
-          )}>
+          )})}>
             {status.emoji ? <StatusEmoji emoji={status.emoji} /> : <EmptyIcon /> }
           </Box>
           <TextInput
@@ -159,16 +186,19 @@ export function UpdateStatus({user, setOpen}) {
               }}>
                 <StatusEmoji emoji={status.emoji} />
                 <Text size='small' weight={500}>{status.text}</Text>
-                <Text size='small' color='dark-3'>-- {display}</Text>
+                <Text size='small' color='dark-3'>{display}</Text>
               </Box>
             ))}
           </Box>
         )}
-        {status.emoji && !expiry && <ClearForm setExpiry={setExpiry} />}
-        {status.emoji && expiry && (
-          <Box direction='row' align='center' gap='xsmall'>
+        {status.emoji && form && <ClearForm setExpiry={setExpiry} />}
+        {status.emoji && !form && (
+          <Box focusIndicator={false} direction='row' align='center' gap='xsmall' >
             <Text size='small' weight={500}>Clear after: </Text>
-            <Anchor size='small' onClick={() => setExpiry({expiry: null})}>{display}</Anchor>
+            <Anchor ref={dropRef} size='small' onClick={() => setDrop({
+              ref: dropRef,
+              drop: <ExpiryDropdown close={close} setForm={setForm} setExpiry={setExpiry} />
+            })}>{display}</Anchor>
           </Box>
         )}
         <Box direction='row' justify='end' align='center' gap='small'>
@@ -185,7 +215,7 @@ export function UpdateStatus({user, setOpen}) {
       </Box>
     </Box>
     {drop && (
-      <Drop target={ref.current} align={{left: 'right'}} onClickOutside={() => setDrop(null)}>
+      <Drop target={target.current} align={{left: 'right'}} onClickOutside={close}>
         {drop}
       </Drop>
     )}

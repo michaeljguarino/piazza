@@ -75,4 +75,4 @@ spec:
   {{ include "piazza.cron" $args | nindent 0 }}
 {{- end -}}
 ---
-{{ include "piazza.cron" .Values.sweepStatus }}
+{{ include "piazza.cron" (mergeOverwrite . .Values.sweepStatus) }}
