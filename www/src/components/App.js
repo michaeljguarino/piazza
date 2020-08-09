@@ -4,6 +4,7 @@ import Piazza from './Piazza'
 import { Grommet } from 'grommet';
 import Workspace from './Workspace'
 import Login from './Login'
+import UserEdit from './users/UserEdit';
 import StructuredMessageTester from './tools/StructuredMessageTester'
 import { ResetPassword, ChangePassword } from './ResetPassword';
 import Directory from './tools/Directory';
@@ -19,16 +20,16 @@ export default function App() {
     {theme => (
       <Grommet theme={theme}>
         <Switch>
-          <Route exact path="/" component={Piazza} />
           <Route exact path="/login" component={Login} />
           <Route exact path='/directory' component={Directory} />
+          <Route exact path='/profile' component={UserEdit} />
           <Route exact path='/wk/:workspace' component={Piazza} />
           <Route path='/wk/:workspace/:conversationId' component={Piazza} />
           <Route path="/invite/:inviteToken" component={Login} />
           <Route path="/messageeditor" component={StructuredMessageTester} />
           <Route path='/reset-password/:token' component={ChangePassword} />
           <Route path='/reset-password' component={ResetPassword} />
-          <Redirect to='/' />
+          <Route path="/" component={Piazza} />
         </Switch>
       </Grommet>
     )}

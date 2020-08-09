@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Keyboard, Box } from 'grommet'
 import { useMutation } from 'react-apollo'
-import { Button, SecondaryButton, InputField } from 'forge-core'
+import { Button, InputCollection, ResponsiveInput } from 'forge-core'
 import { UPDATE_USER } from './queries'
 import {
   Slate,
@@ -12,7 +12,7 @@ import { useEditor } from '../utils/hooks'
 
 const getUserFields = ({bio, title, phone}) => ({bio, title, phone})
 
-export default function UpdateProfile({me, callback}) {
+export default function UpdateProfile({me}) {
   const [editorState, setEditorState] = useState(plainDeserialize(me.bio || ''))
   const [userFields, setUserFields] = useState(getUserFields(me))
   const editor = useEditor()
@@ -20,27 +20,21 @@ export default function UpdateProfile({me, callback}) {
     variables: {id: me.id, attributes: {...userFields, bio: plainSerialize(editorState)}}
   })
 
-  const submit = () => {
-    callback && callback()
-    mutation()
-  }
-
   return (
-    <Keyboard onEnter={submit}>
-      <>
-      <Box gap='xsmall'>
-        <InputField
-          label='Title'
-          value={userFields.title || ""}
-          onChange={e => setUserFields({...userFields, title: e.target.value})}
-        />
-        <InputField
-          label='Phone'
-          value={userFields.phone || ""}
-          onChange={e => setUserFields({...userFields, phone: e.target.value})}
-        />
-      </Box>
-      <Box gap='small' pad={{top: 'small'}}>
+    <Keyboard onEnter={mutation}>
+      <Box gap='small'>
+        <InputCollection>
+          <ResponsiveInput
+            label='Title'
+            value={userFields.title || ""}
+            onChange={e => setUserFields({...userFields, title: e.target.value})}
+          />
+          <ResponsiveInput
+            label='Phone'
+            value={userFields.phone || ""}
+            onChange={e => setUserFields({...userFields, phone: e.target.value})}
+          />
+        </InputCollection>
         <Box style={{minHeight: '150px'}} pad='small' border round='xsmall'>
           <Slate
             editor={editor}
@@ -50,11 +44,9 @@ export default function UpdateProfile({me, callback}) {
           </Slate>
         </Box>
         <Box direction='row' align='center' justify='end' gap='xsmall'>
-          <SecondaryButton round='xsmall' label='Cancel' onClick={callback} />
-          <Button loading={loading} round='xsmall' label='Save' onClick={submit} />
+          <Button loading={loading} round='xsmall' label='Save' onClick={mutation} />
         </Box>
       </Box>
-      </>
     </Keyboard>
   )
 }

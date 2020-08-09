@@ -1,6 +1,7 @@
 import React, { useContext, useCallback, useState } from 'react'
 import { Box, Text, ThemeContext, Meter, Stack, Layer } from 'grommet'
 import { User, Lock, Logout, Iteration } from 'grommet-icons'
+import { useHistory } from 'react-router-dom'
 import Avatar from './Avatar'
 import { useMutation, useQuery } from 'react-apollo'
 import { CloseableDropdown, ModalHeader, MenuItem, SubMenu, InterchangeableBox, HoveredBackground, Tooltip } from 'forge-core'
@@ -80,6 +81,7 @@ function PlanDetails() {
 }
 
 function MeDropdown({me, setModal, setOpen}) {
+  let history = useHistory()
   const isAdmin = me.roles && me.roles.admin
   const openModal = useCallback((modal) => {
     setModal(modal)
@@ -97,7 +99,8 @@ function MeDropdown({me, setModal, setOpen}) {
         <>
         <Box pad={{bottom: 'xxsmall'}}>
           <UserStatus user={me} setModal={openModal} />
-          <DropdownItem icon={User} text='update profile' onClick={() => openModal(
+          <DropdownItem icon={User} text='update profile' onClick={() => history.push('/profile')} />
+          {/* <DropdownItem icon={User} text='update profile' onClick={() => openModal(
             <Box>
               <ModalHeader text='Update Profile' setOpen={openModal} />
               <Box gap='small' pad="medium" style={{minWidth: '400px'}}>
@@ -112,7 +115,7 @@ function MeDropdown({me, setModal, setOpen}) {
                 <UpdatePassword callback={() => openModal(null)} me={me} />
               </Box>
             </Box>
-          )} />
+          )} /> */}
           <DropdownItem icon={Iteration} text='theme selector' onClick={() => openModal(
             <Themes setOpen={openModal} />
           )} />

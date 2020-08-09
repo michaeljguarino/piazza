@@ -119,7 +119,8 @@ export default function MessageList() {
   const {setReply} = useContext(ReplyContext)
   const {scrollTo} = useContext(MessageScrollContext)
   const {loading, error, data, fetchMore, refetch} = useQuery(MESSAGES_Q, {
-    variables: {conversationId: currentConversation.id}
+    variables: {conversationId: currentConversation.id},
+    fetchPolicy: 'cache-and-network'
   })
   const parentRef = useRef()
   const {setLastMessage} = useContext(VisibleMessagesContext)
