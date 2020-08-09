@@ -99,29 +99,29 @@ function MeDropdown({me, setModal, setOpen}) {
           <UserStatus user={me} setModal={openModal} />
           <DropdownItem icon={User} text='update profile' onClick={() => openModal(
             <Box>
-              <ModalHeader text='Update Profile' setOpen={setOpen} />
+              <ModalHeader text='Update Profile' setOpen={openModal} />
               <Box gap='small' pad="medium" style={{minWidth: '400px'}}>
-                <UpdateProfile callback={() => setOpen(false)} me={me} />
+                <UpdateProfile callback={() => openModal(null)} me={me} />
               </Box>
             </Box>
           )} />
           <DropdownItem icon={Lock} text='change password' onClick={() => openModal(
             <Box width='400px'>
-              <ModalHeader text='Update Password' setOpen={setOpen} />
+              <ModalHeader text='Update Password' setOpen={openModal} />
               <Box gap='small' pad="medium">
-                <UpdatePassword callback={() => setOpen(false)} me={me} />
+                <UpdatePassword callback={() => openModal(null)} me={me} />
               </Box>
             </Box>
           )} />
           <DropdownItem icon={Iteration} text='theme selector' onClick={() => openModal(
-            <Themes setOpen={setOpen} />
+            <Themes setOpen={openModal} />
           )} />
           <SubMenu text='developer tools' hover='focus' setAlternate={setAlternate}>
-            <Tools />
+            <Tools openModal={openModal} />
           </SubMenu>
           {isAdmin && (
             <SubMenu text='admin tools' hover='focus' setAlternate={setAlternate}>
-              <AdminTools me={me} />
+              <AdminTools me={me} openModal={openModal} />
             </SubMenu>
           )}
           {isAdmin && (<PlanDetails />)}

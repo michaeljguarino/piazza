@@ -29,14 +29,15 @@ function BrandThemeModal({setOpen}) {
   )
 }
 
-export default function AdminTools({me: {exportToken}}) {
+export default function AdminTools({me: {exportToken}, openModal}) {
   const history = useHistory()
   return (
     <Box pad={{bottom: 'xxsmall'}}>
       <DropdownItem icon={Group} text='user directory' onClick={() => history.push('/directory')} />
-      <Modal target={<DropdownItem icon={Iteration} text='update branding' />}>
-      {setOpen => (<BrandThemeModal setOpen={setOpen} />)}
-      </Modal>
+      <DropdownItem
+        icon={Iteration}
+        text='update branding'
+        onClick={() => openModal(<BrandThemeModal setOpen={openModal} />)} />
       <ExportLink exportToken={exportToken} text='export json' path='json' name='workspace.json' />
       <ExportLink exportToken={exportToken} text='export participants' path='participants' name='participants.csv' />
     </Box>
