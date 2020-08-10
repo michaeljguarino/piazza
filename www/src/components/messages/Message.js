@@ -95,6 +95,24 @@ function CustomEmoji({emoji: {imageUrl, name}, size}) {
   )
 }
 
+function StandardEmoji({name, size}) {
+  const targetRef = useRef()
+  const [open, setOpen] = useState(false)
+  return (
+    <>
+    <span ref={targetRef} onMouseEnter={() => setOpen(true)}
+      onMouseLeave={() => setOpen(false)}>
+      <Emoji tooltip set='google' emoji={name} size={size} />
+    </span>
+    {open && (
+      <TooltipContent targetRef={targetRef}>
+        <Text size='xsmall'>:{name}:</Text>
+      </TooltipContent>
+    )}
+    </>
+  )
+}
+
 function MessageEntity({entity}) {
   switch(entity.type) {
     case "MENTION":
@@ -102,13 +120,13 @@ function MessageEntity({entity}) {
     case "EMOJI":
       const emoji = entity.emoji
       return (emoji.imageUrl ?
-        <CustomEmoji emoji={emoji} size={17} /> :
-        <Emoji tooltip set='google' emoji={emoji.name} size={17} />
+        <CustomEmoji emoji={emoji} size={20} /> :
+        <StandardEmoji emoji={emoji.name} size={20} />
       )
     case "CHANNEL_MENTION":
       return <Text style={{background: PINNED_BACKGROUND}} size='small' weight='bold'>{"@" + entity.text}</Text>
     default:
-      return <span />
+      return null
   }
 }
 

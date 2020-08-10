@@ -9,7 +9,7 @@ import { toEmojiPicker } from './utils'
 function SafeNimblePicker({emoji, ...rest}) {
   if (!emoji || emoji.length === 0) {
     return (
-      <NimblePicker data={emojiData} {...rest} />
+      <NimblePicker set='google' data={emojiData} {...rest} />
     )
   }
 

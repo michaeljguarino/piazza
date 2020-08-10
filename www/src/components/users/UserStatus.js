@@ -37,7 +37,7 @@ export const StatusEmoji = React.forwardRef(({emoji, size, ...props}, ref) => (
   </Box>
 ))
 
-const extractStatus = ({status}) => status ? {text: status.text, emoji: status.emoji} : {text: null, status: null}
+const extractStatus = ({status}) => status ? {text: status.text, emoji: status.emoji} : {text: null, emoji: null}
 
 function ClearForm({setExpiry, close}) {
   const ref = useRef()
