@@ -17,24 +17,18 @@ export default function NotificationList({edges, pageInfo, setCurrentConversatio
         />
       )}
       emptyState='No notifications for now'
-      onLoadMore={() => {
-        if (!pageInfo.hasNextPage) return
-
-        fetchMore({
-          variables: {cursor: pageInfo.endCursor},
-          updateQuery: (prev, {fetchMoreResult}) => {
-            const edges = fetchMoreResult.notifications.edges
-            const pageInfo = fetchMoreResult.notifications.pageInfo
-
-            return edges.length ? {
-              notifications: {
-                ...prev.notifications,
-                pageInfo,
-                edges: mergeAppend(edges, prev.notifications.edges, (e) => e.node.id),
-              }
-            } : prev;
+      onLoadMore={() => pageInfo.hasNextPage && fetchMore({
+        variables: {cursor: pageInfo.endCursor},
+        updateQuery: (prev, {fetchMoreResult: {notifications: {edges, pageInfo}}}) => {
+          console.log(edges)
+          return {...prev, notifications: {
+              ...prev.notifications,
+              pageInfo,
+              edges: mergeAppend(edges, prev.notifications.edges, ({node: {id}}) => id),
+            }
           }
-        })}}
+        }
+      })}
     />
   )
 }

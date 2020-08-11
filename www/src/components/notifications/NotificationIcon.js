@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef, useContext, useCallback } from 'react'
 import { Box, Stack, Text } from 'grommet'
-import { useQuery, useMutation, useApolloClient } from 'react-apollo'
+import { useQuery, useMutation, useApolloClient, useSubscription } from 'react-apollo'
 import { Notification } from 'grommet-icons'
-import { HoveredBackground, FlyoutContext, FlyoutContainer, FlyoutHeader } from 'forge-core'
+import { HoveredBackground, FlyoutContext, FlyoutContainer, FlyoutHeader, Loading } from 'forge-core'
 import NotificationList from './NotificationList'
 import { NOTIFICATIONS_Q, NEW_NOTIFICATIONS_SUB, VIEW_NOTIFICATIONS } from './queries'
 import { updateConversations } from '../conversation/utils'
@@ -21,37 +21,71 @@ function incrNotifications(client, incr, workspaceId) {
   }})
 }
 
-function _subscribeToNewNotifications(subscribeToMore, setCurrentNotification, client, updateConversations, workspaceId) {
-  return subscribeToMore({
-    document: NEW_NOTIFICATIONS_SUB,
-    updateQuery: (prev, { subscriptionData }) => {
-      if (!subscriptionData.data) return prev
-      const newNotification = subscriptionData.data.newNotifications
-      const edges = prev.notifications.edges
-      setCurrentNotification(newNotification)
-      updateConversations(
-        client,
-        workspaceId,
-        ({node}) => node.id === newNotification.message.conversation.id,
-        (e) => ({...e, node: {...e.node, unreadNotifications: e.node.unreadNotifications + 1}})
-      )
-      incrNotifications(client, 1, workspaceId)
-      updateNotifications(
-        client,
-        ({node: {id}}) => id === newNotification.workspace.id,
-        ({node, ...rest}) => ({...rest, node: {...node, unreadNotifications: (node.unreadNotifications || 0) + 1}})
-      )
+function addNewNotification({client, subscriptionData}, setCurrentNotification, updateConversations, workspaceId) {
+  if (!subscriptionData.data) return
+  const newNotification = subscriptionData.data.newNotifications
+  setCurrentNotification(newNotification)
+  updateConversations(
+    client,
+    workspaceId,
+    ({node}) => node.id === newNotification.message.conversation.id,
+    (e) => ({...e, node: {...e.node, unreadNotifications: e.node.unreadNotifications + 1}})
+  )
+  incrNotifications(client, 1, workspaceId)
+  updateNotifications(
+    client,
+    ({node: {id}}) => id === newNotification.workspace.id,
+    ({node, ...rest}) => ({...rest, node: {...node, unreadNotifications: (node.unreadNotifications || 0) + 1}})
+  )
 
-      let newNotificationNode = {node: newNotification, __typename: "NotificationEdge"}
-      return Object.assign({}, prev, {
+  try {
+    const prev = client.readQuery({query: NOTIFICATIONS_Q})
+    client.writeQuery({
+      query: NOTIFICATIONS_Q,
+      data: {
+        ...prev,
         notifications: {
           ...prev.notifications,
-          edges: [newNotificationNode, ...edges],
+          edges: [{node: newNotification, __typename: "NotificationEdge"}, ...prev.notifications.edges],
         }
-      })
-    }
-  })
+      }
+    })
+  } catch {
+    // nothing
+  }
 }
+
+// function _subscribeToNewNotifications(subscribeToMore, setCurrentNotification, client, updateConversations, workspaceId) {
+//   return subscribeToMore({
+//     document: NEW_NOTIFICATIONS_SUB,
+//     updateQuery: (prev, { subscriptionData }) => {
+//       if (!subscriptionData.data) return prev
+//       const newNotification = subscriptionData.data.newNotifications
+//       const edges = prev.notifications.edges
+//       setCurrentNotification(newNotification)
+//       updateConversations(
+//         client,
+//         workspaceId,
+//         ({node}) => node.id === newNotification.message.conversation.id,
+//         (e) => ({...e, node: {...e.node, unreadNotifications: e.node.unreadNotifications + 1}})
+//       )
+//       incrNotifications(client, 1, workspaceId)
+//       updateNotifications(
+//         client,
+//         ({node: {id}}) => id === newNotification.workspace.id,
+//         ({node, ...rest}) => ({...rest, node: {...node, unreadNotifications: (node.unreadNotifications || 0) + 1}})
+//       )
+
+//       let newNotificationNode = {node: newNotification, __typename: "NotificationEdge"}
+//       return Object.assign({}, prev, {
+//         notifications: {
+//           ...prev.notifications,
+//           edges: [newNotificationNode, ...edges],
+//         }
+//       })
+//     }
+//   })
+// }
 
 function convName(conv, me) {
   if (conv.chat) {
@@ -103,10 +137,11 @@ function introduction() {
   return {type: 'WELCOME', message: {text: 'Welcome to Piazza!'}}
 }
 
-function FlyoutContent({edges, fetchMore, unseen, pageInfo, setFlyoutContent}) {
+function FlyoutContent({unseen, setFlyoutContent}) {
   const {setCurrentConversation, workspaceId} = useContext(Conversations)
+  const {data, fetchMore} = useQuery(NOTIFICATIONS_Q)
   const [mutation] = useMutation(VIEW_NOTIFICATIONS, {
-    update: (cache, {data: {viewNotifications}}) => {
+    update: (cache) => {
       const {notifications} = cache.readQuery({ query: NOTIFICATIONS_Q });
       cache.writeQuery({
         query: NOTIFICATIONS_Q,
@@ -124,6 +159,14 @@ function FlyoutContent({edges, fetchMore, unseen, pageInfo, setFlyoutContent}) {
     mutation()
   }, [setFlyoutContent, mutation])
 
+  if (!data) return (
+    <Box width='40vw' height='100%'>
+      <Loading />
+    </Box>
+  )
+
+  const {edges, pageInfo} = data.notifications
+
   return (
     <FlyoutContainer width='40vw'>
       <FlyoutHeader text='Notifications' setOpen={setOpen} />
@@ -140,30 +183,13 @@ function FlyoutContent({edges, fetchMore, unseen, pageInfo, setFlyoutContent}) {
 
 export default function NotificationIcon({me}) {
   const audioRef = useRef()
-  const client = useApolloClient()
   const [currentNotification, setCurrentNotification] = useState(introduction())
-  const {data, loading, fetchMore, subscribeToMore} = useQuery(NOTIFICATIONS_Q)
   const {workspaceId, currentConversation} = useContext(Conversations)
   const {setFlyoutContent} = useContext(FlyoutContext)
+  useSubscription(NEW_NOTIFICATIONS_SUB, {
+    onSubscriptionData: (result) => addNewNotification(result, setCurrentNotification, updateConversations, workspaceId)
+  })
   const unseen = me.unseenNotifications || 0
-
-  useEffect(() => {
-    return _subscribeToNewNotifications(
-      subscribeToMore,
-      setCurrentNotification,
-      client,
-      updateConversations,
-      workspaceId
-    )
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
-  if (loading) return (
-    <Box margin={{left: ICON_SPREAD, right: '15px'}}>
-      <Notification size={ICON_HEIGHT} />
-    </Box>
-  )
-  const {edges, pageInfo} = data.notifications
 
   return (
     <>
@@ -182,12 +208,7 @@ export default function NotificationIcon({me}) {
         align='center'
         justify='center'>
         <Stack anchor="top-right" style={{cursor: 'pointer'}} onClick={() => setFlyoutContent(
-          <FlyoutContent
-            setFlyoutContent={setFlyoutContent}
-            edges={edges}
-            unseen={unseen}
-            pageInfo={pageInfo}
-            fetchMore={fetchMore} />
+          <FlyoutContent setFlyoutContent={setFlyoutContent} unseen={unseen} />
         )}>
           <Notification size={ICON_HEIGHT} />
           {(unseen && unseen > 0) ?
