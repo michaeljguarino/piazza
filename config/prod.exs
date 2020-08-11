@@ -8,12 +8,12 @@ config :email, Email.Mailer,
   adapter: Bamboo.TestAdapter
 
 config :gql, GqlWeb.Endpoint,
-  http: [port: 4000],
+  http: [port: 4000, compress: true],
   cache_static_manifest: "priv/static/cache_manifest.json",
   server: true
 
 config :rtc, RtcWeb.Endpoint,
-  http: [port: 4000],
+  http: [port: 4000, compress: true],
   cache_static_manifest: "priv/static/cache_manifest.json",
   server: true
 
