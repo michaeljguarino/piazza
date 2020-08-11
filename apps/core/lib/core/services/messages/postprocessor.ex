@@ -3,7 +3,7 @@ defmodule Core.Services.Messages.PostProcessor do
   alias Core.Models.{User, Emoji}
 
   @mention_regex ~r/\@[a-zA-Z0-9]+/
-  @emoji_regex ~r/:[\w]+:/
+  @emoji_regex ~r/:[a-zA-Z0-9\+_\-]+:/
   @max_entities 25
 
   @doc """
@@ -26,7 +26,7 @@ defmodule Core.Services.Messages.PostProcessor do
         text: handle
       })
     end
-    
+
     emoji_entities = for {emoji, name, {pos, len}} <- emoji do
       timestamped(%{
         type: :emoji,

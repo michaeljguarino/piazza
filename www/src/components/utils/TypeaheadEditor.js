@@ -8,6 +8,7 @@ import {
   useSelected,
   useFocused,
 } from 'slate-react'
+import { StandardEmoji } from '../messages/Message'
 
 
 function Portal({children}) {
@@ -153,27 +154,30 @@ export const withMentions = editor => {
   const { isInline, isVoid } = editor
 
   editor.isInline = element => {
-    return element.type === 'mention' ? true : isInline(element)
+    return ['mention', 'emoji'].includes(element.type) ? true : isInline(element)
   }
 
   editor.isVoid = element => {
-    return element.type === 'mention' ? true : isVoid(element)
+    return ['mention', 'emoji'].includes(element.type) ? true : isVoid(element)
   }
 
   return editor
 }
 
-const insertMention = (editor, text) => {
-  const mention = { text: text + ' ' }
+const insertMention = (editor, val) => {
+  const mention = val.type ? val : { text: val + ' ' }
   Transforms.insertNodes(editor, mention)
   Transforms.move(editor)
 }
 
 const Element = props => {
   const { attributes, children, element } = props
+  console.log(element)
   switch (element.type) {
     case 'mention':
       return <MentionElement {...props} />
+    case 'emoji':
+      return <StandardEmoji name={element.emoji.name} size={16} />
     default:
       return <div {...attributes}>{children}</div>
   }
@@ -197,7 +201,7 @@ const MentionElement = ({ attributes, children, element }) => {
         boxShadow: selected && focused ? '0 0 0 2px #B4D5FF' : 'none',
       }}
     >
-      @{element.character}
+      @{element.name}
       {children}
     </span>
   )

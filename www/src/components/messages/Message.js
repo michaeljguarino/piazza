@@ -17,6 +17,7 @@ import File from './File'
 import { Emoji } from 'emoji-mart'
 import './message.css'
 import { Status } from '../users/UserStatus'
+import { sortBy } from 'lodash'
 
 
 function TextMessage({text, entities}) {
@@ -56,7 +57,8 @@ const WithEntities = React.memo(({text, entities}) => {
 function* splitText(text, entities) {
   let lastIndex = 0
   let count = 0
-  for (let entity of entities) {
+  const sorted = sortBy(entities, ({startIndex}) => startIndex)
+  for (let entity of sorted) {
     const upTo = text.substring(lastIndex, entity.startIndex)
     if (upTo !== '') {
       yield <MsgMarkdown key={count}>{upTo}</MsgMarkdown>
@@ -81,11 +83,12 @@ function CustomEmoji({emoji: {imageUrl, name}, size}) {
       onMouseEnter={() => setOpen(true)}
       onMouseLeave={() => setOpen(false)}
       style={{
-      backgroundImage: `url("${imageUrl}")`,
-      width: `${size}px`,
-      height: `${size}px`,
-      backgroundSize: 'contain'
-    }} />
+          backgroundImage: `url("${imageUrl}")`,
+          width: `${size}px`,
+          height: `${size}px`,
+          backgroundSize: 'contain'
+        }}
+    />
     {open && (
       <TooltipContent targetRef={targetRef}>
         <Text size='xsmall'>:{name}:</Text>
@@ -95,14 +98,14 @@ function CustomEmoji({emoji: {imageUrl, name}, size}) {
   )
 }
 
-function StandardEmoji({name, size}) {
+export function StandardEmoji({name, size}) {
   const targetRef = useRef()
   const [open, setOpen] = useState(false)
   return (
     <>
-    <span ref={targetRef} onMouseEnter={() => setOpen(true)}
+    <span style={{lineHeight: '0px'}} ref={targetRef} onMouseEnter={() => setOpen(true)}
       onMouseLeave={() => setOpen(false)}>
-      <Emoji tooltip set='google' emoji={name} size={size} />
+    <Emoji set='google' emoji={name} size={size} />
     </span>
     {open && (
       <TooltipContent targetRef={targetRef}>
@@ -113,16 +116,17 @@ function StandardEmoji({name, size}) {
   )
 }
 
+export function MessageEmoji({entity: {emoji, text}}) {
+  if (emoji && emoji.imageUrl) return <CustomEmoji emoji={emoji} size={18} />
+  return <StandardEmoji name={text} size={19} />
+}
+
 function MessageEntity({entity}) {
   switch(entity.type) {
     case "MENTION":
-      return <UserHandle size='xsmall' weight='bold' margin={{right: '0px'}} user={entity.user} />
+      return <UserHandle size='xsmall' weight='bold' user={entity.user} />
     case "EMOJI":
-      const emoji = entity.emoji
-      return (emoji.imageUrl ?
-        <CustomEmoji emoji={emoji} size={20} /> :
-        <StandardEmoji emoji={emoji.name} size={20} />
-      )
+      return <MessageEmoji entity={entity} />
     case "CHANNEL_MENTION":
       return <Text style={{background: PINNED_BACKGROUND}} size='small' weight='bold'>{"@" + entity.text}</Text>
     default:

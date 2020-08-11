@@ -90,7 +90,7 @@ export default function SmoothScroller({
   const getSize = useCallback(index => sizeMap.current[index] || 50, []);
   const count = items.length
   const itemCount = hasNextPage ? count + 7 : count;
-  const loadMoreItems = loading ? () => {} : loadNextPage;
+  const loadMoreItems = loading ? () => console.log('ignore while loading') : loadNextPage;
   const isItemLoaded = useCallback(index => !hasNextPage || index < count, [hasNextPage, count])
   const itemKey = keyFn ? (index) => (index < count ? keyFn(items[index]) : index) : (index) => index
 

@@ -144,9 +144,10 @@ function MessageInputInner({editor, attachment, setAttachment, conversation, set
   const empty = isEmpty(editorState)
 
   const sendMessage = useCallback(() => {
+    const text = plainSerialize(editorState)
     mutation({variables: {
       conversationId: conversation.id,
-      attributes: {attachment, parentId, text: plainSerialize(editorState)}
+      attributes: {attachment, parentId, text}
     }})
     Transforms.select(editor, Editor.start(editor, []))
     setEditorState(plainDeserialize(''))

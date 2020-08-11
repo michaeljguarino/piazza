@@ -13,6 +13,7 @@ import { emojiIndex } from 'emoji-mart'
 import './MentionManager.css'
 import TypeaheadEditor from '../utils/TypeaheadEditor'
 import { Editor, Transforms } from 'slate'
+import { Emoji as NimbleEmoji } from 'emoji-mart'
 
 const BUILTIN_MENTIONS = [
   {mention: "here", explanation: "Notifies all members of the conversation who are currently online"},
@@ -73,7 +74,7 @@ function fetchEmojis(client, query) {
       .slice(0, 5)
       .map(({node}) => ({
         key: node.name,
-        value: ` :${node.name}:`,
+        value: emojiNode(node),
         suggestion: customEmojiSuggestion(node)
       }))
     const defaultEmoji = emojiIndex
@@ -81,7 +82,7 @@ function fetchEmojis(client, query) {
       .slice(0, 5)
       .map((emoji) => ({
         key: emoji.colons,
-        value: ` ${emoji.native}`,
+        value: emojiNode(emoji),
         suggestion: emojiSuggestion(emoji)
       }))
     return [...customEmoji, ...defaultEmoji]
@@ -135,7 +136,8 @@ function customEmojiSuggestion(emoji) {
 function emojiSuggestion(emoji) {
   return (
     <Box direction='row' align='center' pad='xsmall' gap='xsmall'>
-      <Text size='xsmall'>{emoji.native} {emoji.colons}</Text>
+      <NimbleEmoji set='google' emoji={emoji.short_names[0]} size={18} />
+      <Text size='xsmall'>{emoji.colons}</Text>
     </Box>
   )
 }
@@ -172,7 +174,14 @@ const insertEmoji = (editor, emoji) => {
   } else {
     at = [0]
   }
-  Transforms.insertText(editor, emoji, {at})
+  Transforms.insertNodes(editor, emojiNode(emoji), {at})
+  Transforms.move(editor)
+}
+
+export const emojiNode = (emoji) => {
+  const name = emoji.short_names ? emoji.short_names[0] : emoji.name
+  const text = ` :${name}:`
+  return {type: 'emoji', children: [{text}], emoji: {...emoji, name}}
 }
 
 function MentionManager({editor, editorState, setEditorState, onChange, disableSubmit}) {
@@ -210,10 +219,7 @@ function MentionManager({editor, editorState, setEditorState, onChange, disableS
         onClickOutside={() => setEmojiPicker(false)}
         onEsc={() => setEmojiPicker(false)}
       >
-        <EmojiPicker onSelect={(emoji) => {
-          const text = ' ' + (emoji.native ? emoji.native : `:${emoji.short_names[0]}:`)
-          insertEmoji(editor, text)
-        }} />
+        <EmojiPicker onSelect={(emoji) => insertEmoji(editor, emoji)} />
       </Drop>
     )}
     </>

@@ -1,6 +1,6 @@
 import React from 'react'
 import { useHistory } from 'react-router-dom'
-import { Modal, ModalHeader } from 'forge-core'
+import { ModalHeader } from 'forge-core'
 import { Box } from 'grommet'
 import { DropdownItem } from '../users/Me'
 import { download } from '../../utils/file'
