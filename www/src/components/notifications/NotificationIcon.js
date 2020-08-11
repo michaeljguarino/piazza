@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useRef, useContext, useCallback } from 'react'
+import React, { useState, useRef, useContext, useCallback } from 'react'
 import { Box, Stack, Text } from 'grommet'
-import { useQuery, useMutation, useApolloClient, useSubscription } from 'react-apollo'
+import { useQuery, useMutation, useSubscription } from 'react-apollo'
 import { Notification } from 'grommet-icons'
 import { HoveredBackground, FlyoutContext, FlyoutContainer, FlyoutHeader, Loading } from 'forge-core'
 import NotificationList from './NotificationList'
@@ -8,7 +8,7 @@ import { NOTIFICATIONS_Q, NEW_NOTIFICATIONS_SUB, VIEW_NOTIFICATIONS } from './qu
 import { updateConversations } from '../conversation/utils'
 import WebNotification from 'react-web-notification';
 import { conversationNameString } from '../conversation/Conversation'
-import { ICON_HEIGHT, ICON_SPREAD } from '../Piazza'
+import { ICON_HEIGHT } from '../Piazza'
 import { NOTIF_SOUND } from './constants'
 import { CONTEXT_Q } from '../login/queries'
 import { Conversations } from '../login/MyConversations'
@@ -54,38 +54,6 @@ function addNewNotification({client, subscriptionData}, setCurrentNotification, 
     // nothing
   }
 }
-
-// function _subscribeToNewNotifications(subscribeToMore, setCurrentNotification, client, updateConversations, workspaceId) {
-//   return subscribeToMore({
-//     document: NEW_NOTIFICATIONS_SUB,
-//     updateQuery: (prev, { subscriptionData }) => {
-//       if (!subscriptionData.data) return prev
-//       const newNotification = subscriptionData.data.newNotifications
-//       const edges = prev.notifications.edges
-//       setCurrentNotification(newNotification)
-//       updateConversations(
-//         client,
-//         workspaceId,
-//         ({node}) => node.id === newNotification.message.conversation.id,
-//         (e) => ({...e, node: {...e.node, unreadNotifications: e.node.unreadNotifications + 1}})
-//       )
-//       incrNotifications(client, 1, workspaceId)
-//       updateNotifications(
-//         client,
-//         ({node: {id}}) => id === newNotification.workspace.id,
-//         ({node, ...rest}) => ({...rest, node: {...node, unreadNotifications: (node.unreadNotifications || 0) + 1}})
-//       )
-
-//       let newNotificationNode = {node: newNotification, __typename: "NotificationEdge"}
-//       return Object.assign({}, prev, {
-//         notifications: {
-//           ...prev.notifications,
-//           edges: [newNotificationNode, ...edges],
-//         }
-//       })
-//     }
-//   })
-// }
 
 function convName(conv, me) {
   if (conv.chat) {

@@ -46,7 +46,7 @@ function Reaction(props) {
         background='highlight'
         border={{color: 'highlightDark'}}>
         <Text size='10px'>
-          <Emoji forceSize emoji={props.name} size={15} style={{lineHeight: 0}} />
+          <Emoji set='google' emoji={props.name} size={18} style={{lineHeight: 0}} />
         </Text>
         <Text size='10px' margin={{left: '3px'}} color='brand'>{props.reactions.length}</Text>
       </Box>
