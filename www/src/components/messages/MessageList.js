@@ -3,7 +3,7 @@ import { Box, Text, Layer } from 'grommet'
 import { Loading, Pill } from 'forge-core'
 import { Wifi, Close, User, Down } from 'grommet-icons'
 import Message, { MessagePlaceholder } from './Message'
-import { Subscription, useQuery } from 'react-apollo'
+import { useQuery, useSubscription } from 'react-apollo'
 import SmoothScroller from '../utils/SmoothScroller'
 import { MESSAGES_Q, DIALOG_SUB } from './queries'
 import { Conversations } from '../login/MyConversations'
@@ -15,17 +15,19 @@ import { conversationNameString } from '../conversation/Conversation'
 import { CurrentUserContext } from '../login/EnsureLogin'
 import Avatar from '../users/Avatar'
 
+export const PRELUDE = 'prl'
+
 export const DialogContext = React.createContext({
   dialog: null,
   setDialog: () => null
 })
 
-export function DialogProvider(props) {
+export function DialogProvider({children}) {
   const [dialog, setDialog] = useState(null)
 
   return (
     <DialogContext.Provider value={{dialog, setDialog}}>
-    {props.children(dialog, setDialog)}
+    {typeof children === 'function' ? children(dialog, setDialog) : children}
     </DialogContext.Provider>
   )
 }
@@ -118,6 +120,8 @@ export default function MessageList() {
   const {currentConversation, waterline} = useContext(Conversations)
   const {setReply} = useContext(ReplyContext)
   const {scrollTo} = useContext(MessageScrollContext)
+  const {dialog, setDialog} = useContext(DialogContext)
+  const {data: dialogData} = useSubscription(DIALOG_SUB)
   const {loading, error, data, fetchMore, refetch} = useQuery(MESSAGES_Q, {
     variables: {conversationId: currentConversation.id},
     fetchPolicy: 'cache-and-network'
@@ -137,84 +141,77 @@ export default function MessageList() {
 // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [scrolled, scrollTo])
 
+  useEffect(() => {
+    if (dialogData && dialogData.dialog) setDialog(dialogData.dialog)
+  }, [dialogData])
+
   if (loading && !data) return <Loading height='calc(100vh - 135px)' width='100%' />
   if (error) return <div>wtf</div>
 
   let {edges, pageInfo} = data.conversation.messages
 
   return (
-    <DialogProvider>
-    {(dialog, setDialog) => (
-      <Subscription subscription={DIALOG_SUB} onSubscriptionData={({subscriptionData}) => {
-        if (!subscriptionData.data) return
-        setDialog(subscriptionData.data.dialog)
-      }}>
-      {() => (
-        <>
-        {scrolled && <ReturnToBeginning listRef={listRef} />}
-        <AvailabilityDetector>
-        {status => status !== OFFLINE ? <BackOnline refetch={() => {
-          listRef && listRef.scrollToItem(0)
-          refetch()
-        }} status={status} /> : <Offline />}
-        </AvailabilityDetector>
-        <Box width='100%' height='100%' ref={parentRef}>
-          <div style={{ flex: '1 1 auto' }}>
-          <SmoothScroller
-            listRef={listRef}
-            setListRef={setListRef}
-            hasNextPage={pageInfo.hasNextPage}
-            loading={loading}
-            handleScroll={setScrolled}
-            items={pageInfo.hasNextPage ? edges : [...edges, 'PRELUDE']}
-            sizeEstimate={({node}) => sizeEstimate(node)}
-            refreshKey={currentConversation.id}
-            keyFn={(edge) => edge === 'PRELUDE' ? edge : edge.node.id}
-            scrollTo='start'
-            placeholder={(i) => <MessagePlaceholder index={i} />}
-            onRendered={({visibleStopIndex}) => {
-              const edge = edges[visibleStopIndex]
-              setLastMessage(edge && edge.node)
-            }}
-            mapper={(edge, next, props) => {
-              if (edge === 'PRELUDE') return <Prelude conversation={currentConversation} />
-              return (
-                <Message
-                  waterline={waterline}
-                  key={edge.node.id}
-                  parentRef={parentRef}
-                  conversation={currentConversation}
-                  message={edge.node}
-                  setReply={setReply}
-                  dialog={dialog}
-                  next={next.node}
-                  refreshList={refreshList}
-                  {...props} />)
-            }}
-            loadNextPage={() => fetchMore({
-                variables: {conversationId: currentConversation.id, cursor: pageInfo.endCursor},
-                updateQuery: (prev, {fetchMoreResult: {conversation: {messages: {edges, pageInfo}}}}) => {
-                  return {
-                    ...prev,
-                    conversation: {
-                      ...prev.conversation,
-                      messages: {
-                        ...prev.conversation.messages,
-                        pageInfo,
-                        edges: [...prev.conversation.messages.edges, ...edges]
-                      }
-                    }
+    <>
+    {scrolled && <ReturnToBeginning listRef={listRef} />}
+    <AvailabilityDetector>
+    {status => status !== OFFLINE ? <BackOnline refetch={() => {
+      listRef && listRef.scrollToItem(0)
+      refetch()
+    }} status={status} /> : <Offline />}
+    </AvailabilityDetector>
+    <Box width='100%' height='100%' ref={parentRef}>
+      <div style={{ flex: '1 1 auto' }}>
+      <SmoothScroller
+        listRef={listRef}
+        setListRef={setListRef}
+        hasNextPage={pageInfo.hasNextPage}
+        loading={loading}
+        handleScroll={setScrolled}
+        items={pageInfo.hasNextPage ? edges : [...edges, PRELUDE]}
+        sizeEstimate={({node}) => sizeEstimate(node)}
+        refreshKey={currentConversation.id}
+        keyFn={(edge) => edge === PRELUDE ? edge : edge.node.id}
+        scrollTo='start'
+        placeholder={(i) => <MessagePlaceholder index={i} />}
+        onRendered={({visibleStopIndex}) => {
+          const edge = edges[visibleStopIndex]
+          setLastMessage(edge && edge.node)
+        }}
+        mapper={(edge, next, props) => {
+          if (edge === PRELUDE) return <Prelude conversation={currentConversation} />
+          return (
+            <Message
+              waterline={waterline}
+              key={edge.node.id}
+              parentRef={parentRef}
+              conversation={currentConversation}
+              message={edge.node}
+              setReply={setReply}
+              dialog={dialog}
+              next={next.node}
+              refreshList={refreshList}
+              {...props} />)
+        }}
+        loadNextPage={() => fetchMore({
+            variables: {conversationId: currentConversation.id, cursor: pageInfo.endCursor},
+            updateQuery: (prev, {fetchMoreResult: {conversation: {messages: {edges, pageInfo}}}}) => {
+              return {
+                ...prev,
+                conversation: {
+                  ...prev.conversation,
+                  messages: {
+                    ...prev.conversation.messages,
+                    pageInfo,
+                    edges: [...prev.conversation.messages.edges, ...edges]
                   }
                 }
-              })
+              }
             }
-          />
-          </div>
-      </Box>
-      </>
-    )}
-    </Subscription>
-  )}
-  </DialogProvider>
+          })
+        }
+      />
+      </div>
+    </Box>
+    </>
   )
 }

@@ -9,7 +9,7 @@ import {ANCHORED_MESSAGES} from './queries'
 import { Conversations } from '../login/MyConversations'
 import { ReplyContext } from './ReplyProvider'
 import { ScrollContext } from '../utils/SmoothScroller'
-import { Prelude } from './MessageList'
+import { Prelude, PRELUDE } from './MessageList'
 
 function RecentItemsOverlay({setAnchor}) {
   return (
@@ -65,7 +65,7 @@ function AnchoredMessageList({anchor, setAnchor}) {
   let allEdges = [...Array.from(reverse(results.before.edges)), ...results.after.edges]
   const scrollTo = anchor.id ? anchor.id : (results.after.edges[0] && results.after.edges[0].node.id)
   if (!results.before.pageInfo.hasNextPage) {
-    allEdges.unshift("PRELUDE")
+    allEdges.unshift(PRELUDE)
   }
 
   return (
@@ -85,7 +85,7 @@ function AnchoredMessageList({anchor, setAnchor}) {
             flexDirection: 'column-reverse',
           }}
           mapper={(e, next, ref, pos) => {
-            if (e === 'PRELUDE') return <Prelude conversation={currentConversation} />
+            if (e === PRELUDE) return <Prelude conversation={currentConversation} />
             const {node} = e
             return (
               <Message

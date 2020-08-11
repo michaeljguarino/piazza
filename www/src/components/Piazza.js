@@ -2,7 +2,7 @@ import React, { useState, useContext } from 'react'
 import { DndProvider, useDrop } from 'react-dnd'
 import { HTML5Backend, NativeTypes } from 'react-dnd-html5-backend'
 import { FlyoutProvider } from 'forge-core'
-import MessageList from './messages/MessageList'
+import MessageList, { DialogProvider } from './messages/MessageList'
 import AnchoredMessageList from './messages/AnchoredMessageList'
 import MessageInput from './messages/MessageInput'
 import ReplyProvider from './messages/ReplyProvider'
@@ -94,10 +94,12 @@ const Piazza = () => {
                     <Box width='100%' height='100%' align='center'>
                       <DividerText />
                       <Box id='msg-view' width='100%' height='100%'>
-                      {anchor ? <AnchoredMessageList
-                                  anchor={anchor}
-                                  setAnchor={setAnchor} /> :
-                                <MessageList />}
+                        <DialogProvider>
+                        {anchor ? <AnchoredMessageList
+                                    anchor={anchor}
+                                    setAnchor={setAnchor} /> :
+                                  <MessageList />}
+                        </DialogProvider>
                       </Box>
                       <MessageInput attachment={attachment} setAttachment={setAttachment} />
                     </Box>
