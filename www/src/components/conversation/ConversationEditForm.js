@@ -2,7 +2,7 @@ import React from 'react'
 import { Keyboard, Box, CheckBox } from 'grommet'
 import { Button, SecondaryButton, InputField } from 'forge-core'
 
-export default function ConversationEditForm({loading, mutation, state, onStateChange, action, cancel}) {
+export default function ConversationEditForm({loading, mutation, chat, state, onStateChange, action, cancel}) {
   return (
     <Keyboard onEnter={mutation}>
       <Box width="330px" gap='small'>
@@ -16,15 +16,15 @@ export default function ConversationEditForm({loading, mutation, state, onStateC
           value={state.topic}
           placeholder='conversation topic'
           onChange={(e) => onStateChange({topic: e.target.value})} />
-        <Box gap='small' border='horizontal' pad={{vertical: 'small'}}>
-          <CheckBox
+        <Box gap='small' pad={{vertical: 'small'}}>
+          {!chat && <CheckBox
             toggle
             label={state.public ?
               'Public (the conversation is searchable)' :
               'Private (can only join via invite)'}
             checked={state.public}
             onChange={(e) => onStateChange({public: e.target.checked})}
-          />
+          />}
           <CheckBox
             toggle
             label={state.archived ?

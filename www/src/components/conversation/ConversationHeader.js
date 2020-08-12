@@ -67,6 +67,7 @@ function ConversationUpdateForm({conversation, setOpen}) {
           cancel={() => setOpen(false)}
           state={attributes}
           mutation={mutation}
+          chat={conversation.chat}
           onStateChange={(update) => setAttributes({...attributes, ...update})}
           action='Update' />
       </Box>
@@ -102,9 +103,16 @@ function ConversationUpdate({conversation, me}) {
 const ConversationName = React.forwardRef(({onClick, ...props}, ref) => {
   const emptyColor = '#DADADA'
   return (
-    <Box ref={ref} direction='row' gap='xsmall' align='center' margin={{bottom: 'xsmall'}}>
+    <Box
+      ref={ref}
+      direction='row'
+      focusIndicator={false}
+      gap='xsmall'
+      align='center'
+      margin={{bottom: 'xsmall'}}
+      onClick={onClick}>
       <Icon emptyColor={emptyColor} me={props.me} conversation={props.conversation} />
-      <Text style={{cursor: "pointer"}} weight='bold' onClick={onClick}>
+      <Text weight='bold'>
         {conversationNameString(props.conversation, props.me)}
       </Text>
       <Down size='12px' />
