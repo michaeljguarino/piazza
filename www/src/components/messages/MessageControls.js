@@ -1,21 +1,25 @@
 import React, { useState, useRef, useContext, useCallback } from 'react'
 import { useMutation } from 'react-apollo'
 import { Box, Drop, Text } from 'grommet'
-import { More, Emoji, Pin, Trash, BlockQuote, Edit } from 'grommet-icons'
-import { HoveredBackground, MenuItem } from 'forge-core'
+import { Emoji, Pin, Trash, BlockQuote, Edit, MoreVertical } from 'grommet-icons'
+import { HoveredBackground, MenuItem, TooltipContent } from 'forge-core'
 import { DELETE_MESSAGE, CREATE_REACTION, MESSAGES_Q, PIN_MESSAGE, PINNED_MESSAGES } from './queries'
 import { removeMessage, updateMessage, addPinnedMessage, removePinnedMessage } from './utils'
 import EmojiPicker from '../emoji/EmojiPicker'
 import { CurrentUserContext } from '../login/EnsureLogin'
 
-const BORDER = {side: 'right', color: 'light-6'}
+const ICON_SIZE = '16px'
+const SIZE = '35px'
 const CONTROL_ATTRS = {
+  fill: true,
   focusIndicator: false,
+  pad: 'xsmall',
+  hoverIndicator: 'light-2',
   align: 'center',
   justify: 'center',
-  border: BORDER,
-  width: '40px'
 }
+const PAD = '2px'
+const OUTER = {height: SIZE, width: SIZE}
 
 function DeleteMessage({message, conversation, setOpen, refreshList}) {
   const [mutation] = useMutation(DELETE_MESSAGE, {
@@ -32,12 +36,35 @@ function DeleteMessage({message, conversation, setOpen, refreshList}) {
   })
 
   return (
-    <MenuItem hover='focus'>
+    <MenuItem hover='notif'>
       <Box direction='row' align='center' gap='small'>
         <Trash size='12px' />
         <Text size='small' onClick={mutation}>delete message</Text>
       </Box>
     </MenuItem>
+  )
+}
+
+export function Control({children, tooltip, pad, closed, ...rest}) {
+  const ref = useRef()
+  const [hover, setHover] = useState(false)
+  return (
+    <>
+    <Box
+      ref={ref}
+      pad={pad || PAD}
+      {...OUTER}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      {...rest}>
+      {children}
+    </Box>
+    {hover && !closed && (
+      <TooltipContent targetRef={ref} align={{bottom: 'top'}}>
+        <Text size='xsmall'>{tooltip}</Text>
+      </TooltipContent>
+    )}
+    </>
   )
 }
 
@@ -63,10 +90,12 @@ export function MessageReaction({conversation, setPinnedHover, boxAttrs, positio
   return (
     <>
     <HoveredBackground>
-      <Box ref={ref} accentable onClick={() => toggleOpen(!open)} {...(boxAttrs || CONTROL_ATTRS)}>
-        <Emoji size='15px'  />
-        {label && (<Text size='xsmall' margin={{left: '2px'}}>{label}</Text>)}
-      </Box>
+      <Control tooltip='add reaction'>
+        <Box ref={ref} accentable onClick={() => toggleOpen(!open)} {...(boxAttrs || CONTROL_ATTRS)}>
+          <Emoji size={ICON_SIZE}  />
+          {label && (<Text size='xsmall' margin={{left: '2px'}}>{label}</Text>)}
+        </Box>
+      </Control>
     </HoveredBackground>
     {open && (
       <Drop target={ref.current} align={{right: 'left'}}
@@ -107,12 +136,11 @@ function PinMessage({message, conversation}) {
 
   return (
     <HoveredBackground>
-      <Box
-        accentable
-        onClick={mutation}
-        {...CONTROL_ATTRS}>
-        <Pin size='15px' />
-      </Box>
+      <Control tooltip='pin message'>
+        <Box accentable onClick={mutation} {...CONTROL_ATTRS}>
+          <Pin size={ICON_SIZE} />
+        </Box>
+      </Control>
     </HoveredBackground>
   )
 }
@@ -133,22 +161,25 @@ export default function MessageControls({setPinnedHover, setEditing, ...props}) 
   }, [setEditing, setMoreOpen])
 
   return (
-    <Box className='message-controls' border={{color: 'light-3'}} elevation='xsmall' background='white'
-      direction='row' height='35px' round='xsmall' margin={{right: '10px', top: '-10px'}}>
+    <Box className='message-controls' border={{color: 'light-5'}} elevation='xsmall' background='white'
+      direction='row' align='center' height={SIZE} round='xsmall' margin={{right: '10px', top: '-10px'}}>
       <MessageReaction setPinnedHover={setPinnedHover} {...props} />
       <PinMessage {...props} />
       <HoveredBackground>
-        <Box accentable onClick={() => props.setReply(props.message)}
-          {...CONTROL_ATTRS} border={props.message.creator.id === me.id ? BORDER : null}>
-          <BlockQuote size='15px' />
-        </Box>
+        <Control tooltip='reply'>
+          <Box accentable onClick={() => props.setReply(props.message)} {...CONTROL_ATTRS}>
+            <BlockQuote size={ICON_SIZE} />
+          </Box>
+        </Control>
       </HoveredBackground>
       {props.message.creator.id === me.id && (
         <>
         <HoveredBackground>
-          <Box accentable ref={dropRef} onClick={() => toggleOpen(!moreOpen)} {...CONTROL_ATTRS}>
-            <More size='15px' />
-          </Box>
+          <Control tooltip='more options'>
+            <Box accentable ref={dropRef} onClick={() => toggleOpen(!moreOpen)} {...CONTROL_ATTRS}>
+              <MoreVertical size={ICON_SIZE} />
+            </Box>
+          </Control>
         </HoveredBackground>
         {moreOpen && (
           <Drop target={dropRef.current} align={{top: 'bottom'}} margin={{top: '4px'}}

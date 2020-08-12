@@ -14,6 +14,8 @@ import './MentionManager.css'
 import TypeaheadEditor from '../utils/TypeaheadEditor'
 import { Editor, Transforms } from 'slate'
 import { Emoji as NimbleEmoji } from 'emoji-mart'
+import { INPUT_HEIGHT } from './MessageInput'
+import { Control } from './MessageControls'
 
 const BUILTIN_MENTIONS = [
   {mention: "here", explanation: "Notifies all members of the conversation who are currently online"},
@@ -142,18 +144,14 @@ function emojiSuggestion(emoji) {
   )
 }
 
-function EmojiTarget({emojiRef, setEmojiPicker}) {
+function EmojiTarget({emojiRef, emojiPicker, setEmojiPicker}) {
   return (
     <HoveredBackground>
-      <Box
-        accentable
-        align='center'
-        justify='center'
-        ref={emojiRef}
-        width='40px'
-        onClick={() => setEmojiPicker(true)}
-        focusIndicator={false}>
-        <Emoji size='25px' color='dark-6' />
+      <Box accentable ref={emojiRef} flex={false} focusIndicator={false}>
+        <Control closed={emojiPicker} tooltip='insert emoji' align='center' justify='center'
+          hoverIndicator='light-2' onClick={() => setEmojiPicker(true)} focusIndicator={false}>
+          <Emoji size='20px' color='dark-6' />
+        </Control>
       </Box>
     </HoveredBackground>
   )
@@ -211,7 +209,7 @@ function MentionManager({editor, editorState, setEditorState, onChange, disableS
         paddingTop: '10px',
         paddingBottom: '10px'
       }} />
-    <EmojiTarget emojiRef={emojiRef} setEmojiPicker={setEmojiPicker} />
+    <EmojiTarget emojiRef={emojiRef} emojiPicker={emojiPicker} setEmojiPicker={setEmojiPicker} />
     {emojiPicker && (
       <Drop
         align={{ bottom: "top"}}

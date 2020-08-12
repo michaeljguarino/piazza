@@ -24,6 +24,7 @@ import { SyncLoader } from 'react-spinners'
 import { normalizeColor } from 'grommet/utils'
 import { Send } from '../utils/icons'
 import fs from 'filesize'
+import { Control } from './MessageControls'
 
 const TEXT_SIZE='xsmall'
 const TEXT_COLOR='dark-4'
@@ -84,14 +85,16 @@ function InputFooter({typists, me: {handle}}) {
   )
 }
 
+export const INPUT_HEIGHT = '35px'
+
 function FileInput({attachment, setAttachment}) {
   return (
     <HoveredBackground>
       <Box accentable style={{cursor: "pointer"}}>
         <FilePicker onChange={(file) => setAttachment(file)} maxSize={2000} onError={(msg) => console.log(msg)}>
-          <Box align='center' justify='center' height='40px' width="30px">
+          <Control onClick={() => null} hoverIndicator='light-2' focusIndicator={false} tooltip='add attachment' align='center' justify='center'>
             <Attachment color={attachment ? 'action' : null} size='15px' />
-          </Box>
+          </Control>
         </FilePicker>
       </Box>
     </HoveredBackground>
