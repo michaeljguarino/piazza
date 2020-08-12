@@ -21,7 +21,7 @@ const CONTROL_ATTRS = {
 const PAD = '2px'
 const OUTER = {height: SIZE, width: SIZE}
 
-function DeleteMessage({message, conversation, setOpen, refreshList}) {
+function DeleteMessage({message, conversation, setOpen}) {
   const [mutation] = useMutation(DELETE_MESSAGE, {
     variables: {messageId: message.id},
     update: (cache, {data: {deleteMessage}}) => {
