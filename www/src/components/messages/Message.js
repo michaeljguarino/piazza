@@ -249,7 +249,9 @@ function Dialog({dialog: {structuredMessage}}) {
   return (
     <Box background={PINNED_BACKGROUND} pad={{vertical: 'small', left: '55px'}} fill='horizontal'>
       <Text size='xsmall' color='dark-4'>only visible to you</Text>
-      <StructuredMessage {...structuredMessage} />
+      <Box flex={false} direction='row'>
+        <StructuredMessage {...structuredMessage} />
+      </Box>
     </Box>
   )
 }
