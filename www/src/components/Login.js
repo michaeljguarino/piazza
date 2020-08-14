@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { AUTH_TOKEN } from '../constants'
 import { useMutation } from 'react-apollo'
-import { Error, Button } from 'forge-core'
+import { Errors, Button } from 'forge-core'
 import gql from 'graphql-tag'
 import { Box, Form, Keyboard, FormField, Text, Anchor } from 'grommet'
 
@@ -53,14 +53,15 @@ function Login(props) {
   if (localStorage.getItem(AUTH_TOKEN)) {
     props.history.push('/')
   }
+  const disabled = [email, password].some((v) => v.length === 0)
 
   return (
     <Box direction="column" align="center" justify="center" height="100vh" background='brand'>
-      <Box width="60%" pad='medium' round='xsmall' background='white'>
-        {error && <Error errors={error} />}
+      <Box width="60%" pad='medium' round='xsmall' background='white' gap='10px'>
+        {error && <Errors errors={error} />}
         <Keyboard onEnter={mutation}>
           <Form onSubmit={mutation}>
-            <Box margin={{bottom: '10px'}}>
+            <Box>
               <Box direction="column" justify="center" align="center">
                 <Text size="medium" weight="bold">{login ? 'Login' : 'Sign Up'}</Text>
               </Box>
@@ -96,28 +97,23 @@ function Login(props) {
                 onChange={e => setState({...state, password: e.target.value })}
               />
             </Box>
-            <Box direction="row" align="center">
+            <Box direction="row" align="center" justify='end' margin={{top: 'small'}} align='center' gap='small'>
+              <Box direction='row' align='center' justify='end'>
+                <Anchor size='small' color='dark-3' onClick={() => props.history.push('/reset-password')}>
+                  forgot your password?
+                </Anchor>
+              </Box>
               <Button
                 onClick={mutation}
                 loading={loading}
+                disabled={disabled}
                 size='small'
                 round='xsmall'
                 pad={{vertical: 'xsmall', horizontal: 'medium'}}
                 label={login ? 'login' : 'sign up'} />
-              <Anchor
-                margin={{left: '10px'}}
-                size="small"
-                onClick={() => setState({...state, login: !login})}>
-                {login ? 'need to create an account?' : 'already have an account?'}
-              </Anchor>
             </Box>
           </Form>
         </Keyboard>
-        <Box margin={{top: 'small'}} direction='row' align='center' justify='end'>
-          <Anchor size='small' color='dark-3' onClick={() => props.history.push('/reset-password')}>
-            forgot your password?
-          </Anchor>
-        </Box>
       </Box>
     </Box>
   )
