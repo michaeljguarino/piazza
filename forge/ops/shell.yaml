@@ -1,0 +1,4 @@
+target: deployment/piazza-gql
+command: /opt/app/bin/gql
+args:
+- remote_console

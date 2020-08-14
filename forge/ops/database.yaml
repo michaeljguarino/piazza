@@ -1,0 +1,8 @@
+engine: POSTGRES
+target: statefulset/piazza-postgresql
+port: 5432
+name: piazza
+credentials:
+  secret: piazza-postgresql
+  key: postgresql-password
+  user: piazza
