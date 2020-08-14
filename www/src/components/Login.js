@@ -55,8 +55,8 @@ function Login(props) {
   }
 
   return (
-    <Box direction="column" align="center" justify="center" height="100vh">
-      <Box width="60%" pad='medium' border={{style: "hidden"}} elevation="small">
+    <Box direction="column" align="center" justify="center" height="100vh" background='brand'>
+      <Box width="60%" pad='medium' round='xsmall' background='white'>
         {error && <Error errors={error} />}
         <Keyboard onEnter={mutation}>
           <Form onSubmit={mutation}>
@@ -67,7 +67,7 @@ function Login(props) {
               {!login && (
                 <FormField
                   value={name}
-                  label="name"
+                  label="Name"
                   name="Name"
                   onChange={e => setState({...state, name: e.target.value })}
                   placeholder="your name"

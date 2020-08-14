@@ -150,10 +150,12 @@ function Workspace({workspace, workspaceId, me, setWorkspace}) {
   )
 }
 
-function CreateTarget() {
+function CreateTarget({onClick}) {
   return (
     <HoveredBackground>
-      <Box accentable style={{cursor: 'pointer'}} fill='horizontal' margin='small' direction='row' align='center' gap='xsmall'>
+      <Box
+        accentable focusIndicator={false}  onClick={onClick} fill='horizontal'
+        margin='small' direction='row' align='center' gap='xsmall'>
         <Add size='14px' />
         <Text size='small'>create another workspace</Text>
       </Box>
@@ -161,7 +163,7 @@ function CreateTarget() {
   )
 }
 
-function WorkspaceDropdown({dropRef, workspaces, setOpen, workspaceId, setWorkspace}) {
+function WorkspaceDropdown({dropRef, workspaces, setOpen, workspaceId, setWorkspace, setModal}) {
   const me = useContext(CurrentUserContext)
 
   return (
@@ -179,9 +181,9 @@ function WorkspaceDropdown({dropRef, workspaces, setOpen, workspaceId, setWorksp
             setWorkspace={setWorkspace} />
         ))}
         {me.roles && me.roles.admin && (
-          <Modal target={<CreateTarget />}>
-          {setOpen => <CreateWorkspace setOpen={setOpen} />}
-          </Modal>
+          <CreateTarget onClick={() => setModal(
+            <CreateWorkspace setOpen={setModal} />
+          )} />
         )}
       </Box>
     </Drop>
@@ -192,6 +194,7 @@ export const FOOTER_HEIGHT = 60
 
 export default function Workspaces({pad}) {
   const [open, setOpen] = useState(false)
+  const [modal, setModal] = useState(false)
   const dropRef = useRef()
   const {workspaces} = useContext(WorkspaceContext)
   const {workspaceId, setWorkspace} = useContext(Conversations)
@@ -208,7 +211,8 @@ export default function Workspaces({pad}) {
           workspaceId={workspaceId}
           setWorkspace={setWorkspace}
           workspaces={workspaces}
-          setOpen={setOpen} />
+          setOpen={setOpen}
+          setModal={setModal} />
       )}
       <HoveredBackground>
         <Box ref={dropRef} sidebarHover accentText onClick={() => setOpen(!open)}
@@ -220,6 +224,11 @@ export default function Workspaces({pad}) {
           </Box>
           {notifs > 0 && <NotificationBadge unread={notifs} />}
         </Box>
+        {modal && (
+          <Layer modal onClickOutside={() => setModal(null)}>
+            {modal}
+          </Layer>
+        )}
       </HoveredBackground>
     </ThemeContext.Extend>
   )

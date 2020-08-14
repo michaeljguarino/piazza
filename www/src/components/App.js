@@ -11,6 +11,7 @@ import Directory from './tools/Directory';
 import { pdfjs } from 'react-pdf';
 // import logo from './logo.svg';
 import '../styles/App.css';
+import Invite from './Invite';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
@@ -25,7 +26,7 @@ export default function App() {
           <Route exact path='/profile' component={UserEdit} />
           <Route exact path='/wk/:workspace' component={Piazza} />
           <Route path='/wk/:workspace/:conversationId' component={Piazza} />
-          <Route path="/invite/:inviteToken" component={Login} />
+          <Route path="/invite/:inviteToken" component={Invite} />
           <Route path="/messageeditor" component={StructuredMessageTester} />
           <Route path='/reset-password/:token' component={ChangePassword} />
           <Route path='/reset-password' component={ResetPassword} />
