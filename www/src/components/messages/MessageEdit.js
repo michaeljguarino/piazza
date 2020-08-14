@@ -10,7 +10,6 @@ import { updateMessage } from './utils'
 import { plainDeserialize, plainSerialize } from '../../utils/slate'
 import { useEditor } from '../utils/hooks'
 import { ReactEditor } from 'slate-react'
-import { Transforms, Editor } from 'slate'
 
 function MessageEdit({setSize, message, setEditing, ...props}) {
   const editRef = useRef()

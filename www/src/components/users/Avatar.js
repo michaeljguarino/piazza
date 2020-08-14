@@ -13,7 +13,7 @@ export class AvatarContainer extends React.PureComponent {
     const boxSize = size || DEFAULT_SIZE
 
     return (
-      <Box border={{style: 'hidden'}} round={RADIUS} align='center' justify='center'
+      <Box flex={false} border={{style: 'hidden'}} round={RADIUS} align='center' justify='center'
         background={img ? null : (background || DEFAULT_BACKGROUND)}
         width={boxSize} height={boxSize} margin={{right: rightMargin || '5px'}}>
         {img ?
