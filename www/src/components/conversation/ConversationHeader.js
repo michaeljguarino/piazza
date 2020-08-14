@@ -109,12 +109,11 @@ const ConversationName = React.forwardRef(({onClick, ...props}, ref) => {
       focusIndicator={false}
       gap='xsmall'
       align='center'
-      margin={{vertical: 'xsmall'}}
-      onClick={onClick}>
+      margin={{vertical: 'xsmall'}}>
       <Icon emptyColor={emptyColor} me={props.me} conversation={props.conversation} />
-      <Text weight='bold'>
+      <Anchor color='black' style={{fontWeight: 600}} size='medium' onClick={onClick}>
         {conversationNameString(props.conversation, props.me)}
-      </Text>
+      </Anchor>
       <Down size='12px' />
     </Box>
   )

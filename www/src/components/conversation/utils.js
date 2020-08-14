@@ -2,7 +2,7 @@ import React from 'react'
 import {Box} from 'grommet'
 import { CONVERSATIONS_SUB } from './queries'
 import sortBy from 'lodash/sortBy'
-import {BeatLoader} from 'react-spinners'
+import { BeatLoader } from 'react-spinners'
 import { CONTEXT_Q } from '../login/queries'
 import { addWorkspace } from '../workspace/utils'
 
@@ -50,13 +50,14 @@ export function subscribeToNewConversations(subscribeToMore, workspaceId, client
       if (!subscriptionData.data) return prev
       const participantDelta = subscriptionData.data.participantDelta
       const participant = participantDelta.payload
+
       switch(participantDelta.delta) {
         case "CREATE":
           return addConversation(prev, participant.conversation, workspaceId, client)
         case "DELETE":
-          return removeConversation(prev, participant.conversation)
+          return removeConversation(prev, participant.conversation,)
         case "UPDATE":
-          return updateConversation(prev, participant.conversation)
+          return updateConversation(prev, participant.conversation, workspaceId, client)
         default:
           return prev
       }
@@ -83,18 +84,24 @@ export function addConversation(prev, conv, workspaceId, client) {
   return {...prev, conversations: scope}
 }
 
-export function updateConversation(prev, conv) {
-  let scope = conv.chat ? prev.chats : prev.conversations
-  scope = {...scope, edges: scope.edges.map((edge) => {
-    if (edge.node.id !== conv.id) return edge
-
-    return {
-      ...edge,
-      node: conv
+export function updateConversation(prev, conv, workspaceId, client) {
+  if (workspaceId && conv.workspace.id !== workspaceId) {
+    if (client) {
+      addWorkspace(client, conv.workspace)
     }
-  })}
+    return prev
+  }
+
+  let scope = conv.chat ? prev.chats : prev.conversations
+  scope = {...scope, edges: upsertConversation(scope.edges, conv)}
   if (conv.chat) return {...prev, chats: scope}
   return {...prev, conversations: scope}
+}
+
+function upsertConversation(edges, conv) {
+  if (!edges.find(({node: {id}}) => id === conv.id))
+    return[{__typename: 'ConversationEdge', node: conv}, ...edges]
+  return edges
 }
 
 export function removeConversation({conversations, chats, ...prev}, conv) {
