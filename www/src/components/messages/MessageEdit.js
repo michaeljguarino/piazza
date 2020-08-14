@@ -9,6 +9,8 @@ import { EDIT_MESSAGE, MESSAGES_Q } from './queries'
 import { updateMessage } from './utils'
 import { plainDeserialize, plainSerialize } from '../../utils/slate'
 import { useEditor } from '../utils/hooks'
+import { ReactEditor } from 'slate-react'
+import { Transforms, Editor } from 'slate'
 
 function MessageEdit({setSize, message, setEditing, ...props}) {
   const editRef = useRef()
@@ -24,11 +26,17 @@ function MessageEdit({setSize, message, setEditing, ...props}) {
         data: updateMessage(data, editMessage)
       })
     },
-    onCompleted: () => setEditing(false)
+    onCompleted: () => {
+      setEditing(false)
+      setSize()
+    }
   })
 
   useEffect(() => {
     setSize()
+    ReactEditor.focus(editor)
+    // Transforms.select(editor, Editor.end(editor, []))
+    return () => editRef && setSize()
 // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editRef])
 
