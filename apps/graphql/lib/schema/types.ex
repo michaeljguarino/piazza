@@ -268,11 +268,12 @@ defmodule GraphQl.Schema.Types do
       file, _, _ -> {:ok, Core.Storage.url({file.object, file}, :original)}
     end
 
-    field :filename,   non_null(:string)
-    field :filesize,   :integer
-    field :media_type, :media_type
-    field :width,      :integer
-    field :height,     :integer
+    field :filename,     non_null(:string)
+    field :filesize,     :integer
+    field :media_type,   :media_type
+    field :content_type, :string
+    field :width,        :integer
+    field :height,       :integer
 
     timestamps()
   end

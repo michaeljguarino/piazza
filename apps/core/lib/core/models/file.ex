@@ -7,13 +7,14 @@ defmodule Core.Models.File do
   defenum MediaType, image: 0, video: 1, audio: 2, other: 3, pdf: 4
 
   schema "files" do
-    field :object_id, :binary_id
-    field :object, Core.Storage.Type
-    field :media_type, MediaType
-    field :filename, :string
-    field :filesize, :integer
-    field :width,    :integer
-    field :height,   :integer
+    field :object_id,    :binary_id
+    field :object,       Core.Storage.Type
+    field :media_type,   MediaType
+    field :filename,     :string
+    field :filesize,     :integer
+    field :width,        :integer
+    field :height,       :integer
+    field :content_type, :string
 
     belongs_to :message, Message
 
@@ -62,7 +63,7 @@ defmodule Core.Models.File do
 
   defp add_media_type(changeset) do
     case apply_changes(changeset) do
-      %{filename: name} -> put_change(changeset, :media_type, media_type(name))
+      %{filename: name} -> change(changeset, %{media_type: media_type(name), content_type: MIME.from_path(name)})
       _ -> changeset
     end
   end

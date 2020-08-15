@@ -39,9 +39,9 @@ function Image({...file}) {
       <Stack anchor='top-right'>
         <Box focusindicator={false} onClick={() => setOpen(true)}>
           <img style={{
-            height: !file.height ? null : file.height,
+            height: !file.height || file.height === 0 ? 50 : file.height,
             maxHeight: 300,
-            objectFit: 'contain'
+            // objectFit: 'contain'
           }} src={file.object} alt={file.filename} />
         </Box>
         {hover && (<DownloadAffordance object={file.object} />)}

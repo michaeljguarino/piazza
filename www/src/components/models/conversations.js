@@ -66,6 +66,7 @@ export const FileFragment = gql`
     filename
     filesize
     mediaType
+    contentType
     object
     insertedAt
     height
