@@ -29,9 +29,9 @@ defmodule Core.Storage do
 
   def default_url(_), do: nil
 
-  def s3_object_headers(_, {_, %File{content_type: content_type}}), do: [content_type: content_type]
+  def s3_object_headers(_, {_, %File{content_type: content_type}}) when is_binary(content_type), do: [content_type: content_type]
   def s3_object_headers(_, {file, _}), do: [content_type: MIME.from_path(file.file_name)]
 
-  def gcs_object_headers(_, {_, %File{content_type: content_type}}), do: [contentType: content_type]
+  def gcs_object_headers(_, {_, %File{content_type: content_type}}) when is_binary(content_type), do: [contentType: content_type]
   def gcs_object_headers(_, {file, _}), do: [contentType: MIME.from_path(file.file_name)]
 end
