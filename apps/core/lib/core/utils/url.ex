@@ -10,10 +10,9 @@ defmodule Core.Utils.Url do
 
   def unfurl(url, opts \\ []) do
     with {:ok, {body, headers, status_code}, oembed} <- fetch(url, opts),
-         {:ok, results} <- parse(body, normalize(headers))
-    do
+         {:ok, results} <- parse(body, normalize(headers)) do
       {:ok, %Furlex{
-        canonical_url: canonical_url(body, url),
+        canonical_url: url,
         oembed: oembed,
         facebook: results.facebook,
         twitter: results.twitter,
