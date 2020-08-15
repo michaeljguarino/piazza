@@ -68,6 +68,7 @@ defmodule Core.Models.File do
     end
   end
 
+  defp infer_media_type(["image", "svg" <> _]), do: :other
   defp infer_media_type(["image", _]),  do: :image
   defp infer_media_type(["video", _]), do: :video
   defp infer_media_type([_, "pdf"]), do: :pdf
