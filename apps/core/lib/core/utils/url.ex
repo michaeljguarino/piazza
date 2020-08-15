@@ -10,7 +10,7 @@ defmodule Core.Utils.Url do
 
   def unfurl(url, opts \\ []) do
     with {:ok, {body, headers, status_code}, oembed} <- fetch(url, opts),
-         {:ok, results} <- parse(body, Map.new(headers))
+         {:ok, results} <- parse(body, normalize(headers))
     do
       {:ok, %Furlex{
         canonical_url: canonical_url(body, url),
@@ -41,8 +41,8 @@ defmodule Core.Utils.Url do
   end
 
   defp intelligent_fetch(url, opts) do
-    with {:ok, %{headers: headers, status_code: code}} <- Mojito.head(url, [], [pool: false] ++ opts),
-         :stop <- proceed(Map.new(headers)) do
+    with {:ok, %{headers: headers, status_code: code}} <- HTTPoison.head(url, [], opts),
+         :stop <- proceed(code, normalize(headers)) do
       {:ok, "", headers, code}
     else
       :continue -> do_fetch(url, opts)
@@ -51,7 +51,7 @@ defmodule Core.Utils.Url do
   end
 
   defp do_fetch(url, opts) do
-    case Mojito.get(url, [], [pool: false] ++ opts) do
+    case HTTPoison.get(url, [], opts) do
       {:ok, %{body: body, headers: headers, status_code: status_code}} -> {:ok, body, headers, status_code}
       other -> other
     end
@@ -77,8 +77,8 @@ defmodule Core.Utils.Url do
     end
   end
 
-  defp proceed(%{"content-type" => "text/html" <> _}), do: :continue
-  defp proceed(_), do: :stop
+  defp proceed(_, %{"content-type" => "text/html" <> _}), do: :continue
+  defp proceed(_, _), do: :stop
 
   defp parse(body, %{"content-type" => "text/html" <> _}) do
     parse = &Task.async(&1, :parse, [ body ])
@@ -112,5 +112,9 @@ defmodule Core.Utils.Url do
       url when is_binary(url) -> url
       _ -> url
     end
+  end
+
+  defp normalize(headers) do
+    Enum.into(headers, %{}, fn {h, v} -> {String.downcase(h), v} end)
   end
 end

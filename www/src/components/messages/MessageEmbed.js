@@ -61,8 +61,7 @@ export default function MessageEmbed({title, description, publisher, logo, url, 
       <Box round='xxsmall' direction='column' align='start' pad={{horizontal: 'small', vertical: 'xsmall'}}
            border={{side: 'left', color: 'light-6', size: '3px'}}>
         <Publisher publisher={publisher} logo={logo} />
-        <Anchor size='small' target='blank' style={{fontWeight: 500}} href={url}
-           margin={publisher ? {top: 'xxsmall'} : null}>
+        <Anchor size='small' target='blank' style={{fontWeight: 500}} href={url} margin={publisher ? {top: 'xxsmall'} : null}>
           {title}
         </Anchor>
         <Box margin={{top: 'xxsmall', bottom: 'small'}}>

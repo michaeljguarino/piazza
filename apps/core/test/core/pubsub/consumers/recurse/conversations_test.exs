@@ -38,7 +38,6 @@ defmodule Core.PubSub.Consumers.Recurse.ConversationsTest do
       assert new_message.embed.url
       assert new_message.embed.description
       assert new_message.embed.title
-      assert new_message.embed.author
     end
 
     test "It will process custom unfurlers" do
@@ -86,7 +85,7 @@ defmodule Core.PubSub.Consumers.Recurse.ConversationsTest do
       event = %PubSub.MessageCreated{item: message, actor: message.creator}
       {:ok, new_msg} = Recurse.handle_event(event)
 
-      assert new_msg.embed.type == :site
+      assert new_msg.embed.type == :image
       assert new_msg.embed.image_url
       assert new_msg.embed.title
       assert new_msg.embed.description
@@ -122,6 +121,14 @@ defmodule Core.PubSub.Consumers.Recurse.ConversationsTest do
 
     test "it can handle exotic urls" do
       message = insert(:message, text: "https://www.dezeen.com/2020/05/22/christophe-gernigon-plex-eat-coronavirus-face-shield-dining-design/")
+      event = %PubSub.MessageCreated{item: message, actor: message.creator}
+      {:ok, new_msg} = Recurse.handle_event(event)
+
+      assert new_msg.embed.type == :image
+    end
+
+    test "It can handle a redirect url" do
+      message = insert(:message, text: "https://www.zerohedge.com/energy/california-forced-rolling-blackouts-heatwave-sparks-energy-shortfall")
       event = %PubSub.MessageCreated{item: message, actor: message.creator}
       {:ok, new_msg} = Recurse.handle_event(event)
 
