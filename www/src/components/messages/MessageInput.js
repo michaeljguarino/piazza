@@ -22,7 +22,7 @@ import { useEditor } from '../utils/hooks'
 import { Editor, Transforms } from 'slate'
 import { SyncLoader } from 'react-spinners'
 import { normalizeColor } from 'grommet/utils'
-import { Send } from '../utils/icons'
+import { Send, SendNew } from '../utils/icons'
 import fs from 'filesize'
 import { Control } from './MessageControls'
 
@@ -106,7 +106,7 @@ function SendMsg({empty, onClick}) {
     <Box flex={false} focusIndicator={false} margin='4px' height='35px'
       width="35px" round='xxsmall' align='center' justify='center'
       onClick={empty ? null : onClick} background={empty ? null : 'action'} >
-      <Send size='15px' color={empty ? 'light-3' : 'white'} />
+      <SendNew size='23px' color={empty ? 'light-3' : 'white'} />
     </Box>
   )
 }
