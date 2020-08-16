@@ -11,10 +11,12 @@ defmodule Core.Models.Embed.Parser do
 
   def title(%Furlex{facebook: %{"og:title" => title}}, _), do: title
   def title(%Furlex{twitter: %{"twitter:title" => title}}, _), do: title
+  def title(%Furlex{json_ld: [%{"name" => name} | _]}, _), do: name
   def title(_, _), do: nil
 
   def description(%Furlex{facebook: %{"og:description" => desc}}, _), do: desc
   def description(%Furlex{twitter: %{"twitter:description" => desc}}, _), do: desc
+  def description(%Furlex{json_ld: [%{"headline" => desc}]}, _), do: desc
   def description(_, _), do: nil
 
   def image_url(%Furlex{facebook: %{"og:image" => im}}, %{url: url}), do: localize(im, url)

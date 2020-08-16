@@ -143,5 +143,16 @@ defmodule Core.PubSub.Consumers.Recurse.ConversationsTest do
 
       assert new_msg.embed.type == :image
     end
+
+    test "it can handle wikipedia" do
+      message = insert(:message, text: "https://en.wikipedia.org/wiki/Mission_District,_San_Francisco")
+
+      event = %PubSub.MessageCreated{item: message, actor: message.creator}
+      {:ok, new_msg} = Recurse.handle_event(event)
+
+      assert new_msg.embed.type == :image
+      assert new_msg.embed.title
+      assert new_msg.embed.description
+    end
   end
 end
