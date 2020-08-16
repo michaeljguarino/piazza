@@ -39,9 +39,10 @@ const WithEntities = React.memo(({text, entities}) => {
       components={{
         MessageEntity: {component: Entity},
         p: {props: {size: 'small', margin: {top: 'xsmall', bottom: 'xsmall'}}},
-        a: {props: {size: 'small', target: '_blank'}, component: Anchor}
+        a: {props: {size: 'small', target: '_blank'}, component: Anchor},
+        span: {props: {style: {verticalAlign: 'bottom'}}}
       }}>
-    {parsed}
+     {parsed}
     </Markdown>
   )
 })
@@ -63,6 +64,8 @@ function* splitText(text, entities) {
   }
 }
 
+const RIGHT_MARGIN = '3px'
+
 function CustomEmoji({emoji: {imageUrl, name}, size}) {
   const targetRef = useRef()
   const [open, setOpen] = useState(false)
@@ -73,6 +76,9 @@ function CustomEmoji({emoji: {imageUrl, name}, size}) {
       onMouseEnter={() => setOpen(true)}
       onMouseLeave={() => setOpen(false)}
       style={{
+          marginRight: RIGHT_MARGIN,
+          marginLeft: RIGHT_MARGIN,
+          display: 'inline-block',
           backgroundImage: `url("${imageUrl}")`,
           width: `${size}px`,
           height: `${size}px`,
@@ -93,7 +99,8 @@ export function StandardEmoji({name, size}) {
   const [open, setOpen] = useState(false)
   return (
     <>
-    <span style={{lineHeight: `0px`}} ref={targetRef} onMouseEnter={() => setOpen(true)} onMouseLeave={() => setOpen(false)}>
+    <span style={{display: 'inline-block', lineHeight: '0px', height: `${size}px`, marginRight: RIGHT_MARGIN, marginLeft: RIGHT_MARGIN}}
+      ref={targetRef} onMouseEnter={() => setOpen(true)} onMouseLeave={() => setOpen(false)}>
       <Emoji forceSize set='google' emoji={name} size={size} />
     </span>
     {open && (
@@ -105,9 +112,11 @@ export function StandardEmoji({name, size}) {
   )
 }
 
+const EMOJI_SIZE = 20
+
 export function MessageEmoji({entity: {emoji, text}}) {
-  if (emoji && emoji.imageUrl) return <CustomEmoji emoji={emoji} size={18} />
-  return <StandardEmoji name={text} size={18} />
+  if (emoji && emoji.imageUrl) return <CustomEmoji emoji={emoji} size={EMOJI_SIZE} />
+  return <StandardEmoji name={text} size={EMOJI_SIZE} />
 }
 
 function MessageEntity({entity}) {
