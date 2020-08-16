@@ -1,4 +1,4 @@
-import React, { useState, useRef, useContext, useCallback, useEffect } from 'react'
+import React, { useState, useRef, useContext, useCallback, useEffect, useMemo } from 'react'
 import { Box, Text, Markdown, Stack, Anchor } from 'grommet'
 import { Pin } from 'grommet-icons'
 import { TooltipContent, Divider, BotIcon } from 'forge-core'
@@ -22,54 +22,44 @@ import { sortBy } from 'lodash'
 
 function TextMessage({text, entities}) {
   return (
-    <Text size='small'>
-      <WithEntities text={text} entities={entities} />
-    </Text>
+    <WithEntities text={text} entities={entities} />
   )
 }
 
 const PINNED_BACKGROUND='rgba(var(--sk_secondary_highlight,242,199,68),.1)'
 const PIN_COLOR='rgb(242,199,68)'
 
-function MsgMarkdown({children}) {
+const WithEntities = React.memo(({text, entities}) => {
+  const parsed = [...splitText(text, entities)].join('')
+  const entityMap = entities.reduce((map, entity) => ({...map, [entity.id]: entity}), {})
+  const Entity = ({id}) => <MessageEntity entity={entityMap[id]} />
+
   return (
     <Markdown
       components={{
+        MessageEntity: {component: Entity},
         p: {props: {size: 'small', margin: {top: 'xsmall', bottom: 'xsmall'}}},
         a: {props: {size: 'small', target: '_blank'}, component: Anchor}
       }}>
-    {children}
+    {parsed}
     </Markdown>
-  )
-}
-
-const WithEntities = React.memo(({text, entities}) => {
-  if (!entities || entities.length === 0) return (
-    <MsgMarkdown>{text}</MsgMarkdown>
-  )
-  return (
-    <Box direction='row' align='center' gap='xsmall'>
-      {Array.from(splitText(text, entities))}
-    </Box>
   )
 })
 
 function* splitText(text, entities) {
   let lastIndex = 0
-  let count = 0
   const sorted = sortBy(entities, ({startIndex}) => startIndex)
   for (let entity of sorted) {
     const upTo = text.substring(lastIndex, entity.startIndex)
     if (upTo !== '') {
-      yield <MsgMarkdown key={count}>{upTo}</MsgMarkdown>
-      count++
+      yield upTo
     }
-    yield <MessageEntity key={count} entity={entity} />
-    count++
+    yield `<MessageEntity id="${entity.id}" />`
     lastIndex = entity.startIndex + entity.length
   }
+
   if (lastIndex < text.length) {
-    yield (<MsgMarkdown key={count}>{text.substring(lastIndex)}</MsgMarkdown>)
+    yield text.substring(lastIndex)
   }
 }
 
@@ -103,9 +93,8 @@ export function StandardEmoji({name, size}) {
   const [open, setOpen] = useState(false)
   return (
     <>
-    <span style={{lineHeight: '0px'}} ref={targetRef} onMouseEnter={() => setOpen(true)}
-      onMouseLeave={() => setOpen(false)}>
-    <Emoji set='google' emoji={name} size={size} />
+    <span style={{lineHeight: `0px`}} ref={targetRef} onMouseEnter={() => setOpen(true)} onMouseLeave={() => setOpen(false)}>
+      <Emoji forceSize set='google' emoji={name} size={size} />
     </span>
     {open && (
       <TooltipContent targetRef={targetRef}>
@@ -118,7 +107,7 @@ export function StandardEmoji({name, size}) {
 
 export function MessageEmoji({entity: {emoji, text}}) {
   if (emoji && emoji.imageUrl) return <CustomEmoji emoji={emoji} size={18} />
-  return <StandardEmoji name={text} size={19} />
+  return <StandardEmoji name={text} size={18} />
 }
 
 function MessageEntity({entity}) {

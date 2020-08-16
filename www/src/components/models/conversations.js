@@ -83,6 +83,7 @@ export const MessageSubFragment = gql`
     structuredMessage
     conversationId
     entities {
+      id
       type
       startIndex
       length
