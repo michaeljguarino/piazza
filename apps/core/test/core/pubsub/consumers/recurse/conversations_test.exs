@@ -134,5 +134,14 @@ defmodule Core.PubSub.Consumers.Recurse.ConversationsTest do
 
       assert new_msg.embed.type == :image
     end
+
+    test "it can handle this url" do
+      message = insert(:message, text: "https://material.io/design/foundation-overview")
+
+      event = %PubSub.MessageCreated{item: message, actor: message.creator}
+      {:ok, new_msg} = Recurse.handle_event(event)
+
+      assert new_msg.embed.type == :image
+    end
   end
 end

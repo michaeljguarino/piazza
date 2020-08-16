@@ -17,13 +17,13 @@ defmodule Core.Models.Embed.Parser do
   def description(%Furlex{twitter: %{"twitter:description" => desc}}, _), do: desc
   def description(_, _), do: nil
 
-  def image_url(%Furlex{facebook: %{"og:image" => url}}, _), do: url
-  def image_url(%Furlex{twitter: %{"twitter:image" => url}}, _), do: url
-  def image_url(%Furlex{json_ld: [%{"image" => %{"url" => url}} | _]}, _), do: url
+  def image_url(%Furlex{facebook: %{"og:image" => im}}, %{url: url}), do: localize(im, url)
+  def image_url(%Furlex{twitter: %{"twitter:image" => im}}, %{url: url}), do: localize(im, url)
+  def image_url(%Furlex{json_ld: [%{"image" => %{"url" => im}} | _]}, %{url: url}), do: localize(im, url)
   def image_url(_, _), do: nil
 
 
-  def video_url(%Furlex{facebook: %{"og:video:url" => url}}, _), do: url
+  def video_url(%Furlex{facebook: %{"og:video:url" => vid}}, %{url: url}), do: localize(vid, url)
   def video_url(_, _), do: nil
 
   def video_type(%Furlex{facebook: attrs}, %{type: :video}), do: __video_type(attrs["og:type"], attrs["og:video:type"])
@@ -59,4 +59,11 @@ defmodule Core.Models.Embed.Parser do
       _ -> :other
     end
   end
+
+  defp localize("/" <> _ = path, url) do
+    %URI{} = uri = URI.parse(url)
+    URI.merge(%{uri | path: "/", query: nil}, path)
+    |> to_string()
+  end
+  defp localize(url, _), do: url
 end

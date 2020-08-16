@@ -27,7 +27,7 @@ defmodule Core.Models.Embed do
   def changeset(model, attrs \\ %{}) do
     model
     |> cast(attrs, @valid)
-    |> validate_required([:type, :url])
+    |> validate_required([:type, :url, :title])
   end
 
   @fields ~w(type title description publisher logo image_url video_url video_type)a
@@ -40,10 +40,16 @@ defmodule Core.Models.Embed do
       |> ok()
     end
   end
-  def from_furlex({:plain, url}), do: {:ok, %{type: type_from_ext(url), url: url}}
+  def from_furlex({:plain, url}) do
+    case type_from_ext(url) do
+      :image -> {:ok, %{type: :image, url: url, title: url, image_url: url}}
+      :video -> {:ok, %{type: :video, url: url, title: url, video_url: url}}
+      _ -> {:error, :noembed}
+    end
+  end
   def from_furlex(_), do: {:error, :noembed}
 
-  def type_from_ext(url) do
+  defp type_from_ext(url) do
     case Path.extname(url) do
       ".gif"  -> :image
       ".jpeg" -> :image
@@ -52,7 +58,7 @@ defmodule Core.Models.Embed do
       ".mp4"  -> :video
       ".mp3"  -> :video
       ".webm" -> :video
-      _       -> :attachment
+      _       -> :ignore
     end
   end
 end

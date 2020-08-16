@@ -50,7 +50,7 @@ defmodule Core.Utils.Url do
   end
 
   defp do_fetch(url, opts) do
-    case HTTPoison.get(url, [], opts) do
+    case HTTPoison.get(url, [], opts ++ [follow_redirect: true]) do
       {:ok, %{body: body, headers: headers, status_code: status_code}} -> {:ok, body, headers, status_code}
       other -> other
     end
@@ -76,6 +76,7 @@ defmodule Core.Utils.Url do
     end
   end
 
+  defp proceed(405, _), do: :continue
   defp proceed(_, %{"content-type" => "text/html" <> _}), do: :continue
   defp proceed(_, _), do: :stop
 
@@ -105,13 +106,6 @@ defmodule Core.Utils.Url do
     end
   end
   defp parse(_, _), do: :plain
-
-  defp canonical_url(body, url) do
-    case Furlex.Parser.extract_canonical(body) do
-      url when is_binary(url) -> url
-      _ -> url
-    end
-  end
 
   defp normalize(headers) do
     Enum.into(headers, %{}, fn {h, v} -> {String.downcase(h), v} end)
