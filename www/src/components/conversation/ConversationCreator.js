@@ -10,20 +10,22 @@ import ConversationSearch from './ConversationSearch'
 import { CONTEXT_Q } from '../login/queries'
 import { Conversations } from '../login/MyConversations'
 
-function ConversationForm({setOpen, setCurrentConversation}) {
-  const {workspaceId} = useContext(Conversations)
+function ConversationForm({setOpen}) {
+  const {workspaceId, setCurrentConversation} = useContext(Conversations)
   const [state, setState] = useState({public: true})
   const [mutation, {loading}] = useMutation(CREATE_CONVERSATION, {
     variables: {attributes: {workspaceId, ...state}},
     update: (cache, { data: { createConversation } }) => {
-      setCurrentConversation(createConversation)
       const prev = cache.readQuery({ query: CONTEXT_Q, variables: {workspaceId} });
       cache.writeQuery({
         query: CONTEXT_Q,
         variables: {workspaceId},
-        data: addConversation(prev, createConversation)
+        data: addConversation(prev, createConversation, workspaceId)
       });
+    },
+    onCompleted: ({createConversation}) => {
       setOpen(false)
+      setCurrentConversation(createConversation)
     }
   })
 
