@@ -32,7 +32,12 @@ defmodule Core.Services.Invites do
   @spec realize(Invite.t, User.t) :: {:ok, Participant.t} | error
   def realize(%Invite{type: :conversation, reference: reference} = invite, %User{id: user_id}) do
     %{creator: creator} = Core.Repo.preload(invite, [:creator])
-    Conversations.create_participant(%{user_id: user_id, conversation_id: reference}, creator)
+    start_transaction()
+    |> add_operation(:participant, fn _ ->
+      Conversations.create_participant(%{user_id: user_id, conversation_id: reference}, creator)
+    end)
+    |> add_operation(:invite, fn _ -> Core.Repo.delete(invite) end)
+    |> execute(extract: :participant)
   end
 
   @doc "Token for this invite"

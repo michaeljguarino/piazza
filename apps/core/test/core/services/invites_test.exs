@@ -30,6 +30,8 @@ defmodule Core.Services.InvitesTest do
 
       assert participant.user_id == invitee.id
       assert participant.conversation_id == conv.id
+
+      refute refetch(invite)
     end
   end
 end

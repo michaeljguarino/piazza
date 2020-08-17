@@ -99,7 +99,7 @@ export function StandardEmoji({name, size}) {
   const [open, setOpen] = useState(false)
   return (
     <>
-    <span style={{display: 'inline-block', lineHeight: '0px', height: `${size}px`, marginRight: RIGHT_MARGIN, marginLeft: RIGHT_MARGIN}}
+    <span style={{display: 'inline-block', alignItems: 'center', height: `${size}px`, lineHeight: '0px', marginRight: RIGHT_MARGIN, marginLeft: RIGHT_MARGIN}}
       ref={targetRef} onMouseEnter={() => setOpen(true)} onMouseLeave={() => setOpen(false)}>
       <Emoji forceSize set='google' emoji={name} size={size} />
     </span>
@@ -112,7 +112,7 @@ export function StandardEmoji({name, size}) {
   )
 }
 
-const EMOJI_SIZE = 20
+const EMOJI_SIZE = 18
 
 export function MessageEmoji({entity: {emoji, text}}) {
   if (emoji && emoji.imageUrl) return <CustomEmoji emoji={emoji} size={EMOJI_SIZE} />

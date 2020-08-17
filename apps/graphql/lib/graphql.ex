@@ -159,6 +159,12 @@ defmodule GraphQl do
 
       resolve &Platform.list_installable_commands/2
     end
+
+    field :invite, :invite do
+      arg :id, non_null(:id)
+
+      resolve &Invite.resolve_invite/2
+    end
   end
 
   mutation do
