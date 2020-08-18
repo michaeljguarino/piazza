@@ -1,11 +1,11 @@
 import React, { useContext, useState, useRef, useCallback } from 'react'
 import { Box, Text, Drop, ThemeContext, Layer } from 'grommet'
-import { Modal, ModalHeader, Button, InputField, HoveredBackground } from 'forge-core'
+import { Loading, ModalHeader, Button, InputField, HoveredBackground } from 'forge-core'
 import { WorkspaceContext } from '../Workspace'
 import { Conversations } from '../login/MyConversations'
 import { Edit, Add } from 'grommet-icons'
-import { useMutation } from 'react-apollo'
-import { UPDATE_WORKSPACE, CREATE_WORKSPACE } from './queries'
+import { useMutation, useQuery } from 'react-apollo'
+import { UPDATE_WORKSPACE, CREATE_WORKSPACE, WORKSPACE_Q } from './queries'
 import { CurrentUserContext } from '../login/EnsureLogin'
 import { NotificationBadge } from '../conversation/Conversation'
 import { addWorkspace } from './utils'
@@ -159,31 +159,32 @@ function CreateTarget({onClick}) {
   )
 }
 
-function WorkspaceDropdown({dropRef, workspaces, setOpen, workspaceId, setWorkspace, setModal}) {
+function WorkspaceDropdown({workspaceId, setWorkspace, setModal}) {
   const me = useContext(CurrentUserContext)
+  const {data} = useQuery(WORKSPACE_Q, {fetchPolicy: 'cache-and-network'})
+
+  if (!data) return (<Box width='300px' height='100px'><Loading /></Box>)
 
   return (
-    <Drop target={dropRef.current} align={{bottom: 'top'}} onClickOutside={() => setOpen(false)}>
-      <Box width='300px' pad={{vertical: 'small'}}>
-        <Box fill='horizontal' margin='small' direction='row'>
-          <Text size='small' style={{fontWeight: 500}}>Switch Workspaces</Text>
-        </Box>
-        {workspaces.map((workspace) => (
-          <Workspace
-            key={workspace.id}
-            me={me}
-            workspaceId={workspaceId}
-            workspace={workspace}
-            setWorkspace={setWorkspace}
-            setModal={setModal} />
-        ))}
-        {me.roles && me.roles.admin && (
-          <CreateTarget onClick={() => setModal(
-            <CreateWorkspace setOpen={setModal} />
-          )} />
-        )}
+    <Box width='300px' pad={{vertical: 'small'}}>
+      <Box fill='horizontal' margin='small' direction='row'>
+        <Text size='small' weight={500}>Switch Workspaces</Text>
       </Box>
-    </Drop>
+      {data.workspaces.edges.map(({node: workspace}) => (
+        <Workspace
+          key={workspace.id}
+          me={me}
+          workspaceId={workspaceId}
+          workspace={workspace}
+          setWorkspace={setWorkspace}
+          setModal={setModal} />
+      ))}
+      {me.roles && me.roles.admin && (
+        <CreateTarget onClick={() => setModal(
+          <CreateWorkspace setOpen={setModal} />
+        )} />
+      )}
+    </Box>
   )
 }
 
@@ -204,13 +205,13 @@ export default function Workspaces({pad}) {
   return (
     <ThemeContext.Extend value={{layer: {zIndex: 25}}}>
       {open && (
-        <WorkspaceDropdown
-          dropRef={dropRef}
-          workspaceId={workspaceId}
-          setWorkspace={setWorkspace}
-          workspaces={workspaces}
-          setOpen={doSetOpen}
-          setModal={setModal} />
+        <Drop target={dropRef.current} align={{bottom: 'top'}} onClickOutside={() => setOpen(false)}>
+          <WorkspaceDropdown
+            workspaceId={workspaceId}
+            setWorkspace={setWorkspace}
+            setOpen={doSetOpen}
+            setModal={setModal} />
+        </Drop>
       )}
       <HoveredBackground>
         <Box ref={dropRef} sidebarHover accentText onClick={() => setOpen(!open)}
