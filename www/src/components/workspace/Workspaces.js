@@ -1,4 +1,4 @@
-import React, { useContext, useState, useRef } from 'react'
+import React, { useContext, useState, useRef, useCallback } from 'react'
 import { Box, Text, Drop, ThemeContext, Layer } from 'grommet'
 import { Modal, ModalHeader, Button, InputField, HoveredBackground } from 'forge-core'
 import { WorkspaceContext } from '../Workspace'
@@ -98,14 +98,12 @@ function UploadableIcon({workspace}) {
   )
 }
 
-function Workspace({workspace, workspaceId, me, setWorkspace}) {
+function Workspace({workspace, workspaceId, me, setWorkspace, setModal}) {
   const [hover, setHover] = useState(false)
-  const [open, setOpen] = useState(false)
   const selected = workspace.id === workspaceId
   const admin = me.roles && me.roles.admin
 
   return (
-    <>
     <Box
       direction='row'
       justify='end'
@@ -134,19 +132,17 @@ function Workspace({workspace, workspaceId, me, setWorkspace}) {
             onClick={(e) => {
               e.preventDefault()
               e.stopPropagation()
-              setOpen(true)
+              setModal(
+                <Layer modal onClickOutside={() => setModal(null)}>
+                  <EditWorkspace workspace={workspace} setOpen={setModal} />
+                </Layer>
+              )
             }}>
             <Edit size='14px' />
           </Box>
         </HoveredBackground>
       )}
     </Box>
-    {open && (
-      <Layer modal onClickOutside={() => setOpen(false)}>
-        <EditWorkspace workspace={workspace} setOpen={setOpen} />
-      </Layer>
-    )}
-    </>
   )
 }
 
@@ -178,7 +174,8 @@ function WorkspaceDropdown({dropRef, workspaces, setOpen, workspaceId, setWorksp
             me={me}
             workspaceId={workspaceId}
             workspace={workspace}
-            setWorkspace={setWorkspace} />
+            setWorkspace={setWorkspace}
+            setModal={setModal} />
         ))}
         {me.roles && me.roles.admin && (
           <CreateTarget onClick={() => setModal(
@@ -202,6 +199,7 @@ export default function Workspaces({pad}) {
   const current = workspaces.find(({id}) => id === workspaceId)
   const notifs = workspaces.filter(({id}) => id !== workspaceId)
                   .reduce((sum, {unreadNotifications}) => sum + (unreadNotifications || 0), 0)
+  const doSetOpen = useCallback((o) => modal ? null : setOpen(o), [modal, setOpen])
 
   return (
     <ThemeContext.Extend value={{layer: {zIndex: 25}}}>
@@ -211,7 +209,7 @@ export default function Workspaces({pad}) {
           workspaceId={workspaceId}
           setWorkspace={setWorkspace}
           workspaces={workspaces}
-          setOpen={setOpen}
+          setOpen={doSetOpen}
           setModal={setModal} />
       )}
       <HoveredBackground>
