@@ -80,7 +80,7 @@ const buildItemData = memoize((setSize, mapper, isItemLoaded, items, listRef, wi
 ))
 
 export default function SmoothScroller({
-  hasNextPage, scrollTo, placeholder, loading, items, loadNextPage, mapper, listRef, setListRef, handleScroll, refreshKey, keyFn, ...props}) {
+  hasNextPage, scrollTo, setLoader, placeholder, loading, items, loadNextPage, mapper, listRef, setListRef, handleScroll, refreshKey, keyFn, ...props}) {
   const sizeMap = useRef({});
   const mounted = useRef(false)
   const loader  = useRef()
@@ -98,6 +98,7 @@ export default function SmoothScroller({
 
   useEffect(() => {
     if (loader.current && mounted.current) {
+      setLoader(loader.current)
       loader.current.resetloadMoreItemsCache()
     }
     mounted.current = true

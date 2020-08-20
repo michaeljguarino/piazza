@@ -116,6 +116,7 @@ function ReturnToBeginning({listRef}) {
 
 export default function MessageList() {
   const [listRef, setListRef] = useState(null)
+  const [loader, setLoader] = useState(null)
   const [scrolled, setScrolled] = useState(false)
   const {currentConversation, waterline} = useContext(Conversations)
   const {setReply} = useContext(ReplyContext)
@@ -132,7 +133,6 @@ export default function MessageList() {
     setScrolled(false)
   }, [currentConversation.id])
   const refreshList = useCallback(() => {
-    console.log(listRef)
     listRef && listRef.resetAfterIndex(0, true)
   }, [listRef])
 
@@ -157,12 +157,14 @@ export default function MessageList() {
     {status => status !== OFFLINE ? <BackOnline refetch={() => {
       listRef && listRef.scrollToItem(0)
       refetch()
+      loader && loader.resetloadMoreItemsCache()
     }} status={status} /> : <Offline />}
     </AvailabilityDetector>
     <Box width='100%' height='100%' ref={parentRef}>
       <div style={{ flex: '1 1 auto' }}>
       <SmoothScroller
         listRef={listRef}
+        setLoader={setLoader}
         setListRef={setListRef}
         hasNextPage={pageInfo.hasNextPage}
         loading={loading}
