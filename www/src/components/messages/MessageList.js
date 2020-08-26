@@ -66,13 +66,13 @@ function sizeEstimate({embed, file, structuredMessage}) {
   return 75
 }
 
-function Pariticipants({participants}) {
+function Participants({participants}) {
   const me = useContext(CurrentUserContext)
   return (
     <Box direction='row' gap='xsmall' margin={{bottom: 'small'}}>
       {participants
         .filter(({user: {id}}) => id !== me.id)
-        .map(({user}) => <Avatar user={user} size='40px' />)}
+        .map(({user}) => <Avatar key={user.id} user={user} size='40px' />)}
     </Box>
   )
 }
@@ -84,7 +84,7 @@ export function Prelude({conversation}) {
 
   return (
     <Box pad='medium' flex={false}>
-      {conversation.chat && <Pariticipants participants={conversation.chatParticipants} />}
+      {conversation.chat && <Participants participants={conversation.chatParticipants} />}
       <Box fill='horizontal' gap='xsmall' justify='center'>
         <Text weight='bold'>This is the beginning of {fullname}</Text>
         <Box>

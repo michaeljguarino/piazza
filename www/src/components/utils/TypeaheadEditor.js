@@ -172,7 +172,6 @@ const insertMention = (editor, val) => {
 
 const Element = props => {
   const { attributes, children, element } = props
-  console.log(element)
   switch (element.type) {
     case 'mention':
       return <MentionElement {...props} />

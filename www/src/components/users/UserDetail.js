@@ -1,11 +1,15 @@
 import React, { useContext } from 'react'
 import { Box, Text } from 'grommet'
-import { FlyoutHeader, FlyoutContainer } from 'forge-core'
+import { FlyoutHeader, FlyoutContainer, Button } from 'forge-core'
 import Avatar from './Avatar'
 import CreateChat from '../conversation/CreateChat'
 import { CurrentUserContext } from '../login/EnsureLogin'
 
-export default function UserDetail({user, onChat, setOpen}) {
+const ChatButton = ({loading, onClick}) => (
+  <Button loading={loading} onClick={onClick} label='Create chat' />
+)
+
+export default function UserDetail({user, setOpen}) {
   const me = useContext(CurrentUserContext)
   return (
     <FlyoutContainer width='30vw'>
@@ -17,9 +21,6 @@ export default function UserDetail({user, onChat, setOpen}) {
             <Text>{user.name}</Text>
             <Box direction='row' align='center' gap='xsmall'>
               <Text size='small'>@{user.handle}</Text>
-              {user.id !== me.id && (
-                <CreateChat user={user} onChat={onChat} />
-              )}
             </Box>
             <Text size='small' color='dark-6'>{user.title}</Text>
           </Box>
@@ -43,6 +44,11 @@ export default function UserDetail({user, onChat, setOpen}) {
             <Text size='small'>{user.bio || 'A man of few words'}</Text>
           </Box>
         )}
+        </Box>
+        <Box pad='small'>
+          {user.id !== me.id && (
+            <CreateChat user={user} onChat={() => setOpen(false)} target={ChatButton} />
+          )}
         </Box>
       </Box>
     </FlyoutContainer>

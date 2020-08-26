@@ -185,7 +185,7 @@ function MessageBody({message, conversation, next, editing, setEditing, dialog, 
   const formattedDate = date.format(DATE_PATTERN)
 
   useEffect(() => {
-    if (!consecutive && painted) {
+    if (consecutive !== painted) {
       setSize()
     }
     setPainted(consecutive)
@@ -272,7 +272,7 @@ function DateDivider({waterline, message, next, setSize}) {
   const [painted, setPainted] = useState(!same)
 
   useEffect(() => {
-    if (!same && painted) {
+    if (!same === painted) {
       setSize()
     }
     setPainted(!same)

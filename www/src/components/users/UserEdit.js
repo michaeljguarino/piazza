@@ -81,7 +81,6 @@ function ViewSwitch({me, view, attributes, setAttributes}) {
 
 function UserEditInner() {
   const me = useContext(CurrentUserContext)
-  console.log(me)
   let history = useHistory()
   const [attributes, setAttributes] = useState(userFields(me))
   const [{view, header}, setView] = useState({view: VIEWS.ATTRIBUTES, header: 'Edit Attributes'})

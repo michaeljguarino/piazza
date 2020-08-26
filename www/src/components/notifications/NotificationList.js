@@ -29,7 +29,6 @@ export default function NotificationList({edges, pageInfo, setCurrentConversatio
       onLoadMore={() => pageInfo.hasNextPage && fetchMore({
         variables: {cursor: pageInfo.endCursor},
         updateQuery: (prev, {fetchMoreResult: {notifications: {edges, pageInfo}}}) => {
-          console.log(edges)
           return {...prev, notifications: {
               ...prev.notifications,
               pageInfo,
