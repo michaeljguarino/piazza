@@ -1,0 +1,16 @@
+artifact: {}
+terraform:
+  terraform/gcp: h1:g7rNntYJ/y3ZBD6B9VSru0ykxD1NTGYG6/jtgDmYrDU=
+helm:
+  charts/piazza: h1:eTH7XFS8jeM56TNGxDMc94qzFDYg5aJ/XQoGcyo03ns=
+recipe:
+  forge/recipes/piazza-gcp.yaml: 8a77c00ff84f49d5942e8b8191921a5df61364786117ec3f330cc1df54923632
+integration:
+  forge/integrations/github.yml: 49ca18ffc6c719f9bfa16ec182791d4427596d8f86f5a3f47ba3d4d58338ce80
+  forge/integrations/semaphore.yml: 62909e303cca3ca42784dcc830f0f14468226670575009d31a8be6ff41501897
+  forge/integrations/silo.yml: 4edfea28b9469dbe04948fb5f30b98c7fd7c19b5855f1f27aeef40d3e73c75eb
+  forge/integrations/watchman.yml: a0695ed256baa28509d960631cc0e7754b79cfc06cba2b54e18273b71d32db67
+shell:
+  forge/ops/shell.yaml: fe7b9eb76b3bd81e02acecc9f036697788e67c5a4b3b22c47e38f48f575c6c63
+database:
+  forge/ops/database.yaml: 0935f5fcc7b8f5d9a0b1f523d420e4b3fdbe7c11062b3357f925fe3c57149c3f

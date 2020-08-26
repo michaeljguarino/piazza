@@ -1,6 +1,7 @@
 name: piazza-gcp
 description: Installs everything needed for piazza to run on GCP
 provider: GCP
+dependencies: []
 sections:
 - name: bootstrap
   items:

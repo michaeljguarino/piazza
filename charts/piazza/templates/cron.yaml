@@ -40,7 +40,7 @@ spec:
             - name: HOST
               value: {{ .Values.ingress.dns }}
             - name: DEPLOYED_AT
-              value: {{ .Release.Time }}
+              value: {{ now | unixEpoch | quote }}
             - name: NAMESPACE
               valueFrom:
                 fieldRef:
