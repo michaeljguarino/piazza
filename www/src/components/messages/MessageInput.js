@@ -76,7 +76,7 @@ function fetchRecentMessage(cache, setEdited, me, conversation) {
 
 function InputFooter({typists, me: {handle}}) {
   return (
-    <Box style={{height: '25px'}} pad={{top: '2px', bottom: '2px'}} align='center' direction='row' fill='horizontal'>
+    <Box style={{height: '30px'}} pad={{top: '2px', bottom: '2px'}} align='center' direction='row' fill='horizontal'>
       <Box flex={false} width='calc(100% - 600px)' margin={{left: 'small'}}>
         <Typing typists={typists} ignore={handle} />
       </Box>
@@ -193,7 +193,7 @@ function MessageInputInner({editor, attachment, setAttachment, conversation, set
           plainSerialize(editorState) === '' && fetchRecentMessage(
             cache,  setEdited, me, conversation)
         )}>
-        <Box border={{color: 'dark-3'}} fill='horizontal' height='calc(100%-20px)'
+        <Box border={{color: 'dark-3'}} fill='horizontal' height='calc(100%-25px)'
              direction="row" align="center" round='xsmall'>
           <MentionManager
             parentRef={boxRef}
