@@ -1,7 +1,7 @@
 import React, { useState, useRef, useContext, useCallback, useEffect, useMemo } from 'react'
-import { Box, Text, Markdown, Stack, Anchor } from 'grommet'
+import { Box, Text, Markdown, Stack, Anchor, Drop } from 'grommet'
 import { Pin } from 'grommet-icons'
-import { TooltipContent, Divider, BotIcon } from 'forge-core'
+import { TooltipContent, Divider, BotIcon, FlyoutContext } from 'forge-core'
 import Avatar from '../users/Avatar'
 import moment from 'moment'
 import MessageEmbed from './MessageEmbed'
@@ -18,6 +18,9 @@ import { Emoji } from 'emoji-mart'
 import './message.css'
 import { Status } from '../users/UserStatus'
 import { sortBy } from 'lodash'
+import { DropdownItem } from '../users/Me'
+import UserDetail from '../users/UserDetail'
+import CreateChat from '../conversation/CreateChat'
 
 
 function TextMessage({text, entities}) {
@@ -178,6 +181,40 @@ function sameDay(message, next) {
 
 const DATE_PATTERN = 'h:mm a'
 
+function MessageAvatar({creator}) {
+  const ref = useRef()
+  const {setFlyoutContent} = useContext(FlyoutContext)
+  const [open, setOpen] = useState(false)
+  return (
+    <>
+    <Box style={{cursor: 'pointer'}} ref={ref} flex={false} onContextMenu={(e) => {
+      e.preventDefault()
+      setOpen(true)
+    }}>
+      <Avatar user={creator} />
+    </Box>
+    {open && (
+      <Drop target={ref.current} align={{top: 'top', left: 'right'}} onClickOutside={() => setOpen(false)}>
+        <Box flex={false} pad={{vertical: 'xsmall'}}>
+          <DropdownItem
+            text={`${creator.name}'s profile`}
+            onClick={() => {
+              setFlyoutContent(
+                <UserDetail setOpen={setFlyoutContent} user={creator} />
+              )
+              setOpen(false)
+            }} />
+          <CreateChat
+            onChat={() => setOpen(false)}
+            user={creator}
+            target={({onClick}) => <DropdownItem onClick={onClick} text={`chat with ${creator.name}`} />} />
+        </Box>
+      </Drop>
+    )}
+    </>
+  )
+}
+
 function MessageBody({message, conversation, next, editing, setEditing, dialog, hover, setPinnedHover, setSize}) {
   const date = moment(message.insertedAt)
   const consecutive = isConsecutive(message, next)
@@ -195,7 +232,7 @@ function MessageBody({message, conversation, next, editing, setEditing, dialog, 
     <Box fill='horizontal' margin={{vertical: '2px'}}>
       <PinHeader {...message} />
       <Box direction='row' pad={{vertical: 'xxsmall', horizontal: 'small'}}>
-        {!consecutive && <Avatar user={message.creator} /> }
+        {!consecutive && <MessageAvatar creator={message.creator} /> }
         {consecutive && (
           <Box width='45px' justify='center' align='center' flex={false}>
             <Text color='dark-2' size='10px' className='message-reactions'>{formattedDate}</Text>
