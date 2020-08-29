@@ -1,13 +1,54 @@
 import React, { useContext } from 'react'
-import { Box, Text } from 'grommet'
-import { FlyoutHeader, FlyoutContainer, Button } from 'forge-core'
+import { Box, Text, Anchor } from 'grommet'
+import { FlyoutHeader, FlyoutContainer, FlyoutContext, Button } from 'forge-core'
 import Avatar from './Avatar'
 import CreateChat from '../conversation/CreateChat'
 import { CurrentUserContext } from '../login/EnsureLogin'
+import WithPresence from '../utils/presence'
+import PresenceIndicator from './PresenceIndicator'
+import { StatusEmoji } from './UserStatus'
 
 const ChatButton = ({loading, onClick}) => (
   <Button loading={loading} onClick={onClick} label='Create chat' />
 )
+
+export function UserDetailSmall({user, setOpen}) {
+  const {setFlyoutContent} = useContext(FlyoutContext)
+
+  return (
+    <Box width='170px'>
+      <Avatar noround size='170px' user={user} />
+      <Box flex={false} pad='small' gap='small'>
+        <Box flex={false}>
+          <WithPresence id={user.id}>
+          {present => (
+            <Box direction='row' gap='xsmall' align='center'>
+              <Text size='small' weight={500}>{user.name}</Text>
+              <PresenceIndicator present={present} />
+            </Box>
+          )}
+          </WithPresence>
+          <Anchor size='small' onClick={() => setFlyoutContent(
+            <UserDetail setOpen={setFlyoutContent} user={user} />
+          )}>view profile</Anchor>
+          <Text size='small' color='dark-6'>{user.title}</Text>
+        </Box>
+        {user.status && (
+          <Box direction='row' gap='xsmall'>
+            <StatusEmoji emoji={user.status.emoji} />
+            <Text size='small'>{user.status.text}</Text>
+          </Box>
+        )}
+        <Box flex={false}>
+          <CreateChat
+            user={user}
+            onChat={() => setOpen(false)}
+            target={ChatButton} />
+        </Box>
+      </Box>
+    </Box>
+  )
+}
 
 export default function UserDetail({user, setOpen}) {
   const me = useContext(CurrentUserContext)

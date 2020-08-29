@@ -19,7 +19,7 @@ import './message.css'
 import { Status } from '../users/UserStatus'
 import { sortBy } from 'lodash'
 import { DropdownItem } from '../users/Me'
-import UserDetail from '../users/UserDetail'
+import UserDetail, { UserDetailSmall } from '../users/UserDetail'
 import CreateChat from '../conversation/CreateChat'
 
 
@@ -184,31 +184,42 @@ const DATE_PATTERN = 'h:mm a'
 function MessageAvatar({creator}) {
   const ref = useRef()
   const {setFlyoutContent} = useContext(FlyoutContext)
-  const [open, setOpen] = useState(false)
+  const [drop, setDrop] = useState(null)
+  const openProfile = useCallback(() => setFlyoutContent(
+    <UserDetail setOpen={setFlyoutContent} user={creator} />
+  ), [creator, setFlyoutContent])
+
   return (
     <>
-    <Box style={{cursor: 'pointer'}} ref={ref} flex={false} onContextMenu={(e) => {
-      e.preventDefault()
-      setOpen(true)
-    }}>
+    <Box
+      ref={ref}
+      style={{outline: 'none'}}
+      focusIndicator={false}
+      flex={false}
+      onClick={() => setDrop(<UserDetailSmall user={creator} setOpen={setDrop} />)}
+      onContextMenu={(e) => {
+        e.preventDefault()
+        setDrop(
+          <Box flex={false} pad={{vertical: 'xsmall'}}>
+            <DropdownItem
+              text={`${creator.name}'s profile`}
+              onClick={() => {
+                openProfile()
+                setDrop(null)
+              }} />
+            <CreateChat
+              onChat={() => setDrop(null)}
+              user={creator}
+              target={({onClick}) => <DropdownItem onClick={onClick} text={`chat with ${creator.name}`} />} />
+          </Box>
+        )
+      }}
+    >
       <Avatar user={creator} />
     </Box>
-    {open && (
-      <Drop target={ref.current} align={{top: 'top', left: 'right'}} onClickOutside={() => setOpen(false)}>
-        <Box flex={false} pad={{vertical: 'xsmall'}}>
-          <DropdownItem
-            text={`${creator.name}'s profile`}
-            onClick={() => {
-              setFlyoutContent(
-                <UserDetail setOpen={setFlyoutContent} user={creator} />
-              )
-              setOpen(false)
-            }} />
-          <CreateChat
-            onChat={() => setOpen(false)}
-            user={creator}
-            target={({onClick}) => <DropdownItem onClick={onClick} text={`chat with ${creator.name}`} />} />
-        </Box>
+    {drop && (
+      <Drop target={ref.current} align={{top: 'top', left: 'right'}} onClickOutside={() => setDrop(null)}>
+        {drop}
       </Drop>
     )}
     </>

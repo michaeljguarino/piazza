@@ -9,15 +9,20 @@ const RADIUS = '3px'
 
 export class AvatarContainer extends React.PureComponent {
   render() {
-    const {background, img, text, size, rightMargin} = this.props
+    const {background, img, text, size, rightMargin, noround} = this.props
     const boxSize = size || DEFAULT_SIZE
 
     return (
-      <Box flex={false} border={{style: 'hidden'}} round={RADIUS} align='center' justify='center'
+      <Box
+        flex={false}
+        border={{style: 'hidden'}}
+        round={noround ? null : RADIUS}
+        align='center'
+        justify='center'
         background={img ? null : (background || DEFAULT_BACKGROUND)}
         width={boxSize} height={boxSize} margin={{right: rightMargin || '5px'}}>
         {img ?
-          <img alt='' height={boxSize} width={boxSize} style={{borderRadius: RADIUS}} src={img}/> :
+          <img alt='' height={boxSize} width={boxSize} style={noround ? null : {borderRadius: RADIUS}} src={img}/> :
           <Text>{text.charAt(0).toUpperCase()}</Text>
         }
       </Box>
@@ -25,11 +30,12 @@ export class AvatarContainer extends React.PureComponent {
   }
 }
 
-export default React.memo(({withPresence, user, size, rightMargin}) => {
+export default React.memo(({withPresence, user, size, noround, rightMargin}) => {
   if (withPresence) {
     return (
       <Stack anchor='top-right'>
         <AvatarContainer
+          noround={noround}
           img={user.avatar}
           text={user.handle}
           background={user.backgroundColor}
@@ -48,6 +54,7 @@ export default React.memo(({withPresence, user, size, rightMargin}) => {
 
   return (
     <AvatarContainer
+      noround={noround}
       img={user.avatar}
       text={user.handle}
       background={user.backgroundColor}
