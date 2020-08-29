@@ -16,8 +16,8 @@ export function UserDetailSmall({user, setOpen}) {
   const {setFlyoutContent} = useContext(FlyoutContext)
 
   return (
-    <Box width='170px'>
-      <Avatar noround size='170px' user={user} />
+    <Box width='200px'>
+      <Avatar noround size='170px' width='200px' user={user} />
       <Box flex={false} pad='small' gap='small'>
         <Box flex={false}>
           <WithPresence id={user.id}>

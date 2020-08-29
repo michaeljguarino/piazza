@@ -200,7 +200,7 @@ function MessageAvatar({creator}) {
       onContextMenu={(e) => {
         e.preventDefault()
         setDrop(
-          <Box flex={false} pad={{vertical: 'xsmall'}}>
+          <Box flex={false} pad={{vertical: '3px'}}>
             <DropdownItem
               text={`${creator.name}'s profile`}
               onClick={() => {
