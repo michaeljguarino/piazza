@@ -77,8 +77,8 @@ function fetchRecentMessage(cache, setEdited, me, conversation) {
 function InputFooter({typists, me: {handle}}) {
   return (
     <Box style={{height: '30px'}} pad={{top: '2px', bottom: '2px'}} align='center' direction='row' fill='horizontal'>
-      <Box flex={false} width='calc(100% - 600px)' margin={{left: 'small'}}>
-        <Typing typists={typists} ignore={handle} />
+      <Box flex={false} width='calc(100% - 600px)' margin={{left: '5px'}}>
+        <Typing typists={typists} ignore={handle}  />
       </Box>
       <HelpDoc/>
     </Box>
