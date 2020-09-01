@@ -106,7 +106,7 @@ export function StandardEmoji({name, size}) {
       display: 'inline-block', alignItems: 'center', height: `${size}px`, width: `${size}px`,
       lineHeight: '0px', marginRight: RIGHT_MARGIN, marginLeft: RIGHT_MARGIN}}
       ref={targetRef} onMouseEnter={() => setOpen(true)} onMouseLeave={() => setOpen(false)}>
-      <Emoji forceSize set='google' emoji={name} size={size} />
+      <Emoji forceSize set='google' emoji={name} size={size} sheetSize={16} />
     </span>
     {open && (
       <TooltipContent targetRef={targetRef}>

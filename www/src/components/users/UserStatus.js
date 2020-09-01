@@ -33,7 +33,7 @@ const PAD = {horizontal: 'small', vertical: 'xsmall'}
 
 export const StatusEmoji = React.forwardRef(({emoji, size, ...props}, ref) => (
   <Box ref={ref} align='center' justify='center' style={{lineHeight: `0px`}} {...props}>
-    <Emoji set='google' emoji={emoji} size={size || ICON_SIZE} />
+    <Emoji set='google' emoji={emoji} size={size || ICON_SIZE} sheetSize={16} />
   </Box>
 ))
 

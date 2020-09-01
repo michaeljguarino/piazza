@@ -22,7 +22,7 @@ import { useEditor } from '../utils/hooks'
 import { Editor, Transforms } from 'slate'
 import { SyncLoader } from 'react-spinners'
 import { normalizeColor } from 'grommet/utils'
-import { Send, SendNew } from '../utils/icons'
+import { SendNew } from '../utils/icons'
 import fs from 'filesize'
 import { Control } from './MessageControls'
 
