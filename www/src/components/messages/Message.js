@@ -32,6 +32,14 @@ function TextMessage({text, entities}) {
 const PINNED_BACKGROUND='rgba(var(--sk_secondary_highlight,242,199,68),.1)'
 const PIN_COLOR='rgb(242,199,68)'
 
+function Blockquote({children}) {
+  return (
+    <Box border={{side: 'left', size: '2px', color: 'light-6'}} pad={{horizontal: 'small'}}>
+      {children}
+    </Box>
+  )
+}
+
 const WithEntities = React.memo(({text, entities}) => {
   const parsed = [...splitText(text, entities)].join('')
   const entityMap = entities.reduce((map, entity) => ({...map, [entity.id]: entity}), {})
@@ -41,7 +49,8 @@ const WithEntities = React.memo(({text, entities}) => {
     <Markdown
       components={{
         MessageEntity: {component: Entity},
-        p: {props: {size: 'small', margin: {top: 'xsmall', bottom: 'xsmall'}}},
+        blockquote: {component: Blockquote},
+        p: {props: {size: 'small', margin: {top: 'xsmall', bottom: 'xsmall'}, style: {maxWidth: '100%'}}},
         a: {props: {size: 'small', target: '_blank'}, component: Anchor},
         span: {props: {style: {verticalAlign: 'bottom'}}}
       }}>
@@ -251,7 +260,7 @@ function MessageBody({message, conversation, next, editing, setEditing, dialog, 
         )}
         <Box margin={{left: '3px'}} fill={editing ? 'horizontal' : false}>
           {!consecutive && !editing && (
-            <Box direction='row' align='center' margin={{bottom: 'xxsmall'}} gap='xsmall'>
+            <Box fill='horizontal' direction='row' align='center' margin={{bottom: 'xxsmall'}} gap='xsmall'>
               <Text weight='bold' size='14px'>{message.creator.name}</Text>
               {message.creator.bot && (<BotIcon />)}
               {message.creator.status && (<Status user={message.creator} size='15px' />)}
