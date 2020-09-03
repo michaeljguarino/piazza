@@ -19,7 +19,7 @@ defmodule Core.Models.Embed.Parser do
   def description(%Furlex{json_ld: [%{"headline" => desc}]}, _), do: desc
   def description(_, _), do: nil
 
-  def image_url(%Furlex{facebook: %{"og:image" => im}}, %{url: url}), do: localize(im, url)
+  def image_url(%Furlex{facebook: %{"og:image" => im}}, %{url: url}) when im != url, do: localize(im, url)
   def image_url(%Furlex{twitter: %{"twitter:image" => im}}, %{url: url}), do: localize(im, url)
   def image_url(%Furlex{json_ld: [%{"image" => %{"url" => im}} | _]}, %{url: url}), do: localize(im, url)
   def image_url(_, _), do: nil
@@ -38,6 +38,8 @@ defmodule Core.Models.Embed.Parser do
 
   def logo(%Furlex{json_ld: [%{"publisher" => %{"logo" => %{"url" => url}}} | _]}, _), do: url
   def logo(%Furlex{json_ld: [%{"@graph" => [%{"publisher" => %{"logo" => %{"url" => url}}} | _]} | _]}, _), do: url
+  def logo(%Furlex{other: %{"msapplication-square70x70logo" => img}}, %{url: url}), do: localize(img, url)
+  def logo(%Furlex{other: %{"msapplication-TileImage" => img}}, %{url: url}), do: localize(img, url)
   def logo(_, _), do: nil
 
   def width(%Furlex{facebook: %{"og:image:width" => w}}, %{type: :image}), do: w

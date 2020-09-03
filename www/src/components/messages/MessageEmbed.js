@@ -19,6 +19,8 @@ function VideoEmbed({title, videoUrl, videoType}) {
 }
 
 function ImageEmbed({imageUrl}) {
+  if (!imageUrl) return null
+
   return (
     <img alt='' style={{height: '200px'}} src={imageUrl} />
   )
@@ -42,11 +44,11 @@ function EmbedMedia(props) {
   }
 }
 
-function Publisher({publisher, logo}) {
-  if (!publisher) return null
+const hasMedia = ({imageUrl, videoUrl}) => imageUrl && videoUrl
 
+function Publisher({publisher, logo}) {
   return (
-    <Box direction='row' gap='small' align='center'>
+    <Box direction='row' gap='xsmall' align='center'>
       {logo && <img alt='' height='15px' src={logo} />}
       <Text size='xsmall' color='dark-3'>{publisher}</Text>
     </Box>
@@ -60,11 +62,11 @@ export default function MessageEmbed({title, description, publisher, logo, url, 
     <Box margin={{vertical: 'xxsmall'}}>
       <Box round='xxsmall' direction='column' align='start' pad={{horizontal: 'small', vertical: 'xsmall'}}
            border={{side: 'left', color: 'light-6', size: '3px'}}>
-        <Publisher publisher={publisher} logo={logo} />
+        {publisher && <Publisher publisher={publisher} logo={logo} />}
         <Anchor size='small' target='blank' style={{fontWeight: 500}} href={url} margin={publisher ? {top: 'xxsmall'} : null}>
           {title}
         </Anchor>
-        <Box margin={{top: 'xxsmall', bottom: 'small'}}>
+        <Box margin={{top: 'xxsmall', bottom: hasMedia(props) ? 'small' : null}}>
           <Markdown size='small'>{(description || '').trim()}</Markdown>
         </Box>
         <EmbedMedia {...props} />
