@@ -155,7 +155,7 @@ function parse(struct, index, theme) {
 export default React.memo(function StructuredMessage({children, attributes}) {
   const theme = useContext(ThemeContext)
   return (
-    <Box gap='xsmall' {...(attributes || {})}>
+    <Box gap='xsmall' align='start' {...(attributes || {})}>
       {recurse(children, theme)}
     </Box>
   )

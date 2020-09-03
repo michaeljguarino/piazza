@@ -1,7 +1,7 @@
-import React, { useState, useRef, useContext, useCallback, useEffect, useMemo } from 'react'
-import { Box, Text, Markdown, Stack, Anchor, Drop } from 'grommet'
-import { Pin } from 'grommet-icons'
-import { TooltipContent, Divider, BotIcon, FlyoutContext } from 'forge-core'
+import React, { useState, useRef, useContext, useCallback, useEffect } from 'react'
+import { Box, Text, Markdown, Stack, Anchor, Drop, ThemeContext } from 'grommet'
+import { Pin, Copy } from 'grommet-icons'
+import { TooltipContent, Divider, BotIcon, FlyoutContext, WithCopy, HoveredBackground } from 'forge-core'
 import Avatar from '../users/Avatar'
 import moment from 'moment'
 import MessageEmbed from './MessageEmbed'
@@ -21,6 +21,8 @@ import { sortBy } from 'lodash'
 import { DropdownItem } from '../users/Me'
 import UserDetail, { UserDetailSmall } from '../users/UserDetail'
 import CreateChat from '../conversation/CreateChat'
+import Highlight from 'react-highlight.js'
+import { normalizeColor } from 'grommet/utils'
 
 
 function TextMessage({text, entities}) {
@@ -40,6 +42,45 @@ function Blockquote({children}) {
   )
 }
 
+function Code({children, className, multiline}) {
+  const theme = useContext(ThemeContext)
+  if (className && className.startsWith('lang-')) {
+    const lang = className && className.slice(5)
+    return (
+      <Box fill='horizontal' elevation='small' round='xxsmall'>
+        <Box fill='horizontal' border={{color: 'light-5'}} direction='row' justify='end'
+           gap='xsmall' background='light-3' pad='xsmall' align='center'>
+          <Text size='small' weight={500} color='dark-3'>language:</Text>
+          <Text size='small' color='dark-3'>{lang}</Text>
+          <WithCopy text={children} pillText={`copied ${lang} contents`}>
+            <Copy style={{cursor: 'pointer'}} size='small' />
+          </WithCopy>
+        </Box>
+        <Highlight language={lang}>{children}</Highlight>
+      </Box>
+    )
+  }
+
+  return (
+    <Box flex={false} style={{display: 'inline-block', color: multiline ? null : normalizeColor('notif', theme)}}
+         pad={multiline ? 'xsmall' : {horizontal: 'xxsmall'}} round='xxsmall'
+         border={{color: 'light-6'}} background='light-2'>
+      <pre>
+        <code>{children}</code>
+      </pre>
+    </Box>
+  )
+}
+
+function Preformat({children}) {
+  console.log(children)
+  return (
+    <Box flex={false} pad={{vertical: 'xsmall'}}>
+      {React.cloneElement(children, {multiline: true})}
+    </Box>
+  )
+}
+
 const WithEntities = React.memo(({text, entities}) => {
   const parsed = [...splitText(text, entities)].join('')
   const entityMap = entities.reduce((map, entity) => ({...map, [entity.id]: entity}), {})
@@ -52,9 +93,11 @@ const WithEntities = React.memo(({text, entities}) => {
         blockquote: {component: Blockquote},
         p: {props: {size: 'small', margin: {top: 'xsmall', bottom: 'xsmall'}, style: {maxWidth: '100%'}}},
         a: {props: {size: 'small', target: '_blank'}, component: Anchor},
-        span: {props: {style: {verticalAlign: 'bottom'}}}
+        span: {props: {style: {verticalAlign: 'bottom'}}},
+        code: {component: Code},
+        pre: {component: Preformat}
       }}>
-     {parsed}
+      {parsed}
     </Markdown>
   )
 })
@@ -258,7 +301,7 @@ function MessageBody({message, conversation, next, editing, setEditing, dialog, 
             <Text color='dark-2' size='10px' className='message-reactions'>{formattedDate}</Text>
           </Box>
         )}
-        <Box margin={{left: '3px'}} fill={editing ? 'horizontal' : false}>
+        <Box margin={{left: '3px'}} fill='horizontal' align='start'>
           {!consecutive && !editing && (
             <Box fill='horizontal' direction='row' align='center' margin={{bottom: 'xxsmall'}} gap='xsmall'>
               <Text weight='bold' size='14px'>{message.creator.name}</Text>
