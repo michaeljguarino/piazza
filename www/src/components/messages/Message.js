@@ -22,6 +22,7 @@ import { DropdownItem } from '../users/Me'
 import UserDetail, { UserDetailSmall } from '../users/UserDetail'
 import CreateChat from '../conversation/CreateChat'
 import Highlight from 'react-highlight.js'
+import hljs from 'highlight.js'
 import { normalizeColor } from 'grommet/utils'
 
 
@@ -46,19 +47,21 @@ function Code({children, className, multiline}) {
   const theme = useContext(ThemeContext)
   if (className && className.startsWith('lang-')) {
     const lang = className && className.slice(5)
-    return (
-      <Box fill='horizontal' round='xxsmall' border={{color: 'light-5'}}>
-        <Box fill='horizontal' border={{side: 'bottom', color: 'light-5'}} direction='row' justify='end'
-           gap='xsmall' background='light-3' pad='xsmall' align='center'>
-          <Text size='small' weight={500} color='dark-3'>language:</Text>
-          <Text size='small' color='dark-3'>{lang}</Text>
-          <WithCopy text={children} pillText={`copied ${lang} contents`}>
-            <Copy style={{cursor: 'pointer'}} size='small' />
-          </WithCopy>
+    if (hljs.getLanguage(lang)) {
+      return (
+        <Box fill='horizontal' round='xxsmall' border={{color: 'light-5'}}>
+          <Box fill='horizontal' border={{side: 'bottom', color: 'light-5'}} direction='row' justify='end'
+            gap='xsmall' background='light-3' pad='xsmall' align='center'>
+            <Text size='small' weight={500} color='dark-3'>language:</Text>
+            <Text size='small' color='dark-3'>{lang}</Text>
+            <WithCopy text={children} pillText={`copied ${lang} contents`}>
+              <Copy style={{cursor: 'pointer'}} size='small' />
+            </WithCopy>
+          </Box>
+          <Highlight language={lang}>{children}</Highlight>
         </Box>
-        <Highlight language={lang}>{children}</Highlight>
-      </Box>
-    )
+      )
+    }
   }
 
   return (

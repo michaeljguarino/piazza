@@ -67,7 +67,9 @@ export default function MessageEmbed({title, description, publisher, logo, url, 
           {title}
         </Anchor>
         <Box margin={{top: 'xxsmall', bottom: hasMedia(props) ? 'small' : null}}>
-          <Markdown size='small'>{(description || '').trim()}</Markdown>
+          <Markdown size='small'>
+            {(description || '').trim()}
+          </Markdown>
         </Box>
         <EmbedMedia {...props} />
       </Box>
