@@ -65,13 +65,15 @@ function Code({children, className, multiline}) {
   }
 
   return (
-    <Box flex={false} style={{display: 'inline-block', color: multiline ? null : normalizeColor('notif', theme)}}
-         pad={multiline ? 'xsmall' : {horizontal: 'xxsmall'}} round='xxsmall'
-         border={{color: 'light-6'}} background='light-2'>
-      <pre>
-        <code>{children}</code>
-      </pre>
-    </Box>
+    <span>
+      <Box flex={false} style={{display: 'inline-block', color: multiline ? null : normalizeColor('notif', theme)}}
+          pad={multiline ? 'xsmall' : {horizontal: 'xxsmall'}} round='xxsmall'
+          border={{color: 'light-6'}} background='light-2'>
+        <pre>
+          <code>{children}</code>
+        </pre>
+      </Box>
+    </span>
   )
 }
 
