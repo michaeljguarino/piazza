@@ -44,7 +44,7 @@ function EmbedMedia(props) {
   }
 }
 
-const hasMedia = ({imageUrl, videoUrl}) => imageUrl && videoUrl
+const hasMedia = ({imageUrl, videoUrl}) => imageUrl || videoUrl
 
 function Publisher({publisher, logo}) {
   return (
@@ -58,6 +58,8 @@ function Publisher({publisher, logo}) {
 export default function MessageEmbed({title, description, publisher, logo, url, ...props}) {
   let dims = dimensions(props)
   props = {...props, ...dims}
+  const media = hasMedia(props)
+
   return (
     <Box margin={{vertical: 'xxsmall'}}>
       <Box round='xxsmall' direction='column' align='start' pad={{horizontal: 'small', vertical: 'xsmall'}}
@@ -66,7 +68,7 @@ export default function MessageEmbed({title, description, publisher, logo, url, 
         <Anchor size='small' target='blank' style={{fontWeight: 500}} href={url} margin={publisher ? {top: 'xxsmall'} : null}>
           {title}
         </Anchor>
-        <Box margin={{top: 'xxsmall', bottom: hasMedia(props) ? 'small' : null}}>
+        <Box margin={{top: 'xxsmall', bottom: media ? 'small' : null}}>
           <Markdown size='small'>
             {(description || '').trim()}
           </Markdown>

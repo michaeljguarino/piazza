@@ -77,7 +77,7 @@ function MediaFile({file}) {
         {expanded ? <Down color={color} size='10px' /> : <Next color={color} size='10px' />}
       </Box>
       {expanded && (
-        <Box>
+        <Box direction='row' align='start'>
           {mediaType === 'IMAGE' ?
             <Image {...file} /> :
             <Video {...file} />}
