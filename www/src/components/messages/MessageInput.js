@@ -68,9 +68,8 @@ function HelpDoc() {
 function fetchRecentMessage(cache, setEdited, me, conversation) {
   cache.query({query: MESSAGES_Q, variables: {conversationId: conversation.id}})
     .then(({data: {conversation: {messages: {edges}}}}) => {
-      if (edges.length === 0) return
-      const {node} = edges[0]
-      if (node.creator.id === me.id) setEdited(node.id)
+      const found = edges.find(({node: {creator}}) => creator.id === me.id)
+      if (found) setEdited(found.node.id)
     })
 }
 

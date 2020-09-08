@@ -11,7 +11,7 @@ import { plainDeserialize, plainSerialize } from '../../utils/slate'
 import { useEditor } from '../utils/hooks'
 import { ReactEditor } from 'slate-react'
 
-function MessageEdit({setSize, message, setEditing, ...props}) {
+function MessageEdit({setSize, message, setEditing}) {
   const editRef = useRef()
   const [editorState, setEditorState] = useState(plainDeserialize(message.text))
   const editor = useEditor()
@@ -32,12 +32,19 @@ function MessageEdit({setSize, message, setEditing, ...props}) {
   })
 
   useEffect(() => {
-    setSize()
-    ReactEditor.focus(editor)
+    setSize();
+    if (!ReactEditor.isFocused(editor)) {
+      [5000, 2000, 1000, 500].reduce((prev, millis) => {
+        const timeout = setTimeout(() => {
+          ReactEditor.focus(editor)
+        }, millis)
+        return [timeout, ...prev]
+      }, [])
+    }
     // Transforms.select(editor, Editor.end(editor, []))
-    return () => editRef && setSize()
+    return () => setSize()
 // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [editRef])
+  }, [editRef, editor])
 
   const send = useCallback(() => (
     mutation({variables: {id: message.id, attributes: {text: plainSerialize(editorState)}}})
