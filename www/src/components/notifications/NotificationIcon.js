@@ -77,7 +77,7 @@ function getTitle(notif, me) {
   }
 }
 
-function BrowserNotif({me, setCurrentNotification, conversation, audioRef, notif}) {
+const BrowserNotif = React.memo(({me, setCurrentNotification, audioRef, notif}) => {
   const {message, actor} = notif
   const title = getTitle(notif, me)
   if (!title) return null
@@ -96,7 +96,7 @@ function BrowserNotif({me, setCurrentNotification, conversation, audioRef, notif
     />
     </>
   )
-}
+}, ({notif: {id: first}}, {notif: {id: second}}) => first === second)
 
 function introduction() {
   if (localStorage.getItem('piazza-nuxed')) return null

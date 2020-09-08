@@ -102,7 +102,7 @@ export default function SmoothScroller({
       loader.current.resetloadMoreItemsCache()
     }
     mounted.current = true
-  }, [refreshKey])
+  }, [refreshKey, mounted, loader])
 
   return (
     <InfiniteLoader
