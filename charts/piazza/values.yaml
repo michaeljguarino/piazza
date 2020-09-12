@@ -13,7 +13,7 @@ postgresql:
       repository: wrouesnel/postgres_exporter
   resources:
     requests:
-      cpu: .5
+      cpu: 500Mi
       memory: 1Gi
 
 rabbitmq:
@@ -24,7 +24,7 @@ rabbitmq:
 
   resources:
     requests:
-      cpu: .3
+      cpu: 300Mi
       memory: 512Mi
   replicas: 1
 
