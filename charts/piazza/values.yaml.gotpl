@@ -7,6 +7,9 @@ rabbitmq:
   rabbitmq:
     password: {{ dedupe . "piazza.rabbitmq.rabbitmq.password" (randAlphaNum 26) }}
     erlangCookie: {{ dedupe . "piazza.rabbitmq.rabbitmq.erlangCookie" (randAlphaNum 26) }}
+  auth:
+    password: {{ dedupe . "piazza.rabbitmq.rabbitmq.password" (randAlphaNum 26) }}
+    erlangCookie: {{ dedupe . "piazza.rabbitmq.rabbitmq.erlangCookie" (randAlphaNum 26) }}
 
 secrets:
   jwt: {{ dedupe . "piazza.secrets.jwt" (randAlphaNum 26) }}
