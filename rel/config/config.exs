@@ -38,11 +38,11 @@ config :core, Core.Guardian,
 
 config :core, Core.Aquaduct.Broker,
   adapter: ConduitAMQP,
-  url: "amqp://rabbitmq:#{get_env("RABBITMQ_PASSWORD")}@piazza-rabbitmq"
+  url: "amqp://user:#{get_env("RABBITMQ_PASSWORD")}@piazza-rabbitmq"
 
 config :rtc, Rtc.Aquaduct.Broker,
   adapter: ConduitAMQP,
-  url: "amqp://rabbitmq:#{get_env("RABBITMQ_PASSWORD")}@piazza-rabbitmq"
+  url: "amqp://user:#{get_env("RABBITMQ_PASSWORD")}@piazza-rabbitmq"
 
 config :core, Core.Repo,
   database: "piazza",
