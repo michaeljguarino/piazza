@@ -1,23 +1,4 @@
 {{- if .Values.ingress.enabled -}}
-apiVersion: cloud.google.com/v1beta1
-kind: BackendConfig
-metadata:
-  name: piazza-backendconfig
-spec:
-  timeoutSec: 43200
-  connectionDraining:
-    drainingTimeoutSec: 60
-  sessionAffinity:
-    affinityType: "GENERATED_COOKIE"
----
-apiVersion: networking.gke.io/v1beta1
-kind: ManagedCertificate
-metadata:
-  name: piazza-cert
-spec:
-  domains:
-  - {{ .Values.ingress.dns }}
----
 {{- $fullName := include "piazza.fullname" . -}}
 apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
@@ -30,6 +11,10 @@ metadata:
     {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
+  tls:
+  - hosts:
+    - {{ .Values.ingress.dns | quote }}
+    secretName: piazza-tls
   rules:
   - host: {{ .Values.ingress.dns | quote }}
     http:

@@ -14,7 +14,6 @@ import './MentionManager.css'
 import TypeaheadEditor from '../utils/TypeaheadEditor'
 import { Editor, Transforms } from 'slate'
 import { Emoji as NimbleEmoji } from 'emoji-mart'
-import { INPUT_HEIGHT } from './MessageInput'
 import { Control } from './MessageControls'
 
 const BUILTIN_MENTIONS = [
@@ -44,9 +43,7 @@ export function fetchUsers(client, query) {
       value: `@${edge.node.handle}`,
       suggestion: userSuggestion(edge.node)
     }))
-  }).then(userMentions => {
-    return findBuiltinMentions(query).concat(userMentions)
-  })
+  }).then(userMentions => findBuiltinMentions(query).concat(userMentions))
 }
 
 function fetchCommands(client, query) {
