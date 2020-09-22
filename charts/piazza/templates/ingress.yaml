@@ -19,11 +19,7 @@ spec:
   - host: {{ .Values.ingress.dns | quote }}
     http:
       paths:
-      - path: /socket
-        backend:
-          serviceName: piazza-rtc
-          servicePort: http
-      - path: /socket/websocket
+      - path: /socket.*
         backend:
           serviceName: piazza-rtc
           servicePort: http
@@ -31,7 +27,7 @@ spec:
         backend:
           serviceName: piazza-gql
           servicePort: http
-      - path: /external/*
+      - path: /external/.*
         backend:
           serviceName: piazza-gql
           servicePort: http
