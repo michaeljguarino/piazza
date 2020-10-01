@@ -20,7 +20,7 @@ import { EditingMessageContext } from './VisibleMessages'
 import { Conversations } from '../login/MyConversations'
 import { useEditor } from '../utils/hooks'
 import { Editor, Transforms } from 'slate'
-import { SyncLoader } from 'react-spinners'
+import { MoonLoader, SyncLoader } from 'react-spinners'
 import { normalizeColor } from 'grommet/utils'
 import { SendNew } from '../utils/icons'
 import fs from 'filesize'
@@ -100,12 +100,15 @@ function FileInput({attachment, setAttachment}) {
   )
 }
 
-function SendMsg({empty, onClick}) {
+function SendMsg({loading, empty, onClick}) {
   return (
     <Box flex={false} focusIndicator={false} margin='4px' height='35px'
       width="35px" round='xxsmall' align='center' justify='center'
-      onClick={empty ? null : onClick} background={empty ? null : 'action'} >
-      <SendNew size='23px' color={empty ? 'light-3' : 'white'} />
+      onClick={empty ? null : onClick} background={loading ? null : (empty ? null : 'action')} >
+      {loading ?
+        <MoonLoader size={20} /> :
+        <SendNew size='23px' color={empty ? 'light-3' : 'white'} />
+      }
     </Box>
   )
 }
@@ -119,7 +122,7 @@ function MessageInputInner({editor, attachment, setAttachment, conversation, set
   const me = useContext(CurrentUserContext)
   const cache = useApolloClient()
 
-  const [mutation] = useMutation(MESSAGE_MUTATION, {
+  const [mutation, {loading}] = useMutation(MESSAGE_MUTATION, {
     context: {fetchOptions: {
       useUpload: !!attachment,
       onProgress: (ev) => setUploadProgress(Math.round((ev.loaded / ev.total) * 100)),
@@ -203,7 +206,7 @@ function MessageInputInner({editor, attachment, setAttachment, conversation, set
             clearable={!disableSubmit}
             onChange={notifyTyping} />
           <FileInput attachment={attachment} setAttachment={setAttachment} />
-          <SendMsg empty={empty} onClick={sendMessage} />
+          <SendMsg loading={loading} empty={empty} onClick={sendMessage} />
         </Box>
       </Keyboard>
       <InputFooter typists={typists} me={me} />
