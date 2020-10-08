@@ -1,32 +1,49 @@
-apiVersion: v1
-kind: ConfigMap
+apiVersion: forgelabs.sh/v1alpha1
+kind: Dashboard
 metadata:
-  name: {{ template "piazza.fullname" $ }}-dashboards-beam
+  name: {{ template "piazza.fullname" $ }}-beam
   labels:
 {{ include "piazza.labels" . | indent 4 }}
-    grafana_dashboard: '1'
-data:
-  piazza-beam.json:
-{{ toYaml (.Files.Get "dashboards/beam.json") | indent 4 }}
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: {{ template "piazza.fullname" $ }}-dashboards-rabbitmq
+spec:
+  name: beam
+  description: internal erlang telemetry for piazza
+  timeslices: [30m, 1h, 2h, 1d]
+  defaultTime: 30m
   labels:
-{{ include "piazza.labels" . | indent 4 }}
-    grafana_dashboard: '1'
-data:
-  piazza-rabbitmq.json:
-{{ toYaml (.Files.Get "dashboards/rabbit.json") | indent 4 }}
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: {{ template "piazza.fullname" $ }}-dashboards-postgres
-  labels:
-{{ include "piazza.labels" . | indent 4 }}
-    grafana_dashboard: '1'
-data:
-  piazza-postgres.json:
-{{ toYaml (.Files.Get "dashboards/postgres.json") | indent 4 }}
+  - name: "service"
+    query:
+      query: erlang_vm_ets_limit{app_kubernetes_io_instance="{{ .Release.Name }}"}
+      label: app_kubernetes_io_name
+  - name: interval
+    values:
+    - 1m
+    - 5m
+  graphs:
+  - queries:
+    - query: erlang_vm_ets_limit{app_kubernetes_io_name="$service"}
+      legend: ets limit
+    - query: erlang_vm_ets_tables{app_kubernetes_io_name="$service"}
+      legend: ets tables
+    name: Ets Data
+  - queries:
+    - query: erlang_vm_process_limit{app_kubernetes_io_name="$service"}
+      legend: process limit
+    - query: erlang_vm_process_count{app_kubernetes_io_name="$service"}
+      legend: process count
+    name: Process details
+  - queries:
+    - query: irate(erlang_vm_statistics_garbage_collection_number_of_gcs{app_kubernetes_io_name="$service"}[$interval])
+      legend: garbage collections
+    - query: irate(erlang_vm_statistics_garbage_collection_bytes_reclaimed{app_kubernetes_io_name="$service"}[$interval])
+      legend: bytes collected
+    name: Garbage Collection
+  - queries:
+    - query: erlang_vm_memory_bytes_total{app_kubernetes_io_name="$service", kind="processes"}
+      legend: process memory
+    - query: erlang_vm_memory_system_bytes_total{app_kubernetes_io_name="$service", usage="binary"}
+      legend: binary heap memory
+    - query: erlang_vm_memory_system_bytes_total{app_kubernetes_io_name="$service", usage="code"}
+      legend: code memory
+    - query: erlang_vm_memory_system_bytes_total{app_kubernetes_io_name="$service", usage="ets"}
+      legend: ets memory
+    name: VM memory
