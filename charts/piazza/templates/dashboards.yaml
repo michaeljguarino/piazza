@@ -14,36 +14,120 @@ spec:
     query:
       query: erlang_vm_ets_limit{app_kubernetes_io_instance="{{ .Release.Name }}"}
       label: app_kubernetes_io_name
-  - name: interval
-    values:
-    - 1m
-    - 5m
   graphs:
   - queries:
-    - query: erlang_vm_ets_limit{app_kubernetes_io_name="$service"}
-      legend: ets limit
-    - query: erlang_vm_ets_tables{app_kubernetes_io_name="$service"}
-      legend: ets tables
-    name: Ets Data
-  - queries:
-    - query: erlang_vm_process_limit{app_kubernetes_io_name="$service"}
+    - query: avg(erlang_vm_process_limit{app_kubernetes_io_name="$service"})
       legend: process limit
-    - query: erlang_vm_process_count{app_kubernetes_io_name="$service"}
+    - query: avg(erlang_vm_process_count{app_kubernetes_io_name="$service"})
       legend: process count
     name: Process details
   - queries:
-    - query: irate(erlang_vm_statistics_garbage_collection_number_of_gcs{app_kubernetes_io_name="$service"}[$interval])
-      legend: garbage collections
-    - query: irate(erlang_vm_statistics_garbage_collection_bytes_reclaimed{app_kubernetes_io_name="$service"}[$interval])
-      legend: bytes collected
-    name: Garbage Collection
-  - queries:
-    - query: erlang_vm_memory_bytes_total{app_kubernetes_io_name="$service", kind="processes"}
+    - query: avg(erlang_vm_memory_bytes_total{app_kubernetes_io_name="$service", kind="processes"})
       legend: process memory
-    - query: erlang_vm_memory_system_bytes_total{app_kubernetes_io_name="$service", usage="binary"}
+    - query: avg(erlang_vm_memory_system_bytes_total{app_kubernetes_io_name="$service", usage="binary"})
       legend: binary heap memory
-    - query: erlang_vm_memory_system_bytes_total{app_kubernetes_io_name="$service", usage="code"}
+    - query: avg(erlang_vm_memory_system_bytes_total{app_kubernetes_io_name="$service", usage="code"})
       legend: code memory
-    - query: erlang_vm_memory_system_bytes_total{app_kubernetes_io_name="$service", usage="ets"}
+    - query: avg(erlang_vm_memory_system_bytes_total{app_kubernetes_io_name="$service", usage="ets"})
       legend: ets memory
     name: VM memory
+---
+apiVersion: forgelabs.sh/v1alpha1
+kind: Dashboard
+metadata:
+  name: {{ template "piazza.fullname" $ }}-postgres
+  labels:
+{{ include "piazza.labels" . | indent 4 }}
+spec:
+  name: postgres
+  description: Monitoring for piazza's postgres db
+  timeslices: [30m, 1h, 2h, 1d]
+  defaultTime: 30m
+  labels:
+  - name: instance
+    query:
+      query: pg_stat_database_tup_fetched{kubernetes_namespace="{{ .Release.Namespace }}"}
+      label: instance
+  graphs:
+  - queries:
+    - query: SUM(pg_stat_database_tup_fetched{instance=~"$instance"})
+      legend: tuples fetched
+    - query: SUM(pg_stat_database_tup_inserted{instance=~"$instance"})
+      legend: tuples inserted
+    - query: SUM(pg_stat_database_tup_updated{instance=~"$instance"})
+      legend: tuples updated
+    name: Storage Performance
+  - queries:
+    - query: pg_settings_max_connections{instance="$instance"}
+      legend: connections
+    name: Max Connections
+  - queries:
+    - query: avg(rate(process_cpu_seconds_total{instance="$instance"}[5m]) * 1000)
+      legend: seconds
+    name: CPU time
+  - queries:
+    - query: avg(rate(process_resident_memory_bytes{instance="$instance"}[5m]))
+      legend: resident mem
+    - query: avg(rate(process_virtual_memory_bytes{instance="$instance"}[5m]))
+      legend: process mem
+    name: Memory utilization
+  - queries:
+    - query: process_open_fds{instance="$instance"}
+      legend: fds
+    name: Open file descriptors
+  - queries:
+    - query: pg_settings_max_wal_size_bytes{instance="$instance"}
+      legend: WAL size
+    name: Max WAL size
+  - queries:
+    - query: irate(pg_stat_database_xact_commit{instance="$instance"}[5m])
+      legend: commits
+    - query: irate(pg_stat_database_xact_rollback{instance="$instance"}[5m])
+      legend: rollbacks
+    name: Transactions
+  - queries:
+    - query: pg_stat_database_blks_hit{instance="$instance"} / (pg_stat_database_blks_read{instance="$instance"} + pg_stat_database_blks_hit{instance="$instance"})
+      legend: hit rate
+    name: Cache hit rate
+---
+apiVersion: forgelabs.sh/v1alpha1
+kind: Dashboard
+metadata:
+  name: {{ template "piazza.fullname" $ }}-rabbit
+  labels:
+{{ include "piazza.labels" . | indent 4 }}
+spec:
+  name: rabbitmq
+  description: telemetry for piazza's rabbitmq cluster
+  timeslices: [30m, 1h, 2h, 1d]
+  defaultTime: 30m
+  labels:
+  - name: kubernetes_pod_name
+    query:
+      query: rabbitmq_consumers{app_kubernetes_io_instance="{{ .Release.Name }}"}
+      label: kubernetes_pod_name
+  graphs:
+  - queries:
+    - query: sum(rabbitmq_connections{app_kubernetes_io_instance="{{ .Release.Name }}"})
+      legend: connections
+    - query: sum(rabbitmq_channels{app_kubernetes_io_instance="{{ .Release.Name }}"})
+      legend: channels
+    - query: sum(rabbitmq_consumers{app_kubernetes_io_instance="{{ .Release.Name }}"})
+      legend: consumers
+    name: Connection details
+  - queries:
+    - query: sum(rabbitmq_queue_messages{app_kubernetes_io_instance="{{ .Release.Name }}"})
+      legend: messages
+    name: Messages
+  - queries:
+    - query: min(rabbitmq_disk_space_available_bytes{kubernetes_pod_name=~"$kubernetes_pod_name"})
+      legend: disk free
+    - query: min(rabbitmq_disk_space_available_limit_bytes{kubernetes_pod_name=~"$kubernetes_pod_name"})
+      legend: memory used
+    name: Disk utilization
+  - queries:
+    - query: sum(rabbitmq_queue_process_memory_bytes{kubernetes_pod_name=~"$kubernetes_pod_name"}) by (kubernetes_pod_name)
+      legend: process memory
+    - query: sum(rabbitmq_messages_bytes{kubernetes_pod_name=~"$kubernetes_pod_name"}) by (kubernetes_pod_name)
+      legend: message memory
+    name: Memory Utilization

@@ -2,7 +2,7 @@ artifact: {}
 terraform:
   terraform/gcp: h1:g7rNntYJ/y3ZBD6B9VSru0ykxD1NTGYG6/jtgDmYrDU=
 helm:
-  charts/piazza: h1:mPkAaVNPyEklsK3nPmFBrXKv28Tdl84pR8lC3uMEheU=
+  charts/piazza: h1:PRo/OmHjYyfPis9itoEKTeUn1Khd5rRcnNwrqV/Iq0k=
 recipe:
   forge/recipes/piazza-gcp.yaml: 8a77c00ff84f49d5942e8b8191921a5df61364786117ec3f330cc1df54923632
 integration:
