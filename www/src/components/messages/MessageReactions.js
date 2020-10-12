@@ -9,6 +9,7 @@ import { updateMessage } from './utils'
 import { groupBy } from '../../utils/array'
 import { CurrentUserContext } from '../login/EnsureLogin'
 import { MessageReaction } from './MessageControls'
+import { EmojiContext } from '../emoji/EmojiProvider'
 
 const BOX_ATTRS={
   pad:'3px',
@@ -20,37 +21,40 @@ const BOX_ATTRS={
   justify: 'center'
 }
 
-function Reaction(props) {
-  const prolog = props.reactions.slice(0, 3).map((reaction) => `@${reaction.user.handle}`)
-  const text = prolog.length > 2 ? `${prolog.join(', ')} and ${props.reactions.length - prolog.length} more` :
+function Reaction({name, reactions, conversation, me, messageId}) {
+  const prolog = reactions.slice(0, 3).map((reaction) => `@${reaction.user.handle}`)
+  const text = prolog.length > 2 ? `${prolog.join(', ')} and ${reactions.length - prolog.length} more` :
                   prolog.length === 2 ? `${prolog[0]} and ${prolog[1]}` : prolog[0]
-  const mutationQuery = props.reactions.find((r) => r.user.id === props.me.id) ?
+  const mutationQuery = reactions.find((r) => r.user.id === me.id) ?
                           DELETE_REACTION : CREATE_REACTION
   const [mutation] = useMutation(mutationQuery, {
     update: (cache, {data}) => {
       let message = data.deleteReaction || data.createReaction
-      const prev = cache.readQuery({query: MESSAGES_Q, variables: {conversationId: props.conversation.id}})
+      const prev = cache.readQuery({query: MESSAGES_Q, variables: {conversationId: conversation.id}})
       cache.writeQuery({
         query: MESSAGES_Q,
-        variables: {conversationId: props.conversation.id},
+        variables: {conversationId: conversation.id},
         data: updateMessage(prev, message)
       })
     }
   })
+  const customEmoji = useContext(EmojiContext)
+  const custom = customEmoji.find(({node: {name: n}}) => n === name)
 
   return (
     <Tooltip>
       <Box
         {...BOX_ATTRS}
-        onClick={() => mutation({variables: {messageId: props.messageId, name: props.name}})}
+        onClick={() => mutation({variables: {messageId: messageId, name: name}})}
         background='highlight'
+        gap='xsmall'
         border={{color: 'highlightDark'}}>
         <Text size='10px'>
-          <Emoji set='google' emoji={props.name} size={18} style={{lineHeight: 0}} />
+          <Emoji set='google' emoji={custom ? {...custom.node, custom: true} : name} size={18} style={{lineHeight: 0}} />
         </Text>
-        <Text size='10px' margin={{left: '3px'}} color='brand'>{props.reactions.length}</Text>
+        <Text size='10px' margin={{left: '3px'}} color='brand'>{reactions.length}</Text>
       </Box>
-      <Text size='xsmall'>{text} reacted with :{props.name}:</Text>
+      <Text size='xsmall'>{text} reacted with :{name}:</Text>
     </Tooltip>
   )
 }
