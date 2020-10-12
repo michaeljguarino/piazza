@@ -98,7 +98,7 @@ const WithEntities = React.memo(({text, entities}) => {
         blockquote: {component: Blockquote},
         p: {props: {size: 'small', margin: {top: 'xsmall', bottom: 'xsmall'}, style: {maxWidth: '100%'}}},
         a: {props: {size: 'small', target: '_blank'}, component: Anchor},
-        span: {props: {style: {verticalAlign: 'bottom'}}},
+        span: {props: {style: {verticalAlign: 'bottom', display: 'inline-flex', alignItems: 'center'}}},
         code: {component: Code},
         pre: {component: Preformat}
       }}>
@@ -126,7 +126,7 @@ function* splitText(text, entities) {
 
 const RIGHT_MARGIN = '3px'
 
-function CustomEmoji({emoji: {imageUrl, name}, size}) {
+export function CustomEmoji({emoji: {imageUrl, name}, size}) {
   const targetRef = useRef()
   const [open, setOpen] = useState(false)
   return (

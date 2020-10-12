@@ -8,7 +8,7 @@ import {
   useSelected,
   useFocused,
 } from 'slate-react'
-import { StandardEmoji } from '../messages/Message'
+import { StandardEmoji, CustomEmoji } from '../messages/Message'
 
 
 function Portal({children}) {
@@ -172,10 +172,12 @@ const insertMention = (editor, val) => {
 
 const Element = props => {
   const { attributes, children, element } = props
+
   switch (element.type) {
     case 'mention':
       return <MentionElement {...props} />
     case 'emoji':
+      if (element.emoji.imageUrl) return <CustomEmoji emoji={element.emoji} size={16} />
       return <StandardEmoji name={element.emoji.name} size={16} />
     default:
       return <div {...attributes}>{children}</div>
