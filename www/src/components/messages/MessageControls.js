@@ -19,7 +19,7 @@ const CONTROL_ATTRS = {
   justify: 'center',
 }
 const PAD = '2px'
-const OUTER = {height: SIZE, width: SIZE}
+const OUTER = {height: SIZE, width: SIZE, align: 'center', justify: 'center'}
 
 function DeleteMessage({message, conversation, setOpen}) {
   const [mutation] = useMutation(DELETE_MESSAGE, {
@@ -68,7 +68,7 @@ export function Control({children, tooltip, pad, closed, ...rest}) {
   )
 }
 
-export function MessageReaction({conversation, setPinnedHover, boxAttrs, position, label, onSelect, message}) {
+export function MessageReaction({conversation, setPinnedHover, boxAttrs, width, align, label, onSelect, message}) {
   const ref = useRef()
   const [open, setOpen] = useState(false)
   const [mutation] = useMutation(CREATE_REACTION, {
@@ -90,7 +90,7 @@ export function MessageReaction({conversation, setPinnedHover, boxAttrs, positio
   return (
     <>
     <HoveredBackground>
-      <Control tooltip='add reaction'>
+      <Control tooltip='add reaction' width={width}>
         <Box ref={ref} accentable onClick={() => toggleOpen(!open)} {...(boxAttrs || CONTROL_ATTRS)}>
           <Emoji size={ICON_SIZE}  />
           {label && (<Text size='xsmall' margin={{left: '2px'}}>{label}</Text>)}
@@ -98,7 +98,7 @@ export function MessageReaction({conversation, setPinnedHover, boxAttrs, positio
       </Control>
     </HoveredBackground>
     {open && (
-      <Drop target={ref.current} align={{right: 'left'}}
+      <Drop target={ref.current} align={align || {right: 'left'}}
         onClickOutside={() => toggleOpen(false)} onEsc={() => toggleOpen(false)}>
         <EmojiPicker onSelect={(emoji) => {
           mutation({variables: {messageId: message.id, name: emoji.id}})
@@ -163,7 +163,7 @@ export default function MessageControls({setPinnedHover, setEditing, ...props}) 
   return (
     <Box className='message-controls' border={{color: 'light-5'}} elevation='xsmall' background='white'
       direction='row' align='center' height={SIZE} round='xsmall' margin={{right: '10px', top: '-10px'}}>
-      <MessageReaction setPinnedHover={setPinnedHover} {...props} />
+      <MessageReaction setPinnedHover={setPinnedHover} {...props} width='35px' />
       <PinMessage {...props} />
       <HoveredBackground>
         <Control tooltip='reply'>

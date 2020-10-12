@@ -12,10 +12,10 @@ import { MessageReaction } from './MessageControls'
 import { EmojiContext } from '../emoji/EmojiProvider'
 
 const BOX_ATTRS={
-  pad:'3px',
+  pad: {horizontal: 'xsmall', vertical: '3px'},
   direction: 'row',
   focusIndicator: false,
-  height: '25px',
+  height: '28px',
   round: 'xsmall',
   align: 'center',
   justify: 'center'
@@ -47,8 +47,7 @@ function Reaction({name, reactions, conversation, me, messageId}) {
         {...BOX_ATTRS}
         onClick={() => mutation({variables: {messageId: messageId, name: name}})}
         background='highlight'
-        gap='xsmall'
-        border={{color: 'highlightDark'}}>
+        gap='xsmall'>
         <Text size='10px'>
           <Emoji set='google' emoji={custom ? {...custom.node, custom: true} : name} size={18} style={{lineHeight: 0}} />
         </Text>
@@ -69,8 +68,8 @@ export default function MessageReactions({message, conversation, hover, setPinne
     return byLength
   })
   return (
-    <Box direction='row' margin={{top: 'xsmall'}}>
-      <Box direction='row' gap='xsmall' height='25px' margin={{right: 'xsmall'}}>
+    <Box direction='row' margin={{top: 'xsmall'}} align='center'>
+      <Box direction='row' gap='xsmall' height='25px' margin={{right: 'xsmall'}} align='center'>
         {sorted.map(([name, reactions]) => (
           <Reaction
             key={name}
@@ -81,14 +80,14 @@ export default function MessageReactions({message, conversation, hover, setPinne
             messageId={message.id} />
         ))}
       </Box>
-      <Box direction='row' height='25px' className="message-reactions">
+      <Box direction='row' height='25px' className='message-reactions' align='center'>
         <MessageReaction
           message={message}
           conversation={conversation}
           setPinnedHover={setPinnedHover}
-          position={['top', 'right', 'bottom']}
+          align={{bottom: 'top'}}
           label={'+'}
-          boxAttrs={{...BOX_ATTRS, backgroud: 'white', border: true}} />
+          boxAttrs={{...BOX_ATTRS, backgroud: 'white', border: {color: 'light-6'}}} />
       </Box>
     </Box>
   )
