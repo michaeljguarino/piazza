@@ -174,7 +174,7 @@ export function StandardEmoji({name, size}) {
   )
 }
 
-const EMOJI_SIZE = 18
+const EMOJI_SIZE = 22
 
 export function MessageEmoji({entity: {emoji, text}}) {
   if (emoji && emoji.imageUrl) return <CustomEmoji emoji={emoji} size={EMOJI_SIZE} />
