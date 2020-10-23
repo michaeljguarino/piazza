@@ -96,7 +96,7 @@ export function Prelude({conversation}) {
   )
 }
 
-function ReturnToBeginning({listRef}) {
+function ReturnToBeginning({beginning}) {
 
   return (
     <Layer position='top-right' modal={false} plain>
@@ -104,7 +104,7 @@ function ReturnToBeginning({listRef}) {
         margin={{top: '70px', right: '10px'}}
         pad={{horizontal: 'small', vertical: 'xsmall'}}
         focusIndicator={false}
-        onClick={() => listRef.scrollToItem(0)}>
+        onClick={beginning}>
         <Box direction='row' fill='horizontal' justify='center'>
           <Text size='small'>go to most recent</Text>
         </Box>
@@ -140,6 +140,10 @@ export default function MessageList() {
     listRef && !scrolled && listRef.scrollToItem(0)
 // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [scrolled, scrollTo])
+  const returnToBeginning = useCallback(() => {
+    listRef.scrollToItem(0)
+    loader && loader.resetloadMoreItemsCache()
+  }, [loader, listRef])
 
   useEffect(() => {
     if (dialogData && dialogData.dialog) setDialog(dialogData.dialog)
@@ -152,12 +156,10 @@ export default function MessageList() {
 
   return (
     <>
-    {scrolled && <ReturnToBeginning listRef={listRef} />}
+    {scrolled && <ReturnToBeginning beginning={returnToBeginning} />}
     <AvailabilityDetector>
     {status => status !== OFFLINE ? <BackOnline refetch={() => {
-      listRef && listRef.scrollToItem(0)
-      refetch()
-      loader && loader.resetloadMoreItemsCache()
+      refetch().then(() => returnToBeginning())
     }} status={status} /> : <Offline />}
     </AvailabilityDetector>
     <Box width='100%' height='100%' ref={parentRef}>
