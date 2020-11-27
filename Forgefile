@@ -6,6 +6,5 @@ SH forge/ops/shell.yaml
 
 RECIPE forge/recipes/*
 
-HELM charts/piazza
-
 TF terraform/gcp
+HELM charts/piazza

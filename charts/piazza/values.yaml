@@ -35,7 +35,7 @@ image:
 dashboard_provider: sidecar
 
 imagePullSecrets:
-- name: forgecreds
+- name: forge-creds
 
 gql:
   port: 4000
