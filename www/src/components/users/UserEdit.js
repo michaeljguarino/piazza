@@ -44,7 +44,7 @@ function EditOption({onClick, icon, text}) {
   )
 }
 
-function EditAttribtues({me, attributes, setAttributes}) {
+function EditAttributes({me, attributes, setAttributes}) {
   const [mutation, {loading}] = useMutation(UPDATE_USER, {
     variables: {id: me.id, attributes}
   })
@@ -71,7 +71,7 @@ function EditAttribtues({me, attributes, setAttributes}) {
 function ViewSwitch({me, view, attributes, setAttributes}) {
   switch (view) {
     case VIEWS.ATTRIBUTES:
-      return <EditAttribtues me={me} attributes={attributes} setAttributes={setAttributes} />
+      return <EditAttributes me={me} attributes={attributes} setAttributes={setAttributes} />
     case VIEWS.PASSWORD:
       return <UpdatePassword me={me} />
     case VIEWS.PROFILE:
