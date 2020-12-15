@@ -20,7 +20,7 @@ defmodule Piazza.MixProject do
   # Run "mix help deps" for examples and options.
   defp deps do
     [
-      {:ecto_sql, "~> 3.2", override: true},
+      {:ecto_sql, "~> 3.3", override: true},
       {:ecto, "~> 3.2", override: true},
       {:distillery, "~> 2.1"},
       {:plug_cowboy, "~> 2.0", override: true},

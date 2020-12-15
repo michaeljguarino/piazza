@@ -1,4 +1,4 @@
-license: {{ .License }}
+license: {{ .License | quote }}
 
 postgresql:
   postgresqlPassword: {{ dedupe . "piazza.postgresql.postgresqlPassword" (randAlphaNum 26) }}

@@ -127,6 +127,7 @@ defmodule Core.PubSub.Consumers.Recurse.ConversationsTest do
       assert new_msg.embed.type == :image
     end
 
+    @tag :skip
     test "It can handle a redirect url" do
       message = insert(:message, text: "https://www.zerohedge.com/energy/california-forced-rolling-blackouts-heatwave-sparks-energy-shortfall")
       event = %PubSub.MessageCreated{item: message, actor: message.creator}

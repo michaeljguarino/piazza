@@ -1,9 +1,6 @@
 REPO piazza
 
 INTEGRATION forge/integrations/*
-DB forge/ops/database.yaml
-SH forge/ops/shell.yaml
-
 RECIPE forge/recipes/*
 
 TF terraform/gcp

@@ -3,6 +3,8 @@ dependencies:
 - type: terraform
   name: gcp
   repo: piazza
+  version: '>= 0.1.0'
 - type: helm
   name: bootstrap
   repo: bootstrap
+  version: '>= 0.5.0'
