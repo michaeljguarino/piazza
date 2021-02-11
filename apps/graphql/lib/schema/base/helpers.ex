@@ -12,4 +12,18 @@ defmodule GraphQl.Schema.Helpers do
       {:ok, Dataloader.get(loader, resolver, queryable, args)}
     end)
   end
+
+  def safe_resolver(fun) do
+    fn args, ctx ->
+      try do
+        case fun.(args, ctx) do
+          {:ok, res} -> {:ok, res}
+          {:error, %Ecto.Changeset{} = cs} -> {:error, resolve_changeset(cs)}
+          error -> error
+        end
+      rescue
+        error -> {:error, GraphQl.Errors.message(error)}
+      end
+    end
+  end
 end
