@@ -1,0 +1,16 @@
+{
+    "name": "Piazza",
+    "short_name": "piazza",
+    "icons": [
+        {
+            "src": "/piazza-resized-85.png",
+            "sizes": "144x144",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ],
+    "start_url": "/",
+    "theme_color": "#3367D6",
+    "background_color": "#ffffff",
+    "display": "fullscreen"
+}
