@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useMemo } from 'react'
 import { useQuery } from 'react-apollo'
 import { Loading } from 'forge-core'
 import { SearchInput } from 'forge-core'
@@ -95,23 +95,24 @@ export const DEFAULT_THEME = {
 function buildTheme(theme) {
   let merged = {...DEFAULT_THEME}
   merged.global.colors = {...DEFAULT_COLOR_THEME, ...theme}
+
   if (theme.link) {
     merged.anchor.color = {dark: theme.link, light: theme.link}
   }
+
+  document.getElementById('app-theme-color')
+    .setAttribute('content', merged.global.colors.sidebarHover)
+
   return merged
 }
 
 export const ThemeContext = React.createContext({theme: {}, name: null, id: null, brand: null})
 export const WorkspaceContext = React.createContext({workspaces: []})
 
-export default function Workspace({children}) {
-  const {loading, data} = useQuery(WORKSPACE_Q, {errorPolicy: 'all'})
-  if (!data && loading) return <Loading height='100vh' width='100vw' />
-
-  const brand = data.brand
-  const {id, name, ...themeAttrs} = brand.theme
-  const theme = buildTheme(themeAttrs)
-  const workspaces = data.workspaces ? data.workspaces.edges.map(({node}) => node) : []
+function WorkspaceInner({brand, workspaces: spaces, children}) {
+  const {theme: {id, name, ...themeAttrs}} = brand
+  const theme = useMemo(() => buildTheme(themeAttrs), [themeAttrs])
+  const workspaces = spaces ? spaces.edges.map(({node}) => node) : []
 
   return (
     <WorkspaceContext.Provider value={{workspaces}}>
@@ -119,5 +120,16 @@ export default function Workspace({children}) {
         {children(theme)}
       </ThemeContext.Provider>
     </WorkspaceContext.Provider>
+  ) 
+}
+
+export default function Workspace({children}) {
+  const {loading, data} = useQuery(WORKSPACE_Q, {errorPolicy: 'all'})
+  if (!data && loading) return <Loading height='100vh' width='100vw' />
+
+  return (
+    <WorkspaceInner brand={data.brand} workspaces={data.workspaces}>
+      {children}
+    </WorkspaceInner>
   )
 }
