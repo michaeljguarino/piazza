@@ -52,7 +52,7 @@ function ThemeChoice({onClick, theme, current}) {
 
 export default function ThemeSelector({brand}) {
   const {id, brand: {themeId}} = useContext(ThemeContext)
-  const {loading, data, fetchMore} = useQuery(THEME_Q)
+  const {loading, data, fetchMore} = useQuery(THEME_Q, {fetchPolicy: 'cache-and-network'})
   const [mutation] = useMutation(brand ? UPDATE_BRAND : SET_THEME, {
     onCompleted: () => window.location.reload(false)
   })
@@ -69,7 +69,7 @@ export default function ThemeSelector({brand}) {
       }}
       edges={Array.from(chunk(edges, 2))}
       mapper={(chunk) => (
-        <Box direction='row' pad='small' gap='small' margin={{vertical: 'xsmall'}}>
+        <Box key={chunk[0].node.id} direction='row' pad='small' gap='small' margin={{vertical: 'xsmall'}}>
         {chunk.map(({node}) => (
           <ThemeChoice
             current={brand ? themeId : id}

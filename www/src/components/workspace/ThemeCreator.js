@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useCallback, useContext, useState } from 'react'
 import { useMutation } from 'react-apollo'
 import { Box, Text, TextInput } from 'grommet'
 import { Button, SecondaryButton, InputField } from 'forge-core'
@@ -35,10 +35,7 @@ function ThemePicker({field, active, color, onChange}) {
   )
 }
 
-function cleanTheme(theme) {
-  const {__typename, id, name, ...cleanedTheme} = theme
-  return cleanedTheme
-}
+const cleanTheme = ({__typename, id, name, ...cleaned}) => cleaned 
 
 function serializeTheme(theme) {
   return THEME_FIELDS.map((field) => theme[field]).join(",")
@@ -57,6 +54,7 @@ function deserializeTheme(serialized, theme) {
 
 function deserializeSlack(serialized, theme) {
   let newTheme = serialized.split(",").reduce((theme, val, i) => {
+    if (!SLACK_THEME_FIELDS[i]) return theme
     theme[SLACK_THEME_FIELDS[i]] = val
     return theme
   }, {...theme})
@@ -74,20 +72,22 @@ function ThemeForm({theme, cancel}) {
   const [active, setActive] = useState('brand')
   const [name, setName] = useState(theme.name || '')
   const [mutation] = useMutation(CREATE_THEME, {
-    variables: {name, attributes: theme},
+    variables: {name, attributes: themeAttrs},
     update: (cache, {data}) => {
       const prev = cache.readQuery({query: THEME_Q})
       cache.writeQuery({
         query: THEME_Q,
         data: addTheme(prev, data.createTheme)
       })
-      cancel()
-    }
+    },
+    onCompleted: cancel
   })
 
-  function wrappedSetTheme(fieldName, value) {
+  const setTheme = useCallback((fieldName, value) => {
     setThemeAttrs({...themeAttrs, [fieldName]: value})
-  }
+  }, [setThemeAttrs, themeAttrs])
+
+  console.log(themeAttrs)
 
   return (
     <>
@@ -114,7 +114,7 @@ function ThemeForm({theme, cancel}) {
           <TextInput
             value={serializeTheme(theme)}
             onChange={(e) => {
-              const deserialized = deserializeTheme(e.target.value, theme)
+              const deserialized = deserializeTheme(e.target.value, themeAttrs)
               setThemeAttrs(deserialized)
             }} />
         </Box>
@@ -123,7 +123,7 @@ function ThemeForm({theme, cancel}) {
           <TextInput
             value={serializeSlack(theme)}
             onChange={(e) => {
-              const deserialized = deserializeSlack(e.target.value, theme)
+              const deserialized = deserializeSlack(e.target.value, themeAttrs)
               setThemeAttrs(deserialized)
             }} />
         </Box>
@@ -131,7 +131,7 @@ function ThemeForm({theme, cancel}) {
       <ChromePicker
         disableAlpha
         color={themeAttrs[active]}
-        onChangeComplete={(color) => wrappedSetTheme(active, color.hex)}
+        onChangeComplete={(color) => setTheme(active, color.hex)}
       />
     </Box>
     <Box direction='row' margin={{top: 'small'}} gap='xsmall' justify='end'>
@@ -143,13 +143,11 @@ function ThemeForm({theme, cancel}) {
 }
 
 export default function ThemeCreator({cancel}) {
+  const {brand: {theme}} = useContext(ThemeContext)
+
   return (
-    <ThemeContext.Consumer>
-    {({brand: {theme}}) => (
-      <Box gap='small' width='720px' pad='small'>
-        <ThemeForm theme={theme} cancel={cancel} />
-      </Box>
-    )}
-    </ThemeContext.Consumer>
+    <Box gap='small' width='720px' pad='small'>
+      <ThemeForm theme={theme} cancel={cancel} />
+    </Box>
   )
 }
