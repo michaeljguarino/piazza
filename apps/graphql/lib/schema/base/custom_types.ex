@@ -6,6 +6,17 @@ defmodule GraphQl.Schema.CustomTypes do
     parse &mapish/1
   end
 
+  enum :delta do
+    value :create
+    value :update
+    value :delete
+  end
+
+  enum :direction do
+    value :before
+    value :after
+  end
+
   defp mapish(m) when is_map(m), do: m
   defp mapish(_), do: :error
 end

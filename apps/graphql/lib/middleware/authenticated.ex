@@ -1,4 +1,4 @@
-defmodule GraphQl.Schema.Authenticated do
+defmodule GraphQl.Middleware.Authenticated do
   @behaviour Absinthe.Middleware
   alias Core.Models.User
 
