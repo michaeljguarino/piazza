@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, { useState } from 'react'
 import { Box, Text, Stack } from 'grommet'
 import { Next, Down, Download } from 'grommet-icons'
 import FileIcon, { defaultStyles } from 'react-file-icon'

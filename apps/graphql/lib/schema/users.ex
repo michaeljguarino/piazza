@@ -1,6 +1,6 @@
 defmodule GraphQl.Schema.Users do
   use GraphQl.Schema.Base
-  alias GraphQl.Resolvers.{User, Conversation, Notification, Invite}
+  alias GraphQl.Resolvers.{User, Conversation, Notification, Invite, Workspace}
 
   ############
   # INPUTS
